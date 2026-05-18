@@ -1,0 +1,7 @@
+{
+  "name": "Погоня за Робо-пылесосом (A*)",
+  "difficulty": "HARD",
+  "language": "PYTHON",
+  "tags": ["ALGORITHMS", "PATHFINDING"],
+  "shortDescription": "Помоги коту обойти роботы-пылесосы с помощью алгоритма A*"
+}

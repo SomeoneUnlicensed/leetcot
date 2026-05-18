@@ -1,0 +1,32 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "db:generate": {
+      "outputs": ["$TURBO_ROOT$/node_modules/.prisma/**"],
+      "outputLogs": "new-only"
+    },
+    "db:deploy": {
+      "cache": false
+    },
+    "db:push": {
+      "cache": false
+    },
+    "db:reset": {
+      "cache": false
+    },
+    "db:seed": {
+      "dependsOn": ["db:push"],
+      "cache": false
+    },
+    "db:prod:seed": {
+      "dependsOn": ["db:push"],
+      "cache": false
+    },
+    "db:sync-challenges": {
+      "cache": false
+    },
+    "db:studio": {
+      "cache": false
+    }
+  }
+}

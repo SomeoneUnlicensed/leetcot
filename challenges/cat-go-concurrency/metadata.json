@@ -1,0 +1,7 @@
+{
+  "name": "Параллельный Тыгыдык (Channels)",
+  "difficulty": "HARD",
+  "language": "GO",
+  "tags": ["CONCURRENCY", "CHANNELS"],
+  "shortDescription": "Организуй многопоточную очередь кормления голодных котов"
+}
