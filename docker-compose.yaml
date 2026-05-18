@@ -1,0 +1,51 @@
+name: leetcot
+
+services:
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: dev
+      MYSQL_DATABASE: leetcot
+    volumes:
+      - leetcot-data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-pdev']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: 'bitnami/redis:latest'
+    container_name: leetcot-redis
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 6380:6379
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+      - 3001:3001
+      - 3003:3003
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=mysql://root:dev@db:3306/leetcot
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=development
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+volumes:
+  leetcot-data:
+    driver: local

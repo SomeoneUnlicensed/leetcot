@@ -1,0 +1,78 @@
+{
+  "name": "leetcot",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "checks": "turbo run format lint typecheck --continue",
+    "checks:fix": "turbo run format:fix lint:fix typecheck --continue --force",
+    "clean": "turbo run clean && rm -rf node_modules && rm -rf .turbo",
+    "check:solutions": "tsx ./challenges/validate.ts",
+    "db:push": "turbo run db:push",
+    "db:reset": "turbo run db:reset",
+    "db:sc": "turbo run db:sync-challenges",
+    "db:seed": "turbo run db:reset && turbo run db:seed",
+    "db:prod:seed": "turbo run db:reset && turbo run db:prod:seed",
+    "db:studio": "turbo run db:studio",
+    "dev": "turbo run dev --concurrency=1000",
+    "dl-git": "turbo run dl-git",
+    "dl-monaco:force": "turbo run dl-monaco",
+    "format": "prettier . \"!./apps/**\" \"!./packages/**\" \"!./tooling/**\" \"!challenges/**/tests.ts\" --check --cache --cache-location=\"node_modules/.cache/prettiercache\"",
+    "format:fix": "prettier . \"!./apps/**\" \"!./packages/**\" \"!./tooling/**\" \"!challenges/**/tests.ts\" --write --cache --cache-location=\"node_modules/.cache/prettiercache\" --log-level=warn",
+    "lint": "eslint . --max-warnings 0",
+    "lint:markdown": "markdownlint-cli2 \"challenges/**/*.md\" \"#**/node_modules\" && cspell challenges/** --no-progress",
+    "lint:markdown:validate": "tsx challenges/validate.ts",
+    "lint:fix": "eslint . --fix --max-warnings 0",
+    "package-check": "pnpm dlx sherif@latest --ignore-rule root-package-dependencies",
+    "package-check:fix": "pnpm dlx sherif@latest --ignore-rule root-package-dependencies --fix",
+    "refresh": "turbo run db:reset db:seed --concurrency=1",
+    "test:e2e": "turbo run test:e2e",
+    "test:e2e:install": "playwright install",
+    "test:e2e:ui": "turbo run test:e2e:ui",
+    "test:e2e:inspector": "turbo run test:e2e:inspector",
+    "tunnel": "cloudflared tunnel --url http://localhost:3000",
+    "typecheck": "turbo run typecheck --continue"
+  },
+  "devDependencies": {
+    "ajv": "^8.12.0",
+    "cspell": "^7.3.8",
+    "markdownlint-cli2": "^0.10.0",
+    "picocolors": "^1.0.0",
+    "bcryptjs": "^2.4.3",
+    "@types/bcryptjs": "^2.4.6",
+    "prettier": "^3.1.1",
+    "prettier-plugin-tailwindcss": "^0.5.9",
+    "tsx": "4.19.0",
+    "turbo": "^2.6.1",
+    "type-testing": "0.2.0",
+    "typescript": "^5.3.3",
+    "vitest": "^0.34.6"
+  },
+  "packageManager": "pnpm@10.11.0",
+  "pnpm": {
+    "overrides": {
+      "@auth/core": "0.37.4",
+      "@typescript-eslint/eslint-plugin": "8.16.0",
+      "@typescript-eslint/parser": "8.16.0",
+      "@types/react": "npm:types-react@rc",
+      "@types/react-dom": "19.1.0",
+      "react-is": "19.0.0"
+    },
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "monaco-editor"
+      ]
+    },
+    "patchedDependencies": {
+      "monaco-editor@0.52.2": "patches/monaco-editor@0.52.2.patch"
+    },
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@sentry/cli",
+      "@vercel/speed-insights",
+      "esbuild",
+      "sharp",
+      "unrs-resolver"
+    ]
+  }
+}
