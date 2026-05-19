@@ -137,14 +137,20 @@ export function CodePanel(props: CodePanelProps) {
 
       allDiagnostics.forEach((d) => {
         if (!d.messageText) return;
-        if (typeof d.messageText === 'string') {
-          formattedErrors.push(d.messageText);
+        const messageText = d.messageText as any;
+        if (typeof messageText === 'string') {
+          formattedErrors.push(messageText);
         } else {
-          let msg = d.messageText.messageText;
-          let current = d.messageText.next;
-          while (current) {
-            msg += '\n' + current.messageText;
-            current = current.next;
+          let msg = messageText.messageText || '';
+          let next = messageText.next;
+          if (Array.isArray(next)) {
+            next.forEach((n: any) => {
+              if (n && n.messageText) {
+                msg += '\n' + n.messageText;
+              }
+            });
+          } else if (next && next.messageText) {
+            msg += '\n' + next.messageText;
           }
           formattedErrors.push(msg);
         }
@@ -196,76 +202,8 @@ export function CodePanel(props: CodePanelProps) {
     };
   }, [debouncedHandleSubmit]);
 
-  if (checkingState === 'verifying') {
-    return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[400px] bg-zinc-50 dark:bg-zinc-950 p-6 select-none transition-all duration-300">
-        <pre className="font-mono text-zinc-700 dark:text-zinc-300 text-lg md:text-xl font-bold leading-relaxed mb-6 whitespace-pre text-center animate-pulse">
-{`   /\\_/\\
-  ( o.o )  *мурр... проверяем ваш код*
-   > ^ <`}
-        </pre>
-        <div className="flex flex-col items-center gap-2">
-          <div className="w-12 h-12 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin" />
-          <span className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 mt-2 font-mono">
-            Проверяем...
-          </span>
-        </div>
-      </div>
-    );
-  }
-
-  if (checkingState === 'success') {
-    return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[400px] bg-zinc-50 dark:bg-zinc-950 p-6 select-none transition-all duration-300 animate-fade-in">
-        <pre className="font-mono text-emerald-600 dark:text-emerald-400 text-lg md:text-xl font-bold leading-relaxed mb-6 whitespace-pre text-center">
-{`   /\\_/\\
-  ( ^.^ )  *УРА! Все тесты пройдены!*
-   > ^ <`}
-        </pre>
-        <span className="text-xl font-extrabold text-zinc-800 dark:text-zinc-100 font-sans text-center mb-2">
-          Мур-мяу! Задание выполнено! 🎉
-        </span>
-        <span className="text-sm text-zinc-500 dark:text-zinc-400 text-center font-mono">
-          Код успешно проверен и сохранен.
-        </span>
-      </div>
-    );
-  }
-
-  if (checkingState === 'failure') {
-    return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[400px] bg-zinc-50 dark:bg-zinc-950 p-6 transition-all duration-300 overflow-y-auto">
-        <pre className="font-mono text-red-600 dark:text-red-400 text-lg md:text-xl font-bold leading-relaxed mb-6 whitespace-pre text-center">
-{`   /\\_/\\
-  ( x.x )  *грустное мяу...*
-   > ^ <`}
-        </pre>
-        <span className="text-lg font-extrabold text-zinc-800 dark:text-zinc-100 text-center mb-2">
-          Код не прошел тесты! 😿
-        </span>
-        <div className="w-full max-w-2xl bg-zinc-950 text-red-400 font-mono text-xs md:text-sm p-4 rounded-lg border border-red-900/50 max-h-[300px] overflow-y-auto mt-4 text-left whitespace-pre-wrap shadow-inner shadow-black/80">
-          <div className="text-zinc-500 font-bold mb-2 border-b border-zinc-800 pb-1 flex justify-between items-center">
-            <span>КОШАЧИЙ ЛОГ ОШИБОК:</span>
-            <span className="text-[10px] bg-red-950 text-red-400 px-1.5 py-0.5 rounded border border-red-900">FAILED</span>
-          </div>
-          {checkingErrors.map((err, idx) => (
-            <div key={idx} className="mb-2 last:mb-0 pb-2 border-b border-red-950/30 last:border-0">
-              <span className="text-red-500 font-bold mr-1">[{idx + 1}]</span> {err}
-            </div>
-          ))}
-        </div>
-        <Button
-          onClick={() => setCheckingState('editor')}
-          className="mt-6 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-zinc-950 font-bold px-6 py-2 rounded-lg flex items-center gap-2 transition-all border border-zinc-700 dark:border-zinc-300"
-        >
-          <span>Попробовать еще раз 🐾</span>
-        </Button>
-      </div>
-    );
-  }
-
   return (
-    <>
+    <div className="relative h-full flex flex-col w-full">
       <div className="sticky top-0 flex h-[40px] shrink-0 items-center justify-between border-b border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-[#1e1e1e]">
         <div className="flex items-center gap-1">{props.settingsElement}</div>
         <Button
@@ -277,6 +215,73 @@ export function CodePanel(props: CodePanelProps) {
           На проверочку! 🐾
         </Button>
       </div>
+
+      {checkingState !== 'editor' && (
+        <div className="absolute inset-x-0 bottom-0 top-[40px] z-50 flex flex-col items-center justify-center bg-zinc-50/95 dark:bg-zinc-950/95 p-6 select-none overflow-y-auto">
+          {checkingState === 'verifying' && (
+            <>
+              <pre className="font-mono text-zinc-700 dark:text-zinc-300 text-lg md:text-xl font-bold leading-relaxed mb-6 whitespace-pre text-center animate-pulse">
+{`   /\\_/\\
+  ( o.o )  *мурр... проверяем ваш код*
+   > ^ <`}
+              </pre>
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-12 h-12 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin" />
+                <span className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 mt-2 font-mono">
+                  Проверяем...
+                </span>
+              </div>
+            </>
+          )}
+
+          {checkingState === 'success' && (
+            <>
+              <pre className="font-mono text-emerald-600 dark:text-emerald-400 text-lg md:text-xl font-bold leading-relaxed mb-6 whitespace-pre text-center">
+{`   /\\_/\\
+  ( ^.^ )  *УРА! Все тесты пройдены!*
+   > ^ <`}
+              </pre>
+              <span className="text-xl font-extrabold text-zinc-800 dark:text-zinc-100 font-sans text-center mb-2">
+                Мур-мяу! Задание выполнено! 🎉
+              </span>
+              <span className="text-sm text-zinc-500 dark:text-zinc-400 text-center font-mono">
+                Код успешно проверен и сохранен.
+              </span>
+            </>
+          )}
+
+          {checkingState === 'failure' && (
+            <>
+              <pre className="font-mono text-red-600 dark:text-red-400 text-lg md:text-xl font-bold leading-relaxed mb-6 whitespace-pre text-center">
+{`   /\\_/\\
+  ( x.x )  *грустное мяу...*
+   > ^ <`}
+              </pre>
+              <span className="text-lg font-extrabold text-zinc-800 dark:text-zinc-100 text-center mb-2">
+                Код не прошел тесты! 😿
+              </span>
+              <div className="w-full max-w-2xl bg-zinc-950 text-red-400 font-mono text-xs md:text-sm p-4 rounded-lg border border-red-900/50 max-h-[300px] overflow-y-auto mt-4 text-left whitespace-pre-wrap shadow-inner shadow-black/80">
+                <div className="text-zinc-500 font-bold mb-2 border-b border-zinc-800 pb-1 flex justify-between items-center">
+                  <span>КОШАЧИЙ ЛОГ ОШИБОК:</span>
+                  <span className="text-[10px] bg-red-950 text-red-400 px-1.5 py-0.5 rounded border border-red-900">FAILED</span>
+                </div>
+                {checkingErrors.map((err, idx) => (
+                  <div key={idx} className="mb-2 last:mb-0 pb-2 border-b border-red-950/30 last:border-0">
+                    <span className="text-red-500 font-bold mr-1">[{idx + 1}]</span> {err}
+                  </div>
+                ))}
+              </div>
+              <Button
+                onClick={() => setCheckingState('editor')}
+                className="mt-6 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-zinc-950 font-bold px-6 py-2 rounded-lg flex items-center gap-2 transition-all border border-zinc-700 dark:border-zinc-300"
+              >
+                <span>Попробовать еще раз 🐾</span>
+              </Button>
+            </>
+          )}
+        </div>
+      )}
+
       <SplitEditor
         isTestsReadonly={!isPlayground}
         userEditorState={userEditorState}
@@ -406,6 +411,6 @@ export function CodePanel(props: CodePanelProps) {
           },
         }}
       />
-    </>
+    </div>
   );
 }
