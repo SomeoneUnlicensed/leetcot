@@ -56,9 +56,13 @@ export async function GET(request: NextRequest) {
     const values = contributorsPartition.map(
       (contributorId) => `('${contributorRole.id}', '${contributorId}')`,
     );
-    updateCount += await prisma.$executeRawUnsafe(
-      `insert ignore into _RoleToUser (A, B) values ${values.join(',')}`,
-    );
+    updateCount =
+      Number(updateCount) +
+      Number(
+        await prisma.$executeRawUnsafe(
+          `insert ignore into _RoleToUser (A, B) values ${values.join(',')}`,
+        ),
+      );
   }
 
   return Response.json({ success: true, updateCount });

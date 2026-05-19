@@ -61,8 +61,14 @@ export async function getProgressData(userId: string) {
   });
 
   // Calculate percentage, total solved and total challenges
-  const totalSolved = challengesSolved.reduce((acc, challenge) => acc + challenge._count._all, 0);
-  const totalChallenges = allChallenges.reduce((acc, challenge) => acc + challenge._count._all, 0);
+  const totalSolved = challengesSolved.reduce(
+    (acc, challenge) => Number(acc) + Number(challenge._count._all),
+    0,
+  );
+  const totalChallenges = allChallenges.reduce(
+    (acc, challenge) => Number(acc) + Number(challenge._count._all),
+    0,
+  );
 
   const chartData: {
     difficulty: Difficulty;
@@ -124,7 +130,7 @@ export async function getUserActivity(userId: string) {
     const comments = user.comment.filter((c) => isSameDay(c.createdAt, date)).length;
     const badges = 0;
     const submissions = user.submission.filter((s) => isSameDay(s.createdAt, date)).length;
-    const activity = comments + badges + submissions;
+    const activity = Number(comments) + Number(badges) + Number(submissions);
     return {
       date,
       day: getDay(date),

@@ -87,7 +87,7 @@ export const getChallengeRouteData = cache(async (slug: string, session: Session
     track,
   };
 });
-export const getCurrentChallenge = cache(async (slug: string, session: Session | null) => {
+export const getCurrentChallenge = cache((slug: string, session: Session | null) => {
   return prisma.challenge.findFirstOrThrow({
     where: {
       slug,

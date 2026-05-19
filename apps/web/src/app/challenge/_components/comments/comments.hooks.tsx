@@ -232,7 +232,7 @@ export function useCommentsReplies({
         const preselectedReplyIndex = replies!.findIndex(
           (reply) => preselectedReplyId === reply.id,
         );
-        take = Math.ceil((preselectedReplyIndex + 1) / REPLIES_PAGESIZE) * REPLIES_PAGESIZE;
+        take = Math.ceil((Number(preselectedReplyIndex) + 1) / REPLIES_PAGESIZE) * REPLIES_PAGESIZE;
       }
       // `end` is exclusive, and therefore also the next cursor
       const end = cursor + take;
