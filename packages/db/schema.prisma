@@ -175,6 +175,15 @@ enum Language {
   PHP
   RUBY
   KOTLIN
+  CPP
+  C
+  SWIFT
+  SCALA
+  ELIXIR
+  CLOJURE
+  HASKELL
+  PERL
+  LUA
 }
 
 model Challenge {
