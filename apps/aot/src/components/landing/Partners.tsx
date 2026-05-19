@@ -1,6 +1,6 @@
 import FrontendMasters from '../../../public/frontend-masters.svg';
 import ЛитКотDark from '../../../public/typehero-dark.svg';
-import ЛитКот from '../../../public/typehero.svg';
+import ЛитКотLogo from '../../../public/typehero.svg';
 import Sentry from '../../../public/sentry.svg';
 import PartnerLink from './PartnerLink';
 
@@ -18,7 +18,7 @@ const partners = [
   {
     name: 'ЛитКот',
     url: 'https://leetcot.ru/',
-    logo: ЛитКот,
+    logo: ЛитКотLogo,
     darkLogo: ЛитКотDark,
   },
 ];

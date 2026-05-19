@@ -23,7 +23,7 @@ import { NavLinksWithYear, YearSwitcher } from './year-switcher';
 
 const DISCORD_INVITE_LINK = 'https://discord.gg/WjZhvVbFHM';
 const TWITTER_LINK = 'https://x.com/leetcot';
-const GITHUB_LINK = 'https://github.com/typehero/typehero';
+const GITHUB_LINK = 'https://github.com/SomeoneUnlicensed/leetcot';
 
 export async function Navigation() {
   const [session, featureFlags] = await Promise.all([auth(), getAllFlags()]);
