@@ -1,24 +1,17 @@
 import { Badge } from '@repo/ui/components/badge';
 import { Card, CardContent } from '@repo/ui/components/card';
-import { Swords } from '@repo/ui/icons';
+import { Compass } from '@repo/ui/icons';
 import { clsx } from 'clsx';
 import Link from 'next/link';
-import type { Tracks } from './track-grid';
-import { useMemo } from 'react';
 
-interface TrackProps {
-  track: Tracks[number];
-}
-
-// The color for track.
-export const BGS_BY_TRACK: Record<number, string> = {
-  0: 'to-difficulty-beginner/30 dark:to-difficulty-beginner-dark/20',
-  1: 'to-difficulty-easy/30 dark:to-difficulty-easy-dark/20',
-  2: 'to-difficulty-medium/30 dark:to-difficulty-medium-dark/20',
-  3: 'to-difficulty-hard/30 dark:to-difficulty-hard-dark/20',
+const BGS_BY_COURSE: Record<number, string> = {
+  0: 'to-difficulty-easy/30 dark:to-difficulty-easy-dark/20',
+  1: 'to-difficulty-medium/30 dark:to-difficulty-medium-dark/20',
+  2: 'to-difficulty-hard/30 dark:to-difficulty-hard-dark/20',
+  3: 'to-difficulty-beginner/30 dark:to-difficulty-beginner-dark/20',
   4: 'to-difficulty-extreme/30 dark:to-difficulty-extreme-dark/20',
 } as const;
-export const bgsArray = Object.values(BGS_BY_TRACK);
+const bgsArray = Object.values(BGS_BY_COURSE);
 
 const EnrolledAndCompletedBadge = ({ text = 'Enrolled' }: { text?: string }) => {
   const label = text === 'Completed' ? 'Завершено' : 'Вы записаны';
@@ -34,30 +27,30 @@ const EnrolledAndCompletedBadge = ({ text = 'Enrolled' }: { text?: string }) => 
   );
 };
 
-export function TrackCard({ track }: TrackProps) {
-  const { trackChallenges, enrolledUsers } = track;
-  const isEnrolled = Boolean(enrolledUsers?.length);
+interface CourseCardProps {
+  course: {
+    id: number;
+    name: string;
+    slug: string;
+    description: string;
+    tracks: { _count: { trackChallenges: number } }[];
+    _count: { enrolledUsers: number };
+    enrolledUsers?: { id: string }[] | false;
+  };
+}
 
-  const completedChallenges = useMemo(
-    () =>
-      trackChallenges?.filter((trackChallenge) =>
-        trackChallenge.challenge.submission.some((submission) => submission.isSuccessful),
-      ).length ?? 0,
-    [trackChallenges],
-  );
-
-  const isCompleted = completedChallenges === track._count.trackChallenges;
+export function CourseCard({ course }: CourseCardProps) {
+  const isEnrolled = Array.isArray(course.enrolledUsers) && course.enrolledUsers.length > 0;
+  const totalChallenges = course.tracks.reduce((acc, t) => acc + t._count.trackChallenges, 0);
 
   return (
-    <Link href={`/tracks/${track.slug}`} className="group">
+    <Link href={`/courses/${course.slug}`} className="group">
       <Card
         className={clsx(
           'relative overflow-hidden duration-300',
-          isCompleted
-            ? 'border-green-700 dark:border-green-500'
-            : isEnrolled
-              ? 'border-[#3078c5] dark:border-blue-400'
-              : 'dark:group-hover:border-border group-hover:border-neutral-400 group-hover:shadow-xl group-focus:border-neutral-500 dark:group-hover:shadow dark:group-hover:shadow-neutral-400/70',
+          isEnrolled
+            ? 'border-[#3078c5] dark:border-blue-400'
+            : 'dark:group-hover:border-border group-hover:border-neutral-400 group-hover:shadow-xl group-focus:border-neutral-500 dark:group-hover:shadow dark:group-hover:shadow-neutral-400/70',
         )}
       >
         <div className="absolute -bottom-12 -left-4 w-full -translate-x-1/4 translate-y-1/4 rotate-[30deg]">
@@ -94,19 +87,17 @@ export function TrackCard({ track }: TrackProps) {
             )}
           />
         </div>
-        {isEnrolled || isCompleted ? (
-          <EnrolledAndCompletedBadge text={isCompleted ? 'Completed' : undefined} />
-        ) : null}
+        {isEnrolled ? <EnrolledAndCompletedBadge /> : null}
         <CardContent className="relative z-10 flex flex-col items-center gap-5 p-8">
           <div
             className={clsx(
               `bg-gradient-to-r from-neutral-500/10 from-10% ${
-                BGS_BY_TRACK[track.id % bgsArray.length]
+                BGS_BY_COURSE[course.id % bgsArray.length]
               } relative to-100% dark:from-neutral-900`,
               'flex h-24 w-24 flex-none items-center justify-center rounded-2xl',
             )}
           >
-            <Swords
+            <Compass
               size={50}
               className={clsx(
                 'transition-opacity duration-300',
@@ -114,14 +105,17 @@ export function TrackCard({ track }: TrackProps) {
               )}
             />
           </div>
-          <div className="text-center font-semibold capitalize tracking-wide">{track.name}</div>
+          <div className="text-center font-semibold capitalize tracking-wide">{course.name}</div>
           <div className="text-muted-foreground line-clamp-3 text-center text-sm tracking-wide">
-            {track.description}
+            {course.description}
           </div>
 
-          <div className="text-center">
-            <Badge className="flex-none" variant={isCompleted ? 'completed' : 'default'}>
-              {track._count.trackChallenges} Задач
+          <div className="flex gap-2 text-center">
+            <Badge className="flex-none" variant="default">
+              {course.tracks.length} Треков
+            </Badge>
+            <Badge className="flex-none" variant="default">
+              {totalChallenges} Задач
             </Badge>
           </div>
         </CardContent>

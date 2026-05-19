@@ -27,10 +27,10 @@ export default function SearchBar({ setOpen }: { setOpen: (v: boolean) => void }
         className="text-muted-foreground mr-2 hidden w-64 justify-between gap-3 text-sm lg:inline-flex"
         onClick={() => setOpen(true)}
       >
-        <SearchIcon />
-        <span className="sm:hidden">Search</span>
+        <SearchIcon className="h-4 w-4" />
+        <span className="sm:hidden">Поиск</span>
         <span className="hidden w-20 truncate text-left sm:inline-block md:w-full">
-          Search Challenges...
+          Поиск испытаний...
         </span>
         <span className="whitespace-nowrap text-xs">{cmdOrCtrl}K</span>
       </Button>

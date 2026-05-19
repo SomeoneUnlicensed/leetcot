@@ -41,6 +41,8 @@ enum RoleTypes {
   CREATOR
   SUPPORTER
   CONTRIBUTOR
+  BUSINESS_ADMIN
+  CHAMPIONSHIP_MANAGER
 }
 
 enum UserStatus {
@@ -143,6 +145,7 @@ model User {
 
   imageUpload          ImageUpload[]
   tracks               Track[]
+  enrolledCourses      Course[]
   BetaTokens           BetaTokens[]
   donations            Donation[]
   shortUrls            ShortURL[]
@@ -204,6 +207,7 @@ model Challenge {
   tests            String          @db.MediumText
   status           ChallengeStatus @default(PENDING)
   tsconfig         Json?
+  isInfoOnly       Boolean         @default(false)
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
@@ -450,6 +454,21 @@ model Track {
   isComingSoon    Boolean          @default(false)
   trackChallenges TrackChallenge[]
   enrolledUsers   User[]
+  courseId        Int?
+  course          Course?          @relation(fields: [courseId], references: [id])
+
+  @@index([courseId])
+}
+
+model Course {
+  id            Int       @id @default(autoincrement())
+  name          String    @unique
+  slug          String    @unique
+  description   String    @db.MediumText
+  visible       Boolean   @default(true)
+  isComingSoon  Boolean   @default(false)
+  tracks        Track[]
+  enrolledUsers User[]
 }
 
 model BetaTokens {

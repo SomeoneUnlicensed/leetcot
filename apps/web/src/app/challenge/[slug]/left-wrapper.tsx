@@ -163,7 +163,7 @@ export function LeftWrapper({
             }}
             value="description"
           >
-            {isIconOnly ? <Text className="h-4 w-4" /> : 'Description'}
+            {isIconOnly ? <Text className="h-4 w-4" /> : 'Описание'}
           </TabsTrigger>
           <TabsTrigger
             className={cn(
@@ -181,7 +181,7 @@ export function LeftWrapper({
             }}
             value="solutions"
           >
-            {isIconOnly ? <FlaskConical className="h-4 w-4" /> : 'Solutions'}
+            {isIconOnly ? <FlaskConical className="h-4 w-4" /> : 'Решения'}
           </TabsTrigger>
           <TabsTrigger
             className={cn(
@@ -203,7 +203,7 @@ export function LeftWrapper({
             }}
             value="submissions"
           >
-            {isIconOnly ? <History className="h-4 w-4" /> : 'Submissions'}
+            {isIconOnly ? <History className="h-4 w-4" /> : 'Попытки'}
           </TabsTrigger>
         </TabsList>
         <TabsContent

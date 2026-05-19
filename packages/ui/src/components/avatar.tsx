@@ -33,59 +33,18 @@ const AvatarFallback = ({
 );
 
 // million-ignore
-function DefaultAvatar(props: ComponentProps<'svg'>) {
+function DefaultAvatar(props: React.ComponentProps<'div'>) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 200 200"
-      fill="none"
-      shapeRendering="auto"
-      width={50}
-      height={50}
+    <div
       {...props}
+      className={cn(
+        'font-mono text-[7px] leading-[1] font-bold select-none text-center flex flex-col justify-center items-center w-full h-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25 rounded-full aspect-square',
+        props.className,
+      )}
     >
-      <circle cx="100" cy="100" r="100" fill="#FFB800" />
-      
-      {/* Head */}
-      <circle cx="100" cy="110" r="60" fill="#FFA500" />
-      
-      {/* Left ear */}
-      <path d="M 60 60 Q 40 50 35 75 Q 45 60 60 65 Z" fill="#FFA500" />
-      
-      {/* Right ear */}
-      <path d="M 140 60 Q 160 50 165 75 Q 155 60 140 65 Z" fill="#FFA500" />
-      
-      {/* Inner left ear */}
-      <path d="M 58 68 Q 50 65 48 75 Q 52 70 58 72 Z" fill="#FFD99D" />
-      
-      {/* Inner right ear */}
-      <path d="M 142 68 Q 150 65 152 75 Q 148 70 142 72 Z" fill="#FFD99D" />
-      
-      {/* Left eye */}
-      <circle cx="80" cy="95" r="6" fill="#000" />
-      <circle cx="80" cy="93" r="2" fill="#fff" />
-      
-      {/* Right eye */}
-      <circle cx="120" cy="95" r="6" fill="#000" />
-      <circle cx="120" cy="93" r="2" fill="#fff" />
-      
-      {/* Nose */}
-      <path d="M 100 110 L 98 118 L 102 118 Z" fill="#FF69B4" />
-      
-      {/* Mouth */}
-      <path d="M 100 118 Q 90 125 80 123" stroke="#000" strokeWidth="2" fill="none" strokeLinecap="round" />
-      <path d="M 100 118 Q 110 125 120 123" stroke="#000" strokeWidth="2" fill="none" strokeLinecap="round" />
-      
-      {/* Left whisker 1 */}
-      <line x1="60" y1="105" x2="30" y2="100" stroke="#000" strokeWidth="1.5" />
-      {/* Left whisker 2 */}
-      <line x1="60" y1="115" x2="30" y2="120" stroke="#000" strokeWidth="1.5" />
-      
-      {/* Right whisker 1 */}
-      <line x1="140" y1="105" x2="170" y2="100" stroke="#000" strokeWidth="1.5" />
-      {/* Right whisker 2 */}
-      <line x1="140" y1="115" x2="170" y2="120" stroke="#000" strokeWidth="1.5" />
-    </svg>
+      <div className="-mb-0.5">/\_/\</div>
+      <div>( o.o )</div>
+    </div>
   );
 }
 

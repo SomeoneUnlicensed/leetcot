@@ -5,8 +5,9 @@ import { fileURLToPath } from 'node:url';
 import uuidByString from 'uuid-by-string';
 import { prisma } from '../src';
 import { ingestChallenges } from './data/challenge-ingest';
-import { loadChallengesFromTypeChallenge } from '../mocks/challenges.mock';
 import { tracks } from './data/tracks';
+
+import { courses } from './data/courses';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,16 +15,15 @@ const __dirname = path.dirname(__filename);
 const challengePath = path.join(__dirname, '../../../challenges');
 
 const slugify = (str: string) => str.toLowerCase().replace(/\s/g, '-');
-const TYPE_CHALLENGE_ID = uuidByString('type-challenges');
-const TYPEHERO_ID = uuidByString('typehero');
+const LEETCOT_ID = uuidByString('leetcot');
 
 try {
   const typeHeroUser = await prisma.user.upsert({
-    where: { id: TYPEHERO_ID },
+    where: { id: LEETCOT_ID },
     update: {},
     create: {
-      id: TYPEHERO_ID,
-      email: 'typeherapp@gmail.com',
+      id: LEETCOT_ID,
+      email: 'admin@leetcot.ru',
       name: 'ЛитКот',
       userLinks: {
         create: {
@@ -32,29 +32,9 @@ try {
       },
     },
   });
-  const typeChallengeUser = await prisma.user.upsert({
-    where: { id: TYPE_CHALLENGE_ID },
-    update: {},
-    create: {
-      id: TYPE_CHALLENGE_ID,
-      email: 'fake@email.com',
-      name: 'type-challenges',
-      userLinks: {
-        create: {
-          url: 'https://tsch.js.org/',
-        },
-      },
-    },
-  });
 
-  const challengesFromTypeChallenges = await loadChallengesFromTypeChallenge(true);
   const challengesToCreate = await ingestChallenges(challengePath);
-  await prisma.challenge.createMany({
-    data: challengesFromTypeChallenges.map((challenge) => ({
-      ...challenge,
-      userId: typeChallengeUser.id,
-    })),
-  });
+
   await prisma.challenge.createMany({
     data: challengesToCreate.map(({ author: _, ...challenge }) => ({
       ...challenge,
@@ -62,18 +42,22 @@ try {
     })),
   });
 
+  const createdTracksMap = new Map<string, any>();
+
   for (const track of tracks) {
     const createdTrack = await prisma.track.create({
       data: {
         name: track.name,
-        slug: slugify(track.name),
+        slug: track.slug || slugify(track.name),
         description: track.description,
         visible: true,
-        isComingSoon: track.name !== 'TypeScript Foundations',
+        isComingSoon: track.slug !== 'typescript-foundations',
       },
     });
 
-    if (track.name === 'Advent of TypeScript 2023') {
+    createdTracksMap.set(createdTrack.slug, createdTrack);
+
+    if (createdTrack.slug === 'advent-of-typescript-2023') {
       const challengesForTrack = await prisma.challenge.findMany({
         where: {
           slug: {
@@ -116,7 +100,7 @@ try {
       });
     }
 
-    if (track.name === 'Advent of TypeScript 2024') {
+    if (createdTrack.slug === 'advent-of-typescript-2024') {
       const challengesForTrack = await prisma.challenge.findMany({
         where: {
           slug: {
@@ -159,7 +143,7 @@ try {
       });
     }
 
-    if (track.name === 'TypeScript Foundations') {
+    if (createdTrack.slug === 'typescript-foundations') {
       const challengesForTrack = await prisma.challenge.findMany({
         where: {
           slug: {
@@ -187,6 +171,28 @@ try {
           orderId: index,
         })),
       });
+    }
+  }
+
+  // Seed courses and link tracks to them
+  for (const course of courses) {
+    const createdCourse = await prisma.course.create({
+      data: {
+        name: course.name,
+        slug: course.slug,
+        description: course.description,
+        visible: true,
+      },
+    });
+
+    for (const trackSlug of course.trackSlugs) {
+      const dbTrack = createdTracksMap.get(trackSlug);
+      if (dbTrack) {
+        await prisma.track.update({
+          where: { id: dbTrack.id },
+          data: { courseId: createdCourse.id },
+        });
+      }
     }
   }
 

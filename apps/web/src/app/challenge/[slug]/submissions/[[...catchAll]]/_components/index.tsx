@@ -39,7 +39,7 @@ export function Submissions({ submissions }: SubmissionsProps) {
             `}
             onClick={() => setSelectStatus('all')}
           >
-            All
+            Все
           </div>
           <div
             className={`flex cursor-pointer gap-2 rounded-lg px-4 py-1 duration-300  ${
@@ -49,7 +49,7 @@ export function Submissions({ submissions }: SubmissionsProps) {
             }`}
             onClick={() => setSelectStatus('accepted')}
           >
-            Accepted
+            Принято
           </div>
           <div
             className={`flex cursor-pointer gap-2 rounded-lg px-4 py-1 duration-300  ${
@@ -59,7 +59,7 @@ export function Submissions({ submissions }: SubmissionsProps) {
             }`}
             onClick={() => setSelectStatus('rejected')}
           >
-            Rejected
+            Отклонено
           </div>
         </div>
       ) : (
@@ -86,7 +86,7 @@ function SubmissionRow({ submission }: { submission: Submission }) {
             'text-rose-600  dark:text-rose-400': !submission.isSuccessful,
           })}
         >
-          {submission.isSuccessful ? 'Accepted' : 'Rejected'}
+          {submission.isSuccessful ? 'Принято' : 'Отклонено'}
         </div>
         <div className="text-muted-foreground flex items-center gap-2">
           <Calendar className=" h-4 w-4" />

@@ -60,7 +60,7 @@ export default async function CompletedPage(props: { params: Promise<{ username:
 
   return (
     <div className="mt-8 lg:mt-10">
-      <h1 className="text-muted-foreground text-center text-xl">Completed Challenges</h1>
+      <h1 className="text-muted-foreground text-center text-xl">Завершенные испытания</h1>
       {challenges.length > 0 ? (
         <Challenges
           challenges={challenges}
@@ -71,13 +71,13 @@ export default async function CompletedPage(props: { params: Promise<{ username:
       ) : (
         <Alert className="mx-auto mt-4 w-fit md:px-8">
           <AlertTitle className="text-center leading-normal">
-            <span>{isOwnProfile ? "You haven't" : `@${username} hasn't`}</span> completed any{' '}
-            challenges yet
+            <span>{isOwnProfile ? 'Вы еще не' : `@${username} еще не`}</span> завершили ни одного
+            испытания
           </AlertTitle>
           {isOwnProfile ? (
             <AlertDescription className="flex justify-center">
               <Link className="text-primary underline-offset-4 hover:underline" href="/explore">
-                Get started with your first challenge
+                Начните со своего первого испытания
               </Link>
             </AlertDescription>
           ) : null}
