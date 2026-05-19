@@ -52,11 +52,13 @@ export function Markdown({
   className,
   disableMentions = false,
   disableCopy = false,
+  disableLinks = false,
 }: {
   children: string;
   className?: string;
   disableMentions?: boolean;
   disableCopy?: boolean;
+  disableLinks?: boolean;
 }) {
   const { resolvedTheme } = useTheme();
   const syntaxHighlighterTheme = resolvedTheme === 'light' ? vs : vscDarkPlus;
@@ -66,9 +68,12 @@ export function Markdown({
       skipHtml
       className={className}
       components={{
-        a: ({ className, ...props }) => (
-          <a className={clsx(className, 'whitespace-nowrap text-blue-500')} {...props} />
-        ),
+        a: ({ className, ...props }) =>
+          disableLinks ? (
+            <span className={className} {...props} />
+          ) : (
+            <a className={clsx(className, 'whitespace-nowrap text-blue-500')} {...props} />
+          ),
         ul: ({ className, ...props }) => (
           <ul className={clsx(className, 'mb-4 list-disc ps-10')} {...props} />
         ),

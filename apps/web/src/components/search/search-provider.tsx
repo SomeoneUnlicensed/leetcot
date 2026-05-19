@@ -1,72 +1,74 @@
+'use client';
+
 import * as React from 'react';
-
 import type { Challenge } from '@repo/db/types';
-import type { SearchClient } from 'algoliasearch';
-import algoliasearch from 'algoliasearch/lite';
-import { useHits, useInstantSearch, useSearchBox } from 'react-instantsearch';
-import { InstantSearchNext } from 'react-instantsearch-nextjs';
+import { searchChallenges } from '~/app/explore/_components/explore.action';
 
-const searchClient = algoliasearch(
-  // eslint-disable-next-line @typescript-eslint/dot-notation
-  process.env['NEXT_PUBLIC_ALGOLIA_APP_ID'],
-  // eslint-disable-next-line @typescript-eslint/dot-notation
-  process.env['NEXT_PUBLIC_ALGOLIA_API_KEY'],
-);
+interface SearchContextType {
+  query: string;
+  setQuery: (query: string) => void;
+  results: Challenge[];
+  status: 'error' | 'idle' | 'loading' | 'success';
+}
 
-const INDEX_NAME = 'leetcot';
+const SearchContext = React.createContext<SearchContextType | undefined>(undefined);
 
 export function SearchProvider({ children }: { children: React.ReactNode }) {
-  return (
-    <InstantSearchNext
-      searchClient={{
-        ...searchClient,
-        search<TObject>(requests: Parameters<SearchClient['search']>[0]) {
-          const isEmptyQuery = requests.every(({ params }) => !params?.query);
-          if (isEmptyQuery) {
-            return Promise.resolve({
-              results: requests.map(() => ({
-                hits: [],
-                nbHits: 0,
-                nbPages: 0,
-                page: 0,
-                processingTimeMS: 0,
-                hitsPerPage: 0,
-                exhaustiveNbHits: false,
-                query: '',
-                params: '',
-              })),
-            });
-          }
+  const [query, setQuery] = React.useState('');
+  const [results, setResults] = React.useState<Challenge[]>([]);
+  const [status, setStatus] = React.useState<'error' | 'idle' | 'loading' | 'success'>('idle');
 
-          return searchClient.search<TObject>(requests);
-        },
-      }}
-      indexName={INDEX_NAME}
-    >
+  React.useEffect(() => {
+    if (!query) {
+      setResults([]);
+      setStatus('idle');
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setStatus('loading');
+      try {
+        const data = await searchChallenges(query);
+        setResults(data as Challenge[]);
+        setStatus('success');
+      } catch (error) {
+        console.error('Search error:', error);
+        setStatus('error');
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  return (
+    <SearchContext.Provider value={{ query, setQuery, results, status }}>
       {children}
-    </InstantSearchNext>
+    </SearchContext.Provider>
   );
 }
 
 export function useSearchStatus() {
-  const { status } = useInstantSearch();
-  return { status };
+  const context = React.useContext(SearchContext);
+  if (!context) throw new Error('useSearchStatus must be used within SearchProvider');
+  return { status: context.status };
 }
 
 export function useSearchResult() {
-  const { items, results } = useHits<Challenge>();
-  const query = results?.query;
-
-  return { results: items, query };
+  const context = React.useContext(SearchContext);
+  if (!context) throw new Error('useSearchResult must be used within SearchProvider');
+  return { results: context.results, query: context.query };
 }
-export type Result = ReturnType<typeof useSearchResult>['results'][number];
+
+export type Result = Challenge;
 
 export function useSearchProviderInput() {
-  const { query, refine } = useSearchBox();
+  const context = React.useContext(SearchContext);
+  if (!context) throw new Error('useSearchProviderInput must be used within SearchProvider');
+  return { query: context.query, update: context.setQuery };
+}
 
-  const update = (newQuery: string) => {
-    refine(newQuery);
-  };
-
-  return { query, update };
+export function useSearchBox() {
+  const context = React.useContext(SearchContext);
+  if (!context) throw new Error('useSearchBox must be used within SearchProvider');
+  return { query: context.query, setQuery: context.setQuery };
 }

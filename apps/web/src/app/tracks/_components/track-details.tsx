@@ -85,10 +85,10 @@ export async function TrackDetail({ slug }: TrackDetailProps) {
               slug={slug}
               action={unenrollUserFromTrack}
               trackId={track.id}
-              text="Unenroll"
+              text="Отписаться"
             />
           ) : (
-            <ActionButton slug={slug} action={enrollUserInTrack} trackId={track.id} text="Enroll" />
+            <ActionButton slug={slug} action={enrollUserInTrack} trackId={track.id} text="Записаться" />
           )}
         </div>
         <div className="flex w-full flex-col">

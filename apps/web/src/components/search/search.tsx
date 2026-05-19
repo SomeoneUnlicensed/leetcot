@@ -1,6 +1,6 @@
 'use client';
 
-import { Dialog, DialogContent, DialogTrigger } from '@repo/ui/components/dialog';
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@repo/ui/components/dialog';
 import dynamic from 'next/dynamic';
 import * as React from 'react';
 import { SearchContent } from './search-content';
@@ -35,6 +35,7 @@ export function Search() {
           className="max-h-[80vh] max-w-full gap-0 overflow-hidden rounded-sm p-0 sm:rounded-sm md:max-w-[75vw] lg:max-w-[60vw] xl:max-h-[60vh]"
           displayX={false}
         >
+          <DialogTitle className="sr-only">Поиск задач</DialogTitle>
           <SearchContent onClick={() => setOpen(false)} />
         </DialogContent>
       </SearchProvider>

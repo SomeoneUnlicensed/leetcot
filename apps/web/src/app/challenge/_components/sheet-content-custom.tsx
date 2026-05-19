@@ -61,7 +61,7 @@ export function ExplorerPanel() {
             className="text-foreground flex max-w-full items-center justify-start gap-4 text-xl font-semibold"
           >
             <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-              Explore all challenges
+              Все испытания
             </span>
             <ChevronRight className="mt-0.5 h-6 w-6 shrink-0" />
           </Link>

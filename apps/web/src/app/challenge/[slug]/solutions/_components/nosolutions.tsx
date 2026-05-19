@@ -51,13 +51,13 @@ export function NoSolutions({ setView, loggedInUser, loggedInUserHasSolution }: 
           <circle cx="433.63626" cy="105.17383" fill="#888a" r="20" />
           <circle cx="433.63626" cy="105.17383" fill="#444a" r="12.18187" />
         </svg>
-        No solutions yet, <br />
+        Решений пока нет, <br />
         {loggedInUser && loggedInUserHasSolution ? (
           <>
-            be the first to submit one! <SubmitSolution disabled={false} setView={setView} />
+            отправьте первое решение! <SubmitSolution disabled={false} setView={setView} />
           </>
         ) : (
-          'complete the challenge to submit one!'
+          'выполните испытание, чтобы добавить свое!'
         )}
       </p>
     </div>

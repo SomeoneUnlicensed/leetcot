@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 import { Footsies } from '~/components/footsies';
 import { ExploreSection } from './explore-section';
 import { ExploreSectionSkeleton } from './explore-section-skeleton';
-import { BootPromo } from '../../_components/boot-promo';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,9 +13,6 @@ export function Explore() {
           <h1 className="mb-8 text-4xl font-bold tracking-tight text-neutral-900 dark:text-white">
             Исследовать
           </h1>
-        </div>
-        <div className="container flex items-center justify-center">
-          <BootPromo />
         </div>
         <div className="flex flex-col gap-8 py-8">
           <Suspense fallback={<ExploreSectionSkeleton />}>

@@ -97,11 +97,11 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {error && (
+          {error ? (
             <div className="rounded-lg border border-pink-500/20 bg-pink-500/10 py-2 text-center text-sm text-pink-500">
               {error}
             </div>
-          )}
+          ) : null}
 
           <Button
             type="submit"

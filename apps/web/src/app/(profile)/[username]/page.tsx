@@ -22,12 +22,6 @@ import { ProgressChart } from './_components/progress-chart';
 import { SharedSolutionCard } from './_components/shared-solution-card';
 import { getBadges, getProgressData, getUserActivity } from './user-info';
 
-/* const sampleBadgeData = [
-  { slug: 'aot-2023-bronze', name: 'Advent of TypeScript 2023 Bronze' },
-  { slug: 'aot-2023-silver', name: 'Advent of TypeScript 2023 Bronze' },
-  { slug: 'aot-2023-gold', name: 'Advent of TypeScript 2023 Bronze' },
-  { slug: 'aot-2023-platinum', name: 'Advent of TypeScript 2023 Bronze' },
-] as BadgeInfo[]; */
 export default async function ProfilePage(props: { params: Promise<{ username: string }> }) {
   const { username: rawUserName } = await props.params;
 
@@ -48,6 +42,13 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
       roles: true,
       createdAt: true,
       userLinks: true,
+      enrolledCourses: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
       sharedSolution: {
         take: 3,
         orderBy: [{ isPinned: 'desc' }, { createdAt: 'desc' }],
@@ -79,7 +80,6 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
   const gradient = getGradient(user.roles);
   const progressData = await getProgressData(user.id);
   const activityData = await getUserActivity(user.id);
-  // TODO: Change form to prevent it from adding empty links?
   const userLinks = user.userLinks.filter((u) => u.url !== '');
 
   const session = await auth();
@@ -112,7 +112,7 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
             ) : null}
             <Titles data={titles} />
             <h2 className="text-muted-foreground text-sm tracking-tight">
-              Joined {getRelativeTime(user.createdAt)}
+              Присоединился {getRelativeTime(user.createdAt)}
             </h2>
             <div className="flex flex-row space-x-1">
               {userLinks.map((link) => (
@@ -127,10 +127,10 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
             {user.bio === '' && isOwnProfile ? (
               <div className="flex flex-col justify-center">
                 <h1 className="text-center">
-                  You haven’t added a bio yet—tell others a bit about yourself !
+                  Вы еще не добавили описание профиля — расскажите о себе!
                 </h1>
                 <Button asChild variant="link" className="text-center" size="sm">
-                  <Link href={`/@${encodeURIComponent(username)}/edit`}>Update your bio</Link>
+                  <Link href={`/@${encodeURIComponent(username)}/edit`}>Обновить описание</Link>
                 </Button>
               </div>
             ) : (
@@ -180,7 +180,7 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
                 </div>
                 <Titles data={titles} />
                 <h2 className="text-muted-foreground text-sm tracking-tight">
-                  Joined {getRelativeTime(user.createdAt)}
+                  Присоединился {getRelativeTime(user.createdAt)}
                 </h2>
                 <div className="flex flex-row space-x-1">
                   {userLinks.map((link) => (
@@ -196,9 +196,9 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
             </div>
             {user.bio === '' && isOwnProfile ? (
               <div className="p-4">
-                <h1>You haven’t added a bio yet—tell others a bit about yourself !</h1>
+                <h1>Вы еще не добавили описание профиля — расскажите о себе!</h1>
                 <Button asChild variant="link" className="px-0 " size="sm">
-                  <Link href={`/@${encodeURIComponent(username)}/edit`}>Update your bio</Link>
+                  <Link href={`/@${encodeURIComponent(username)}/edit`}>Обновить описание</Link>
                 </Button>
               </div>
             ) : (
@@ -230,7 +230,7 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
                 className="text-muted-foreground hover:text-primary w-fit text-lg "
               >
                 <Link href={`/@${encodeURIComponent(username)}/shared-solutions`}>
-                  Shared Solutions
+                  Опубликованные решения
                   <ArrowUpRight className="ml-1 h-4 w-4 " />
                 </Link>
               </Button>
@@ -240,13 +240,13 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
               <CardContent className="flex h-full grow flex-col items-center justify-center space-y-3 lg:px-16">
                 <h1 className="text-center">
                   {isOwnProfile
-                    ? "It looks like you haven't shared any solutions yet."
-                    : `It looks like @${username} hasn't shared any solutions yet.`}
+                    ? 'Похоже, вы еще не поделились решениями.'
+                    : `Похоже, @${username} еще не поделился решениями.`}
                 </h1>
                 {isOwnProfile ? (
                   <Button asChild variant="link" className="text-center">
                     <Link href={`/@${encodeURIComponent(username)}/completed`}>
-                      Explore your completed solutions and share your own!
+                      Исследуйте свои завершенные задачи и поделитесь решением!
                     </Link>
                   </Button>
                 ) : null}
@@ -281,14 +281,14 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
         <CardWithRadialBg className="max-w-sm basis-full md:basis-1/2 lg:basis-1/3">
           <div className="flex h-full flex-col">
             <CardHeader>
-              <h1 className="text-muted-foreground pl-2 text-lg tracking-wide">Badges</h1>
+              <h1 className="text-muted-foreground pl-2 text-lg tracking-wide">Значки</h1>
             </CardHeader>
             {badges.length === 0 ? (
               <CardContent className="flex h-full w-full grow flex-col items-center justify-center space-y-3 lg:px-16">
                 <h1 className="text-center md:px-4 lg:px-2">
                   {isOwnProfile
-                    ? "You haven't earned a badge yet - keep going, you're close!"
-                    : `@${username} is yet to discover an achievement`}
+                    ? 'Вы еще не заработали ни одного значка — продолжайте, вы близки!'
+                    : `@${username} еще не открыл ни одного достижения`}
                 </h1>
                 <div className="mx-auto grid w-fit grid-cols-3 gap-4  ">
                   {Array.from({ length: 6 }).map((_, i) => (
@@ -306,26 +306,48 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
 
         <CardWithRadialBg className="h-fit max-w-sm basis-full md:basis-1/2 lg:basis-1/3">
           <CardHeader>
-            <h1 className="text-muted-foreground pl-2 text-lg tracking-wide">Recent Activity</h1>
+            <h1 className="text-muted-foreground pl-2 text-lg tracking-wide">Недавняя активность</h1>
           </CardHeader>
           <CardContent className="flex flex-col justify-center">
             <ActivityChart data={activityData} />
           </CardContent>
         </CardWithRadialBg>
+
+        <CardWithRadialBg className="h-fit max-w-sm basis-full md:basis-1/2 lg:basis-1/3">
+          <div className="flex h-full flex-col">
+            <CardHeader>
+              <h1 className="text-muted-foreground pl-2 text-lg tracking-wide">Мои курсы</h1>
+            </CardHeader>
+            {user.enrolledCourses.length === 0 ? (
+              <CardContent className="flex h-full grow flex-col items-center justify-center space-y-3 lg:px-16">
+                <h1 className="text-center">
+                  {isOwnProfile
+                    ? 'Вы еще не записались ни на один курс.'
+                    : `@${username} еще не записался ни на один курс.`}
+                </h1>
+                {isOwnProfile ? (
+                  <Button asChild variant="link" className="text-center">
+                    <Link href="/courses">Посмотреть курсы</Link>
+                  </Button>
+                ) : null}
+              </CardContent>
+            ) : (
+              <CardContent className="flex flex-col space-y-2">
+                {user.enrolledCourses.map((course) => (
+                  <Link
+                    key={course.id}
+                    href={`/courses/${course.slug}`}
+                    className="flex items-center gap-2 rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                  >
+                    <span>📚</span>
+                    <span>{course.name}</span>
+                  </Link>
+                ))}
+              </CardContent>
+            )}
+          </div>
+        </CardWithRadialBg>
       </div>
     </div>
   );
 }
-
-/* To be used when we have stats in the future */
-/* function StatCard(props: { title: string; data: string; secondaryData?: string }) {
-  return (
-    <div className="space-y-0.5">
-      <h1 className="text-muted-foreground tracking-tight">{props.title}</h1>
-      <div className="flex flex-row items-baseline space-x-1.5">
-        <p className="text-4xl font-bold">{props.data}</p>
-        {props.secondaryData !== undefined ? <p>{props.secondaryData}</p> : null}
-      </div>
-    </div>
-  );
-} */

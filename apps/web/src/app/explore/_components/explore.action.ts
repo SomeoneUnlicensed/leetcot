@@ -54,6 +54,37 @@ export async function getChallengesByTagOrDifficulty(str: string, take?: number)
     }),
   });
 }
+
+/**
+ * Searches for challenges by name or slug.
+ */
+export async function searchChallenges(query: string) {
+  if (!query) return [];
+
+  return prisma.challenge.findMany({
+    where: {
+      status: 'ACTIVE',
+      user: {
+        NOT: {
+          status: 'BANNED',
+        },
+      },
+      OR: [
+        { name: { contains: query } },
+        { slug: { contains: query } },
+      ],
+    },
+    include: {
+      user: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    take: 10,
+  });
+}
+
 export type ChallengesByTagOrDifficulty = Awaited<
   ReturnType<typeof getChallengesByTagOrDifficulty>
 >;
@@ -63,7 +94,7 @@ export type ChallengesByTagOrDifficulty = Awaited<
  * difficutly / tag group
  * @param str difficutly or tag string
  */
-export const getExploreChallengesLengthByTagOrDifficulty = cache((str: string) => {
+export const getExploreChallengesLengthByTagOrDifficulty = cache(async (str: string) => {
   const formattedStr = str.trim().toUpperCase();
 
   return prisma.challenge.count({

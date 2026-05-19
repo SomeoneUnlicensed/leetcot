@@ -80,6 +80,9 @@ async function buildChallenge(
           if (fileName === 'user') {
             challengeToCreate.code = fileContents;
           }
+          if (fileName === 'solution') {
+            challengeToCreate.code = fileContents;
+          }
           if (fileName === 'tests') {
             challengeToCreate.tests = fileContents;
           }
@@ -90,6 +93,12 @@ async function buildChallenge(
             challengeToCreate.slug = jsonData.id;
             challengeToCreate.shortDescription = jsonData.description;
             challengeToCreate.author = jsonData.author;
+            if (jsonData.language) {
+              challengeToCreate.language = jsonData.language.toUpperCase();
+            }
+            if (jsonData.isInfoOnly !== undefined) {
+              challengeToCreate.isInfoOnly = Boolean(jsonData.isInfoOnly);
+            }
           }
           if (fileName === 'tsconfig') {
             const jsonData = JSON.parse(fileContents);
@@ -102,6 +111,14 @@ async function buildChallenge(
         }
       }
     }
+
+    if (!challengeToCreate.code) {
+      challengeToCreate.code = '// Решение пишется здесь';
+    }
+    if (!challengeToCreate.tests) {
+      challengeToCreate.tests = '// Тесты для этой задачи отсутствуют';
+    }
+
     return challengeToCreate;
   } catch (error) {
     console.error('Error reading directory:', error);

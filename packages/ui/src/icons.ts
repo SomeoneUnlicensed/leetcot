@@ -61,7 +61,7 @@ export {
   RectangleVertical,
   Reply,
   RotateCcw,
-  SearchIcon,
+  Search as SearchIcon,
   Settings,
   Settings2,
   Shapes,

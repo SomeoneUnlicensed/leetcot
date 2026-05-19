@@ -17,8 +17,6 @@
         "GH_TOKEN",
         "GITHUB_ID",
         "GITHUB_SECRET",
-        "GITHUB_AOT_ID",
-        "GITHUB_AOT_SECRET",
         "UPLOADTHING_SECRET",
         "UPLOADTHING_APP_ID",
         "EDGE_CONFIG",
@@ -36,9 +34,7 @@
         "MAILCHIMP_AUDIENCE_ID",
         "MAILCHIMP_API_SERVER",
         "NEXT_PUBLIC_ALGOLIA_API_KEY",
-        "NEXT_PUBLIC_ALGOLIA_APP_ID",
-        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
-        "STRIPE_SECRET_KEY"
+        "NEXT_PUBLIC_ALGOLIA_APP_ID"
       ]
     },
     "topo": {

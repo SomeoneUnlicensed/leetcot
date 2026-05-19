@@ -26,7 +26,7 @@ export function LoginLink({ className }: { className?: string }) {
     >
       <div className="flex items-center space-x-2">
         <LogIn className="h-5 w-5" />
-        <span className="dark:text-white">Login</span>
+        <span className="dark:text-white">Вход</span>
       </div>
     </Link>
   );

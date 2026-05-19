@@ -19,23 +19,23 @@ import { ArrowUpRight } from '@repo/ui/icons';
 
 const chartConfig = {
   BEGINNER: {
-    label: 'Beginner',
+    label: 'Новичок',
     color: 'hsl(var(--chart-1))',
   },
   EASY: {
-    label: 'Easy',
+    label: 'Простой',
     color: 'hsl(var(--chart-2))',
   },
   MEDIUM: {
-    label: 'Medium',
+    label: 'Средний',
     color: 'hsl(var(--chart-3))',
   },
   HARD: {
-    label: 'Hard',
+    label: 'Сложный',
     color: 'hsl(var(--chart-4))',
   },
   EXTREME: {
-    label: 'Extreme',
+    label: 'Экстремальный',
     color: 'hsl(var(--chart-5))',
   },
 } satisfies ChartConfig;
@@ -94,7 +94,7 @@ export function ProgressChart(props: {
                         dominantBaseline="middle"
                         className="fill-muted-foreground group-hover:underline"
                       >
-                        Total
+                        Решено
                       </text>
 
                       <text
@@ -114,7 +114,7 @@ export function ProgressChart(props: {
                         dominantBaseline="middle"
                         className="fill-muted-foreground text-sm"
                       >
-                        of {props.totalChallenges}
+                        из {props.totalChallenges}
                       </text>
                       <foreignObject
                         x={(viewBox.cx ?? 0) + 10}

@@ -42,7 +42,9 @@ export const baseMetadata: Metadata = {
     ],
   },
   icons: {
-    shortcut: '/favicon.ico',
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
   },
 };
 

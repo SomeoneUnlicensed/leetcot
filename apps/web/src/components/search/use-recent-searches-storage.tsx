@@ -1,6 +1,6 @@
 import { useLocalStorage } from '~/utils/useLocalStorage';
 
-const SEARCH_LOCAL_STORAGE_KEY = '__TYPEHERO_SEARCH__';
+const SEARCH_LOCAL_STORAGE_KEY = '__LEETCOT_SEARCH__';
 
 interface UseRecentSearchesStorageProps {
   limit?: number;

@@ -20,7 +20,7 @@ export async function EnrolledTrackSection() {
           <div className="container p-4">
             <h2 className="relative text-3xl font-bold tracking-tight">
               <div className="absolute -left-8 -z-10 h-12 w-32 rounded-full bg-blue-300/50 blur-3xl" />
-              Your Tracks
+              Ваши треки
             </h2>
           </div>
 
@@ -31,16 +31,16 @@ export async function EnrolledTrackSection() {
       ) : (
         <>
           <div className="container p-4">
-            <h2 className="relative text-3xl font-bold tracking-tight">Your Tracks</h2>
+            <h2 className="relative text-3xl font-bold tracking-tight">Ваши треки</h2>
           </div>
           <div
             className="relative grid min-h-[246px] w-full items-center gap-2 px-5  md:grid-cols-2 md:gap-10"
             key="helper-track"
           >
             <div className="text-center md:text-right">
-              <h1 className="text-lg font-bold">You're not enrolled in any tracks yet.</h1>
+              <h1 className="text-lg font-bold">Вы еще не записались ни на один трек.</h1>
               <p className="text-muted-foreground mt-2 text-sm">
-                Start your journey by enrolling in a track below.
+                Начните свое обучение, выбрав трек ниже.
               </p>
             </div>
 
