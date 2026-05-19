@@ -44,24 +44,47 @@ function DefaultAvatar(props: ComponentProps<'svg'>) {
       height={50}
       {...props}
     >
-      <mask id="viewboxMask">
-        <rect width="200" height="200" rx="0" ry="0" x="0" y="0" fill="#fff" />
-      </mask>
-      <g mask="url(#viewboxMask)">
-        <rect fill="#71cf62" width="200" height="200" x="0" y="0" />
-        <g transform="matrix(1.5625 0 0 1.5625 37.5 110.94)">
-          <path
-            d="M40.54 30h-.75c-9.7-.22-20.8-5.3-23.7-16.15a1.36 1.36 0 0 1 .44-1.55 1.41 1.41 0 0 1 2.26.86c2.55 9.46 12.42 13.89 21.06 14.08 8.24.16 19.04-3.84 22.46-14.57a1.47 1.47 0 0 1 1.65-.55A1.44 1.44 0 0 1 65 13.5C61.85 23.31 52.3 30 40.54 30Z"
-            fill="#000"
-          />
-        </g>
-        <g transform="matrix(1.5625 0 0 1.5625 31.25 59.38)">
-          <path
-            d="M75.84 21.11c-2.9.04-5.72-.89-8.04-2.63a13.47 13.47 0 0 1-4.85-7.03 1.75 1.75 0 0 1 1.1-2.26 1.68 1.68 0 0 1 1.86.61c.14.2.24.4.3.64.6 2.11 1.87 3.97 3.61 5.28a9.84 9.84 0 0 0 6.04 1.98c2.17.01 4.29-.68 6.03-2a10.17 10.17 0 0 0 3.65-5.26c.15-.42.46-.75.85-.95a1.68 1.68 0 0 1 2.23.7c.21.38.27.83.17 1.26a13.48 13.48 0 0 1-4.87 7.04 13.17 13.17 0 0 1-8.08 2.62ZM13.84 21.11c-2.9.03-5.73-.9-8.06-2.65a13.54 13.54 0 0 1-4.85-7.05 1.78 1.78 0 0 1 .51-1.88 1.67 1.67 0 0 1 2.4.22c.15.17.25.38.32.6.62 2.1 1.9 3.96 3.64 5.28a9.93 9.93 0 0 0 6.02 2c2.18.03 4.3-.67 6.06-1.99a10.21 10.21 0 0 0 3.66-5.3 1.68 1.68 0 0 1 3.08-.25c.21.4.27.85.17 1.27a13.57 13.57 0 0 1-4.86 7.1 13.19 13.19 0 0 1-8.1 2.65Z"
-            fill="#000"
-          />
-        </g>
-      </g>
+      <circle cx="100" cy="100" r="100" fill="#FFB800" />
+      
+      {/* Head */}
+      <circle cx="100" cy="110" r="60" fill="#FFA500" />
+      
+      {/* Left ear */}
+      <path d="M 60 60 Q 40 50 35 75 Q 45 60 60 65 Z" fill="#FFA500" />
+      
+      {/* Right ear */}
+      <path d="M 140 60 Q 160 50 165 75 Q 155 60 140 65 Z" fill="#FFA500" />
+      
+      {/* Inner left ear */}
+      <path d="M 58 68 Q 50 65 48 75 Q 52 70 58 72 Z" fill="#FFD99D" />
+      
+      {/* Inner right ear */}
+      <path d="M 142 68 Q 150 65 152 75 Q 148 70 142 72 Z" fill="#FFD99D" />
+      
+      {/* Left eye */}
+      <circle cx="80" cy="95" r="6" fill="#000" />
+      <circle cx="80" cy="93" r="2" fill="#fff" />
+      
+      {/* Right eye */}
+      <circle cx="120" cy="95" r="6" fill="#000" />
+      <circle cx="120" cy="93" r="2" fill="#fff" />
+      
+      {/* Nose */}
+      <path d="M 100 110 L 98 118 L 102 118 Z" fill="#FF69B4" />
+      
+      {/* Mouth */}
+      <path d="M 100 118 Q 90 125 80 123" stroke="#000" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <path d="M 100 118 Q 110 125 120 123" stroke="#000" strokeWidth="2" fill="none" strokeLinecap="round" />
+      
+      {/* Left whisker 1 */}
+      <line x1="60" y1="105" x2="30" y2="100" stroke="#000" strokeWidth="1.5" />
+      {/* Left whisker 2 */}
+      <line x1="60" y1="115" x2="30" y2="120" stroke="#000" strokeWidth="1.5" />
+      
+      {/* Right whisker 1 */}
+      <line x1="140" y1="105" x2="170" y2="100" stroke="#000" strokeWidth="1.5" />
+      {/* Right whisker 2 */}
+      <line x1="140" y1="115" x2="170" y2="120" stroke="#000" strokeWidth="1.5" />
     </svg>
   );
 }
