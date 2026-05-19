@@ -2,20 +2,28 @@ import { SidebarNav } from './_components/side-nav';
 
 const sidebarNavItems = [
   {
-    title: 'Reports',
+    title: 'Репорты',
     href: '/dashboard/reports',
   },
   {
-    title: 'Users',
+    title: 'Пользователи',
     href: '/dashboard/users',
   },
   {
-    title: 'Images',
+    title: 'Изображения',
     href: '/dashboard/images',
   },
   {
-    title: 'Tracks',
+    title: 'Треки',
     href: '/dashboard/tracks',
+  },
+  {
+    title: 'Бизнес',
+    href: '/dashboard/business',
+  },
+  {
+    title: 'Чемпионаты',
+    href: '/dashboard/championships',
   },
 ];
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

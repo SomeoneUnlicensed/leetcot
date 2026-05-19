@@ -1,1 +1,0 @@
-type SantaListProtector = unknown;
