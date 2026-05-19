@@ -169,6 +169,21 @@ enum Language {
   JAVASCRIPT
   PYTHON
   GO
+  JAVA
+  RUST
+  CSHARP
+  PHP
+  RUBY
+  KOTLIN
+  CPP
+  C
+  SWIFT
+  SCALA
+  ELIXIR
+  CLOJURE
+  HASKELL
+  PERL
+  LUA
 }
 
 model Challenge {

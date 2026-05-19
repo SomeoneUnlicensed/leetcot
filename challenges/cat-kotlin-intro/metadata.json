@@ -1,0 +1,9 @@
+{
+  "id": "cat-kotlin-intro",
+  "label": "Кошачий Kotlin: Лаконичность и мощь",
+  "description": "Напишите кошачий код на Kotlin, используя возможности современного языка.",
+  "difficulty": "beginner",
+  "language": "KOTLIN",
+  "prerequisites": [],
+  "author": "ЛитКот"
+}
