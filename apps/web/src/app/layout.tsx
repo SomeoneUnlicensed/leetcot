@@ -56,7 +56,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" type="image/svg+xml" sizes="32x32" href="/favicon.svg" />
         <link rel="icon" type="image/svg+xml" sizes="16x16" href="/favicon.svg" />
         <link rel="manifest" href="/site.webmanifest" />
-        <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body className={`${inter.className} flex flex-col bg-zinc-950 text-white`}>
         <Providers>

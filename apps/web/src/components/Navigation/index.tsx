@@ -23,7 +23,6 @@ import { NotificationLink } from './notification-link';
 import { SignOutLink } from './signout-link';
 import { SkipToCodeEditor } from './skip-to-code-editor';
 import { ThemeButton } from './theme-button';
-import { Badge } from '@repo/ui/components/badge';
 
 export function getAdminUrl() {
   // reference for vercel.com
@@ -75,9 +74,7 @@ export async function Navigation() {
               <ThemeButton />
             </div>
             {isAdminOrMod ? <NavLink title="Админ" href={getAdminUrl()} /> : null}
-            {isAdminOrMod ? (
-              <NavLink title="Песочница задач" href="/challenge-playground" />
-            ) : null}
+            {isAdminOrMod ? <NavLink title="Песочница задач" href="/challenge-playground" /> : null}
             {isAdminRole ? <NavLink title="Сокращатель ссылок" href="/share" /> : null}
             <SignOutLink className="px-0" />
           </>
@@ -94,16 +91,25 @@ export async function Navigation() {
         <div className="flex w-full items-center justify-between">
           <div className="relative flex items-center gap-4">
             <SkipToCodeEditor />
-            <Link className="flex items-center space-x-2 focus:outline-none focus-visible:ring-2" href="/">
-              <pre className="text-[10px] leading-3 text-pink-500 font-bold hidden sm:block">
-{`
+            <Link
+              className="flex items-center space-x-2 focus:outline-none focus-visible:ring-2"
+              href="/"
+            >
+              <pre className="hidden text-[10px] font-bold leading-3 text-pink-500 sm:block">
+                {`
  /\\_/\\
 ( o.o )
 `}
               </pre>
 
-              <div className="text-xl leading-5 text-white" style={{ fontFamily: '"Dela Gothic One", sans-serif' }}>
-                ЛитКот <span className="text-muted-foreground bg-muted px-1 text-xs font-sans align-top">БЕТА</span>
+              <div
+                className="text-xl leading-5 text-white"
+                style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+              >
+                ЛитКот{' '}
+                <span className="text-muted-foreground bg-muted px-1 align-top font-sans text-xs">
+                  БЕТА
+                </span>
               </div>
             </Link>
             <div className="hidden items-center md:flex md:gap-4">{NavLinks}</div>

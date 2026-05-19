@@ -21,9 +21,9 @@ export async function generateMetadata({ params }: { params: Params }) {
 
   const { challenge } = await getChallengeRouteData(slug, null);
   const description = `Unlock your coding potential by solving the ${challenge.name} challenge on ЛитКот.`;
-    return buildMetaForChallenge({
-      title: `${challenge.name} | ЛитКот`,
-      description,
+  return buildMetaForChallenge({
+    title: `${challenge.name} | ЛитКот`,
+    description,
     username: challenge.user.name,
     difficulty: challenge.difficulty,
     date: getRelativeTimeStrict(challenge.createdAt),

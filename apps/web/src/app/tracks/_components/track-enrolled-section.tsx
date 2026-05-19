@@ -63,7 +63,7 @@ export type EnrolledTracks = Awaited<ReturnType<typeof getUserEnrolledTracks>>;
 /**
  * Fetches user enrolled tracks based on current session.
  */
-async function getUserEnrolledTracks(session: Session) {
+function getUserEnrolledTracks(session: Session) {
   return prisma.track.findMany({
     where: {
       enrolledUsers: {

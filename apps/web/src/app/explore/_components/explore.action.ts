@@ -63,7 +63,7 @@ export type ChallengesByTagOrDifficulty = Awaited<
  * difficutly / tag group
  * @param str difficutly or tag string
  */
-export const getExploreChallengesLengthByTagOrDifficulty = cache(async (str: string) => {
+export const getExploreChallengesLengthByTagOrDifficulty = cache((str: string) => {
   const formattedStr = str.trim().toUpperCase();
 
   return prisma.challenge.count({

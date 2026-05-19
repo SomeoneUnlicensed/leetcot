@@ -57,8 +57,8 @@ export default async function DonatePage() {
         ) : (
           <p className="mb-6 mt-8 max-w-[42ch] text-balance text-sm sm:mx-auto">
             <span className="font-semibold dark:text-neutral-200">You are not logged in!</span> If
-            you would like to receive "Supporter" badge on both the ЛитКот and Advent of
-            TypeScript platforms, please log in, otherwise, your donation will be anonymous.
+            you would like to receive "Supporter" badge on both the ЛитКот and Advent of TypeScript
+            platforms, please log in, otherwise, your donation will be anonymous.
           </p>
         )}
       </div>
