@@ -7,7 +7,10 @@ export async function POST(req: Request) {
     const { email, password, name } = await req.json();
 
     if (!email || !password || !name) {
-      return NextResponse.json({ error: 'Мяу! Нужно заполнить все поля.' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Мяу! Нужно заполнить все поля.' },
+        { status: 400 }
+      );
     }
 
     const existingUser = await prisma.user.findUnique({
@@ -15,7 +18,10 @@ export async function POST(req: Request) {
     });
 
     if (existingUser) {
-      return NextResponse.json({ error: 'Этот котик уже зарегистрирован!' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Этот котик уже зарегистрирован!' },
+        { status: 400 }
+      );
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -44,7 +50,7 @@ export async function POST(req: Request) {
     console.error('Registration error:', error);
     return NextResponse.json(
       { error: 'Что-то пошло не так при создании котика.' },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

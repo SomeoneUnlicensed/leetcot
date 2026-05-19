@@ -30,13 +30,21 @@ export function Explore() {
             <ExploreSection title="Для тех, кто учится" tag="EASY" redirectRoute="/explore/easy" />
           </Suspense>
           <Suspense fallback={<ExploreSectionSkeleton />}>
-            <ExploreSection title="Для энтузиастов" tag="MEDIUM" redirectRoute="/explore/medium" />
+            <ExploreSection
+              title="Для энтузиастов"
+              tag="MEDIUM"
+              redirectRoute="/explore/medium"
+            />
           </Suspense>
           <Suspense fallback={<ExploreSectionSkeleton />}>
             <ExploreSection title="Для экспертов" tag="HARD" redirectRoute="/explore/hard" />
           </Suspense>
           <Suspense fallback={<ExploreSectionSkeleton />}>
-            <ExploreSection title="Для мастеров" tag="EXTREME" redirectRoute="/explore/extreme" />
+            <ExploreSection
+              title="Для мастеров"
+              tag="EXTREME"
+              redirectRoute="/explore/extreme"
+            />
           </Suspense>
         </div>
       </div>

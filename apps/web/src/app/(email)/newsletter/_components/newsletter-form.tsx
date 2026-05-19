@@ -178,7 +178,12 @@ export function AlertSuccess() {
       <MailCheck className="h-4 w-4" />
       <AlertDescription className="pl-7 text-left text-white">
         Thanks for subscribing! Consider{' '}
-        <a className="underline" href="https://twitter.com/leetcot" rel="noopener" target="_blank">
+        <a
+          className="underline"
+          href="https://twitter.com/leetcot"
+          rel="noopener"
+          target="_blank"
+        >
           following us on twitter
         </a>{' '}
         for general updates.

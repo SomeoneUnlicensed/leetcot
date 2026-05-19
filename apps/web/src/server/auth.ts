@@ -21,7 +21,9 @@ export const authOptions = {
       },
     },
   },
-  providers: [createCredentialsProvider()],
+  providers: [
+    createCredentialsProvider()
+  ],
 };
 
 export const { handlers, auth } = NextAuth(authOptions);
