@@ -168,7 +168,7 @@ export function Description({ challenge }: DescriptionProps) {
                   shouldBookmark = true;
                   setHasBookmarked(true);
                 }
-                debouncedBookmark(challenge.id, session.data?.user?.id, shouldBookmark)?.catch(
+                debouncedBookmark(challenge.id, session.data?.user?.id!, shouldBookmark)?.catch(
                   (e) => {
                     console.error(e);
                   },

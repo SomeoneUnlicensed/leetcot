@@ -20,25 +20,10 @@ const nextConfig = {
             source: '/min/vs/(.*)',
             headers: [
               { key: 'Access-Control-Allow-Origin', value: '*' },
-              { key: 'Access-Control-Allow-Methods', value: 'GET' },
             ],
           },
         ]
       : [];
-  },
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.md$/,
-      use: 'raw-loader',
-    });
-    return config;
-  },
-  reactStrictMode: true,
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
   },
   transpilePackages: ['@repo/db', '@repo/ui', '@repo/auth', '@repo/monaco'],
   images: {
