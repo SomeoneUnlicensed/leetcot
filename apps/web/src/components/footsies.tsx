@@ -11,15 +11,10 @@ export function Footsies() {
             href="https://arlist.tech"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-2 transition-opacity hover:opacity-80"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
             <Image src="/arlist-logo.svg" alt="Arlist Tech Logo" width={24} height={24} />
-            <span
-              style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
-              className="text-pink-500 dark:text-fuchsia-400"
-            >
-              Arlist Tech
-            </span>
+            <span style={{ fontFamily: '"Dela Gothic One", sans-serif' }} className="text-pink-500 dark:text-fuchsia-400">Arlist Tech</span>
           </a>
         </div>
       </div>
