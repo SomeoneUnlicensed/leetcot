@@ -8,6 +8,7 @@ import { createComment } from '../mocks/comment.mock';
 import { createUsers } from '../mocks/user.mock';
 import { tracks } from './data/tracks';
 import { courses } from './data/courses';
+import bcrypt from 'bcryptjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -51,13 +52,41 @@ function alotOfSharedSolutions(challengeId: number) {
 
 try {
   const TYPEHERO_ID = uuidByString('typehero');
+
+  const adminRole = await prisma.role.upsert({
+    where: { role: 'ADMIN' },
+    update: {},
+    create: { role: 'ADMIN' },
+  });
+
+  const userRole = await prisma.role.upsert({
+    where: { role: 'USER' },
+    update: {},
+    create: { role: 'USER' },
+  });
+
   const typeHeroUser = await prisma.user.upsert({
     where: { id: TYPEHERO_ID },
-    update: {},
+    update: {
+      password: bcrypt.hashSync('admin123', 10),
+      roles: {
+        connect: [
+          { id: adminRole.id },
+          { id: userRole.id },
+        ],
+      },
+    },
     create: {
       id: TYPEHERO_ID,
       email: 'admin@leetcot.ru',
       name: 'ЛитКот',
+      password: bcrypt.hashSync('admin123', 10),
+      roles: {
+        connect: [
+          { id: adminRole.id },
+          { id: userRole.id },
+        ],
+      },
     },
   });
 
