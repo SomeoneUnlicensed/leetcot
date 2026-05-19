@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { PrismaClient, type Challenge, type Prisma } from '@prisma/client';
+import { PrismaClient, type Prisma } from '@prisma/client';
 import uuidByString from 'uuid-by-string';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -18,6 +18,36 @@ const prisma = new PrismaClient();
 export const slugify = (str: string) => str.toLowerCase().replace(/\s/g, '-');
 export const trashId = uuidByString('trash');
 export const gId = uuidByString('g');
+
+const solutionTitles = [
+  'Решение через рекурсию',
+  'Итеративный подход',
+  'Используя mapped types',
+  'Решение с conditional types',
+  'Простое решение',
+  'Оптимальный вариант',
+  'Через infer и template literals',
+  'С помощью generic constraints',
+  'Кошачье решение 🐱',
+  'Минималистичный подход',
+];
+
+const solutionDescs = [
+  'Использовал рекурсивные типы для обхода вложенных структур.',
+  'Простой и понятный подход без лишних усложнений.',
+  'Ключевая идея — conditional types и infer.',
+  'Решение основано на mapped types с фильтрацией ключей.',
+  'Нашёл элегантный способ через template literal types.',
+  'Применил distributive conditional types для обработки union.',
+];
+
+function alotOfSharedSolutions(challengeId: number) {
+  return Array.from({ length: 50 }, (_, i) => ({
+    challengeId,
+    title: solutionTitles[i % solutionTitles.length]!,
+    description: solutionDescs[i % solutionDescs.length]!,
+  }));
+}
 
 try {
   const TYPEHERO_ID = uuidByString('typehero');
@@ -46,9 +76,39 @@ try {
 
   const createdTracksMap = new Map<string, any>();
 
-  for (const [index, track] of tracks.entries()) {
-    const challenges = await getRandomChallenges(index);
+  const trackChallengeSlugs: Record<string, string[]> = {
+    'crafting-typescript-utility-types': [
+      'cat-typescript-utility-types',
+      'pick',
+    ],
+    'typescript-wizardry': [
+      'cat-typescript-generics',
+      'default-generic-arguments',
+    ],
+    'javascript-built-in-methods': [
+      'cat-javascript-basics',
+      'index-signatures',
+    ],
+    'understanding-typescript-syntax': [
+      'type-aliases',
+      'type-unions',
+      'typeof',
+      'literal-types',
+    ],
+    'typescript-foundations': [
+      'generic-function-arguments',
+      'generic-type-arguments',
+      'generic-type-constraints',
+      'indexed-types',
+      'keyof',
+      'primitive-data-types',
+      'mapped-object-types',
+    ],
+    'advent-of-typescript-2023': Array.from({ length: 25 }, (_, i) => `2023-${i + 1}`),
+    'advent-of-typescript-2024': Array.from({ length: 25 }, (_, i) => `2024-${i + 1}`),
+  };
 
+  for (const track of tracks) {
     const createdTrack = await prisma.track.create({
       data: {
         name: track.name,
@@ -60,8 +120,21 @@ try {
 
     createdTracksMap.set(createdTrack.slug, createdTrack);
 
+    const targetSlugs = trackChallengeSlugs[createdTrack.slug] || [];
+    const challenges = await prisma.challenge.findMany({
+      where: {
+        slug: {
+          in: targetSlugs,
+        },
+      },
+    });
+
+    const orderedChallenges = challenges.sort((a, b) => {
+      return targetSlugs.indexOf(a.slug) - targetSlugs.indexOf(b.slug);
+    });
+
     await prisma.trackChallenge.createMany({
-      data: challenges.map((challenge, index) => ({
+      data: orderedChallenges.map((challenge, index) => ({
         challengeId: challenge.id,
         trackId: createdTrack.id,
         orderId: index,
@@ -90,6 +163,7 @@ try {
       }
     }
   }
+
   const someChallenge = await prisma.challenge.findFirst({
     where: {
       status: 'ACTIVE',
@@ -144,20 +218,4 @@ try {
   console.error(e);
   await prisma.$disconnect();
   process.exit(1);
-}
-
-async function getRandomChallenges(iteration: number): Promise<Challenge[]> {
-  const challenges = await prisma.challenge.findMany({
-    take: 10,
-    skip: 10 * iteration,
-  });
-  return challenges;
-}
-
-function alotOfSharedSolutions(challengeId: number) {
-  return Array.from({ length: 50 }, () => ({
-    challengeId,
-    title: faker.lorem.words(7),
-    description: faker.lorem.words({ min: 5, max: 25 }),
-  }));
 }

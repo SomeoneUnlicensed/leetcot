@@ -47,13 +47,12 @@ GITHUB_SECRET=<client_secret>
 
 ### 4. Setup uploadthing for file uploads
 
-Go to [uploadthing.com](https://uploadthing.com/dashboard) and create a project,
-then copy in the secrets (legacy, not SDK v7+) into your `.env`.
+Go to [uploadthing.com](https://uploadthing.com/dashboard) and create a project, then copy in the secrets (legacy, not SDK v7+) into your `.env`.
 
 In the end your local `.env` file should look something like the following
 
 ```
-DATABASE_URL="mysql://dev:dev@localhost/typehero"
+DATABASE_URL="mysql://root:dev@localhost/leetcot"
 GITHUB_ID=very_real_github_id
 GITHUB_SECRET=very_real_secret
 
@@ -65,20 +64,9 @@ UPLOADTHING_APP_ID="very_real_uploadthing_app_id"
 # https://next-auth.js.org/configuration/options#secret
 NEXTAUTH_SECRET="for local use you can just use a garble of letters"
 NEXTAUTH_URL="http://localhost:3000"
-GITHUB_AOT_ID=asdf
-GITHUB_AOT_SECRET=asdf
 ```
 
-### 5. Setup algolia for search
-
-Go to [algolia.com](https://www.algolia.com/apps/) and create a project, then copy in the secrets into your `.env`.
-
-```
-NEXT_PUBLIC_ALGOLIA_APP_ID=APP_ID
-NEXT_PUBLIC_ALGOLIA_API_KEY=API_KEY
-```
-
-### 6. Install dependencies
+### 5. Install dependencies
 
 Use `pnpm` to install dependencies.
 
@@ -197,10 +185,10 @@ command and then run `db:seed`.
   If you are using the docker setup for your local environment then get into the container with
 
 ```sh
-docker exec -it typehero-db bash
+docker exec -it leetcot-db-1 bash
 # we are in the container from here on
-$ mysql -u dev -p -h 127.0.0.1 typehero
-> drop database typehero;
+$ mysql -u root -p -h 127.0.0.1 leetcot
+> drop database leetcot;
 ```
 
 Exit out of the container and then run
@@ -217,7 +205,7 @@ This tends to resolve the issue as it entirely destroys and rebuilds + reseeds t
   <summary>How do I use the `@vercel/toolbar` locally?</summary>
   If you have access to the vercel project then you can run `vercel link` (make sure you have the vercel CLI).
 
-Follow the interactive CLI to link it to the Trash Company/typehero project.
+Follow the interactive CLI to link it to the Trash Company/leetcot project.
 
 From there on out you should be able to read and make comments while on local host for that branch.
 

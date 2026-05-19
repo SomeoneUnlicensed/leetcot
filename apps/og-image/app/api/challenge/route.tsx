@@ -1,15 +1,15 @@
 import { ImageResponse } from '@vercel/og';
 import { fetchFont, challengeParam } from '@repo/og-utils';
-import { Logo3d } from 'app/components/logo3d';
 import { Grid } from 'app/components/grid';
 
 export const runtime = 'edge';
 
 export async function GET(req: Request) {
-  const [inter900, inter700, inter400] = await Promise.all([
+  const [inter900, inter700, inter400, dela] = await Promise.all([
     fetchFont('Inter', 900),
     fetchFont('Inter', 700),
     fetchFont('Inter', 400),
+    fetchFont('Dela Gothic One', 400),
   ]);
 
   const parsed = challengeParam.decodeRequest(req);
@@ -40,16 +40,7 @@ export async function GET(req: Request) {
     EVENT: '#48345c',
   };
 
-  const mogus_coords = Array.from(
-    new Set([
-      ['right-16 -bottom-10', 'rotate(50deg)'],
-      ['left-8 -bottom-16', 'scaleX(-1)'],
-      ['top-0 left-100', 'scaleX(1)'],
-    ]),
-  );
-
-  const mogus_roll = Math.floor(1 + Math.random() * 9);
-  const random_mogus_coord = mogus_coords[Math.floor(Math.random() * mogus_coords.length)] ?? '';
+  // Removed mogus
   let title = props.title === null ? null : props.title.split(' | ')[0]?.trim();
   if (title && title?.length > 45) {
     title = `${title.slice(0, 40)}…`;
@@ -62,14 +53,6 @@ export async function GET(req: Request) {
     (
       <div tw="bg-black h-full w-full text-white bg-cover justify-center flex flex-col  pt-10 pb-10 px-16">
         <Grid />
-        {mogus_roll === 8 && (
-          <img
-            tw={`absolute h-32 opacity-30 ${random_mogus_coord[0]}`}
-            style={{ transform: random_mogus_coord[1] }}
-            src={`${HOST}/amoguwuowoaahhh.png?cache-bust=${new Date().getDate()}`}
-            alt="OG"
-          />
-        )}
         <div tw="flex items-start min-h-[350px] overflow-hidden rounded-[3.5rem] border-zinc-700 border-2 to-black relative">
           <svg
             // @ts-ignore
@@ -94,12 +77,13 @@ export async function GET(req: Request) {
             </defs>
           </svg>
           <div tw="flex h-full flex-col p-10 w-full">
-            <div tw="flex absolute top-10 right-10">
-              <Logo3d />
+            <div tw="flex absolute top-10 right-10 items-center text-[#d946ef] text-3xl" style={{ fontFamily: '"Dela Gothic One", sans-serif' }}>
+              <span tw="mr-4 text-4xl">/\_/\ ( o.o )</span>
+              ЛитКот БЕТА
             </div>
             <h1
               tw="-mt-2 text-7xl pr-48 truncate overflow-ellipsis"
-              style={{ fontWeight: '800 !important' }}
+              style={{ fontFamily: '"Dela Gothic One", sans-serif', fontWeight: '400 !important' }}
             >
               {title}
             </h1>
@@ -128,6 +112,7 @@ export async function GET(req: Request) {
         { name: 'Inter', data: inter900, weight: 900 },
         { name: 'Inter', data: inter700, weight: 700 },
         { name: 'Inter', data: inter400, weight: 400 },
+        { name: 'Dela Gothic One', data: dela, weight: 400 },
       ],
     },
   );

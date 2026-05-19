@@ -264,15 +264,15 @@ export function CodePanel(props: CodePanelProps) {
 
   return (
     <>
-      <div className="sticky top-0 flex h-[40px] shrink-0 items-center justify-between gap-4 border-b border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-[#1e1e1e]">
-        <div>{props.settingsElement}</div>
+      <div className="sticky top-0 flex h-[40px] shrink-0 items-center justify-between border-b border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-[#1e1e1e]">
+        <div className="flex items-center gap-1">{props.settingsElement}</div>
         <Button
           disabled={disabled}
           size="sm"
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1 rounded-lg flex items-center gap-1 text-xs transition-colors whitespace-nowrap"
           onClick={debouncedHandleSubmit}
         >
-          <span>На проверочку! 🐾</span>
+          На проверочку! 🐾
         </Button>
       </div>
       <SplitEditor

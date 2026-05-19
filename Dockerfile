@@ -8,7 +8,7 @@ WORKDIR /app
 FROM base AS deps
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json turbo.json ./
 COPY apps/admin/package.json ./apps/admin/package.json
-COPY apps/aot/package.json ./apps/aot/package.json
+
 COPY apps/auth-proxy/package.json ./apps/auth-proxy/package.json
 COPY apps/og-image/package.json ./apps/og-image/package.json
 COPY apps/web/package.json ./apps/web/package.json
@@ -31,8 +31,9 @@ FROM deps AS builder
 COPY . .
 # We need environment variables at build time for Next.js in some cases, 
 # but usually it's better to provide them via .env during build if needed.
-# For now, let's just build.
-RUN pnpm build
+# Limit concurrency to 1 to prevent OOM kills in Docker
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+RUN npx turbo run build --concurrency=1
 
 # --- Stage 4: Production ---
 FROM base AS runner

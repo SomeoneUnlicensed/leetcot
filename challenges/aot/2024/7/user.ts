@@ -1,1 +1,0 @@
-type AppendGood = unknown;
