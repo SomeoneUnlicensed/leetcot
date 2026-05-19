@@ -1,0 +1,9 @@
+{
+  "id": "cat-ruby-intro",
+  "label": "Рубиновый кот: Элегантность кода",
+  "description": "Разработайте кошачий класс на Ruby, наслаждаясь элегантностью языка.",
+  "difficulty": "beginner",
+  "language": "RUBY",
+  "prerequisites": [],
+  "author": "ЛитКот"
+}

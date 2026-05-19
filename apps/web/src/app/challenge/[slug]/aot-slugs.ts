@@ -1,6 +1,6 @@
 // i dont feel like dealing with a db query right now to grab aot challenges
 // AOT and ЛитКот share the same db so a user can technically change the slug in the url and
-// load the aot challenge in typehero
+// load the aot challenge in ЛитКот
 export const AOT_CHALLENGES = [
   '2023-1',
   '2023-2',

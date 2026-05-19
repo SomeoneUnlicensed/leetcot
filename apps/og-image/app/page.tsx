@@ -21,7 +21,7 @@ export default function Page() {
   return (
     <div>
       <Head>
-        <meta name="og:title" content="typehero OG Image Playground" />
+        <meta name="og:title" content="ЛитКот OG Image Playground" />
         <meta
           name="og:description"
           content="Playground for OG Image Generation using @vercel/og-image"

@@ -22,6 +22,11 @@
       "type": "string",
       "enum": ["beginner", "easy", "medium", "hard", "extreme", "event"]
     },
+    "language": {
+      "description": "The programming language for this challenge.",
+      "type": "string",
+      "enum": ["TYPESCRIPT", "JAVASCRIPT", "PYTHON", "GO", "JAVA", "RUST", "CSHARP", "PHP", "RUBY", "KOTLIN", "CPP", "C", "SWIFT", "SCALA", "ELIXIR", "CLOJURE", "HASKELL", "PERL", "LUA"]
+    },
     "prerequisites": {
       "description": "An array of ids of other challenges that this challenge is written as to expect the reader to already understand.",
       "type": "array",
@@ -34,5 +39,5 @@
       "type": "string"
     }
   },
-  "required": ["id", "label", "description", "difficulty", "prerequisites", "author"]
+  "required": ["id", "label", "description", "difficulty", "prerequisites", "author", "language"]
 }

@@ -61,7 +61,7 @@ export default function AboutPage() {
                 target="_blank"
                 rel="noreferrer"
                 className="gap-1 md:inline-flex"
-                href="https://github.com/typehero/typehero"
+                href="https://github.com/SomeoneUnlicensed/leetcot"
               >
                 <Github className="h-4 w-4" />
                 Star us on GitHub
