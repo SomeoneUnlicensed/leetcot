@@ -1,38 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" rx="20" fill="#18181b"/>
-  <!-- Head -->
-  <circle cx="50" cy="55" r="30" fill="#FFA500"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Background -->
+  <rect width="120" height="120" fill="#18181b"/>
   
-  <!-- Left ear -->
-  <path d="M 30 30 Q 20 15 25 20 Q 30 25 35 30 Z" fill="#FFA500"/>
+  <!-- ASCII Cat Art -->
+  <g font-family="'Courier New', monospace" font-size="11" font-weight="bold" fill="#FFA500" letter-spacing="1">
+    <!-- Line 1: /\_/\ -->
+    <text x="10" y="25">/\_/\</text>
+    
+    <!-- Line 2: ( o.o ) -->
+    <text x="10" y="40">( o.o )</text>
+    
+    <!-- Line 3: > ^ < -->
+    <text x="12" y="55">> ^ &lt;</text>
+    
+    <!-- Line 4: /|   |\ -->
+    <text x="10" y="70">/|   |\</text>
+    
+    <!-- Line 5: (_|   |_) -->
+    <text x="8" y="85">(_|   |_)</text>
+  </g>
   
-  <!-- Right ear -->
-  <path d="M 70 30 Q 80 15 75 20 Q 70 25 65 30 Z" fill="#FFA500"/>
-  
-  <!-- Inner left ear -->
-  <path d="M 32 28 Q 27 22 30 24 Q 33 27 35 28 Z" fill="#FFD99D"/>
-  
-  <!-- Inner right ear -->
-  <path d="M 68 28 Q 73 22 70 24 Q 67 27 65 28 Z" fill="#FFD99D"/>
-  
-  <!-- Left eye -->
-  <circle cx="40" cy="48" r="4" fill="#000"/>
-  <circle cx="40" cy="47" r="1.5" fill="#fff"/>
-  
-  <!-- Right eye -->
-  <circle cx="60" cy="48" r="4" fill="#000"/>
-  <circle cx="60" cy="47" r="1.5" fill="#fff"/>
-  
-  <!-- Nose -->
-  <path d="M 50 58 L 49 63 L 51 63 Z" fill="#FF69B4"/>
-  
-  <!-- Mouth -->
-  <path d="M 50 63 Q 43 67 38 65" stroke="#000" stroke-width="1" fill="none" stroke-linecap="round"/>
-  <path d="M 50 63 Q 57 67 62 65" stroke="#000" stroke-width="1" fill="none" stroke-linecap="round"/>
-  
-  <!-- Whiskers -->
-  <line x1="30" y1="52" x2="10" y2="50" stroke="#000" stroke-width="1"/>
-  <line x1="30" y1="58" x2="10" y2="60" stroke="#000" stroke-width="1"/>
-  <line x1="70" y1="52" x2="90" y2="50" stroke="#000" stroke-width="1"/>
-  <line x1="70" y1="58" x2="90" y2="60" stroke="#000" stroke-width="1"/>
+  <!-- Eyes highlight for better visibility -->
+  <circle cx="34" cy="34" r="1.5" fill="#fff" opacity="0.6"/>
+  <circle cx="46" cy="34" r="1.5" fill="#fff" opacity="0.6"/>
 </svg>
