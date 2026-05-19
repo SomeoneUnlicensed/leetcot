@@ -320,7 +320,7 @@ export default function SplitEditor({
   );
 
   return (
-    <div className={clsx('flex h-[calc(100%-_90px)] flex-col', className)} ref={wrapper}>
+    <div className={clsx('flex h-[calc(100%-40px)] flex-col', className)} ref={wrapper}>
       <section
         id="code-editor"
         tabIndex={-1}
@@ -470,7 +470,7 @@ export default function SplitEditor({
           <VimStatusBar editor={userEditorState} />
         )}
       </section>
-      <div className="transition-all" ref={testPanelSection}>
+      <div className="transition-all" ref={testPanelSection} style={{ display: 'none' }}>
         <div
           className="group cursor-row-resize border-y border-zinc-200 bg-zinc-100 p-2 dark:border-zinc-700 dark:bg-zinc-800"
           ref={resizer}

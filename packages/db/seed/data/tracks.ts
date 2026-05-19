@@ -1,35 +1,42 @@
 export const tracks = [
   {
-    name: 'Crafting TypeScript Utility Types',
+    name: 'Создание служебных типов TypeScript',
+    slug: 'crafting-typescript-utility-types',
     description:
-      "This collection guides you through hands-on exercises to recreate TypeScript's built-in utility types.",
+      'Эта подборка проведет вас через практические упражнения по воссозданию встроенных утилит-типов TypeScript.',
   },
   {
-    name: 'TypeScript Wizardry',
+    name: 'Магия TypeScript',
+    slug: 'typescript-wizardry',
     description:
-      "Dive into the elite realm of TypeScript mastery with our 'Pro-Level TypeScript Challenges.' Designed for seasoned professionals, this collection offers a formidable gauntlet of intricate exercises, pushing the boundaries of your TypeScript expertise to the limit.",
+      "Погрузитесь в элитную сферу мастерства TypeScript с нашими профессиональными испытаниями. Эта подборка разработана для опытных специалистов и предлагает сложные упражнения, расширяющие границы ваших знаний.",
   },
   {
-    name: 'Javascript Built in Methods',
+    name: 'Встроенные методы JavaScript',
+    slug: 'javascript-built-in-methods',
     description:
-      "This collection of challenges equips you to develop and enhance standard JavaScript methods, all while harnessing TypeScript's advanced type system to achieve a fully typesafe developer experience.",
+      'Эта коллекция испытаний научит вас создавать и улучшать стандартные методы JavaScript, используя продвинутую систему типов TypeScript для достижения полной типобезопасности.',
   },
   {
-    name: 'Understanding TypeScript Syntax',
+    name: 'Понимание синтаксиса TypeScript',
+    slug: 'understanding-typescript-syntax',
     description:
-      'A collection of challenging exercises that dive into type annotations, generics, and more to level up your typescript abilities.',
+      'Коллекция практических упражнений, посвященных аннотациям типов, дженерикам и другим базовым конструкциям для быстрого повышения ваших навыков.',
   },
   {
-    name: 'TypeScript Foundations',
+    name: 'Основы TypeScript',
+    slug: 'typescript-foundations',
     description:
-      'TypeScript Foundations is a curated set of challenges designed to build a strong foundation. From basic syntax to advanced concepts, this collection offers hands-on exercises to help you become a TypeScript Hero.',
+      'Основы TypeScript — это курируемый набор испытаний, предназначенный для создания прочного фундамента. От базового синтаксиса до продвинутых концепций — эта подборка поможет вам стать героем ЛитКота.',
   },
   {
-    name: 'Advent of TypeScript 2023',
-    description: 'Explore and follow along with the community across Advent of TypeScript 2023.',
+    name: 'Адвент TypeScript 2023',
+    slug: 'advent-of-typescript-2023',
+    description: 'Исследуйте праздничные испытания вместе с сообществом в рамках Advent of TypeScript 2023.',
   },
   {
-    name: 'Advent of TypeScript 2024',
-    description: 'Explore and follow along with the community across Advent of TypeScript 2024.',
+    name: 'Адвент TypeScript 2024',
+    slug: 'advent-of-typescript-2024',
+    description: 'Исследуйте праздничные испытания вместе с сообществом в рамках Advent of TypeScript 2024.',
   },
 ];

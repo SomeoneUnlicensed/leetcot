@@ -8,7 +8,9 @@ import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
 import { Label } from '@repo/ui/components/label';
 
-export default function LoginPage() {
+import { Suspense } from 'react';
+
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
@@ -94,17 +96,17 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {error && (
+          {error ? (
             <div className="rounded-lg border border-pink-500/20 bg-pink-500/10 py-2 text-center text-sm text-pink-500">
               {error}
             </div>
-          )}
+          ) : null}
 
-          {success && (
+          {success ? (
             <div className="rounded-lg border border-green-500/20 bg-green-500/10 py-2 text-center text-sm text-green-500">
               {success}
             </div>
-          )}
+          ) : null}
 
           <Button
             type="submit"
@@ -123,5 +125,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-zinc-950 text-white">Мяу...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

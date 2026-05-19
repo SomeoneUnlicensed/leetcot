@@ -46,6 +46,7 @@ export async function Navigation() {
   const TopSectionLinks = (
     <>
       <NavLink title="Задачи" href="/explore" />
+      <NavLink title="Курсы" href="/courses" />
       <NavLink title="Треки" href="/tracks" />
       <NavLink title="Бизнес" href="/business" />
       <NavLink title="Чемпионат" href="/championship" />

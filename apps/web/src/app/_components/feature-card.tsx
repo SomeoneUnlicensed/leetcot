@@ -405,10 +405,10 @@ export function CollaborativeEnvironmentCard(props: CardProps) {
           )}
         >
           <div className="flex items-center gap-2">
-            <Badge name="dax" />
-            <div className="text-xs text-neutral-500">5 years ago</div>
+            <Badge name="новичок" />
+            <div className="text-xs text-neutral-500">5 минут назад</div>
           </div>
-          Implementing Pick in TypeScript is hard, can anyone help?
+          Реализовать Pick в TypeScript сложно, кто-нибудь может помочь?
         </div>
         <div
           className={clsx(
@@ -419,10 +419,10 @@ export function CollaborativeEnvironmentCard(props: CardProps) {
         >
           <Reply className="absolute -left-8 h-4 w-4 opacity-50" />
           <div className="flex items-center gap-2">
-            <Badge name="trash" />
-            <div className="text-xs text-neutral-500">just now</div>
+            <Badge name="Barsik" />
+            <div className="text-xs text-neutral-500">только что</div>
           </div>
-          ez, the answer is
+          Мяу, это легко, вот ответ:
           <Markdown>{solutionComment}</Markdown>
         </div>
         <div
@@ -434,23 +434,12 @@ export function CollaborativeEnvironmentCard(props: CardProps) {
         >
           <Reply className="absolute -left-8 h-4 w-4 opacity-50" />
           <div className="flex items-center gap-2">
-            <Badge name="nikita" />
-            <div className="text-xs text-neutral-500">just now</div>
+            <Badge name="ЛитКот" />
+            <div className="text-xs text-neutral-500">только что</div>
           </div>
-          <Image
-            className={clsx({ amoguwusus: inView }, 'hidden opacity-0 xl:block')}
-            alt="amoguwuawa"
-            src="/Red.webp"
-            height="198"
-            width="150"
-          />
-          <Image
-            className={clsx({ amoguwusus: inView }, 'opacity-0 xl:hidden')}
-            alt="amoguwuawa"
-            src="/Red.webp"
-            height="66"
-            width="50"
-          />
+          <div className="mt-2 text-sm font-bold text-pink-500">
+            Мяу! Барсик помог разобраться 🐾
+          </div>
         </div>
       </div>
     </FeatureCard>

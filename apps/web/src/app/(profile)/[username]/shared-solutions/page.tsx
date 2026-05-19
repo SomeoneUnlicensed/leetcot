@@ -51,7 +51,7 @@ export default async function SharedSolutionPage(props: { params: Promise<{ user
 
   return (
     <div className="mt-8 lg:mt-10">
-      <h1 className="text-muted-foreground text-center text-xl">Shared Solutions</h1>
+      <h1 className="text-muted-foreground text-center text-xl">Опубликованные решения</h1>
       {solutions.length > 0 ? (
         <SharedSolutions
           solutions={solutions}
@@ -62,13 +62,13 @@ export default async function SharedSolutionPage(props: { params: Promise<{ user
       ) : (
         <Alert className="mx-auto mt-4 w-fit md:px-8">
           <AlertTitle className="text-center leading-normal">
-            <span>{isOwnProfile ? "You haven't" : `@${username} hasn't`}</span> shared any{' '}
-            challenges yet
+            <span>{isOwnProfile ? 'Вы еще не' : `@${username} еще не`}</span> опубликовали ни одного
+            решения
           </AlertTitle>
           {isOwnProfile ? (
             <AlertDescription className="flex justify-center">
               <Link className="text-primary underline-offset-4 hover:underline" href="./completed">
-                Explore your completed solutions and share your own!
+                Исследуйте свои завершенные задачи и поделитесь решением!
               </Link>
             </AlertDescription>
           ) : null}

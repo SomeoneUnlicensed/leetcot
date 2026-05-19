@@ -6,9 +6,9 @@ export const dynamic = 'force-dynamic';
 
 export function generateMetadata(): Metadata {
   return buildMetaForDefault({
-    title: 'Explore Challenges | ЛитКот',
+    title: 'Исследовать испытания | ЛитКот',
     description:
-      'Explore all challenges by difficulty on ЛитКот. These are interactive coding challenges to help you learn and improve your TypeScript skills.',
+      'Исследуйте все испытания по сложности на ЛитКот. Это интерактивные задачи по программированию, которые помогут вам изучить и улучшить свои навыки TypeScript.',
   });
 }
 

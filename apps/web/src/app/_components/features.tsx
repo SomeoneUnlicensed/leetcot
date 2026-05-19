@@ -1,7 +1,5 @@
 import { Balancer } from 'react-wrap-balancer';
 import clsx from 'clsx';
-import Image from 'next/image';
-import DogeSmile from '~/assets/images/doge.webp';
 import FeatureCardChallengeDark1 from '~/assets/images/feature_card_challenge_dark1.png';
 import FeatureCardChallengeDark2 from '~/assets/images/feature_card_challenge_dark2.png';
 import FeatureCardChallengeLight1 from '~/assets/images/feature_card_challenge_light1.png';
@@ -42,14 +40,7 @@ export function Features() {
                   >
                     <path d="m19.2 36.4-4.75-10.45L4 21.2l10.45-4.75L19.2 6l4.75 10.45L34.4 21.2l-10.45 4.75ZM36.4 42l-2.35-5.25-5.25-2.35 5.25-2.4 2.35-5.2 2.4 5.2 5.2 2.4-5.2 2.35Z" />
                   </svg>
-                  много фич, вау{' '}
-                  <Image
-                    className="absolute -bottom-1 right-1 translate-y-7 duration-300 group-hover:translate-y-0"
-                    alt="doge smile"
-                    height="28"
-                    width="28"
-                    src={DogeSmile}
-                  />
+                  Мяу, сколько фич! 🐾
                 </span>
               </div>
             </a>

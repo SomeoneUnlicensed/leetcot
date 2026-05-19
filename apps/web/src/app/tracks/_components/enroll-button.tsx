@@ -33,39 +33,39 @@ export function ActionButton({ action, text, trackId, slug }: EnrollButtonProps)
           }
 
           toast({
-            title: 'Success',
+            title: 'Готово!',
             variant: 'success',
-            description: <p>You're now successfully {text.toLowerCase()}ed the track.</p>,
+            description: <p>Вы успешно {text === 'Enroll' ? 'записались на' : 'отписались от'} трек{text === 'Enroll' ? '' : 'а'}.</p>,
           });
         } catch (error: unknown) {
           if (error instanceof Error) {
             if (error.message === 'User is not logged in') {
               toast({
-                title: 'Please Login to continue',
+                title: 'Необходимо войти',
                 variant: 'destructive',
                 description: (
                   <p>
-                    You must be logged in to enroll in a track.{' '}
+                    Войдите в аккаунт, чтобы записаться на трек.{' '}
                     <Link href={`/login?redirectTo=${path}`} className="font-bold underline">
-                      Login
+                      Войти
                     </Link>
                   </p>
                 ),
               });
             } else {
               toast({
-                title: 'Error',
+                title: 'Ошибка',
                 variant: 'destructive',
                 description: (
-                  <p>There was an error trying to {text.toLowerCase()} you from the track.</p>
+                  <p>Произошла ошибка при выполнении действия.</p>
                 ),
               });
             }
           } else {
             toast({
-              title: 'Unknown Error',
+              title: 'Неизвестная ошибка',
               variant: 'destructive',
-              description: <p>Something went wrong</p>,
+              description: <p>Что-то пошло не так</p>,
             });
           }
         } finally {

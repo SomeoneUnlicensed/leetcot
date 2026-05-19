@@ -61,12 +61,12 @@ export function TrackCardSoon({ track }: TrackProps) {
           </div>
           <div className="text-center font-semibold capitalize tracking-wide">{track.name}</div>
           <div className="text-muted-foreground line-clamp-3 text-center text-sm tracking-wide">
-            This track is still in development. <br /> Check back soon!
+            Этот трек ещё в разработке. <br /> Скоро будет доступен!
             <br />
           </div>
 
           <div className="text-center">
-            <Badge className="flex-none bg-neutral-600">coming soon</Badge>
+            <Badge className="flex-none bg-neutral-600">Скоро</Badge>
           </div>
         </CardContent>
       </Card>
