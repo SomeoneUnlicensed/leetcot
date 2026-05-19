@@ -1,0 +1,9 @@
+{
+  "id": "cat-typescript-generics",
+  "label": "Кот TypeScript: Дженерики",
+  "description": "Научитесь использовать дженерики TypeScript для создания гибких типов котов.",
+  "difficulty": "easy",
+  "language": "TYPESCRIPT",
+  "prerequisites": [],
+  "author": "ЛитКот"
+}
