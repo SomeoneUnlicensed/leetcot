@@ -20,8 +20,8 @@ export default async function NotFound() {
         />
         <Image
           className="th-amogfly absolute left-0 -z-10 mx-auto opacity-80"
-          alt="Early Access"
-          src="/typehero.png"
+          alt="ЛитКот"
+          src="/favicon.svg"
           height="99"
           width="99"
         />

@@ -4,7 +4,7 @@ import { ThemeButton } from './navigation/theme-button';
 
 const links = [
   {
-    href: 'https://github.com/typehero/typehero',
+    href: 'https://github.com/SomeoneUnlicensed/leetcot',
     label: 'ЛитКот on GitHub',
     Icon: Github,
   },
