@@ -19,29 +19,8 @@ export function Navigation() {
         <div className="flex w-full items-center justify-between">
           <div className="relative flex gap-3">
             <Link className="flex items-center space-x-2 duration-300" href="/">
-              <svg
-                className="h-8 w-8 rounded-md bg-[#3178C6] p-[2px]"
-                viewBox="0 0 38 38"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <rect width="38" height="38" rx="4.5" fill="#3178C6" />
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M15.6947 20.9344H20V18H8V20.9344H12.2842V34H15.6947V20.9344Z"
-                  fill="white"
-                />
-                <path
-                  d="M22 34V18H25.4511V24.6309H30.5405V18H34V34H30.5405V27.3458H25.4511V34H22Z"
-                  fill="white"
-                />
-              </svg>
-
-              <span className="font-bold leading-3">
-                type
-                <br />
-                hero
+              <span className="font-bold leading-3 text-xl" style={{ fontFamily: '"Dela Gothic One", sans-serif' }}>
+                ЛитКот
               </span>
             </Link>
           </div>
@@ -124,7 +103,7 @@ function LoginButton() {
           onClick={handleSignOut}
           variant="ghost"
         >
-          <span className="text-red-500">Log out</span>
+          <span className="text-red-500">Выйти</span>
         </Button>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -139,7 +118,7 @@ function LoginButton() {
       ) : (
         <div className="flex items-center space-x-2">
           <LogIn className="h-5 w-5" />
-          <span className="dark:text-white">Login</span>
+          <span className="dark:text-white">Войти</span>
         </div>
       )}
     </Button>

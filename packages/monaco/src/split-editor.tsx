@@ -319,6 +319,27 @@ export default function SplitEditor({
     [],
   );
 
+  useEffect(() => {
+    if (!monaco || !userEditorState) return;
+    const testUri = monaco.Uri.parse(TESTS_PATH);
+    let testModel = monaco.editor.getModel(testUri);
+    if (!testModel) {
+      testModel = monaco.editor.createModel(tests, 'typescript', testUri);
+    } else {
+      if (testModel.getValue() !== tests) {
+        testModel.setValue(tests);
+      }
+    }
+    onMount?.tests?.(userEditorState, monaco);
+
+    return () => {
+      const model = monaco.editor.getModel(testUri);
+      if (model) {
+        model.dispose();
+      }
+    };
+  }, [monaco, userEditorState, tests, onMount]);
+
   return (
     <div className={clsx('flex h-[calc(100%-40px)] flex-col', className)} ref={wrapper}>
       <section
@@ -331,6 +352,15 @@ export default function SplitEditor({
           height={userEditorState && settings.bindings === 'vim' ? 'calc(100% - 36px)' : '100%'}
           defaultPath={USER_CODE_PATH}
           onMount={async (editor, monaco) => {
+            // Ensure tests model exists immediately
+            const testUri = monaco.Uri.parse(TESTS_PATH);
+            let testModel = monaco.editor.getModel(testUri);
+            if (!testModel) {
+              testModel = monaco.editor.createModel(tests, 'typescript', testUri);
+            } else {
+              testModel.setValue(tests);
+            }
+
             // this just does the typechecking so the UI can update
             // it also makes the monaco instance available outside of this callback by setting state in parent
             onMount?.user?.(editor, monaco);
@@ -470,77 +500,6 @@ export default function SplitEditor({
           <VimStatusBar editor={userEditorState} />
         )}
       </section>
-      <div className="transition-all" ref={testPanelSection} style={{ display: 'none' }}>
-        <div
-          className="group cursor-row-resize border-y border-zinc-200 bg-zinc-100 p-2 dark:border-zinc-700 dark:bg-zinc-800"
-          ref={resizer}
-          onDoubleClick={() => {
-            setIsTestPanelExpanded(false);
-          }}
-        >
-          <div className="group-hover:bg-primary group-hover:dark:bg-primary group-active:bg-primary m-auto h-1 w-24 rounded-full bg-zinc-300 duration-300 dark:bg-zinc-700" />
-        </div>
-        <div
-          style={{
-            height: `${expandTestPanel ? settings.testPanelHeight || MIN_HEIGHT : 0}px`,
-          }}
-          ref={testPanel}
-        >
-          <CodeEditor
-            options={{
-              lineNumbers: 'off',
-              renderValidationDecorations: 'on',
-              readOnly: isTestsReadonly,
-            }}
-            onMount={(editor, monaco) => {
-              // this just does the typechecking so the UI can update
-              onMount?.tests?.(editor, monaco);
-              const testModel = monaco.editor.getModel(monaco.Uri.parse(TESTS_PATH))!;
-              const testCode = testModel.getValue();
-              debouncedTestCodeAta(testCode);
-
-              if (hasImports(testCode)) {
-                const actualCode = testCode
-                  .split('\n')
-                  .filter((c) => !c.startsWith('import'))
-                  .join('\n');
-                if (actualCode) {
-                  monaco.languages.typescript.typescriptDefaults.setExtraLibs([
-                    {
-                      content: actualCode,
-                      filePath: TEST_FILE_PATH,
-                    },
-                  ]);
-                }
-              }
-            }}
-            defaultPath={TESTS_PATH}
-            value={tests}
-            defaultValue={tests}
-            onChange={(editor, changeEvent) => {
-              const code = editor ?? '';
-              debouncedTestCodeAta(code);
-              if (hasImports(code)) {
-                const actualCode = code
-                  .split('\n')
-                  .filter((c) => !c.startsWith('import'))
-                  .join('\n');
-                if (actualCode) {
-                  monaco?.languages.typescript.typescriptDefaults.setExtraLibs([
-                    {
-                      content: actualCode,
-                      filePath: TEST_FILE_PATH,
-                    },
-                  ]);
-                }
-              }
-
-              onChange?.tests?.(editor, changeEvent);
-            }}
-            onValidate={onValidate?.tests}
-          />
-        </div>
-      </div>
     </div>
   );
 }

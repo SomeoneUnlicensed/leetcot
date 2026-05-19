@@ -1,1 +1,0 @@
-type SantasFavoriteCookies = unknown;
