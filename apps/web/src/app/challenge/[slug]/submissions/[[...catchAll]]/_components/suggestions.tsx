@@ -42,7 +42,7 @@ export function Suggestions({ track, challengeId }: SuggestionsProps) {
   const next = useMemo(() => {
     if (currentIndex === null) return null;
 
-    const index = currentIndex + 1;
+    const index = Number(currentIndex) + 1;
     return index < trackDetails!.trackChallenges.length
       ? trackDetails!.trackChallenges[index]
       : null;

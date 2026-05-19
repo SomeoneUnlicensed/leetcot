@@ -26,7 +26,7 @@ export async function TrackGrid() {
 
 export type Tracks = Awaited<ReturnType<typeof getTracks>>;
 
-async function getTracks(session: Session | null) {
+function getTracks(session: Session | null) {
   return prisma.track.findMany({
     include: {
       _count: {

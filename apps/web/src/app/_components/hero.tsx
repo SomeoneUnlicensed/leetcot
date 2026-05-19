@@ -1,4 +1,4 @@
-import { Github, Sparkle, Twitter, Compass } from '@repo/ui/icons';
+import { Compass } from '@repo/ui/icons';
 import Link from 'next/link';
 import { Balancer } from 'react-wrap-balancer';
 import { Button } from '@repo/ui/components/button';
@@ -7,8 +7,8 @@ import { auth } from '~/server/auth';
 
 function ЛитКотLogo3D() {
   return (
-    <pre className="text-[14px] leading-4 text-pink-500 font-bold dark:text-fuchsia-400 mr-6">
-{`
+    <pre className="mr-6 text-[14px] font-bold leading-4 text-pink-500 dark:text-fuchsia-400">
+      {`
    |\\__/,|   (\`\\
  _.|o o  |_   ) )
 -(((---(((--------
@@ -64,7 +64,6 @@ export async function Hero() {
       <div className="container relative -mt-[3rem] grid min-h-screen items-center justify-center py-24 lg:min-h-0 lg:grid-cols-2 lg:py-0 [&>*]:pointer-events-auto">
         <BeamOfLight />
         <div className="flex w-full flex-col items-center justify-center gap-10 lg:items-start">
-          
           <div className="relative flex w-full items-center justify-center gap-4 lg:justify-start">
             <div className="absolute left-1/2 top-1/2 -z-10 hidden h-56 w-56 -translate-x-[15%] -translate-y-[50%] rounded-full bg-pink-500/20 blur-3xl dark:block" />
             <div className="absolute right-1/2 top-1/2 -z-10 hidden h-56 w-56 -translate-y-[40%] rounded-full bg-fuchsia-600/20 blur-3xl dark:block" />
@@ -76,7 +75,8 @@ export async function Hero() {
 
           <p className="max-w-[55ch] bg-transparent text-center font-medium leading-8 text-black/60 sm:px-8 lg:px-0 lg:text-left dark:text-white/50">
             <Balancer>
-              Общайтесь, сотрудничайте и растите вместе с сообществом разработчиков. Повышайте свои навыки через интерактивные задачи с котиками, обсуждения и обмен знаниями. Мяу!
+              Общайтесь, сотрудничайте и растите вместе с сообществом разработчиков. Повышайте свои
+              навыки через интерактивные задачи с котиками, обсуждения и обмен знаниями. Мяу!
             </Balancer>
           </p>
           <div className="flex flex-col-reverse gap-3 md:flex-row">

@@ -22,7 +22,7 @@ export function ProblemExplorerNav() {
     if (!track.length) return null;
     if (currentIndex === null) return null;
 
-    const nextIndex = currentIndex + 1;
+    const nextIndex = Number(currentIndex) + 1;
     return nextIndex < track.length ? track[nextIndex] : null;
   }, [currentIndex, track]);
 

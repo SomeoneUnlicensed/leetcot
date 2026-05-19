@@ -482,7 +482,7 @@ function SingleComment({
                           },
                         ]
                       : [];
-                    comment._count.vote += didUpvote ? 1 : -1;
+                    comment._count.vote = Number(comment._count.vote) + (didUpvote ? 1 : -1);
                   }}
                 />
 
