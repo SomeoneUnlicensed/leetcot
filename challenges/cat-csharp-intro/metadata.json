@@ -1,0 +1,9 @@
+{
+  "id": "cat-csharp-intro",
+  "label": "Кошачий C#: Первый класс",
+  "description": "Изучите основы C# создав свой кошачий класс с использованием .NET.",
+  "difficulty": "beginner",
+  "language": "CSHARP",
+  "prerequisites": [],
+  "author": "ЛитКот"
+}
