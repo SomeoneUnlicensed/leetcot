@@ -100,9 +100,11 @@ export function CodePanel(props: CodePanelProps) {
 
     try {
       const getTsWorker = await monacoInstance.languages.typescript.getTypeScriptWorker();
+      console.log('Available Monaco Models:', monacoInstance.editor.getModels().map(m => m.uri.toString()));
       const model = monacoInstance.editor.getModel(monacoInstance.Uri.parse(TESTS_PATH));
 
       if (!model) {
+        console.error('TESTS_PATH model not found! Target:', TESTS_PATH);
         throw new Error('Не удалось запустить компилятор тестов');
       }
 
