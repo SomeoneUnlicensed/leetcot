@@ -34,7 +34,7 @@ export async function getPreselectedCommentMetadata(challengeId: number, comment
   if (index === -1) return;
 
   const selectedComment = challengeComments[index];
-  const page = Math.ceil((index + 1) / PAGESIZE);
+  const page = Math.ceil((Number(index) + 1) / PAGESIZE);
 
   return {
     page,
@@ -71,7 +71,7 @@ export async function getPreselectedSolutionCommentMetadata(
   if (index === -1) return;
 
   const selectedComment = comments[index];
-  const page = Math.ceil((index + 1) / PAGESIZE);
+  const page = Math.ceil((Number(index) + 1) / PAGESIZE);
 
   return {
     page,
@@ -81,7 +81,7 @@ export async function getPreselectedSolutionCommentMetadata(
   };
 }
 
-async function getCommentsCount({
+function getCommentsCount({
   rootType,
   rootId,
   parentId = null,
@@ -188,7 +188,7 @@ export async function getPaginatedComments({
   const totalPages = Math.ceil(totalComments / take);
 
   return {
-    totalComments: totalReplies + totalComments,
+    totalComments: Number(totalReplies) + Number(totalComments),
     totalPages,
     hasMore: page < totalPages,
     comments,

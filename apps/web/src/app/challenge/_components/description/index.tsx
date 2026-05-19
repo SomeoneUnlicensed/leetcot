@@ -168,9 +168,7 @@ export function Description({ challenge }: DescriptionProps) {
                   shouldBookmark = true;
                   setHasBookmarked(true);
                 }
-                // TODO: Is this guaranteed to exist, or is userId actually optional?
-                // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-                debouncedBookmark(challenge.id, session.data?.user?.id!, shouldBookmark)?.catch(
+                debouncedBookmark(challenge.id, session.data?.user?.id, shouldBookmark)?.catch(
                   (e) => {
                     console.error(e);
                   },

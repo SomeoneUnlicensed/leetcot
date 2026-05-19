@@ -47,7 +47,7 @@ export function ChallengeTrackNavigation({
   const next = useMemo(() => {
     if (currentIndex === null) return null;
 
-    const nextIndex = currentIndex + 1;
+    const nextIndex = Number(currentIndex) + 1;
     return nextIndex < trackDetails!.trackChallenges.length
       ? trackDetails!.trackChallenges[nextIndex]
       : null;
