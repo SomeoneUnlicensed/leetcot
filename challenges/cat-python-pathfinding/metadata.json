@@ -1,7 +1,9 @@
 {
-  "name": "Погоня за Робо-пылесосом (A*)",
-  "difficulty": "HARD",
+  "id": "cat-python-pathfinding",
+  "label": "Погоня за Робо-пылесосом (A*)",
+  "description": "Помоги коту обойти роботы-пылесосы с помощью алгоритма A*",
+  "difficulty": "hard",
   "language": "PYTHON",
-  "tags": ["ALGORITHMS", "PATHFINDING"],
-  "shortDescription": "Помоги коту обойти роботы-пылесосы с помощью алгоритма A*"
+  "prerequisites": ["cat-python-basics"],
+  "author": "ЛитКот"
 }
