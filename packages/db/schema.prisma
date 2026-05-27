@@ -7,7 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
+  provider     = "postgresql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
@@ -125,7 +125,7 @@ model User {
   userLinks UserLink[]
 
   status    UserStatus @default(ACTIVE)
-  banReason String?    @db.MediumText
+  banReason String?    @db.Text
 
   accounts   Account[]
   sessions   Session[]
@@ -198,13 +198,13 @@ model Challenge {
   name             String          @unique
   slug             String          @unique
   /// this is the description to describe the challenge on description panel
-  description      String          @db.MediumText
+  description      String          @db.Text
   /// this is a short blue thats shown on the explore card
   shortDescription String
   /// Starter code for the challenge
-  code             String          @db.MediumText
+  code             String          @db.Text
   /// Test cases that need to be passed in order have the submission be accepted.
-  tests            String          @db.MediumText
+  tests            String          @db.Text
   status           ChallengeStatus @default(PENDING)
   tsconfig         Json?
   isInfoOnly       Boolean         @default(false)
@@ -263,7 +263,7 @@ model SharedSolution {
   createdAt       DateTime       @default(now())
   isPinned        Boolean        @default(false)
   title           String
-  description     String         @db.MediumText
+  description     String         @db.Text
   vote            Vote[]
   user            User?          @relation(fields: [userId], references: [id])
   userId          String?
@@ -280,7 +280,7 @@ model SharedSolution {
 /// Every attempt a user makes to a challenge is stored here
 model Submission {
   id           Int       @id @default(autoincrement())
-  code         String    @db.MediumText
+  code         String    @db.Text
   createdAt    DateTime  @default(now())
   isSuccessful Boolean
   user         User      @relation(fields: [userId], references: [id])
@@ -337,7 +337,7 @@ model Report {
   // Base table info
   id Int @id @default(autoincrement())
 
-  text String @db.MediumText
+  text String @db.Text
 
   type   ReportType
   status ReportStatus
@@ -383,7 +383,7 @@ enum CommentRoot {
 
 model Comment {
   id            Int       @id @default(autoincrement())
-  text          String    @db.MediumText
+  text          String    @db.Text
   visible       Boolean   @default(true)
   parentId      Int?
   parentComment Comment?  @relation("reply_comments", fields: [parentId], references: [id], onUpdate: NoAction, onDelete: NoAction)
@@ -447,7 +447,7 @@ model Track {
   id              Int              @id @default(autoincrement())
   name            String           @unique
   slug            String           @unique
-  description     String           @db.MediumText
+  description     String           @db.Text
   /// determines if a track can be seen on tracks page
   visible         Boolean          @default(true)
   /// use this to display coming soon UI
@@ -464,7 +464,7 @@ model Course {
   id            Int       @id @default(autoincrement())
   name          String    @unique
   slug          String    @unique
-  description   String    @db.MediumText
+  description   String    @db.Text
   visible       Boolean   @default(true)
   isComingSoon  Boolean   @default(false)
   tracks        Track[]
@@ -524,7 +524,7 @@ model Notification {
 model ShortURL {
   id           Int       @id @default(autoincrement())
   /// the original full url that we want to shorten e.g. https://www.url.com
-  originalUrl  String    @db.MediumText
+  originalUrl  String    @db.Text
   /// slug for the short url e.g. url.com/[shortUrlSlug]
   shortUrlSlug String    @unique
   createdAt    DateTime  @default(now())
