@@ -2,17 +2,18 @@ name: leetcot
 
 services:
   db:
-    image: mysql
+    image: postgres:16
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: dev
-      MYSQL_DATABASE: leetcot
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: leetcot
     volumes:
-      - leetcot-data:/var/lib/mysql
+      - leetcot-data:/var/lib/postgresql/data
     ports:
-      - 3306:3306
+      - 5432:5432
     healthcheck:
-      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-pdev']
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d leetcot']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -37,7 +38,7 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL=mysql://root:dev@db:3306/leetcot
+      - DATABASE_URL=postgresql://postgres:dev@db:5432/leetcot?schema=public
       - REDIS_URL=redis://redis:6379
       - NODE_ENV=development
     depends_on:
@@ -46,6 +47,25 @@ services:
       redis:
         condition: service_started
 
+  pgadmin:
+    image: dpage/pgadmin4:8
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@leetcot.local
+      PGADMIN_DEFAULT_PASSWORD: dev
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    volumes:
+      - ./pgadmin/servers.json:/pgadmin4/servers.json
+      - ./pgadmin/pgpass:/pgpassfile
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - 5050:80
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   leetcot-data:
+    driver: local
+  pgadmin-data:
     driver: local

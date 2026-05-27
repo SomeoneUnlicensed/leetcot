@@ -13,7 +13,7 @@ Provide your values as needed.
 
 ### 2 Configure your database
 
-You can use a local Docker container to run your database, or any other remote MySQL host you prefer that is compatible with Prisma.
+You can use a local Docker container to run your database, or any other remote PostgreSQL host you prefer that is compatible with Prisma.
 
 ### 2.a Local Database & Redis (using Docker)
 
@@ -21,6 +21,13 @@ Starting the docker container
 
 ```
 docker compose up -d
+```
+
+Once it is running, you can access pgAdmin at [http://localhost:5050](http://localhost:5050) with:
+
+```
+Email: admin@leetcot.local
+Password: dev
 ```
 
 ### 3. Create a new GitHub OAuth Application
@@ -52,7 +59,7 @@ Go to [uploadthing.com](https://uploadthing.com/dashboard) and create a project,
 In the end your local `.env` file should look something like the following
 
 ```
-DATABASE_URL="mysql://root:dev@localhost/leetcot"
+DATABASE_URL="postgresql://postgres:dev@localhost:5432/leetcot?schema=public"
 GITHUB_ID=very_real_github_id
 GITHUB_SECRET=very_real_secret
 
@@ -187,8 +194,8 @@ command and then run `db:seed`.
 ```sh
 docker exec -it leetcot-db-1 bash
 # we are in the container from here on
-$ mysql -u root -p -h 127.0.0.1 leetcot
-> drop database leetcot;
+$ psql -U postgres -d postgres
+postgres=# DROP DATABASE leetcot;
 ```
 
 Exit out of the container and then run
