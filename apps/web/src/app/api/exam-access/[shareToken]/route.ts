@@ -12,14 +12,13 @@ export async function GET(
         questions: {
           include: {
             testCases: {
+              where: { isHidden: false },
               select: {
                 id: true,
                 input: true,
                 expectedOutput: true,
                 points: true,
                 timeout: true,
-                // Don't expose if test case is hidden on initial fetch
-                isHidden: false,
               },
             },
           },
