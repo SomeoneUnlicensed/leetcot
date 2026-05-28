@@ -40,6 +40,8 @@ export default function ExamEditorPage() {
   const [questionContent, setQuestionContent] = useState('');
   const [questionPoints, setQuestionPoints] = useState('1');
   const [questionLanguage, setQuestionLanguage] = useState('PYTHON');
+  const [questionOptions, setQuestionOptions] = useState<string[]>(['', '', '', '']);
+  const [correctAnswerIndex, setCorrectAnswerIndex] = useState('0');
   const router = useRouter();
 
   useEffect(() => {
@@ -75,20 +77,36 @@ export default function ExamEditorPage() {
       return;
     }
 
+    if (questionType === 'MULTIPLE_CHOICE') {
+      const nonEmptyOptions = questionOptions.filter(opt => opt.trim().length > 0);
+      if (nonEmptyOptions.length < 2) {
+        setError('Пожалуйста, укажите минимум 2 варианта ответов');
+        return;
+      }
+    }
+
     try {
+      const body: any = {
+        examId,
+        type: questionType,
+        content: questionContent,
+        order: (exam?.questions?.length || 0) + 1,
+        points: parseInt(questionPoints),
+      };
+
+      if (questionType === 'CODE_TASK') {
+        body.language = questionLanguage;
+      } else if (questionType === 'MULTIPLE_CHOICE') {
+        body.options = questionOptions.filter(opt => opt.trim().length > 0);
+        body.correctAnswers = [parseInt(correctAnswerIndex)];
+      }
+
       const response = await fetch('/api/questions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          examId,
-          type: questionType,
-          content: questionContent,
-          order: (exam?.questions?.length || 0) + 1,
-          points: parseInt(questionPoints),
-          language: questionType === 'CODE_TASK' ? questionLanguage : undefined,
-        }),
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
@@ -101,6 +119,8 @@ export default function ExamEditorPage() {
       setQuestionType('MULTIPLE_CHOICE');
       setQuestionContent('');
       setQuestionPoints('1');
+      setQuestionOptions(['', '', '', '']);
+      setCorrectAnswerIndex('0');
       setIsAddingQuestion(false);
       await fetchExam();
     } catch (err) {
@@ -277,6 +297,33 @@ export default function ExamEditorPage() {
                       <option value="JAVA">Java</option>
                       <option value="CPP">C++</option>
                     </select>
+                  </div>
+                )}
+
+                {questionType === 'MULTIPLE_CHOICE' && (
+                  <div className="space-y-3">
+                    <Label>Варианты ответов</Label>
+                    {questionOptions.map((option, idx) => (
+                      <div key={idx} className="flex gap-2 items-center">
+                        <input
+                          type="radio"
+                          name="correct"
+                          checked={parseInt(correctAnswerIndex) === idx}
+                          onChange={() => setCorrectAnswerIndex(idx.toString())}
+                          className="w-4 h-4"
+                        />
+                        <Input
+                          value={option}
+                          onChange={(e) => {
+                            const newOptions = [...questionOptions];
+                            newOptions[idx] = e.target.value;
+                            setQuestionOptions(newOptions);
+                          }}
+                          placeholder={`Вариант ${idx + 1}`}
+                        />
+                      </div>
+                    ))}
+                    <p className="text-xs text-gray-600">Выберите правильный ответ</p>
                   </div>
                 )}
 
