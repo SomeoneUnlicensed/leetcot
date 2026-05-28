@@ -58,11 +58,20 @@ export async function GET(
       );
     }
 
-    // Don't expose teacher info to students
+    // Don't expose teacher info to students or correct answers
     const { teacherId, ...examData } = exam;
+    
+    // Remove correct answers from questions
+    const sanitizedExam = {
+      ...examData,
+      questions: examData.questions.map((q: any) => {
+        const { correctAnswers, ...questionData } = q;
+        return questionData;
+      }),
+    };
 
     return NextResponse.json({
-      exam: examData,
+      exam: sanitizedExam,
     });
   } catch (error) {
     console.error('Get exam by share token error:', error);

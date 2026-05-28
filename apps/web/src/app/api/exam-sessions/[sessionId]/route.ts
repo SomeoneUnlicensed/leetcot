@@ -32,8 +32,20 @@ export async function GET(
       );
     }
 
+    // Filter out correct answers before sending to student
+    const sanitizedSession = {
+      ...session,
+      exam: {
+        ...session.exam,
+        questions: session.exam.questions.map((q: any) => {
+          const { correctAnswers, ...questionData } = q;
+          return questionData;
+        }),
+      },
+    };
+
     return NextResponse.json({
-      session,
+      session: sanitizedSession,
     });
   } catch (error) {
     console.error('Get session error:', error);
