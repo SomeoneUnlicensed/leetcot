@@ -1,23 +1,24 @@
 import { prisma } from '@repo/db';
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
+import { z } from 'zod';
+
+// Validation schema
+const CreateSessionSchema = z.object({
+  examId: z.string().uuid('Invalid exam ID'),
+  studentName: z.string().min(1, 'Student name is required').max(255),
+  studentSurname: z.string().max(255).optional(),
+  studentClass: z.string().min(1, 'Student class is required').max(255),
+});
 
 // POST - Create a new exam session
 export async function POST(req: Request) {
   try {
-    const {
-      examId,
-      studentName,
-      studentSurname,
-      studentClass,
-    } = await req.json();
+    const body = await req.json();
 
-    if (!examId || !studentName || !studentClass) {
-      return NextResponse.json(
-        { error: 'Мяу! Укажите тест, имя и класс.' },
-        { status: 400 }
-      );
-    }
+    // Validate request
+    const validatedData = CreateSessionSchema.parse(body);
+    const { examId, studentName, studentSurname, studentClass } = validatedData;
 
     // Verify the exam exists and is active
     const exam = await prisma.exam.findUnique({
@@ -75,6 +76,13 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Мяу! Некорректные данные в запросе.', details: error.errors },
+        { status: 400 }
+      );
+    }
+
     console.error('Create exam session error:', error);
     return NextResponse.json(
       { error: 'Что-то пошло не так при создании сессии экзамена.' },
