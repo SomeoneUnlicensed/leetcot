@@ -2,30 +2,23 @@ name: Deploy Production on Release
 
 on:
   release:
-    types: [published] # Экшен сработает ТОЛЬКО при нажатии "Publish release" в GitHub
+    types: [published]
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted # ВОТ ОНО. Никаких SSH-экшенов, Гитхаб отдаст команду твоему серверу.
 
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /var/www/leetcot.ru/html
-            
-            # Скачиваем информацию о новых тегах и изменениях из репы
-            git fetch --all --tags
-            
-            # Принудительно переключаем код на сервере на тег этого релиза (например, v1.0.1)
-            git checkout ${{ github.event.release.tag_name }}
-            
-            # Собираем контейнеры и запускаем (Turborepo сам закэширует зависимости)
-            sudo docker compose up -d --build
-            
-            # Удаляем старые ненужные образы Докера, чтобы не забить диск виртуалки
-            sudo docker image prune -f
+      # Этот экшен сам поймет, какой тег релиза был нажат, и скачает именно его код
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      # Собираем и поднимаем докер прямо в рабочей папке раннера на сервере
+      - name: Build and start Docker containers
+        run: |
+          sudo docker compose up -d --build
+          
+      # Сносим старый мусор, чтобы сервер не задохнулся по диску
+      - name: Clean up unused Docker images
+        run: |
+          sudo docker image prune -f
