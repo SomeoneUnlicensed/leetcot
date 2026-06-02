@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-dijkstra",
+  "label": "Золотая рыбка (Dijkstra)",
+  "description": "Найди самый дешевый (по силам) путь к золотой рыбке через опасные дворы.",
+  "difficulty": "extreme",
+  "language": "python",
+  "author": "ЛитКот"
+}

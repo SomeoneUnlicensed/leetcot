@@ -127,20 +127,6 @@ export const buildMetaForDefault = ({
   });
 };
 
-export const buildMetaForEventPage = ({
-  title,
-  description,
-}: {
-  title?: string;
-  description?: string;
-}): Metadata => {
-  return buildMeta({
-    ogImageUrl: `${OG_URL}/api/aot-2023`,
-    title,
-    description,
-  });
-};
-
 /** update the metadata for og */
 const buildMeta = ({
   ogImageUrl,

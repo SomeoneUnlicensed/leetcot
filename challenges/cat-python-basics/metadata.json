@@ -1,9 +1,0 @@
-{
-  "id": "cat-python-basics",
-  "label": "Кошачий Python: Первое Мяу",
-  "description": "Познакомьтесь с Python через кошачьи списки и циклы.",
-  "difficulty": "beginner",
-  "language": "PYTHON",
-  "prerequisites": [],
-  "author": "ЛитКот"
-}

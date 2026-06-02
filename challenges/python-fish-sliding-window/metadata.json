@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-sliding-window",
+  "label": "Лазерная указка (Sliding Window)",
+  "description": "Найди самую длинную последовательность уникальных 'точек' в луче света.",
+  "difficulty": "medium",
+  "language": "python",
+  "author": "ЛитКот"
+}

@@ -1,9 +1,0 @@
-{
-  "id": "cat-rust-intro",
-  "label": "Стремительный Rust: Владение памятью",
-  "description": "Освойте концепцию владения памятью в Rust на примере кошачьего приложения.",
-  "difficulty": "beginner",
-  "language": "RUST",
-  "prerequisites": [],
-  "author": "ЛитКот"
-}

@@ -1,12 +1,79 @@
 'use server';
 
 import { prisma } from '@repo/db';
-import { Tags, type Difficulty } from '@repo/db/types';
+import { Tags, type Difficulty, Language } from '@repo/db/types';
 import { cache } from 'react';
 import { auth } from '~/server/auth';
 
 export type ExploreChallengeData = ReturnType<typeof getChallengesByTagOrDifficulty>;
 const allTags: Tags[] = Object.values(Tags);
+
+export interface FilterOptions {
+  difficulty?: Difficulty;
+  language?: Language;
+  tag?: Tags;
+  query?: string;
+}
+
+/**
+ * Fetches challenges with comprehensive filtering.
+ */
+export async function getFilteredChallenges(filters: FilterOptions, take?: number) {
+  const session = await auth();
+
+  const where: any = {
+    status: 'ACTIVE',
+    user: {
+      NOT: {
+        status: 'BANNED',
+      },
+    },
+  };
+
+  if (filters.difficulty) {
+    where.difficulty = filters.difficulty;
+  }
+
+  if (filters.language) {
+    where.language = filters.language;
+  }
+
+  if (filters.tag) {
+    where.tags = { some: { tag: filters.tag } };
+  }
+
+  if (filters.query) {
+    where.OR = [
+      { name: { contains: filters.query, mode: 'insensitive' } },
+      { slug: { contains: filters.query, mode: 'insensitive' } },
+    ];
+  }
+
+  return prisma.challenge.findMany({
+    where,
+    include: {
+      _count: {
+        select: { vote: true, comment: true },
+      },
+      user: {
+        select: {
+          name: true,
+        },
+      },
+      submission: {
+        where: {
+          userId: session?.user?.id || '',
+          isSuccessful: true,
+        },
+        take: 1,
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+    ...(take && {
+      take,
+    }),
+  });
+}
 
 /**
  * Fetches challenges either by tag or difficulty.

@@ -1,9 +1,0 @@
-{
-  "id": "cat-elixir-intro",
-  "label": "Функциональный кот на Elixir",
-  "description": "Погрузитесь в функциональное программирование через котов на Elixir.",
-  "difficulty": "easy",
-  "language": "ELIXIR",
-  "prerequisites": [],
-  "author": "ЛитКот"
-}
