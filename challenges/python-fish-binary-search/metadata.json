@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-binary-search",
+  "label": "Прятки с сосиской (Binary Search)",
+  "description": "Найди спрятанную сосиску в отсортированном шкафу за минимальное время.",
+  "difficulty": "easy",
+  "language": "python",
+  "author": "ЛитКот"
+}

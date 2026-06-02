@@ -1,9 +1,0 @@
-{
-  "id": "cat-javascript-basics",
-  "label": "Кот JavaScript: Основы",
-  "description": "Начните работать с JavaScript на примере кошачьих функций.",
-  "difficulty": "beginner",
-  "language": "JAVASCRIPT",
-  "prerequisites": [],
-  "author": "ЛитКот"
-}

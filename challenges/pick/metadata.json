@@ -1,8 +1,0 @@
-{
-  "id": "pick",
-  "label": "Выбор кота (Pick)",
-  "description": "Научитесь выбирать нужные характеристики из кошачьего объекта с помощью Pick.",
-  "difficulty": "easy",
-  "prerequisites": ["primitive-data-types"],
-  "author": "ЛитКот"
-}

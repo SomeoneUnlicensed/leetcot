@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-heap",
+  "label": "Очередь за кормом (Priority Queue)",
+  "description": "Помоги организовать очередь котов по их голоду.",
+  "difficulty": "medium",
+  "language": "python",
+  "author": "ЛитКот"
+}

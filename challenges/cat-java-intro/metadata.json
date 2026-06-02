@@ -1,9 +1,0 @@
-{
-  "id": "cat-java-intro",
-  "label": "Кошачья Java: Первый Класс",
-  "description": "Изучите основы Java, создав свой первый кошачий класс.",
-  "difficulty": "beginner",
-  "language": "JAVA",
-  "prerequisites": [],
-  "author": "ЛитКот"
-}

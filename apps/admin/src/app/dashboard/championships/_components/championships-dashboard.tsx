@@ -39,68 +39,7 @@ interface Championship {
   challengesCount: number;
 }
 
-const DEFAULT_CHAMPIONSHIPS: Championship[] = [
-  {
-    id: 'ch-1',
-    name: 'Кубок Рыжего Кота 🐱🏆',
-    slug: 'red-cat-cup',
-    description: 'Главное соревнование весны по алгоритмам на C++ и JavaScript для котиков всех уровней.',
-    prizePool: '150 000 ₽',
-    startDate: '2026-05-15',
-    endDate: '2026-05-25',
-    status: 'ACTIVE',
-    participantsCount: 342,
-    challengesCount: 12,
-  },
-  {
-    id: 'ch-2',
-    name: 'Летний Хакатон ЛитКот 2026 ☀️',
-    slug: 'summer-hackathon-2026',
-    description: 'Разработка кошачьих веб-приложений и ботов с использованием современных технологий.',
-    prizePool: '250 000 ₽',
-    startDate: '2026-06-01',
-    endDate: '2026-06-05',
-    status: 'UPCOMING',
-    participantsCount: 120,
-    challengesCount: 8,
-  },
-  {
-    id: 'ch-3',
-    name: 'Кошачий парный кодинг 🐾',
-    slug: 'cat-pair-coding',
-    description: 'Экстремальное парное программирование. Решайте задачи вместе с напарником быстрее всех!',
-    prizePool: '100 000 ₽',
-    startDate: '2026-05-18',
-    endDate: '2026-05-22',
-    status: 'ACTIVE',
-    participantsCount: 250,
-    challengesCount: 6,
-  },
-  {
-    id: 'ch-4',
-    name: 'Весенний спринт 2026 🌱',
-    slug: 'spring-sprint-2026',
-    description: 'Быстрые алгоритмические задачки на скорость. Кто соберет больше всего рыбок за неделю?',
-    prizePool: '50 000 ₽',
-    startDate: '2026-04-10',
-    endDate: '2026-04-17',
-    status: 'FINISHED',
-    participantsCount: 890,
-    challengesCount: 15,
-  },
-  {
-    id: 'ch-5',
-    name: 'Новогодний марафон 2025 🎄',
-    slug: 'new-year-marathon-2025',
-    description: 'Зимнее приключение: 30 дней, 30 кошачьих задач. Победители получили годовую подписку!',
-    prizePool: 'Подарки & Мерч 🎁',
-    startDate: '2025-12-01',
-    endDate: '2025-12-31',
-    status: 'FINISHED',
-    participantsCount: 1540,
-    challengesCount: 30,
-  }
-];
+const DEFAULT_CHAMPIONSHIPS: Championship[] = [];
 
 export function ChampionshipDashboard() {
   const [championships, setChampionships] = useState<Championship[]>(() => {

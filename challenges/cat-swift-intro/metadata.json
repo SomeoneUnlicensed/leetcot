@@ -1,9 +1,0 @@
-{
-  "id": "cat-swift-intro",
-  "label": "Swift кот: Безопасность типов",
-  "description": "Освойте Swift, создав кошачий класс с использованием современных возможностей языка.",
-  "difficulty": "easy",
-  "language": "SWIFT",
-  "prerequisites": [],
-  "author": "ЛитКот"
-}

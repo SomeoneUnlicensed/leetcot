@@ -1,9 +1,0 @@
-{
-  "id": "cat-cpp-intro",
-  "label": "Котик на C++: STL для котов",
-  "description": "Изучите основы C++ и STL, создав структуру данных для котов.",
-  "difficulty": "easy",
-  "language": "CPP",
-  "prerequisites": [],
-  "author": "ЛитКот"
-}

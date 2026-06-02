@@ -1,9 +1,0 @@
-{
-  "id": "cat-php-intro",
-  "label": "Кошачий PHP: Web для котов",
-  "description": "Создайте кошачий веб-скрипт на PHP для обработки кошачьих данных.",
-  "difficulty": "beginner",
-  "language": "PHP",
-  "prerequisites": [],
-  "author": "ЛитКот"
-}

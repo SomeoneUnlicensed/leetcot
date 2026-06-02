@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-tree",
+  "label": "Высота Дерева (Binary Tree)",
+  "description": "Посчитай, на какую максимальную высоту залез кот.",
+  "difficulty": "medium",
+  "language": "python",
+  "author": "ЛитКот"
+}

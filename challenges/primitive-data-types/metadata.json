@@ -1,8 +1,0 @@
-{
-  "id": "primitive-data-types",
-  "label": "Примитивные типы (кошачьи основы)",
-  "description": "Ваше путешествие в TypeScript начинается с базовых кошачьих типов.",
-  "difficulty": "beginner",
-  "prerequisites": [],
-  "author": "ЛитКот"
-}
