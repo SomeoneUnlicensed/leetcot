@@ -1,5 +1,5 @@
 import { prisma } from '@repo/db';
-import { getServerSession } from 'next-auth';
+import { auth } from '~/server/auth';
 import { NextResponse } from 'next/server';
 
 export async function PUT(
@@ -7,7 +7,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession();
+    const session = await auth();
 
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -90,7 +90,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession();
+    const session = await auth();
 
     if (!session?.user?.email) {
       return NextResponse.json(

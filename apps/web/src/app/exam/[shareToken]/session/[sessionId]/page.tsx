@@ -167,6 +167,15 @@ export default function ExamSessionPage() {
   }
 
   const currentQuestion = session.exam.questions[currentQuestionIndex];
+
+  if (!currentQuestion) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg">Ошибка: вопрос не найден</p>
+      </div>
+    );
+  }
+
   const currentAnswer = answers[currentQuestion.id] || '';
   const totalQuestions = session.exam.questions.length;
   const answeredCount = Object.keys(answers).length;
