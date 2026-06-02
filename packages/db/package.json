@@ -35,12 +35,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@prisma/client": "5.21.1"
+    "@prisma/client": "5.21.1",
+    "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.0.2",
     "@repo/lint": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.4.2",
     "dotenv-cli": "^7.2.1",
     "eslint": "^8.57.0",

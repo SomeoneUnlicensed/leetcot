@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui/components/select';
 import { Input } from '@repo/ui/components/input';
-import { Search } from '@repo/ui/icons';
+import { SearchIcon } from '@repo/ui/icons';
 
 export function ExploreFilterBar() {
   const router = useRouter();
@@ -30,7 +30,7 @@ export function ExploreFilterBar() {
   return (
     <div className="container flex flex-col gap-4 md:flex-row md:items-center md:justify-between py-6">
       <div className="flex flex-1 items-center gap-2 max-w-md relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
         <Input
           placeholder="Поиск задачек..."
           className="pl-10 bg-zinc-900/50 border-zinc-800 focus:border-pink-500/50"
