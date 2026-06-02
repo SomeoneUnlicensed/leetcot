@@ -419,7 +419,7 @@ model Comment {
   text          String    @db.Text
   visible       Boolean   @default(true)
   parentId      Int?
-  parentComment Comment?  @relation("reply_comments", fields: [parentId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  parentComment Comment?  @relation("reply_comments", fields: [parentId], references: [id], onUpdate: Restrict, onDelete: Restrict)
   replies       Comment[] @relation("reply_comments")
 
   userId String
