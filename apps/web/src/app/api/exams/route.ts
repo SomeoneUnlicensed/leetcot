@@ -1,11 +1,11 @@
 import { prisma } from '@repo/db';
-import { getServerSession } from 'next-auth';
+import { auth } from '~/server/auth';
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function GET(req: Request) {
   try {
-    const session = await getServerSession();
+    const session = await auth();
 
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -59,7 +59,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession();
+    const session = await auth();
 
     if (!session?.user?.email) {
       return NextResponse.json(

@@ -136,12 +136,20 @@ export async function PUT(
             // Parse correct answers (could be array or JSON)
             let correctAnswerIndices: number[] = [];
             if (Array.isArray(question.correctAnswers)) {
-              correctAnswerIndices = question.correctAnswers as number[];
+              correctAnswerIndices = question.correctAnswers.map((v: any) => Number(v));
+            } else if (typeof question.correctAnswers === 'number') {
+              correctAnswerIndices = [question.correctAnswers];
             } else {
               try {
-                correctAnswerIndices = JSON.parse(question.correctAnswers as string);
+                const parsed = JSON.parse(question.correctAnswers as string);
+                correctAnswerIndices = Array.isArray(parsed)
+                  ? (parsed as any[]).map((v: any) => Number(v))
+                  : [Number(parsed)];
               } catch {
-                correctAnswerIndices = [question.correctAnswers];
+                const parsed = parseInt(question.correctAnswers as string);
+                if (!isNaN(parsed)) {
+                  correctAnswerIndices = [parsed];
+                }
               }
             }
 

@@ -1,6 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { type Prisma } from '@prisma/client';
-import { trashId } from '../seed/dev';
+import uuidByString from 'uuid-by-string';
+
+const trashId = uuidByString('trash-user');
 
 const catComments = [
   'Отличная задачка! Решил через рекурсию 🐾',
