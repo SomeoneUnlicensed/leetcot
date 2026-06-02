@@ -1,24 +1,26 @@
-name: Deploy Production on Release
+name: Deploy Production on Push
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main # Срабатывает при каждом коммите/мерже в ветку main
 
 jobs:
   deploy:
-    runs-on: self-hosted # ВОТ ОНО. Никаких SSH-экшенов, Гитхаб отдаст команду твоему серверу.
+    runs-on: self-hosted
 
     steps:
-      # Этот экшен сам поймет, какой тег релиза был нажат, и скачает именно его код
       - name: Checkout code
         uses: actions/checkout@v4
         
-      # Собираем и поднимаем докер прямо в рабочей папке раннера на сервере
+      # Копируем .env из сейфа раннера в корень свежескачанного кода
+      - name: Copy .env file
+        run: cp /home/user1/actions-runner/.env ./.env
+        
+      # Собираем и поднимаем докер-контейнеры
       - name: Build and start Docker containers
-        run: |
-          sudo docker compose up -d --build
+        run: docker compose up -d --build
           
-      # Сносим старый мусор, чтобы сервер не задохнулся по диску
+      # Чистим старые образы, чтобы при частых коммитах не забить диск сервера
       - name: Clean up unused Docker images
-        run: |
-          sudo docker image prune -f
+        run: docker image prune -f
