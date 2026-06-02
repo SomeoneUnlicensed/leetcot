@@ -118,7 +118,8 @@ export function Titles(props: { data: TitleInfo[] }) {
   return (
     <div className="flex flex-row flex-wrap gap-2">
       {props.data.map((t) => {
-        const Icon = TITLE_TO_ICON[t.type];
+        const Icon = TITLE_TO_ICON[t.type] as React.ElementType;
+        if (!Icon) return null;
         return (
           <Tooltip key={t.type}>
             <TooltipTrigger asChild>
@@ -139,7 +140,8 @@ function Badges(props: { data: BadgeInfo[] }) {
   return (
     <div className="flex flex-row space-x-[-15px]">
       {props.data.map((b) => {
-        const Icon = SlugToBadgeIcon[b.slug];
+        const Icon = SlugToBadgeIcon[b.slug] as React.ElementType;
+        if (!Icon) return null;
         return <Icon className="h-10 w-10" key={b.slug} />;
       })}
     </div>

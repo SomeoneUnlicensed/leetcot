@@ -15,9 +15,11 @@ import { NextBack } from './NextBack';
 import { Summary } from './Summary';
 import { TestCasesEditor } from './TestCasesEditor';
 import { uploadChallenge } from './create.action';
-import DEFAULT_CHALLENGE_TEMPLATE from './default-challenge.md';
-import DEFAULT_TEST_CASES from './default-tests.md';
-import DEFAULT_DESCRIPTION from './default-description.md';
+import {
+  DEFAULT_CHALLENGE_TEMPLATE,
+  DEFAULT_TEST_CASES,
+  DEFAULT_DESCRIPTION,
+} from './templates';
 import {
   createNoProfanitySchema,
   createNoProfanitySchemaWithValidate,
