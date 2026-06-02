@@ -1,9 +1,8 @@
-name: Deploy to Production
+name: Deploy Production on Release
 
 on:
-  push:
-    branches:
-      - main # Замени на нужную ветку, если релизы идут не из main
+  release:
+    types: [published] # Экшен сработает ТОЛЬКО при нажатии "Publish release" в GitHub
 
 jobs:
   deploy:
@@ -19,12 +18,14 @@ jobs:
           script: |
             cd /var/www/leetcot.ru/html
             
-            # Стягиваем последние изменения
-            git pull origin main
+            # Скачиваем информацию о новых тегах и изменениях из репы
+            git fetch --all --tags
             
-            # Пересобираем и перезапускаем Докер-контейнеры в фоне
-            # Turborepo сам закэширует то, что не изменилось
+            # Принудительно переключаем код на сервере на тег этого релиза (например, v1.0.1)
+            git checkout ${{ github.event.release.tag_name }}
+            
+            # Собираем контейнеры и запускаем (Turborepo сам закэширует зависимости)
             sudo docker compose up -d --build
             
-            # Очищаем старые неиспользуемые образы Докера, чтобы не забить диск
+            # Удаляем старые ненужные образы Докера, чтобы не забить диск виртуалки
             sudo docker image prune -f
