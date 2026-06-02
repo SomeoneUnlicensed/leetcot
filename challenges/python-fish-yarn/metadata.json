@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-yarn",
+  "label": "Распутывание Клубка (Reverse Linked List)",
+  "description": "Разверни связный список, как если бы ты разматывал клубок ниток.",
+  "difficulty": "medium",
+  "language": "python",
+  "author": "ЛитКот"
+}

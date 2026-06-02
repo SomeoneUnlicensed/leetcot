@@ -1,9 +1,0 @@
-{
-  "id": "cat-go-intro",
-  "label": "Быстрый как Кот: Введение в Go",
-  "description": "Изучите основы Go, создавая быстрые кошачьи структуры.",
-  "difficulty": "easy",
-  "language": "GO",
-  "prerequisites": [],
-  "author": "ЛитКот"
-}

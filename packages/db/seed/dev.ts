@@ -1,11 +1,8 @@
-import { faker } from '@faker-js/faker';
-import { PrismaClient, type Prisma } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import uuidByString from 'uuid-by-string';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ingestChallenges } from './data/challenge-ingest';
-import { createComment } from '../mocks/comment.mock';
-import { createUsers } from '../mocks/user.mock';
 import { tracks } from './data/tracks';
 import { courses } from './data/courses';
 import bcrypt from 'bcryptjs';
@@ -17,234 +14,193 @@ const challengePath = path.join(__dirname, '../../../challenges');
 const prisma = new PrismaClient();
 
 export const slugify = (str: string) => str.toLowerCase().replace(/\s/g, '-');
-export const trashId = uuidByString('trash');
-export const gId = uuidByString('g');
 
-const solutionTitles = [
-  'Решение через рекурсию',
-  'Итеративный подход',
-  'Используя mapped types',
-  'Решение с conditional types',
-  'Простое решение',
-  'Оптимальный вариант',
-  'Через infer и template literals',
-  'С помощью generic constraints',
-  'Кошачье решение 🐱',
-  'Минималистичный подход',
-];
+async function main() {
+  const args = process.argv.slice(2);
+  const emailArg = args.find(arg => arg.startsWith('--email='));
+  const passwordArg = args.find(arg => arg.startsWith('--password='));
 
-const solutionDescs = [
-  'Использовал рекурсивные типы для обхода вложенных структур.',
-  'Простой и понятный подход без лишних усложнений.',
-  'Ключевая идея — conditional types и infer.',
-  'Решение основано на mapped types с фильтрацией ключей.',
-  'Нашёл элегантный способ через template literal types.',
-  'Применил distributive conditional types для обработки union.',
-];
+  if (!emailArg || !passwordArg) {
+    console.error('Ошибка: Необходимо указать email и пароль админа.');
+    console.error('Пример: pnpm db:seed -- --email=admin@leetcot.ru --password=my-secure-password');
+    process.exit(1);
+  }
 
-function alotOfSharedSolutions(challengeId: number) {
-  return Array.from({ length: 50 }, (_, i) => ({
-    challengeId,
-    title: solutionTitles[i % solutionTitles.length]!,
-    description: solutionDescs[i % solutionDescs.length]!,
-  }));
-}
+  const adminEmail = emailArg.split('=')[1];
+  const adminPassword = passwordArg.split('=')[1];
 
-try {
-  const TYPEHERO_ID = uuidByString('typehero');
+  if (!adminEmail || !adminPassword) {
+    console.error('Ошибка: Некорректный формат email или пароля.');
+    process.exit(1);
+  }
 
-  const adminRole = await prisma.role.upsert({
-    where: { role: 'ADMIN' },
-    update: {},
-    create: { role: 'ADMIN' },
-  });
+  console.log('--- Начало сидирования ---');
 
-  const userRole = await prisma.role.upsert({
-    where: { role: 'USER' },
-    update: {},
-    create: { role: 'USER' },
-  });
+  try {
+    const TYPEHERO_ID = uuidByString(adminEmail);
 
-  const typeHeroUser = await prisma.user.upsert({
-    where: { id: TYPEHERO_ID },
-    update: {
-      password: bcrypt.hashSync('admin123', 10),
-      roles: {
-        connect: [
-          { id: adminRole.id },
-          { id: userRole.id },
-        ],
-      },
-    },
-    create: {
-      id: TYPEHERO_ID,
-      email: 'admin@leetcot.ru',
-      name: 'ЛитКот',
-      password: bcrypt.hashSync('admin123', 10),
-      roles: {
-        connect: [
-          { id: adminRole.id },
-          { id: userRole.id },
-        ],
-      },
-    },
-  });
-
-  await prisma.user.createMany({
-    data: createUsers(15),
-  });
-
-  const localChallenges = await ingestChallenges(challengePath);
-
-  await prisma.challenge.createMany({
-    data: localChallenges.map(({ author: _, ...challenge }) => ({
-      ...challenge,
-      userId: typeHeroUser.id,
-    })),
-  });
-
-  const createdTracksMap = new Map<string, any>();
-
-  const trackChallengeSlugs: Record<string, string[]> = {
-    'crafting-typescript-utility-types': [
-      'cat-typescript-utility-types',
-      'pick',
-    ],
-    'typescript-wizardry': [
-      'cat-typescript-generics',
-      'default-generic-arguments',
-    ],
-    'javascript-built-in-methods': [
-      'cat-javascript-basics',
-      'index-signatures',
-    ],
-    'understanding-typescript-syntax': [
-      'type-aliases',
-      'type-unions',
-      'typeof',
-      'literal-types',
-    ],
-    'typescript-foundations': [
-      'generic-function-arguments',
-      'generic-type-arguments',
-      'generic-type-constraints',
-      'indexed-types',
-      'keyof',
-      'primitive-data-types',
-      'mapped-object-types',
-    ],
-    'advent-of-typescript-2023': Array.from({ length: 25 }, (_, i) => `2023-${i + 1}`),
-    'advent-of-typescript-2024': Array.from({ length: 25 }, (_, i) => `2024-${i + 1}`),
-  };
-
-  for (const track of tracks) {
-    const createdTrack = await prisma.track.create({
-      data: {
-        name: track.name,
-        slug: track.slug || slugify(track.name),
-        description: track.description,
-        visible: true,
-      },
+    // 1. Создание ролей
+    const adminRole = await prisma.role.upsert({
+      where: { role: 'ADMIN' },
+      update: {},
+      create: { role: 'ADMIN' },
     });
 
-    createdTracksMap.set(createdTrack.slug, createdTrack);
+    const userRole = await prisma.role.upsert({
+      where: { role: 'USER' },
+      update: {},
+      create: { role: 'USER' },
+    });
 
-    const targetSlugs = trackChallengeSlugs[createdTrack.slug] || [];
-    const challenges = await prisma.challenge.findMany({
-      where: {
-        slug: {
-          in: targetSlugs,
+    // 2. Создание админа
+    const adminUser = await prisma.user.upsert({
+      where: { id: TYPEHERO_ID },
+      update: {
+        email: adminEmail,
+        password: bcrypt.hashSync(adminPassword, 10),
+        roles: {
+          connect: [
+            { id: adminRole.id },
+            { id: userRole.id },
+          ],
+        },
+      },
+      create: {
+        id: TYPEHERO_ID,
+        email: adminEmail,
+        name: 'Админ ЛитКот',
+        password: bcrypt.hashSync(adminPassword, 10),
+        roles: {
+          connect: [
+            { id: adminRole.id },
+            { id: userRole.id },
+          ],
         },
       },
     });
 
-    const orderedChallenges = challenges.sort((a, b) => {
-      return targetSlugs.indexOf(a.slug) - targetSlugs.indexOf(b.slug);
-    });
+    console.log(`Админ создан: ${adminEmail}`);
 
-    await prisma.trackChallenge.createMany({
-      data: orderedChallenges.map((challenge, index) => ({
-        challengeId: challenge.id,
-        trackId: createdTrack.id,
-        orderId: index,
-      })),
-    });
-  }
+    // 3. Импорт задач
+    const localChallenges = await ingestChallenges(challengePath);
+    console.log(`Найдено задач: ${localChallenges.length}`);
 
-  // Seed courses and link tracks to them
-  for (const course of courses) {
-    const createdCourse = await prisma.course.create({
-      data: {
-        name: course.name,
-        slug: course.slug,
-        description: course.description,
-        visible: true,
-      },
-    });
-
-    for (const trackSlug of course.trackSlugs) {
-      const dbTrack = createdTracksMap.get(trackSlug);
-      if (dbTrack) {
-        await prisma.track.update({
-          where: { id: dbTrack.id },
-          data: { courseId: createdCourse.id },
+    for (const challenge of localChallenges) {
+        const { author: _, ...challengeData } = challenge;
+        await prisma.challenge.upsert({
+            where: { slug: challenge.slug },
+            update: {
+                ...challengeData,
+                userId: adminUser.id,
+            },
+            create: {
+                ...challengeData,
+                userId: adminUser.id,
+            }
         });
+    }
+
+    const createdTracksMap = new Map<string, any>();
+
+    const trackChallengeSlugs: Record<string, string[]> = {
+      'python-algo-fishing': [
+        'python-fish-twosum',
+        'python-fish-palindrome',
+        'python-fish-binary-search',
+        'python-fish-stack',
+        'python-fish-sort',
+        'python-fish-sliding-window',
+        'python-fish-yarn',
+        'python-fish-tree',
+        'python-fish-heap',
+        'python-fish-graph',
+        'python-fish-dp',
+        'python-fish-backtracking',
+        'python-fish-dijkstra'
+      ],
+    };
+
+    // 4. Создание треков
+    for (const track of tracks) {
+      const createdTrack = await prisma.track.upsert({
+        where: { slug: track.slug || slugify(track.name) },
+        update: {
+            name: track.name,
+            description: track.description,
+            visible: true,
+        },
+        create: {
+          name: track.name,
+          slug: track.slug || slugify(track.name),
+          description: track.description,
+          visible: true,
+        },
+      });
+
+      createdTracksMap.set(createdTrack.slug, createdTrack);
+
+      const targetSlugs = trackChallengeSlugs[createdTrack.slug] || [];
+      const dbChallenges = await prisma.challenge.findMany({
+        where: {
+          slug: {
+            in: targetSlugs,
+          },
+        },
+      });
+
+      // Clear old connections for this track
+      await prisma.trackChallenge.deleteMany({
+          where: { trackId: createdTrack.id }
+      });
+
+      const orderedChallenges = dbChallenges.sort((a, b) => {
+        return targetSlugs.indexOf(a.slug) - targetSlugs.indexOf(b.slug);
+      });
+
+      await prisma.trackChallenge.createMany({
+        data: orderedChallenges.map((challenge, index) => ({
+          challengeId: challenge.id,
+          trackId: createdTrack.id,
+          orderId: index,
+        })),
+      });
+    }
+
+    // 5. Создание курсов
+    for (const course of courses) {
+      const createdCourse = await prisma.course.upsert({
+        where: { slug: course.slug },
+        update: {
+            name: course.name,
+            description: course.description,
+            visible: true,
+        },
+        create: {
+          name: course.name,
+          slug: course.slug,
+          description: course.description,
+          visible: true,
+        },
+      });
+
+      for (const trackSlug of course.trackSlugs) {
+        const dbTrack = createdTracksMap.get(trackSlug);
+        if (dbTrack) {
+          await prisma.track.update({
+            where: { id: dbTrack.id },
+            data: { courseId: createdCourse.id },
+          });
+        }
       }
     }
+
+    console.log('Сидирование успешно завершено.');
+    await prisma.$disconnect();
+  } catch (e) {
+    console.error('Ошибка при сидировании:', e);
+    await prisma.$disconnect();
+    process.exit(1);
   }
-
-  const someChallenge = await prisma.challenge.findFirst({
-    where: {
-      status: 'ACTIVE',
-    },
-  });
-
-  await prisma.user.upsert({
-    where: { id: trashId },
-    update: {},
-    create: {
-      id: trashId,
-      email: 'chris@leetcot.ru',
-      name: 'chris',
-      sharedSolution: {
-        create: alotOfSharedSolutions(someChallenge?.id ?? 2),
-      },
-    },
-  });
-
-  let commentNum = 0;
-  const comments = Array.from({ length: 50 }, () => createComment(++commentNum));
-
-  const replies: Prisma.CommentCreateManyInput[] = [];
-
-  const { comment: createdComments } = await prisma.challenge.update({
-    where: { id: someChallenge?.id },
-    include: {
-      comment: true,
-    },
-    data: {
-      comment: {
-        create: comments,
-      },
-    },
-  });
-
-  for (const comment of createdComments) {
-    replies.push(createComment(++commentNum, comment.id), createComment(++commentNum, comment.id));
-  }
-
-  await prisma.challenge.update({
-    where: { id: someChallenge?.id },
-    data: {
-      comment: {
-        create: replies,
-      },
-    },
-  });
-
-  await prisma.$disconnect();
-} catch (e) {
-  console.error(e);
-  await prisma.$disconnect();
-  process.exit(1);
 }
+
+main();

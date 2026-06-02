@@ -6,10 +6,14 @@ export const dynamic = 'force-dynamic';
 
 export function generateMetadata(): Metadata {
   return buildMetaForDefault({
-    title: 'Исследовать испытания | ЛитКот',
+    title: 'Исследовать задачки | ЛитКот',
     description:
-      'Исследуйте все испытания по сложности на ЛитКот. Это интерактивные задачи по программированию, которые помогут вам изучить и улучшить свои навыки TypeScript.',
+      'Изучай алгоритмы на Python и TypeScript. Интерактивные задачи с котиками для прокачки навыков программирования.',
   });
 }
 
-export { Explore as default } from './_components';
+import { Explore } from './_components';
+
+export default async function Page({ searchParams }: { searchParams: Promise<any> }) {
+  return <Explore searchParams={searchParams} />;
+}

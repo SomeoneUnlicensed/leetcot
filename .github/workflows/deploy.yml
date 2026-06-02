@@ -3,7 +3,7 @@ name: Deploy Production on Push
 on:
   push:
     branches:
-      - main # Срабатывает при каждом коммите/мерже в ветку main
+      - main
 
 jobs:
   deploy:
@@ -13,14 +13,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         
-      # Копируем .env из сейфа раннера в корень свежескачанного кода
       - name: Copy .env file
         run: cp /home/user1/actions-runner/.env ./.env
         
-      # Собираем и поднимаем докер-контейнеры
-      - name: Build and start Docker containers
-        run: docker compose up -d --build
-          
-      # Чистим старые образы, чтобы при частых коммитах не забить диск сервера
-      - name: Clean up unused Docker images
-        run: docker image prune -f
+      - name: Make deploy script executable
+        run: chmod +x ./tooling/scripts/deploy.sh
+
+      - name: Run deploy script
+        # Передаем email и пароль через секреты GitHub, если они нужны для пересоздания админа при каждом деплое
+        # Либо просто запускаем без них, если база уже просидирована
+        run: ./tooling/scripts/deploy.sh "${{ secrets.ADMIN_EMAIL }}" "${{ secrets.ADMIN_PASSWORD }}"

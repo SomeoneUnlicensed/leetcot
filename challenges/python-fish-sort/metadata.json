@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-sort",
+  "label": "Сортировка улова (QuickSort)",
+  "description": "Помоги коту отсортировать рыбок по весу, чтобы начать с самой крупной!",
+  "difficulty": "medium",
+  "language": "python",
+  "author": "ЛитКот"
+}

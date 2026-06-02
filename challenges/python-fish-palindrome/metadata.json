@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-palindrome",
+  "label": "Кот в Зеркале (Palindrome)",
+  "description": "Проверь, является ли строка зеркальной.",
+  "difficulty": "easy",
+  "language": "python",
+  "author": "ЛитКот"
+}

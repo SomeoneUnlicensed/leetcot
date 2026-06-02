@@ -1,9 +1,0 @@
-{
-  "id": "cat-go-concurrency",
-  "label": "Параллельный Тыгыдык (Channels)",
-  "description": "Организуй многопоточную очередь кормления голодных котов",
-  "difficulty": "hard",
-  "language": "GO",
-  "prerequisites": ["cat-go-intro"],
-  "author": "ЛитКот"
-}

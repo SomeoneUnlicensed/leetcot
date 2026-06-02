@@ -1,30 +1,11 @@
 import {
-  Tooltip,
-  TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
 } from '@repo/ui/components/tooltip';
-
-import {
-  HolidayBronzeBadge,
-  HolidayGoldBadge,
-  HolidayPlatinumBadge,
-  HolidaySilverBadge,
-} from './aot-badges/aot-2023-badge';
 import type { BadgeInfo } from '../user-info';
 import type { FC } from 'react';
-import { BronzeBadge, GoldBadge, PlatinumBadge, SilverBadge } from './aot-badges/aot-2024-badges';
 
-export const SlugToBadgeIcon: Record<BadgeInfo['slug'], FC<{ className: string }>> = {
-  'aot-2023-bronze': HolidayBronzeBadge,
-  'aot-2023-silver': HolidaySilverBadge,
-  'aot-2023-gold': HolidayGoldBadge,
-  'aot-2023-platinum': HolidayPlatinumBadge,
-  'aot-2024-bronze': BronzeBadge,
-  'aot-2024-silver': SilverBadge,
-  'aot-2024-gold': GoldBadge,
-  'aot-2024-platinum': PlatinumBadge,
-};
+export const SlugToBadgeIcon: Record<BadgeInfo['slug'], FC<{ className: string }>> = {};
+
 export function Badges(props: { data: BadgeInfo[] }) {
   return (
     <div>
@@ -39,20 +20,13 @@ function BadgesStuff(props: { data: BadgeInfo[] }) {
   return (
     <div className="mx-auto grid w-fit grid-cols-4 gap-4  ">
       {props.data.map((b) => {
-        const Icon = SlugToBadgeIcon[b.slug];
+        // Fallback for icons if any badges are still passed
         return (
-          <Tooltip key={b.slug}>
-            <TooltipTrigger>
-              <Icon className="h-16 w-16" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{b.name}</p>
-            </TooltipContent>
-          </Tooltip>
+          <div key={b.slug} className="h-16 w-16 bg-muted rounded-full" title={b.name} />
         );
       })}
       {props.data.length < 12
-        ? Array.from({ length: 12 - props.data.length }).map((i) => (
+        ? Array.from({ length: 12 - props.data.length }).map((_, i) => (
             <EmptyBadge key={`empty-badge-${i}`} />
           ))
         : null}

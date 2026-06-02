@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-backtracking",
+  "label": "Девять жизней (Permutations)",
+  "description": "Найди все возможные комбинации путей для кота.",
+  "difficulty": "hard",
+  "language": "python",
+  "author": "ЛитКот"
+}

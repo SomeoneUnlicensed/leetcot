@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-graph",
+  "label": "Путь к Миске (BFS)",
+  "description": "Помоги коту найти кратчайший путь к еде в лабиринте комнат.",
+  "difficulty": "medium",
+  "language": "python",
+  "author": "ЛитКот"
+}

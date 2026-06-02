@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-stack",
+  "label": "Скобочный Тыгыдык (Stack)",
+  "description": "Проверь, правильно ли расставлены миски и крышки в шкафу.",
+  "difficulty": "easy",
+  "language": "python",
+  "author": "ЛитКот"
+}

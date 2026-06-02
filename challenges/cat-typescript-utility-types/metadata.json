@@ -1,9 +1,0 @@
-{
-  "id": "cat-typescript-utility-types",
-  "label": "Кот TypeScript: Утилиты",
-  "description": "Освойте встроенные утилиты TypeScript для работы с типами котов.",
-  "difficulty": "medium",
-  "language": "TYPESCRIPT",
-  "prerequisites": ["cat-typescript-generics"],
-  "author": "ЛитКот"
-}

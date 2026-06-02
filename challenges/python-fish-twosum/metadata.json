@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-twosum",
+  "label": "Пара рыбок (Two Sum)",
+  "description": "Найди двух рыбок, чей суммарный вес равен цели.",
+  "difficulty": "easy",
+  "language": "python",
+  "author": "ЛитКот"
+}
