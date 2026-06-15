@@ -3,7 +3,7 @@ import { auth } from '~/server/auth';
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 
-export async function GET(_req: Request) {
+export async function GET(_req: Request): Promise<NextResponse> {
   try {
     const session = await auth();
 
@@ -51,7 +51,7 @@ export async function GET(_req: Request) {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<NextResponse> {
   try {
     const session = await auth();
 
