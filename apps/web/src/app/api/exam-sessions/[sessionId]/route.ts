@@ -19,7 +19,7 @@ const SubmitExamSchema = z.object({
 const PutRequestSchema = z.union([SaveAnswerSchema, SubmitExamSchema]);
 
 // GET - Get session and current progress
-export async function GET(req: Request, { params }: { params: { sessionId: string } }) {
+export async function GET(req: Request, { params }: { params: { sessionId: string } }): Promise<NextResponse> {
   try {
     const session = await prisma.examSession.findUnique({
       where: { id: params.sessionId },
@@ -67,7 +67,7 @@ export async function GET(req: Request, { params }: { params: { sessionId: strin
 }
 
 // PUT - Save answer(s) or submit exam
-export async function PUT(req: Request, { params }: { params: { sessionId: string } }) {
+export async function PUT(req: Request, { params }: { params: { sessionId: string } }): Promise<NextResponse> {
   try {
     const body = await req.json();
 
