@@ -12,7 +12,7 @@ const CreateSessionSchema = z.object({
 });
 
 // POST - Create a new exam session
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<NextResponse> {
   try {
     const body = await req.json();
 
