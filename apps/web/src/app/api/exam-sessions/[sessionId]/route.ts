@@ -237,6 +237,8 @@ export async function PUT(req: Request, { params }: { params: { sessionId: strin
         answer: existingAnswer,
       });
     }
+
+    return NextResponse.json({ error: 'Некорректное действие.' }, { status: 400 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
