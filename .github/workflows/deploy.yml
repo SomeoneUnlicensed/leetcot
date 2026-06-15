@@ -34,10 +34,6 @@ jobs:
       - name: Apply database migrations
         run: docker compose exec -T app npx prisma db push --accept-data-loss
 
-      - name: Seed database with admin credentials
-        if: ${{ secrets.ADMIN_EMAIL != '' && secrets.ADMIN_PASSWORD != '' }}
-        run: |
-          docker compose exec -T app pnpm db:seed -- --email="${{ secrets.ADMIN_EMAIL }}" --password="${{ secrets.ADMIN_PASSWORD }}"
 
       - name: Clean up unused Docker images
         run: docker image prune -f
