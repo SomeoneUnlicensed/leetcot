@@ -48,7 +48,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 const withVercelToolbar = vercelToolbar();
 
 // In turbopack (dev) mode: skip million compiler (webpack-only)
-// In webpack (prod) mode: apply million for optimization
+/** @param {any} config */
 const withPlugins = (config) =>
   isTurbopack
     ? withBundleAnalyzer(withVercelToolbar(config))
