@@ -172,7 +172,7 @@ export const getChallengeRouteData = cache(async (slug: string, session: Session
     nextChallenge,
   };
 });
-export const getCurrentChallenge = cache((slug: string, session: Session | null) => {
+const getCurrentChallenge = cache((slug: string, session: Session | null) => {
   return prisma.challenge.findFirstOrThrow({
     where: {
       slug,
