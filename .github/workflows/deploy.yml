@@ -10,6 +10,18 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      - name: Free disk space before build
+        run: |
+          echo "=== Disk before cleanup ==="
+          df -h /
+          docker image prune -a -f || true
+          docker builder prune -a -f || true
+          docker volume prune -f || true
+          sudo journalctl --vacuum-size=30M || true
+          sudo apt-get clean || true
+          echo "=== Disk after cleanup ==="
+          df -h /
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -26,15 +38,18 @@ jobs:
         run: docker compose pull
 
       - name: Build and start containers
-        run: docker compose up -d --build
+        run: docker compose up -d --build --remove-orphans
 
       - name: Wait for database readiness
-        run: sleep 5
+        run: sleep 8
 
       - name: Apply database migrations
         run: docker compose exec -T app npx prisma db push --accept-data-loss
 
-
-      - name: Clean up unused Docker images
-        run: docker image prune -f
-
+      - name: Clean up build artifacts
+        if: always()
+        run: |
+          docker image prune -f || true
+          docker builder prune -a -f || true
+          echo "=== Disk after deploy ==="
+          df -h /
