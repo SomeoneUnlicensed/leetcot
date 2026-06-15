@@ -12,14 +12,33 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
-      - name: Copy .env file
-        run: cp /home/user1/actions-runner/.env ./.env
-        
-      - name: Make deploy script executable
-        run: chmod +x ./tooling/scripts/deploy.sh
 
-      - name: Run deploy script
-        # Передаем email и пароль через секреты GitHub, если они нужны для пересоздания админа при каждом деплое
-        # Либо просто запускаем без них, если база уже просидирована
-        run: ./tooling/scripts/deploy.sh "${{ secrets.ADMIN_EMAIL }}" "${{ secrets.ADMIN_PASSWORD }}"
+      - name: Copy .env file
+        run: |
+          if [ -f /home/user1/actions-runner/.env ]; then
+            cp /home/user1/actions-runner/.env ./.env
+          else
+            echo "❌ Error: Host .env file not found!"
+            exit 1
+          fi
+
+      - name: Pull Docker images
+        run: docker compose pull
+
+      - name: Build and start containers
+        run: docker compose up -d --build
+
+      - name: Wait for database readiness
+        run: sleep 5
+
+      - name: Apply database migrations
+        run: docker compose exec -T app npx prisma db push --accept-data-loss
+
+      - name: Seed database with admin credentials
+        if: ${{ secrets.ADMIN_EMAIL != '' && secrets.ADMIN_PASSWORD != '' }}
+        run: |
+          docker compose exec -T app pnpm db:seed -- --email="${{ secrets.ADMIN_EMAIL }}" --password="${{ secrets.ADMIN_PASSWORD }}"
+
+      - name: Clean up unused Docker images
+        run: docker image prune -f
+
