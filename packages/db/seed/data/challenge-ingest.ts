@@ -7,6 +7,7 @@ const defaultExcludes = ['blank', 'solutions', 'aot'];
 export async function ingestChallenges(
   challengePath: string,
   excludes = defaultExcludes,
+  isRoot = true,
 ): Promise<(Prisma.ChallengeCreateManyInput & { author: string })[]> {
   const challengesToCreate: (Prisma.ChallengeCreateManyInput & { author: string })[] = [];
 
@@ -18,24 +19,23 @@ export async function ingestChallenges(
 
       // Skip items that are excluded.
       if (excludes.some((x) => itemPath.includes(x))) {
-        console.log('Skipping:', itemPath);
         continue;
       }
 
       const stats = await fs.promises.stat(itemPath);
 
       if (stats.isDirectory()) {
-        // Recursively ingest challenges from subdirectories.
-        const nestedChallenges = await ingestChallenges(itemPath, excludes);
-        challengesToCreate.push(...nestedChallenges);
-      } else if (stats.isFile()) {
-        // Process individual files as part of a challenge.
-        const challengeToCreate = await buildChallenge(challengePath, excludes);
-        // only valid challenges will have a slug
-        if (challengeToCreate?.slug) {
-          challengesToCreate.push(challengeToCreate);
+        if (isRoot) {
+          // In root directory, treat each subdirectory as a potential challenge
+          const challengeToCreate = await buildChallenge(itemPath, excludes);
+          if (challengeToCreate?.slug) {
+            challengesToCreate.push(challengeToCreate);
+          }
+        } else {
+          // Recursively ingest challenges from deeper subdirectories if needed
+          const nestedChallenges = await ingestChallenges(itemPath, excludes, false);
+          challengesToCreate.push(...nestedChallenges);
         }
-        break; // Exit after processing files for a challenge.
       }
     }
   } catch (error) {

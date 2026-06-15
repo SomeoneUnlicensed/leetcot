@@ -2,18 +2,12 @@ import { prisma } from '@repo/db';
 import { auth } from '~/server/auth';
 import { NextResponse } from 'next/server';
 
-export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: Request, { params }: { params: { id: string } }) {
   try {
     const session = await auth();
 
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Мяу! Нужно авторизоваться.' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Мяу! Нужно авторизоваться.' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
@@ -21,10 +15,7 @@ export async function PUT(
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'Котик не найден.' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Котик не найден.' }, { status: 404 });
     }
 
     const question = await prisma.examQuestion.findUnique({
@@ -35,29 +26,18 @@ export async function PUT(
     });
 
     if (!question) {
-      return NextResponse.json(
-        { error: 'Вопрос не найден.' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Вопрос не найден.' }, { status: 404 });
     }
 
     // Check if user is the teacher of this exam
     if (question.exam.teacherId !== user.id) {
       return NextResponse.json(
         { error: 'Мяу! Нет прав доступа к этому вопросу.' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
-    const {
-      type,
-      content,
-      order,
-      points,
-      language,
-      options,
-      correctAnswers,
-    } = await req.json();
+    const { type, content, order, points, language, options, correctAnswers } = await req.json();
 
     const updatedQuestion = await prisma.examQuestion.update({
       where: { id: params.id },
@@ -80,23 +60,17 @@ export async function PUT(
     console.error('Update question error:', error);
     return NextResponse.json(
       { error: 'Что-то пошло не так при обновлении вопроса.' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
   try {
     const session = await auth();
 
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Мяу! Нужно авторизоваться.' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Мяу! Нужно авторизоваться.' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
@@ -104,10 +78,7 @@ export async function DELETE(
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'Котик не найден.' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Котик не найден.' }, { status: 404 });
     }
 
     const question = await prisma.examQuestion.findUnique({
@@ -118,17 +89,14 @@ export async function DELETE(
     });
 
     if (!question) {
-      return NextResponse.json(
-        { error: 'Вопрос не найден.' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Вопрос не найден.' }, { status: 404 });
     }
 
     // Check if user is the teacher of this exam
     if (question.exam.teacherId !== user.id) {
       return NextResponse.json(
         { error: 'Мяу! Нет прав доступа к этому вопросу.' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -143,7 +111,7 @@ export async function DELETE(
     console.error('Delete question error:', error);
     return NextResponse.json(
       { error: 'Что-то пошло не так при удалении вопроса.' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

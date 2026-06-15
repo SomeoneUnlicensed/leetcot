@@ -2,7 +2,13 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui/components/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@repo/ui/components/select';
 import { Input } from '@repo/ui/components/input';
 import { SearchIcon } from '@repo/ui/icons';
 
@@ -28,29 +34,29 @@ export function ExploreFilterBar() {
   };
 
   return (
-    <div className="container flex flex-col gap-4 md:flex-row md:items-center md:justify-between py-6">
-      <div className="flex flex-1 items-center gap-2 max-w-md relative">
-        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+    <div className="container flex flex-col gap-4 py-6 md:flex-row md:items-center md:justify-between">
+      <div className="relative flex max-w-md flex-1 items-center gap-2">
+        <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
         <Input
           placeholder="Поиск задачек..."
-          className="pl-10 bg-zinc-900/50 border-zinc-800 focus:border-pink-500/50"
+          className="border-zinc-800 bg-zinc-900/50 pl-10 focus:border-pink-500/50"
           defaultValue={searchParams.get('query') ?? ''}
           onChange={(e) => {
             // Debounce would be better here, but for now simple change
             const query = e.target.value;
-             // Simple delay to avoid too many redirects
-             const timeoutId = setTimeout(() => onFilterChange('query', query), 500);
-             return () => clearTimeout(timeoutId);
+            // Simple delay to avoid too many redirects
+            const timeoutId = setTimeout(() => onFilterChange('query', query), 500);
+            return () => clearTimeout(timeoutId);
           }}
         />
       </div>
-      
+
       <div className="flex flex-wrap items-center gap-3">
         <Select
           defaultValue={searchParams.get('language') ?? 'ALL'}
           onValueChange={(v) => onFilterChange('language', v)}
         >
-          <SelectTrigger className="w-[140px] bg-zinc-900/50 border-zinc-800">
+          <SelectTrigger className="w-[140px] border-zinc-800 bg-zinc-900/50">
             <SelectValue placeholder="Язык" />
           </SelectTrigger>
           <SelectContent>
@@ -66,7 +72,7 @@ export function ExploreFilterBar() {
           defaultValue={searchParams.get('difficulty') ?? 'ALL'}
           onValueChange={(v) => onFilterChange('difficulty', v)}
         >
-          <SelectTrigger className="w-[140px] bg-zinc-900/50 border-zinc-800">
+          <SelectTrigger className="w-[140px] border-zinc-800 bg-zinc-900/50">
             <SelectValue placeholder="Сложность" />
           </SelectTrigger>
           <SelectContent>

@@ -10,12 +10,14 @@ import { useChallengeRouteData } from '../[slug]/challenge-route-data.hook';
 interface ChallengeLayoutWrapperProps {
   challenge: ChallengeRouteData['challenge'];
   track: ChallengeRouteData['track'];
+  nextChallenge: ChallengeRouteData['nextChallenge'];
   children: ReactNode;
 }
 
 export function ChallengeLayoutWrapper({
   challenge,
   track,
+  nextChallenge,
   children,
 }: ChallengeLayoutWrapperProps) {
   const { setCurrentChallenge } = useChallengeRouteData();
@@ -59,7 +61,14 @@ export function ChallengeLayoutWrapper({
           {children}
         </LeftWrapper>
       }
-      right={<RightWrapper track={track} challenge={challenge} toggleDirection={toggleDirection} />}
+      right={
+        <RightWrapper
+          track={track}
+          challenge={challenge}
+          nextChallenge={nextChallenge}
+          toggleDirection={toggleDirection}
+        />
+      }
       {...props}
     />
   );

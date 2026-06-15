@@ -19,7 +19,7 @@ export function NextBack({ current, onChange, onNext, onSubmit, isSubmitting }: 
           variant="ghost"
           disabled={isSubmitting}
         >
-          Back
+          Назад
         </Button>
       )}
       {current === STEPS.Summary ? (
@@ -28,7 +28,7 @@ export function NextBack({ current, onChange, onNext, onSubmit, isSubmitting }: 
           onClick={onSubmit}
           disabled={isSubmitting}
         >
-          Submit
+          Отправить
         </Button>
       ) : (
         <Button
@@ -36,7 +36,7 @@ export function NextBack({ current, onChange, onNext, onSubmit, isSubmitting }: 
           onClick={onNext}
           disabled={isSubmitting}
         >
-          Next
+          Далее
         </Button>
       )}
     </div>

@@ -9,10 +9,7 @@ export async function POST(req: Request) {
     const session = await auth();
 
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Мяу! Нужно авторизоваться.' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Мяу! Нужно авторизоваться.' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
@@ -20,25 +17,15 @@ export async function POST(req: Request) {
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'Котик не найден.' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Котик не найден.' }, { status: 404 });
     }
 
-    const {
-      questionId,
-      input,
-      expectedOutput,
-      points,
-      timeout,
-      isHidden,
-    } = await req.json();
+    const { questionId, input, expectedOutput, points, timeout, isHidden } = await req.json();
 
     if (!questionId || !input || !expectedOutput) {
       return NextResponse.json(
         { error: 'Мяу! Укажите вопрос, входные данные и ожидаемый результат.' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -53,7 +40,7 @@ export async function POST(req: Request) {
     if (!question || question.exam.teacherId !== user.id) {
       return NextResponse.json(
         { error: 'Мяу! Нет прав доступа к этому вопросу.' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -74,13 +61,13 @@ export async function POST(req: Request) {
         message: 'Тестовый случай успешно создан!',
         testCase,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error('Create test case error:', error);
     return NextResponse.json(
       { error: 'Что-то пошло не так при создании тестового случая.' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

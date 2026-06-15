@@ -21,9 +21,16 @@ interface SubmissionOverviewProps {
   submissionId: string;
   userId: string;
 }
-const codifyForMarkdown = (code: string) => {
-  return `\`\`\`ts
-${code}`;
+const codifyForMarkdown = (code: string, lang = 'typescript') => {
+  const displayLang =
+    lang.toLowerCase() === 'python'
+      ? 'python'
+      : lang.toLowerCase() === 'javascript'
+        ? 'javascript'
+        : 'typescript';
+  return `\`\`\`${displayLang}
+${code}
+\`\`\``;
 };
 
 export function SubmissionOverview({ submissionId, userId }: SubmissionOverviewProps) {
@@ -36,7 +43,7 @@ export function SubmissionOverview({ submissionId, userId }: SubmissionOverviewP
     queryFn: () => getChallengeSubmissionById(submissionId, userId),
   });
 
-  const code = codifyForMarkdown(submission?.code.trimStart() ?? '');
+  const code = codifyForMarkdown(submission?.code.trimStart() ?? '', submission?.challenge.language);
 
   const track = searchParams.get('slug');
 
@@ -85,7 +92,7 @@ export function SubmissionOverview({ submissionId, userId }: SubmissionOverviewP
               className="bg-primary flex h-8 items-center gap-1 rounded-lg py-2 pl-2 pr-3 text-sm text-white"
               href={`/challenge/${slug}/solutions`}
             >
-              <Plus size={16} /> Share your Solution
+              <Plus size={16} /> Поделиться решением
             </Link>
           </div>
         </div>
@@ -107,23 +114,23 @@ export function SubmissionOverview({ submissionId, userId }: SubmissionOverviewP
                     variant="outline"
                   >
                     <Share className="h-4 w-4" />
-                    Share Code on Playground
+                    Поделиться кодом
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Share Challenge with Code</p>
+                  <p>Поделиться задачей с кодом</p>
                 </TooltipContent>
               </Tooltip>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Share</DialogTitle>
+                <DialogTitle>Поделиться</DialogTitle>
               </DialogHeader>
               <div className="pt-4">
                 <ShareUrl
                   isChallenge
                   code={submission.code}
-                  desciprtion="Click Copy to Share code on Playground."
+                  desciprtion="Нажмите «Копировать», чтобы поделиться кодом в песочнице."
                 />
               </div>
             </DialogContent>
@@ -135,7 +142,7 @@ export function SubmissionOverview({ submissionId, userId }: SubmissionOverviewP
           >
             <a target="_blank" rel="noreferrer" className="gap-1 md:inline-flex" href={tweet}>
               <Twitter className="h-4 w-4" />
-              Share on Twitter
+              Поделиться в Twitter
             </a>
           </Button>
         </div>

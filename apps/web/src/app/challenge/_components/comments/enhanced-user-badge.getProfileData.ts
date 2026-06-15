@@ -18,7 +18,7 @@ export async function getProfileData(username: string) {
     },
   });
 
-  const badges = await getBadges(user.id);
+  const badges = getBadges(user.id);
   const titles = getTitles(user.roles);
   return {
     ...user,

@@ -17,7 +17,7 @@ export function Wrapper() {
 
   return (
     <CodePanel
-      challenge={values.challenge}
+      challenge={{ ...values.challenge, language: 'typescript' }}
       // TODO: Why is saveSubmission required if it's not always provided?
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       saveSubmission={(() => {}) as unknown as CodePanelProps['saveSubmission']}

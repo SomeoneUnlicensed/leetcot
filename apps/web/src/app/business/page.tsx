@@ -14,35 +14,45 @@ export function generateMetadata(): Metadata {
 export default function BusinessPage() {
   return (
     <>
-      <div className="flex flex-col items-center justify-center min-h-screen py-20 bg-zinc-950">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-950 py-20">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="space-y-2">
-              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl/none text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
+              <h1 className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-4xl font-bold tracking-tighter text-transparent sm:text-5xl md:text-6xl lg:text-7xl/none">
                 ЛитКот.Бизнес
               </h1>
               <p className="mx-auto max-w-[700px] text-zinc-400 md:text-xl">
-                Единая платформа для оценки компетенций, онбординга и непрерывного развития ваших разработчиков.
+                Единая платформа для оценки компетенций, онбординга и непрерывного развития ваших
+                разработчиков.
               </p>
             </div>
-            
-            <div className="w-full max-w-full space-y-4 mx-auto mt-8 grid gap-8 md:grid-cols-3">
-              <div className="flex flex-col items-center space-y-2 border border-zinc-800 p-6 rounded-2xl bg-zinc-900/50">
+
+            <div className="mx-auto mt-8 grid w-full max-w-full gap-8 space-y-4 md:grid-cols-3">
+              <div className="flex flex-col items-center space-y-2 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
                 <h3 className="text-xl font-bold text-white">Оценка при найме</h3>
-                <p className="text-sm text-zinc-400 text-center">Автоматизированные тесты и задачи для проверки реальных навыков кандидатов.</p>
+                <p className="text-center text-sm text-zinc-400">
+                  Автоматизированные тесты и задачи для проверки реальных навыков кандидатов.
+                </p>
               </div>
-              <div className="flex flex-col items-center space-y-2 border border-zinc-800 p-6 rounded-2xl bg-zinc-900/50">
+              <div className="flex flex-col items-center space-y-2 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
                 <h3 className="text-xl font-bold text-white">Внутреннее обучение</h3>
-                <p className="text-sm text-zinc-400 text-center">Приватные треки и задачи, адаптированные под стек технологий вашей компании.</p>
+                <p className="text-center text-sm text-zinc-400">
+                  Приватные треки и задачи, адаптированные под стек технологий вашей компании.
+                </p>
               </div>
-              <div className="flex flex-col items-center space-y-2 border border-zinc-800 p-6 rounded-2xl bg-zinc-900/50">
+              <div className="flex flex-col items-center space-y-2 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
                 <h3 className="text-xl font-bold text-white">Аналитика и прогресс</h3>
-                <p className="text-sm text-zinc-400 text-center">Подробные отчеты о росте компетенций каждого сотрудника в команде.</p>
+                <p className="text-center text-sm text-zinc-400">
+                  Подробные отчеты о росте компетенций каждого сотрудника в команде.
+                </p>
               </div>
             </div>
 
             <div className="mt-12 space-x-4">
-              <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl text-lg">
+              <Button
+                asChild
+                className="rounded-xl bg-blue-600 px-8 py-3 text-lg font-bold text-white hover:bg-blue-700"
+              >
                 <Link href="mailto:business@leetcot.ru">Связаться с нами</Link>
               </Button>
             </div>

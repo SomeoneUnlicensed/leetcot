@@ -60,9 +60,7 @@ export function ExplorerPanel() {
             href="/explore"
             className="text-foreground flex max-w-full items-center justify-start gap-4 text-xl font-semibold"
           >
-            <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-              Все испытания
-            </span>
+            <span className="overflow-hidden text-ellipsis whitespace-nowrap">Все испытания</span>
             <ChevronRight className="mt-0.5 h-6 w-6 shrink-0" />
           </Link>
           <div className="mt-8 flex items-start justify-between gap-4 text-lg">

@@ -53,8 +53,8 @@ export function HeroIllustration() {
           prompt="Типизируй медицинский паспорт кота"
           title="Примитивные типы (TS)"
         />
-        </motion.div>
-        <motion.div
+      </motion.div>
+      <motion.div
         animate={{
           y: 260,
           opacity: 1,
@@ -69,7 +69,7 @@ export function HeroIllustration() {
           y: 270,
           x: 60,
         }}
-        >
+      >
         <HeroChallengeCard
           username="murzik"
           className="absolute"

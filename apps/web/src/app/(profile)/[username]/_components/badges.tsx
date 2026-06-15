@@ -1,6 +1,4 @@
-import {
-  TooltipProvider,
-} from '@repo/ui/components/tooltip';
+import { TooltipProvider } from '@repo/ui/components/tooltip';
 import type { BadgeInfo } from '../user-info';
 import type { FC } from 'react';
 
@@ -21,9 +19,7 @@ function BadgesStuff(props: { data: BadgeInfo[] }) {
     <div className="mx-auto grid w-fit grid-cols-4 gap-4  ">
       {props.data.map((b) => {
         // Fallback for icons if any badges are still passed
-        return (
-          <div key={b.slug} className="h-16 w-16 bg-muted rounded-full" title={b.name} />
-        );
+        return <div key={b.slug} className="bg-muted h-16 w-16 rounded-full" title={b.name} />;
       })}
       {props.data.length < 12
         ? Array.from({ length: 12 - props.data.length }).map((_, i) => (

@@ -75,7 +75,7 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
   if (user === null) {
     notFound();
   }
-  const badges = await getBadges(user.id);
+  const badges = getBadges(user.id);
   const titles = getTitles(user.roles);
   const gradient = getGradient(user.roles);
   const progressData = await getProgressData(user.id);
@@ -306,7 +306,9 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
 
         <CardWithRadialBg className="h-fit max-w-sm basis-full md:basis-1/2 lg:basis-1/3">
           <CardHeader>
-            <h1 className="text-muted-foreground pl-2 text-lg tracking-wide">Недавняя активность</h1>
+            <h1 className="text-muted-foreground pl-2 text-lg tracking-wide">
+              Недавняя активность
+            </h1>
           </CardHeader>
           <CardContent className="flex flex-col justify-center">
             <ActivityChart data={activityData} />

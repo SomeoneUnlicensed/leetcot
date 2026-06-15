@@ -16,23 +16,28 @@ const ResetEditorButton = () => {
   const { dispatch } = useResetEditor();
   return (
     <AlertDialog>
-      <AlertDialogTrigger name="reset">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <RotateCcw className="stroke-zinc-500 stroke-1 hover:stroke-zinc-400" size={20} />
-          </TooltipTrigger>
-          <TooltipContent side="left">
-            <p>Reset to default code definition</p>
-          </TooltipContent>
-        </Tooltip>
+      <AlertDialogTrigger asChild>
+        <button
+          className="flex items-center justify-center rounded-lg p-1.5 text-zinc-400 transition-all hover:bg-zinc-800/60 hover:text-zinc-200 focus:outline-none"
+          aria-label="Сбросить код"
+        >
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <RotateCcw className="stroke-current stroke-[1.5]" size={18} />
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p>Сбросить код до исходного</p>
+            </TooltipContent>
+          </Tooltip>
+        </button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Reset code?</AlertDialogTitle>
+          <AlertDialogTitle>Сбросить код до исходного?</AlertDialogTitle>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={() => dispatch('resetCode')}>Continue</AlertDialogAction>
+          <AlertDialogCancel>Отмена</AlertDialogCancel>
+          <AlertDialogAction onClick={() => dispatch('resetCode')}>Продолжить</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

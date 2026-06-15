@@ -1,7 +1,9 @@
 'use server';
 
 import { prisma } from '@repo/db';
-import { Tags, type Difficulty, Language } from '@repo/db/types';
+import { Tags } from '@repo/db/types';
+import type { Language, Difficulty } from '@repo/db/types';
+
 import { cache } from 'react';
 import { auth } from '~/server/auth';
 
@@ -21,7 +23,7 @@ export interface FilterOptions {
 export async function getFilteredChallenges(filters: FilterOptions, take?: number) {
   const session = await auth();
 
-  const where: any = {
+  const where: Record<string, unknown> = {
     status: 'ACTIVE',
     user: {
       NOT: {
@@ -136,10 +138,7 @@ export async function searchChallenges(query: string) {
           status: 'BANNED',
         },
       },
-      OR: [
-        { name: { contains: query } },
-        { slug: { contains: query } },
-      ],
+      OR: [{ name: { contains: query } }, { slug: { contains: query } }],
     },
     include: {
       user: {

@@ -16,9 +16,9 @@ const prisma = new PrismaClient();
 export const slugify = (str: string) => str.toLowerCase().replace(/\s/g, '-');
 
 async function main() {
-  const args = process.argv.slice(2);
-  const emailArg = args.find(arg => arg.startsWith('--email='));
-  const passwordArg = args.find(arg => arg.startsWith('--password='));
+  const args = process.argv.slice(2).map((arg) => arg.replace(/^['"]|['"]$/g, ''));
+  const emailArg = args.find((arg) => arg.startsWith('--email='));
+  const passwordArg = args.find((arg) => arg.startsWith('--password='));
 
   if (!emailArg || !passwordArg) {
     console.error('Ошибка: Необходимо указать email и пароль админа.');
@@ -59,10 +59,7 @@ async function main() {
         email: adminEmail,
         password: bcrypt.hashSync(adminPassword, 10),
         roles: {
-          connect: [
-            { id: adminRole.id },
-            { id: userRole.id },
-          ],
+          connect: [{ id: adminRole.id }, { id: userRole.id }],
         },
       },
       create: {
@@ -71,10 +68,7 @@ async function main() {
         name: 'Админ ЛитКот',
         password: bcrypt.hashSync(adminPassword, 10),
         roles: {
-          connect: [
-            { id: adminRole.id },
-            { id: userRole.id },
-          ],
+          connect: [{ id: adminRole.id }, { id: userRole.id }],
         },
       },
     });
@@ -86,21 +80,21 @@ async function main() {
     console.log(`Найдено задач: ${localChallenges.length}`);
 
     for (const challenge of localChallenges) {
-        const { author: _, ...challengeData } = challenge;
-        await prisma.challenge.upsert({
-            where: { slug: challenge.slug },
-            update: {
-                ...challengeData,
-                userId: adminUser.id,
-            },
-            create: {
-                ...challengeData,
-                userId: adminUser.id,
-            }
-        });
+      const { author: _, ...challengeData } = challenge;
+      await prisma.challenge.upsert({
+        where: { slug: challenge.slug },
+        update: {
+          ...challengeData,
+          userId: adminUser.id,
+        },
+        create: {
+          ...challengeData,
+          userId: adminUser.id,
+        },
+      });
     }
 
-    const createdTracksMap = new Map<string, any>();
+    const createdTracksMap = new Map<string, unknown>();
 
     const trackChallengeSlugs: Record<string, string[]> = {
       'python-algo-fishing': [
@@ -116,7 +110,10 @@ async function main() {
         'python-fish-graph',
         'python-fish-dp',
         'python-fish-backtracking',
-        'python-fish-dijkstra'
+        'python-fish-dijkstra',
+        'python-fish-merge-intervals',
+        'python-fish-stock-trade',
+        'python-fish-valid-anagram',
       ],
     };
 
@@ -125,9 +122,9 @@ async function main() {
       const createdTrack = await prisma.track.upsert({
         where: { slug: track.slug || slugify(track.name) },
         update: {
-            name: track.name,
-            description: track.description,
-            visible: true,
+          name: track.name,
+          description: track.description,
+          visible: true,
         },
         create: {
           name: track.name,
@@ -150,7 +147,7 @@ async function main() {
 
       // Clear old connections for this track
       await prisma.trackChallenge.deleteMany({
-          where: { trackId: createdTrack.id }
+        where: { trackId: createdTrack.id },
       });
 
       const orderedChallenges = dbChallenges.sort((a, b) => {
@@ -171,9 +168,9 @@ async function main() {
       const createdCourse = await prisma.course.upsert({
         where: { slug: course.slug },
         update: {
-            name: course.name,
-            description: course.description,
-            visible: true,
+          name: course.name,
+          description: course.description,
+          visible: true,
         },
         create: {
           name: course.name,
@@ -187,7 +184,7 @@ async function main() {
         const dbTrack = createdTracksMap.get(trackSlug);
         if (dbTrack) {
           await prisma.track.update({
-            where: { id: dbTrack.id },
+            where: { id: (dbTrack as { id: number }).id },
             data: { courseId: createdCourse.id },
           });
         }

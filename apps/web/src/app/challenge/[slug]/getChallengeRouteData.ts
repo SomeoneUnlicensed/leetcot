@@ -1,5 +1,6 @@
 import { type Session } from '@repo/auth/server';
 import { prisma } from '@repo/db';
+import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { getAllFlags } from '~/utils/feature-flags';
 import { validateCompilerOptions } from '~/utils/validateCompilerOptions';
@@ -10,7 +11,7 @@ export type ChallengeRouteData = NonNullable<Awaited<ReturnType<typeof getChalle
 export const getChallengeRouteData = cache(async (slug: string, session: Session | null) => {
   const featureFlags = await getAllFlags();
 
-  const challenge = await prisma.challenge.findFirstOrThrow({
+  const challenge = await prisma.challenge.findFirst({
     where: {
       slug,
       status: 'ACTIVE',
@@ -50,6 +51,10 @@ export const getChallengeRouteData = cache(async (slug: string, session: Session
     },
   });
 
+  if (!challenge) {
+    notFound();
+  }
+
   const tsconfig = challenge.tsconfig;
   if (!validateCompilerOptions(tsconfig)) {
     throw new Error(`Challenge "${challenge.slug}" has an invalid tsconfig`);
@@ -58,25 +63,104 @@ export const getChallengeRouteData = cache(async (slug: string, session: Session
   /**
    * Select the first track that the user is enrolled in for this challenge.
    */
-  const track =
-    featureFlags?.enableInChallengeTrack && session
-      ? await prisma.track.findFirst({
-          where: {
-            trackChallenges: {
-              some: {
-                challengeId: challenge.id,
-                track: {
-                  enrolledUsers: {
-                    some: {
-                      id: session.user?.id,
-                    },
-                  },
+  let trackForNavigation = null;
+  if (featureFlags?.enableInChallengeTrack && session) {
+    trackForNavigation = await prisma.track.findFirst({
+      where: {
+        trackChallenges: {
+          some: {
+            challengeId: challenge.id,
+            track: {
+              enrolledUsers: {
+                some: {
+                  id: session.user?.id,
                 },
               },
             },
           },
-        })
-      : null;
+        },
+      },
+      include: {
+        trackChallenges: {
+          orderBy: {
+            orderId: 'asc',
+          },
+          include: {
+            challenge: {
+              select: {
+                slug: true,
+                name: true,
+                id: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  if (!trackForNavigation) {
+    trackForNavigation = await prisma.track.findFirst({
+      where: {
+        trackChallenges: {
+          some: {
+            challengeId: challenge.id,
+          },
+        },
+      },
+      include: {
+        trackChallenges: {
+          orderBy: {
+            orderId: 'asc',
+          },
+          include: {
+            challenge: {
+              select: {
+                slug: true,
+                name: true,
+                id: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  let nextChallenge: { slug: string; name: string } | null = null;
+  if (trackForNavigation) {
+    const index = trackForNavigation.trackChallenges.findIndex((x) => x.challengeId === challenge.id);
+    if (index !== -1 && index + 1 < trackForNavigation.trackChallenges.length) {
+      const nextChallengeData = trackForNavigation.trackChallenges[index + 1]?.challenge;
+      if (nextChallengeData) {
+        nextChallenge = {
+          slug: nextChallengeData.slug,
+          name: nextChallengeData.name,
+        };
+      }
+    }
+  }
+
+  if (!nextChallenge) {
+    const globalNext = await prisma.challenge.findFirst({
+      where: {
+        id: {
+          gt: challenge.id,
+        },
+        status: 'ACTIVE',
+      },
+      orderBy: {
+        id: 'asc',
+      },
+      select: {
+        slug: true,
+        name: true,
+      },
+    });
+    if (globalNext) {
+      nextChallenge = globalNext;
+    }
+  }
 
   return {
     challenge: {
@@ -84,7 +168,8 @@ export const getChallengeRouteData = cache(async (slug: string, session: Session
       hasSolved: challenge.submission.length > 0,
       tsconfig,
     },
-    track,
+    track: trackForNavigation,
+    nextChallenge,
   };
 });
 export const getCurrentChallenge = cache((slug: string, session: Session | null) => {

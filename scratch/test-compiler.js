@@ -7,7 +7,7 @@ async function run() {
   const page = await context.newPage();
 
   // Log all console messages
-  page.on('console', msg => {
+  page.on('console', (msg) => {
     console.log(`[BROWSER CONSOLE] ${msg.type()}: ${msg.text()}`);
   });
 
@@ -28,7 +28,6 @@ async function run() {
     console.log('Taking screenshot...');
     await page.screenshot({ path: 'scratch/result.png' });
     console.log('Screenshot saved to scratch/result.png');
-
   } catch (error) {
     console.error('Error during run:', error);
   } finally {

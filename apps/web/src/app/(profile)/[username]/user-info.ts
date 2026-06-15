@@ -151,6 +151,6 @@ export interface BadgeInfo {
   name: string;
 }
 
-export async function getBadges(_userId: string): Promise<BadgeInfo[]> {
+export function getBadges(_userId: string): BadgeInfo[] {
   return [];
 }

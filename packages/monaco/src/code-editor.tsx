@@ -1,7 +1,6 @@
 'use client';
 
 import Editor, { loader, type EditorProps } from '@monaco-editor/react';
-import { useTheme } from 'next-themes';
 import { useMemo } from 'react';
 import { useEditorSettingsStore } from './settings-store';
 
@@ -24,9 +23,14 @@ const DEFAULT_OPTIONS = {
 
 export type CodeEditorProps = Omit<EditorProps, 'theme'>;
 
-export function CodeEditor({ onChange, onMount, options, value, ...props }: CodeEditorProps) {
-  const { resolvedTheme } = useTheme();
-  const editorTheme = resolvedTheme === 'light' ? 'light' : 'vs-dark';
+export function CodeEditor({
+  onChange,
+  onMount,
+  options,
+  value,
+  language,
+  ...props
+}: CodeEditorProps & { language?: string }) {
   const { settings } = useEditorSettingsStore();
   const editorOptions = useMemo(() => {
     return {
@@ -41,11 +45,11 @@ export function CodeEditor({ onChange, onMount, options, value, ...props }: Code
   return (
     <Editor
       {...props}
-      defaultLanguage="typescript"
+      language={language || 'typescript'}
       onChange={onChange}
       onMount={onMount}
       options={editorOptions}
-      theme={editorTheme}
+      theme="vs-dark"
       value={value}
     />
   );

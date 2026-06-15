@@ -18,10 +18,7 @@ export function EnrollCourseButton({ courseId, isEnrolled, isLoggedIn }: EnrollC
 
   if (!isLoggedIn) {
     return (
-      <Button
-        disabled
-        className="bg-zinc-400 text-white font-bold px-6 py-2 rounded-xl"
-      >
+      <Button disabled className="rounded-xl bg-zinc-400 px-6 py-2 font-bold text-white">
         Войдите, чтобы записаться
       </Button>
     );
@@ -33,7 +30,7 @@ export function EnrollCourseButton({ courseId, isEnrolled, isLoggedIn }: EnrollC
         <Button
           variant="outline"
           disabled={isPending}
-          className="border-red-500/50 text-red-500 hover:bg-red-500/10 font-bold px-6 py-2 rounded-xl"
+          className="rounded-xl border-red-500/50 px-6 py-2 font-bold text-red-500 hover:bg-red-500/10"
           onClick={() => {
             setError(null);
             startTransition(async () => {
@@ -48,7 +45,7 @@ export function EnrollCourseButton({ courseId, isEnrolled, isLoggedIn }: EnrollC
         >
           {isPending ? 'Отписываемся...' : 'Отписаться от курса'}
         </Button>
-        {error && <span className="text-xs text-red-500">{error}</span>}
+        {error ? <span className="text-xs text-red-500">{error}</span> : null}
       </div>
     );
   }
@@ -57,7 +54,7 @@ export function EnrollCourseButton({ courseId, isEnrolled, isLoggedIn }: EnrollC
     <div className="flex flex-col items-end gap-1">
       <Button
         disabled={isPending}
-        className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-8 py-3 rounded-xl transition-all shadow-lg hover:shadow-emerald-950/20"
+        className="rounded-xl bg-emerald-600 px-8 py-3 font-extrabold text-white shadow-lg transition-all hover:bg-emerald-700 hover:shadow-emerald-950/20"
         onClick={() => {
           setError(null);
           startTransition(async () => {
@@ -70,9 +67,9 @@ export function EnrollCourseButton({ courseId, isEnrolled, isLoggedIn }: EnrollC
           });
         }}
       >
-        {isPending ? 'Записываемся...' : 'Записаться на курс 🐾'}
+        {isPending ? 'Записываемся...' : 'Записаться на курс'}
       </Button>
-      {error && <span className="text-xs text-red-500">{error}</span>}
+      {error ? <span className="text-xs text-red-500">{error}</span> : null}
     </div>
   );
 }
