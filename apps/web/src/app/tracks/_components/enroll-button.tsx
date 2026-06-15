@@ -35,7 +35,12 @@ export function ActionButton({ action, text, trackId, slug }: EnrollButtonProps)
           toast({
             title: 'Готово!',
             variant: 'success',
-            description: <p>Вы успешно {text === 'Enroll' ? 'записались на' : 'отписались от'} трек{text === 'Enroll' ? '' : 'а'}.</p>,
+            description: (
+              <p>
+                Вы успешно {text === 'Enroll' ? 'записались на' : 'отписались от'} трек
+                {text === 'Enroll' ? '' : 'а'}.
+              </p>
+            ),
           });
         } catch (error: unknown) {
           if (error instanceof Error) {
@@ -56,9 +61,7 @@ export function ActionButton({ action, text, trackId, slug }: EnrollButtonProps)
               toast({
                 title: 'Ошибка',
                 variant: 'destructive',
-                description: (
-                  <p>Произошла ошибка при выполнении действия.</p>
-                ),
+                description: <p>Произошла ошибка при выполнении действия.</p>,
               });
             }
           } else {

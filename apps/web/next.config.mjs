@@ -18,9 +18,7 @@ const nextConfig = {
           {
             // allow CORS only on dev for admin site to get monaco files
             source: '/min/vs/(.*)',
-            headers: [
-              { key: 'Access-Control-Allow-Origin', value: '*' },
-            ],
+            headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
           },
         ]
       : [];
@@ -44,10 +42,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 });
 const withVercelToolbar = vercelToolbar();
 
-const baseConfig = million.next(
-  withBundleAnalyzer(withVercelToolbar(nextConfig)),
-  millionConfig
-);
+const baseConfig = million.next(withBundleAnalyzer(withVercelToolbar(nextConfig)), millionConfig);
 
 export default process.env.SENTRY_AUTH_TOKEN
   ? withSentryConfig(

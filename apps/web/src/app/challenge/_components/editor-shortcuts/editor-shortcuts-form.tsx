@@ -35,31 +35,31 @@ export function EditorShortcuts() {
   return (
     <div className="flex flex-col gap-2">
       <EditorShortcut
-        title="To indent one level"
+        title="Увеличить отступ"
         description={
           <p>
-            <Key>Tab</Key> or <Key>{cmdOrCtrl}</Key> + <Key>&#91;</Key>
+            <Key>Tab</Key> или <Key>{cmdOrCtrl}</Key> + <Key>&#91;</Key>
           </p>
         }
       />
       <EditorShortcut
-        title="To indent one fewer levels"
+        title="Уменьшить отступ"
         description={
           <p>
-            <Key>Shift</Key> + <Key>Tab</Key> or <Key>{cmdOrCtrl}</Key> + <Key>&#93;</Key>
+            <Key>Shift</Key> + <Key>Tab</Key> или <Key>{cmdOrCtrl}</Key> + <Key>&#93;</Key>
           </p>
         }
       />
       <EditorShortcut
-        title="To move lines up/down"
+        title="Переместить строки вверх/вниз"
         description={
           <p>
-            <Key>{optionOrAlt}</Key> + <Key>Up/Down</Key>
+            <Key>{optionOrAlt}</Key> + <Key>Вверх</Key>/<Key>Вниз</Key>
           </p>
         }
       />
       <EditorShortcut
-        title="Delete line and copy to buffer"
+        title="Удалить строку и скопировать"
         description={
           <p>
             <Key>{cmdOrCtrl}</Key> + <Key>X</Key>
@@ -67,7 +67,7 @@ export function EditorShortcuts() {
         }
       />
       <EditorShortcut
-        title="Comment/uncomment current selection"
+        title="Комментировать выделение"
         description={
           <p>
             <Key>{cmdOrCtrl}</Key> + <Key>/</Key>
@@ -75,7 +75,7 @@ export function EditorShortcuts() {
         }
       />
       <EditorShortcut
-        title="Undo action"
+        title="Отменить действие"
         description={
           <p>
             <Key>{cmdOrCtrl}</Key> + <Key>Z</Key>
@@ -83,7 +83,7 @@ export function EditorShortcuts() {
         }
       />
       <EditorShortcut
-        title="Redo action"
+        title="Повторить действие"
         description={
           <p>
             <Key>{cmdOrCtrl}</Key> + <Key>Shift</Key> + <Key>Z</Key>

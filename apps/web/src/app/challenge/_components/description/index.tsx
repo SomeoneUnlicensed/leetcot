@@ -22,6 +22,7 @@ import { useRef, useState } from 'react';
 import { type ChallengeRouteData } from '~/app/challenge/[slug]/getChallengeRouteData';
 import { ReportDialog } from '~/components/ReportDialog';
 import { ShareUrl } from '~/components/share-url';
+import { PromoBlock } from '~/components/promo-block';
 import { getRelativeTimeStrict } from '~/utils/relativeTime';
 import { addOrRemoveBookmark } from '../bookmark.action';
 import { UserBadge } from '../comments/enhanced-user-badge';
@@ -168,11 +169,13 @@ export function Description({ challenge }: DescriptionProps) {
                   shouldBookmark = true;
                   setHasBookmarked(true);
                 }
-                debouncedBookmark(challenge.id, session.data?.user?.id!, shouldBookmark)?.catch(
-                  (e) => {
-                    console.error(e);
-                  },
-                );
+                debouncedBookmark(
+                  challenge.id,
+                  session.data?.user?.id ?? '',
+                  shouldBookmark,
+                )?.catch((e) => {
+                  console.error(e);
+                });
               }}
             >
               <BookmarkIcon className="h-4 w-4" />
@@ -187,6 +190,13 @@ export function Description({ challenge }: DescriptionProps) {
       <div className="prose-invert prose-h3:text-xl mt-6 leading-7">
         <Markdown>{challenge.description}</Markdown>
       </div>
+
+      <PromoBlock
+        variant="in-feed"
+        text="ИНФОРМАЦИЯ (БЛОК ПОД ОПИСАНИЕМ ЗАДАЧИ)"
+        className="mb-4 mt-8"
+      />
+
       {/* More Challenges Suggestions */}
       <Suggestions challengeId={challenge.id} />
     </div>

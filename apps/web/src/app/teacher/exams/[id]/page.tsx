@@ -1,11 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'next/navigation';
 import { Button } from '@repo/ui/components/button';
 import { Card } from '@repo/ui/components/card';
 import { Badge } from '@repo/ui/components/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@repo/ui/components/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@repo/ui/components/dialog';
 import { Input } from '@repo/ui/components/input';
 import { Label } from '@repo/ui/components/label';
 
@@ -16,7 +22,7 @@ interface ExamQuestion {
   content: string;
   points: number;
   language?: string;
-  testCases: any[];
+  testCases: unknown[];
 }
 
 interface Exam {
@@ -42,19 +48,12 @@ export default function ExamEditorPage() {
   const [questionLanguage, setQuestionLanguage] = useState('PYTHON');
   const [questionOptions, setQuestionOptions] = useState<string[]>(['', '', '', '']);
   const [correctAnswerIndex, setCorrectAnswerIndex] = useState('0');
-  const router = useRouter();
 
-  useEffect(() => {
-    if (examId) {
-      fetchExam();
-    }
-  }, [examId]);
-
-  const fetchExam = async () => {
+  const fetchExam = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/exams/${examId}`);
-      
+
       if (!response.ok) {
         const data = await response.json();
         setError(data.error || 'Ошибка при загрузке теста');
@@ -69,7 +68,13 @@ export default function ExamEditorPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [examId]);
+
+  useEffect(() => {
+    if (examId) {
+      void fetchExam();
+    }
+  }, [examId, fetchExam]);
 
   const addQuestion = async () => {
     if (!questionContent) {
@@ -78,7 +83,7 @@ export default function ExamEditorPage() {
     }
 
     if (questionType === 'MULTIPLE_CHOICE') {
-      const nonEmptyOptions = questionOptions.filter(opt => opt.trim().length > 0);
+      const nonEmptyOptions = questionOptions.filter((opt) => opt.trim().length > 0);
       if (nonEmptyOptions.length < 2) {
         setError('Пожалуйста, укажите минимум 2 варианта ответов');
         return;
@@ -86,7 +91,7 @@ export default function ExamEditorPage() {
     }
 
     try {
-      const body: any = {
+      const body: Record<string, unknown> = {
         examId,
         type: questionType,
         content: questionContent,
@@ -97,7 +102,7 @@ export default function ExamEditorPage() {
       if (questionType === 'CODE_TASK') {
         body.language = questionLanguage;
       } else if (questionType === 'MULTIPLE_CHOICE') {
-        body.options = questionOptions.filter(opt => opt.trim().length > 0);
+        body.options = questionOptions.filter((opt) => opt.trim().length > 0);
         body.correctAnswers = [parseInt(correctAnswerIndex)];
       }
 
@@ -175,7 +180,7 @@ export default function ExamEditorPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <p className="text-lg">Загрузка...</p>
       </div>
     );
@@ -193,18 +198,18 @@ export default function ExamEditorPage() {
 
   return (
     <div className="container mx-auto py-10">
-      {error && (
-        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+      {error ? (
+        <div className="mb-4 rounded border border-red-400 bg-red-100 p-4 text-red-700">
           {error}
         </div>
-      )}
+      ) : null}
 
       <div className="mb-8">
-        <div className="flex justify-between items-start mb-4">
+        <div className="mb-4 flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2">{exam.title}</h1>
-            <p className="text-gray-600 mb-2">{exam.description}</p>
-            <div className="flex gap-2 items-center">
+            <h1 className="mb-2 text-3xl font-bold">{exam.title}</h1>
+            <p className="mb-2 text-gray-600">{exam.description}</p>
+            <div className="flex items-center gap-2">
               <Badge>{exam.status === 'DRAFT' ? 'Черновик' : 'Активен'}</Badge>
               <span className="text-sm text-gray-600">Класс: {exam.classLevel}</span>
             </div>
@@ -217,10 +222,10 @@ export default function ExamEditorPage() {
         </div>
 
         {exam.status === 'ACTIVE' && (
-          <Card className="p-4 bg-blue-50 border-blue-200">
-            <h3 className="font-semibold mb-2">Ссылка на тест (поделитесь со студентами):</h3>
-            <div className="flex items-center gap-2 bg-white p-3 rounded border">
-              <code className="flex-1 text-sm break-all">{shareUrl}</code>
+          <Card className="border-blue-200 bg-blue-50 p-4">
+            <h3 className="mb-2 font-semibold">Ссылка на тест (поделитесь со студентами):</h3>
+            <div className="flex items-center gap-2 rounded border bg-white p-3">
+              <code className="flex-1 break-all text-sm">{shareUrl}</code>
               <Button
                 size="sm"
                 variant="outline"
@@ -234,7 +239,7 @@ export default function ExamEditorPage() {
       </div>
 
       <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <h2 className="text-2xl font-bold">Вопросы ({exam.questions.length})</h2>
           <Dialog open={isAddingQuestion} onOpenChange={setIsAddingQuestion}>
             <DialogTrigger asChild>
@@ -251,7 +256,7 @@ export default function ExamEditorPage() {
                     id="type"
                     value={questionType}
                     onChange={(e) => setQuestionType(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2"
                   >
                     <option value="MULTIPLE_CHOICE">Множественный выбор</option>
                     <option value="CODE_TASK">Задача программирования</option>
@@ -266,7 +271,7 @@ export default function ExamEditorPage() {
                     value={questionContent}
                     onChange={(e) => setQuestionContent(e.target.value)}
                     placeholder="Введите текст вопроса..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2"
                     rows={4}
                   />
                 </div>
@@ -289,7 +294,7 @@ export default function ExamEditorPage() {
                       id="language"
                       value={questionLanguage}
                       onChange={(e) => setQuestionLanguage(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2"
                     >
                       <option value="PYTHON">Python</option>
                       <option value="JAVASCRIPT">JavaScript</option>
@@ -304,13 +309,13 @@ export default function ExamEditorPage() {
                   <div className="space-y-3">
                     <Label>Варианты ответов</Label>
                     {questionOptions.map((option, idx) => (
-                      <div key={idx} className="flex gap-2 items-center">
+                      <div key={idx} className="flex items-center gap-2">
                         <input
                           type="radio"
                           name="correct"
                           checked={parseInt(correctAnswerIndex) === idx}
                           onChange={() => setCorrectAnswerIndex(idx.toString())}
-                          className="w-4 h-4"
+                          className="h-4 w-4"
                         />
                         <Input
                           value={option}
@@ -329,10 +334,7 @@ export default function ExamEditorPage() {
 
                 <div className="flex gap-2">
                   <Button onClick={addQuestion}>Добавить</Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsAddingQuestion(false)}
-                  >
+                  <Button variant="outline" onClick={() => setIsAddingQuestion(false)}>
                     Отмена
                   </Button>
                 </div>
@@ -349,15 +351,22 @@ export default function ExamEditorPage() {
           ) : (
             exam.questions.map((question, index) => (
               <Card key={question.id} className="p-4">
-                <div className="flex justify-between items-start">
+                <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className="font-semibold mb-2">
+                    <h3 className="mb-2 font-semibold">
                       Вопрос {index + 1}: {question.content.substring(0, 100)}...
                     </h3>
                     <div className="flex gap-4 text-sm text-gray-600">
-                      <span>Тип: {question.type === 'MULTIPLE_CHOICE' ? 'Множественный выбор' : question.type === 'CODE_TASK' ? 'Программирование' : 'Короткий ответ'}</span>
+                      <span>
+                        Тип:{' '}
+                        {question.type === 'MULTIPLE_CHOICE'
+                          ? 'Множественный выбор'
+                          : question.type === 'CODE_TASK'
+                            ? 'Программирование'
+                            : 'Короткий ответ'}
+                      </span>
                       <span>Баллы: {question.points}</span>
-                      {question.language && <span>Язык: {question.language}</span>}
+                      {question.language ? <span>Язык: {question.language}</span> : null}
                       <span>Тестовых случаев: {question.testCases?.length || 0}</span>
                     </div>
                   </div>

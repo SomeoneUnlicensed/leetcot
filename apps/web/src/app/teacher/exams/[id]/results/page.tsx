@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { Card } from '@repo/ui/components/card';
 import { Badge } from '@repo/ui/components/badge';
-import { DataTable } from '@repo/ui/components/data-table';
 
 interface ExamResult {
   id: string;
@@ -34,17 +33,11 @@ export default function ExamResultsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (examId) {
-      fetchResults();
-    }
-  }, [examId]);
-
-  const fetchResults = async () => {
+  const fetchResults = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/exams/${examId}/results`);
-      
+
       if (!response.ok) {
         const data = await response.json();
         setError(data.error || 'Ошибка при загрузке результатов');
@@ -60,7 +53,13 @@ export default function ExamResultsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [examId]);
+
+  useEffect(() => {
+    if (examId) {
+      void fetchResults();
+    }
+  }, [examId, fetchResults]);
 
   const getScoreBadge = (percentage: number) => {
     if (percentage >= 80) return <Badge className="bg-green-600">Отлично</Badge>;
@@ -71,7 +70,7 @@ export default function ExamResultsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <p className="text-lg">Загрузка...</p>
       </div>
     );
@@ -79,38 +78,38 @@ export default function ExamResultsPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-8">Результаты теста</h1>
+      <h1 className="mb-8 text-3xl font-bold">Результаты теста</h1>
 
-      {error && (
-        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+      {error ? (
+        <div className="mb-4 rounded border border-red-400 bg-red-100 p-4 text-red-700">
           {error}
         </div>
-      )}
+      ) : null}
 
-      {statistics && (
-        <div className="grid grid-cols-4 gap-4 mb-8">
+      {statistics ? (
+        <div className="mb-8 grid grid-cols-4 gap-4">
           <Card className="p-6">
-            <h3 className="text-gray-600 text-sm font-semibold mb-2">Всего попыток</h3>
+            <h3 className="mb-2 text-sm font-semibold text-gray-600">Всего попыток</h3>
             <p className="text-3xl font-bold">{statistics.totalSessions}</p>
           </Card>
           <Card className="p-6">
-            <h3 className="text-gray-600 text-sm font-semibold mb-2">Средний балл</h3>
+            <h3 className="mb-2 text-sm font-semibold text-gray-600">Средний балл</h3>
             <p className="text-3xl font-bold">{statistics.avgScore.toFixed(1)}</p>
           </Card>
           <Card className="p-6">
-            <h3 className="text-gray-600 text-sm font-semibold mb-2">Средний %</h3>
+            <h3 className="mb-2 text-sm font-semibold text-gray-600">Средний %</h3>
             <p className="text-3xl font-bold">{statistics.avgPercentage.toFixed(1)}%</p>
           </Card>
           <Card className="p-6">
-            <h3 className="text-gray-600 text-sm font-semibold mb-2">Макс. баллов</h3>
+            <h3 className="mb-2 text-sm font-semibold text-gray-600">Макс. баллов</h3>
             <p className="text-3xl font-bold">{statistics.maxScoreOverall}</p>
           </Card>
         </div>
-      )}
+      ) : null}
 
       <Card className="p-6">
-        <h2 className="text-2xl font-bold mb-4">Результаты студентов</h2>
-        
+        <h2 className="mb-4 text-2xl font-bold">Результаты студентов</h2>
+
         {results.length === 0 ? (
           <p className="text-gray-600">Нет результатов</p>
         ) : (
@@ -118,30 +117,28 @@ export default function ExamResultsPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-2 px-4 font-semibold">Студент</th>
-                  <th className="text-left py-2 px-4 font-semibold">Класс</th>
-                  <th className="text-left py-2 px-4 font-semibold">Балл</th>
-                  <th className="text-left py-2 px-4 font-semibold">%</th>
-                  <th className="text-left py-2 px-4 font-semibold">Статус</th>
-                  <th className="text-left py-2 px-4 font-semibold">Время</th>
+                  <th className="px-4 py-2 text-left font-semibold">Студент</th>
+                  <th className="px-4 py-2 text-left font-semibold">Класс</th>
+                  <th className="px-4 py-2 text-left font-semibold">Балл</th>
+                  <th className="px-4 py-2 text-left font-semibold">%</th>
+                  <th className="px-4 py-2 text-left font-semibold">Статус</th>
+                  <th className="px-4 py-2 text-left font-semibold">Время</th>
                 </tr>
               </thead>
               <tbody>
                 {results.map((result) => (
                   <tr key={result.id} className="border-b hover:bg-gray-50">
-                    <td className="py-3 px-4">
+                    <td className="px-4 py-3">
                       {result.session.studentName}{' '}
-                      {result.session.studentSurname && result.session.studentSurname}
+                      {result.session.studentSurname ? result.session.studentSurname : null}
                     </td>
-                    <td className="py-3 px-4">{result.session.studentClass}</td>
-                    <td className="py-3 px-4 font-semibold">
+                    <td className="px-4 py-3">{result.session.studentClass}</td>
+                    <td className="px-4 py-3 font-semibold">
                       {result.totalScore}/{result.maxScore}
                     </td>
-                    <td className="py-3 px-4">{result.percentage.toFixed(1)}%</td>
-                    <td className="py-3 px-4">
-                      {getScoreBadge(result.percentage)}
-                    </td>
-                    <td className="py-3 px-4 text-sm text-gray-600">
+                    <td className="px-4 py-3">{result.percentage.toFixed(1)}%</td>
+                    <td className="px-4 py-3">{getScoreBadge(result.percentage)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
                       {new Date(result.session.submittedAt).toLocaleDateString('ru-RU')}
                     </td>
                   </tr>

@@ -47,7 +47,7 @@ export function SettingsForm() {
   function onSubmit(data: FormSchema) {
     updateSettings({ ...settings, ...data });
     toast({
-      title: 'Settings updated!',
+      title: 'Настройки обновлены!',
       variant: 'success',
     });
   }
@@ -60,11 +60,11 @@ export function SettingsForm() {
           name="fontSize"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Font Size</FormLabel>
+              <FormLabel>Размер шрифта</FormLabel>
               <Select defaultValue={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a font size" />
+                    <SelectValue placeholder="Выберите размер шрифта" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -89,16 +89,16 @@ export function SettingsForm() {
           name="tabSize"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tab Size</FormLabel>
+              <FormLabel>Размер табуляции</FormLabel>
               <Select defaultValue={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a tab size" />
+                    <SelectValue placeholder="Выберите размер табуляции" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="2">2 spaces</SelectItem>
-                  <SelectItem value="4">4 spaces</SelectItem>
+                  <SelectItem value="2">2 пробела</SelectItem>
+                  <SelectItem value="4">4 пробела</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -110,15 +110,15 @@ export function SettingsForm() {
           name="bindings"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Key Bindings</FormLabel>
+              <FormLabel>Горячие клавиши</FormLabel>
               <Select defaultValue={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Key Binding Style" />
+                    <SelectValue placeholder="Выберите стиль раскладки" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="standard">Standard</SelectItem>
+                  <SelectItem value="standard">Стандартный</SelectItem>
                   <SelectItem value="vim">Vim</SelectItem>
                 </SelectContent>
               </Select>
@@ -132,7 +132,7 @@ export function SettingsForm() {
             name="vimConfig"
             render={({ field: { value, ...field } }) => (
               <FormItem>
-                <FormLabel>Vim Config</FormLabel>
+                <FormLabel>Конфигурация Vim</FormLabel>
                 <Textarea
                   value={value || DEFAULT_SETTINGS.vimConfig}
                   className="h-60 resize-none font-mono"
@@ -147,7 +147,7 @@ export function SettingsForm() {
         <DialogFooter className="mt-3">
           <DialogPrimitive.Close asChild>
             <Button type="submit" disabled={form.formState.isSubmitting}>
-              Save
+              Сохранить
             </Button>
           </DialogPrimitive.Close>
         </DialogFooter>

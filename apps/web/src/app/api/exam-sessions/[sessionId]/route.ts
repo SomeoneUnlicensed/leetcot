@@ -19,10 +19,7 @@ const SubmitExamSchema = z.object({
 const PutRequestSchema = z.union([SaveAnswerSchema, SubmitExamSchema]);
 
 // GET - Get session and current progress
-export async function GET(
-  req: Request,
-  { params }: { params: { sessionId: string } }
-) {
+export async function GET(req: Request, { params }: { params: { sessionId: string } }) {
   try {
     const session = await prisma.examSession.findUnique({
       where: { id: params.sessionId },
@@ -42,10 +39,7 @@ export async function GET(
     });
 
     if (!session) {
-      return NextResponse.json(
-        { error: 'Сессия не найдена.' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Сессия не найдена.' }, { status: 404 });
     }
 
     // Filter out correct answers before sending to student
@@ -53,8 +47,8 @@ export async function GET(
       ...session,
       exam: {
         ...session.exam,
-        questions: session.exam.questions.map((q: any) => {
-          const { correctAnswers, ...questionData } = q;
+        questions: session.exam.questions.map((q: { [key: string]: unknown }) => {
+          const { correctAnswers: _correctAnswers, ...questionData } = q;
           return questionData;
         }),
       },
@@ -67,16 +61,13 @@ export async function GET(
     console.error('Get session error:', error);
     return NextResponse.json(
       { error: 'Что-то пошло не так при получении сессии.' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 // PUT - Save answer(s) or submit exam
-export async function PUT(
-  req: Request,
-  { params }: { params: { sessionId: string } }
-) {
+export async function PUT(req: Request, { params }: { params: { sessionId: string } }) {
   try {
     const body = await req.json();
 
@@ -97,20 +88,14 @@ export async function PUT(
     });
 
     if (!session) {
-      return NextResponse.json(
-        { error: 'Сессия не найдена.' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Сессия не найдена.' }, { status: 404 });
     }
 
     // Handle submission
     if (validatedData.action === 'submit') {
       // Check if already submitted
       if (session.status === 'SUBMITTED' || session.status === 'GRADED') {
-        return NextResponse.json(
-          { error: 'Тест уже отправлен.' },
-          { status: 409 }
-        );
+        return NextResponse.json({ error: 'Тест уже отправлен.' }, { status: 409 });
       }
 
       // Use transaction to ensure consistency
@@ -124,7 +109,9 @@ export async function PUT(
           maxScore += question.points;
 
           // Find answer for this question
-          const answer = session.answers.find((a: any) => a.questionId === question.id);
+          const answer = session.answers.find(
+            (a: { questionId: string; id: string; answer: string }) => a.questionId === question.id,
+          );
 
           if (!answer) {
             // No answer given
@@ -136,14 +123,16 @@ export async function PUT(
             // Parse correct answers (could be array or JSON)
             let correctAnswerIndices: number[] = [];
             if (Array.isArray(question.correctAnswers)) {
-              correctAnswerIndices = question.correctAnswers.map((v: any) => Number(v));
+              correctAnswerIndices = (question.correctAnswers as unknown[]).map((v: unknown) =>
+                Number(v),
+              );
             } else if (typeof question.correctAnswers === 'number') {
               correctAnswerIndices = [question.correctAnswers];
             } else {
               try {
                 const parsed = JSON.parse(question.correctAnswers as string);
                 correctAnswerIndices = Array.isArray(parsed)
-                  ? (parsed as any[]).map((v: any) => Number(v))
+                  ? (parsed as unknown[]).map((v: unknown) => Number(v))
                   : [Number(parsed)];
               } catch {
                 const parsed = parseInt(question.correctAnswers as string);
@@ -182,7 +171,7 @@ export async function PUT(
           data: {
             status: 'SUBMITTED',
             submittedAt: new Date(),
-            duration: session.startedAt 
+            duration: session.startedAt
               ? new Date().getTime() - new Date(session.startedAt).getTime()
               : undefined,
           },
@@ -197,7 +186,7 @@ export async function PUT(
             totalScore,
             maxScore,
             percentage: maxScore > 0 ? (totalScore / maxScore) * 100 : 0,
-            isGraded: maxScore > 0 ? true : false, // Marked as graded only for multiple choice
+            isGraded: maxScore > 0, // Marked as graded only for multiple choice
           },
         });
 
@@ -252,14 +241,14 @@ export async function PUT(
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Мяу! Некорректные данные в запросе.', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error('Put exam session error:', error);
     return NextResponse.json(
       { error: 'Что-то пошло не так при обработке запроса.' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

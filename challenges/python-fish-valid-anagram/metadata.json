@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-valid-anagram",
+  "label": "Рыбные анаграммы (Valid Anagram)",
+  "description": "Определите, являются ли два слова анаграммами.",
+  "difficulty": "easy",
+  "language": "python",
+  "author": "ЛитКот"
+}

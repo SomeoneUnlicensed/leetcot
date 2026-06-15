@@ -73,13 +73,9 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
     notFound();
   }
 
-  const isEnrolled =
-    Array.isArray(course.enrolledUsers) && course.enrolledUsers.length > 0;
+  const isEnrolled = Array.isArray(course.enrolledUsers) && course.enrolledUsers.length > 0;
 
-  const totalChallenges = course.tracks.reduce(
-    (acc, t) => acc + t._count.trackChallenges,
-    0,
-  );
+  const totalChallenges = course.tracks.reduce((acc, t) => acc + t._count.trackChallenges, 0);
 
   return (
     <>
@@ -89,7 +85,7 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
           <div className="max-w-2xl">
             <div className="mb-2 flex items-center gap-3">
               <span className="text-3xl">📚</span>
-              <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white md:text-4xl">
+              <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 md:text-4xl dark:text-white">
                 {course.name}
               </h1>
             </div>
@@ -108,7 +104,7 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
             <EnrollCourseButton
               courseId={course.id}
               isEnrolled={isEnrolled}
-              isLoggedIn={!!session?.user}
+              isLoggedIn={Boolean(session?.user)}
             />
           </div>
         </div>
@@ -120,7 +116,9 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {course.tracks.map((track) => {
             const completedCount = session?.user
-              ? track.trackChallenges.filter((tc: any) =>
+              ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                track.trackChallenges.filter((tc: any) =>
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   tc.challenge?.submission?.some((s: any) => s.isSuccessful),
                 ).length
               : 0;
@@ -129,23 +127,17 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
               totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
             return (
-              <Link
-                key={track.id}
-                href={`/tracks/${track.slug}`}
-                className="group"
-              >
+              <Link key={track.id} href={`/tracks/${track.slug}`} className="group">
                 <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-500">
-                  <h3 className="mb-1 text-lg font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                  <h3 className="mb-1 text-lg font-bold text-zinc-900 transition-colors group-hover:text-emerald-600 dark:text-zinc-100 dark:group-hover:text-emerald-400">
                     {track.name}
                   </h3>
                   <p className="mb-3 line-clamp-2 text-sm text-zinc-500 dark:text-zinc-400">
                     {track.description}
                   </p>
                   <div className="flex items-center justify-between">
-                    <Badge variant="default">
-                      {totalCount} задач
-                    </Badge>
-                    {session?.user && totalCount > 0 && (
+                    <Badge variant="default">{totalCount} задач</Badge>
+                    {session?.user && totalCount > 0 ? (
                       <div className="flex items-center gap-2">
                         <div className="h-2 w-20 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700">
                           <div
@@ -157,7 +149,7 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
                           {completedCount}/{totalCount}
                         </span>
                       </div>
-                    )}
+                    ) : null}
                   </div>
                 </div>
               </Link>

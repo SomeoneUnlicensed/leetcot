@@ -1,6 +1,8 @@
 'use client';
 import { useSession } from '@repo/auth/react';
 import { CodePanel } from '@repo/monaco';
+import { useState } from 'react';
+import { Confetti } from '~/components/confetti';
 import { track as vercelTrack } from '@vercel/analytics';
 import { useRouter, useSelectedLayoutSegments } from 'next/navigation';
 import { EditorShortcutsButton } from '../_components/editor-shortcuts/editor-shortcuts-button';
@@ -16,14 +18,21 @@ import { useQueryClient } from '@tanstack/react-query';
 interface RightWrapperProps {
   challenge: ChallengeRouteData['challenge'];
   track: ChallengeRouteData['track'];
+  nextChallenge: ChallengeRouteData['nextChallenge'];
   toggleDirection: () => void;
 }
 
-export function RightWrapper({ track, challenge, toggleDirection }: RightWrapperProps) {
+export function RightWrapper({
+  track,
+  challenge,
+  nextChallenge,
+  toggleDirection,
+}: RightWrapperProps) {
   const queryClient = useQueryClient();
   const router = useRouter();
   const segments = useSelectedLayoutSegments();
   const { data: session } = useSession();
+  const [showConfetti, setShowConfetti] = useState(false);
 
   if (!challenge) return null;
 
@@ -41,18 +50,18 @@ export function RightWrapper({ track, challenge, toggleDirection }: RightWrapper
 
   if (challenge.isInfoOnly) {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[400px] bg-zinc-50 dark:bg-zinc-950 p-8 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-sm m-4 select-none">
-        <pre className="font-mono text-zinc-700 dark:text-zinc-300 text-lg md:text-xl font-bold leading-relaxed mb-6 whitespace-pre text-center">
-{`   /\\_/\\
+      <div className="m-4 flex h-full min-h-[400px] select-none flex-col items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+        <pre className="mb-6 whitespace-pre text-center font-mono text-lg font-bold leading-relaxed text-zinc-700 md:text-xl dark:text-zinc-300">
+          {`   /\\_/\\
   ( =.o=)  *мурр... это теория*
    > ^ <`}
         </pre>
-        <h3 className="text-xl font-extrabold text-zinc-800 dark:text-zinc-100 text-center mb-2 font-sans">
+        <h3 className="mb-2 text-center font-sans text-xl font-extrabold text-zinc-800 dark:text-zinc-100">
           Информационный раздел 🐾
         </h3>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 text-center max-w-md mb-6 leading-relaxed">
-          Внимательно ознакомьтесь с теоретическим материалом и примерами в левой панели.
-          Когда вы будете готовы, нажмите кнопку ниже, чтобы зафиксировать выполнение.
+        <p className="mb-6 max-w-md text-center text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+          Внимательно ознакомьтесь с теоретическим материалом и примерами в левой панели. Когда вы
+          будете готовы, нажмите кнопку ниже, чтобы зафиксировать выполнение.
         </p>
         <button
           disabled={!session?.user}
@@ -72,7 +81,7 @@ export function RightWrapper({ track, challenge, toggleDirection }: RightWrapper
             }
             handleSuccessfulSubmission(submission.isSuccessful, submission.id, track?.slug);
           }}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-8 py-3 rounded-xl transition-all shadow-lg hover:shadow-emerald-950/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
+          className="flex items-center gap-2 rounded-xl bg-emerald-600 px-8 py-3 text-sm font-extrabold text-white shadow-lg transition-all hover:bg-emerald-700 hover:shadow-emerald-950/20 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span>{!session?.user ? 'Войдите, чтобы отметить' : 'Отметить как выполненное 🐾'}</span>
         </button>
@@ -81,30 +90,37 @@ export function RightWrapper({ track, challenge, toggleDirection }: RightWrapper
   }
 
   return (
-    <CodePanel
-      challenge={challenge}
-      saveSubmission={async (code, isSuccessful) => {
-        vercelTrack?.('challenge-submitted', {
-          success: !isSuccessful,
-        });
-
-        const submission = await saveSubmission({
-          challenge,
-          code,
-          isSuccessful,
-        });
-
-        if (submission.isSuccessful) {
-          queryClient.invalidateQueries({
-            queryKey: ['challenge-solutions', challenge.slug],
+    <>
+      {showConfetti ? <Confetti /> : null}
+      <CodePanel
+        challenge={challenge}
+        saveSubmission={async (code, isSuccessful) => {
+          vercelTrack?.('challenge-submitted', {
+            success: !isSuccessful,
           });
-        }
 
-        return handleSuccessfulSubmission(submission.isSuccessful, submission.id, track?.slug);
-      }}
-      submissionDisabled={!session?.user}
-      settingsElement={<SettingsElements toggleDirection={toggleDirection} />}
-    />
+          const submission = await saveSubmission({
+            challenge,
+            code,
+            isSuccessful,
+          });
+
+          if (submission.isSuccessful) {
+            setShowConfetti(true);
+            queryClient.invalidateQueries({
+              queryKey: ['challenge-solutions', challenge.slug],
+            });
+          }
+
+          return submission;
+        }}
+        submissionDisabled={!session?.user}
+        settingsElement={<SettingsElements toggleDirection={toggleDirection} />}
+        nextChallengeSlug={nextChallenge?.slug}
+        nextChallengeName={nextChallenge?.name}
+        trackSlug={track?.slug}
+      />
+    </>
   );
 }
 
@@ -114,12 +130,12 @@ interface SettingsElementsProps {
 
 function SettingsElements({ toggleDirection }: SettingsElementsProps) {
   return (
-    <>
+    <div className="flex items-center gap-0.5 rounded-lg border border-zinc-800 bg-zinc-900/40 p-0.5 shadow-inner backdrop-blur-sm">
       <ResetEditorButton />
       <EditorShortcutsButton />
       <SettingsButton />
       <SwapPanelButton toggleDirection={toggleDirection} />
       <FullscreenButton />
-    </>
+    </div>
   );
 }

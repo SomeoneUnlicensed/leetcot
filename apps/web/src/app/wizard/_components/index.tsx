@@ -15,11 +15,7 @@ import { NextBack } from './NextBack';
 import { Summary } from './Summary';
 import { TestCasesEditor } from './TestCasesEditor';
 import { uploadChallenge } from './create.action';
-import {
-  DEFAULT_CHALLENGE_TEMPLATE,
-  DEFAULT_TEST_CASES,
-  DEFAULT_DESCRIPTION,
-} from './templates';
+import { DEFAULT_CHALLENGE_TEMPLATE, DEFAULT_TEST_CASES, DEFAULT_DESCRIPTION } from './templates';
 import {
   createNoProfanitySchema,
   createNoProfanitySchemaWithValidate,
@@ -37,28 +33,28 @@ const createExploreCardSchema = z.object({
   difficulty: z.enum(['BEGINNER', 'EASY', 'MEDIUM', 'HARD', 'EXTREME', 'EVENT']),
   name: createNoProfanitySchemaWithValidate((zodString) =>
     zodString
-      .min(3, 'The name must be longer than 3 characters')
-      .max(30, 'The name must be shorter than 30 characters'),
+      .min(3, 'Название должно быть длиннее 3 символов')
+      .max(30, 'Название должно быть короче 30 символов'),
   ),
   shortDescription: createNoProfanitySchemaWithValidate((zodString) =>
     zodString
-      .min(10, 'The short description must be longer than 10 characters')
-      .max(191, 'The short description must be shorter than 191 characters'),
+      .min(10, 'Краткое описание должно быть длиннее 10 символов')
+      .max(191, 'Краткое описание должно быть короче 191 символа'),
   ),
 });
 
 const createDescriptionSchema = z.object({
   description: createNoProfanitySchemaWithValidate((zodString) =>
-    zodString.min(20, 'The description must be longer than 20 characters').max(65536),
+    zodString.min(20, 'Описание должно быть длиннее 20 символов').max(65536),
   ),
 });
 
 const createTestCasesSchema = z.object({
   tests: createNoProfanitySchemaWithValidate((zodString) =>
     zodString
-      .min(20, 'The test cases must be longer than 20 characters')
+      .min(20, 'Тестовые случаи должны быть длиннее 20 символов')
       .max(65536)
-      .regex(testCaseRegex, 'You need to have test cases in your challenge'),
+      .regex(testCaseRegex, 'В задаче должны быть тестовые случаи'),
   ),
   code: createNoProfanitySchema(),
 });
@@ -67,10 +63,10 @@ export const createChallengeSchema = createExploreCardSchema
   .merge(createTestCasesSchema);
 
 const steps: Step[] = [
-  { id: '1', name: 'Challenge Card', schema: createExploreCardSchema },
-  { id: '2', name: 'Description', schema: createDescriptionSchema },
-  { id: '3', name: 'Test Cases', schema: createTestCasesSchema },
-  { id: '4', name: 'Summary' },
+  { id: '1', name: 'Карточка задачи', schema: createExploreCardSchema },
+  { id: '2', name: 'Описание', schema: createDescriptionSchema },
+  { id: '3', name: 'Тестовые случаи', schema: createTestCasesSchema },
+  { id: '4', name: 'Итог' },
 ];
 
 export interface Step {
@@ -95,7 +91,7 @@ export function Wizard() {
     [session?.user?.role],
   );
 
-  const hasTsErrors = useMemo(() => tsErrors.some((e) => e.length), [tsErrors]);
+  const hasTsErrors = useMemo(() => tsErrors.some((e: unknown[]) => e.length), [tsErrors]);
   const form = useForm<CreateChallengeSchema>({
     resolver: zodResolver(createChallengeSchema),
     defaultValues: {

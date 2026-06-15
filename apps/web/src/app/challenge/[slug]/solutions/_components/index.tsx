@@ -2,7 +2,6 @@
 
 import { Calendar, MessageCircle, ThumbsUp } from '@repo/ui/icons';
 import { useSession } from '@repo/auth/react';
-import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { SolutionEditor } from './solution-editor';
 import { NoSolutions } from './nosolutions';
@@ -10,7 +9,7 @@ import { SubmitSolution } from './submit-solution';
 import { type PaginatedSolution, getPaginatedSolutions } from '../getSolutionRouteData';
 import { getRelativeTimeStrict } from '~/utils/relativeTime';
 import { Badge } from '@repo/ui/components/badge';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Pagination } from '../../../_components/pagination';
 import { useQuery } from '@tanstack/react-query';
 import { SolutionsSkeleton } from './solution-skeleton';
@@ -152,9 +151,18 @@ function SolutionRow({
 }) {
   const { slug } = useParams();
   const queryString = useGetQueryString();
+  const router = useRouter();
+
+  const handleRowClick = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('a') || (e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    router.push(`/challenge/${slug}/solutions/${solution.id}?${queryString}`);
+  };
+
   return (
-    <Link
-      href={`/challenge/${slug}/solutions/${solution.id}?${queryString}`}
+    <div
+      onClick={handleRowClick}
       className="flex cursor-pointer flex-col gap-2 p-4 duration-300 hover:bg-neutral-100 dark:hover:bg-zinc-700/50"
     >
       <h3 className="truncate font-bold">{solution.title}</h3>
@@ -185,6 +193,6 @@ function SolutionRow({
           <span>{solution._count.solutionComment}</span>
         </Badge>
       </div>
-    </Link>
+    </div>
   );
 }

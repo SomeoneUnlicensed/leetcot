@@ -9,7 +9,7 @@
     },
     "label": {
       "description": "A few capitalized words (often just a capitalized version of the slug) that the user will see for the challenge.",
-      "maxLength": 35,
+      "maxLength": 60,
       "type": "string"
     },
     "description": {
@@ -25,7 +25,31 @@
     "language": {
       "description": "The programming language for this challenge.",
       "type": "string",
-      "enum": ["TYPESCRIPT", "JAVASCRIPT", "PYTHON", "GO", "JAVA", "RUST", "CSHARP", "PHP", "RUBY", "KOTLIN", "CPP", "C", "SWIFT", "SCALA", "ELIXIR", "CLOJURE", "HASKELL", "PERL", "LUA"]
+      "enum": [
+        "TYPESCRIPT",
+        "JAVASCRIPT",
+        "PYTHON",
+        "GO",
+        "JAVA",
+        "RUST",
+        "CSHARP",
+        "PHP",
+        "RUBY",
+        "KOTLIN",
+        "CPP",
+        "C",
+        "SWIFT",
+        "SCALA",
+        "ELIXIR",
+        "CLOJURE",
+        "HASKELL",
+        "PERL",
+        "LUA",
+        "typescript",
+        "javascript",
+        "python",
+        "go"
+      ]
     },
     "prerequisites": {
       "description": "An array of ids of other challenges that this challenge is written as to expect the reader to already understand.",
@@ -39,5 +63,5 @@
       "type": "string"
     }
   },
-  "required": ["id", "label", "description", "difficulty", "prerequisites", "author", "language"]
+  "required": ["id", "label", "description", "difficulty", "author", "language"]
 }

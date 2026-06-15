@@ -34,8 +34,8 @@ const COLLAPSE_THRESHOLD = MIN_HEIGHT / 2;
 const USER_FILE_PATH = 'node_modules/@types/user.d.ts';
 const TEST_FILE_PATH = 'node_modules/@types/test.d.ts';
 
-export const TESTS_PATH = 'file:///tests.ts';
-export const USER_CODE_PATH = 'file:///user.ts';
+export const TESTS_PATH_TS = 'file:///tests.ts';
+export const USER_CODE_PATH_TS = 'file:///user.ts';
 
 export interface SplitEditorProps {
   /** the classes applied to the container div */
@@ -44,6 +44,7 @@ export interface SplitEditorProps {
   setIsTestPanelExpanded: (isExpanded: boolean) => void;
   tests: string;
   userCode: string;
+  language?: string;
   tsconfig?: monaco_editor.languages.typescript.CompilerOptions;
   onValidate?: {
     tests?: OnValidate;
@@ -75,8 +76,8 @@ const getActualCode = (code: string) =>
 // million-ignore
 export default function SplitEditor({
   className,
-  isTestsReadonly = true,
-  expandTestPanel,
+  isTestsReadonly: _isTestsReadonly = true,
+  expandTestPanel: _expandTestPanel,
   monaco,
   onChange,
   onMount,
@@ -84,12 +85,17 @@ export default function SplitEditor({
   setIsTestPanelExpanded,
   tests,
   userCode,
+  language = 'typescript',
   userEditorState,
   tsconfig,
 }: SplitEditorProps) {
   const { toast } = useToast();
   const { settings, updateSettings } = useEditorSettingsStore();
   const { subscribe } = useResetEditor();
+
+  const extension = language === 'python' ? 'py' : language === 'javascript' ? 'js' : 'ts';
+  const TESTS_PATH = `file:///tests.${extension}`;
+  const USER_CODE_PATH = `file:///user.${extension}`;
 
   const wrapper = useRef<HTMLDivElement>(null);
   const resizer = useRef<HTMLDivElement>(null);
@@ -131,8 +137,13 @@ export default function SplitEditor({
   }, [userEditorState]);
 
   // i moved this into onMount to avoid the monacoRef stuff but then you can really debounce it
-  const [ata] = useState(() =>
-    setupTypeAcquisition({
+  const [ata] = useState(() => {
+    if (language !== 'typescript' && language !== 'javascript') {
+      return () => {
+        /* noop */
+      };
+    }
+    return setupTypeAcquisition({
       projectName: 'ЛитКот Playground',
       typescript: ts,
       logger: console,
@@ -178,11 +189,11 @@ export default function SplitEditor({
           onMount?.tests?.(editorRef.current, monacoRef.current);
         },
       },
-    }),
-  );
+    });
+  });
 
-  const debouncedUserCodeAta = useRef(debounce((code: string) => ata(code), 1000)).current;
-  const debouncedTestCodeAta = useRef(debounce((code: string) => ata(code), 1000)).current;
+  const _debouncedUserCodeAta = useRef(debounce((code: string) => ata(code), 1000)).current;
+  const _debouncedTestCodeAta = useRef(debounce((code: string) => ata(code), 1000)).current;
 
   useEffect(() => {
     const resizerRef = resizer.current;
@@ -325,10 +336,8 @@ export default function SplitEditor({
     let testModel = monaco.editor.getModel(testUri);
     if (!testModel) {
       testModel = monaco.editor.createModel(tests, 'typescript', testUri);
-    } else {
-      if (testModel.getValue() !== tests) {
-        testModel.setValue(tests);
-      }
+    } else if (testModel.getValue() !== tests) {
+      testModel.setValue(tests);
     }
     onMount?.tests?.(userEditorState, monaco);
 
@@ -351,6 +360,7 @@ export default function SplitEditor({
           className="overflow-hidden"
           height={userEditorState && settings.bindings === 'vim' ? 'calc(100% - 36px)' : '100%'}
           defaultPath={USER_CODE_PATH}
+          language={language}
           onMount={async (editor, monaco) => {
             // Ensure tests model exists immediately
             const testUri = monaco.Uri.parse(TESTS_PATH);
@@ -364,12 +374,14 @@ export default function SplitEditor({
             // this just does the typechecking so the UI can update
             // it also makes the monaco instance available outside of this callback by setting state in parent
             onMount?.user?.(editor, monaco);
-            typeCheck(monaco);
+            if (language === 'typescript' || language === 'javascript') {
+              typeCheck(monaco);
+            }
             monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
 
             const model = monaco.editor.getModel(monaco.Uri.parse(USER_CODE_PATH))!;
             const code = model.getValue();
-            debouncedUserCodeAta(code);
+            _debouncedUserCodeAta(code);
 
             async function addNodeTypesToMonaco() {
               try {
@@ -464,7 +476,7 @@ export default function SplitEditor({
           onValidate={onValidate?.user}
           onChange={(value, changeEvent) => {
             const code = value ?? '';
-            debouncedUserCodeAta(code);
+            _debouncedUserCodeAta(code);
             if (hasImports(code)) {
               const actualCode = code
                 .split('\n')
@@ -493,7 +505,9 @@ export default function SplitEditor({
             onChange?.user?.(value, changeEvent);
 
             debouncedRefreshInlayHints(monaco!);
-            typeCheck(monaco!);
+            if (language === 'typescript' || language === 'javascript') {
+              typeCheck(monaco!);
+            }
           }}
         />
         {userEditorState && settings.bindings === 'vim' && (
@@ -509,6 +523,11 @@ async function typeCheck(monaco: typeof monaco_editor) {
   const getWorker = await monaco.languages.typescript.getTypeScriptWorker();
 
   for (const model of models) {
+    if (model.isDisposed()) continue;
+
+    const langId = model.getLanguageId();
+    if (langId !== 'typescript' && langId !== 'javascript') continue;
+
     const worker = await getWorker(model.uri);
     const diagnostics = (
       await Promise.all([
@@ -516,6 +535,8 @@ async function typeCheck(monaco: typeof monaco_editor) {
         worker.getSemanticDiagnostics(model.uri.toString()),
       ])
     ).reduce((a, b) => a.concat(b));
+
+    if (model.isDisposed()) continue;
 
     const markers = diagnostics.map((d) => {
       const start = model.getPositionAt(d.start!);

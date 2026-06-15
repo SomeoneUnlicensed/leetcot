@@ -6,11 +6,15 @@ interface Result {
 }
 
 export async function getRandomChallenge() {
-  const result: Result[] =
-    await prisma.$queryRaw`SELECT slug FROM Challenge ORDER BY RAND() LIMIT 1`;
+  try {
+    const result: Result[] =
+      await prisma.$queryRaw`SELECT slug FROM "Challenge" ORDER BY RANDOM() LIMIT 1`;
 
-  if (result.length > 0 && result[0] && Boolean(result[0].slug)) {
-    return result[0].slug;
+    if (result.length > 0 && result[0] && Boolean(result[0].slug)) {
+      return result[0].slug;
+    }
+  } catch (error) {
+    console.error('Error getting random challenge:', error);
   }
 
   return null;

@@ -45,18 +45,19 @@ export function FullscreenButton() {
     <Tooltip>
       <TooltipTrigger asChild>
         <button
-          className="focus:outline-none focus-visible:ring-2"
+          className="flex items-center justify-center rounded-lg p-1.5 text-zinc-400 transition-all hover:bg-zinc-800/60 hover:text-zinc-200 focus:outline-none"
           onClick={handleToggleFullscreen}
+          aria-label="Во весь экран"
         >
           {fssettings.isFullscreen ? (
-            <Minimize2 className="stroke-zinc-500 stroke-1 hover:stroke-zinc-400" size={20} />
+            <Minimize2 className="stroke-current stroke-[1.5]" size={18} />
           ) : (
-            <Maximize2 className="stroke-zinc-500 stroke-1 hover:stroke-zinc-400" size={20} />
+            <Maximize2 className="stroke-current stroke-[1.5]" size={18} />
           )}
         </button>
       </TooltipTrigger>
       <TooltipContent>
-        <p>Maximize Editor</p>
+        <p>{fssettings.isFullscreen ? 'Выйти из полноэкранного режима' : 'На весь экран'}</p>
       </TooltipContent>
     </Tooltip>
   );

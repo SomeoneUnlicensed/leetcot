@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-merge-intervals",
+  "label": "Объединение рыбных зон (Merge Intervals)",
+  "description": "Объедините перекрывающиеся интервалы времени кормления рыб.",
+  "difficulty": "medium",
+  "language": "python",
+  "author": "ЛитКот"
+}

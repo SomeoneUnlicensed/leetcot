@@ -88,7 +88,12 @@ export async function TrackDetail({ slug }: TrackDetailProps) {
               text="Отписаться"
             />
           ) : (
-            <ActionButton slug={slug} action={enrollUserInTrack} trackId={track.id} text="Записаться" />
+            <ActionButton
+              slug={slug}
+              action={enrollUserInTrack}
+              trackId={track.id}
+              text="Записаться"
+            />
           )}
         </div>
         <div className="flex w-full flex-col">

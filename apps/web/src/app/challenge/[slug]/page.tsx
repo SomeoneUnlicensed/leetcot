@@ -11,15 +11,25 @@ type Params = Promise<{ slug: string }>;
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params;
 
-  const { challenge } = await getChallengeRouteData(slug, null);
-  const description = `Unlock your coding potential by solving the ${challenge.name} challenge on ЛитКот.`;
+  try {
+    const { challenge } = await getChallengeRouteData(slug, null);
+    const description = `Unlock your coding potential by solving the ${challenge.name} challenge on ЛитКот.`;
     return buildMetaForChallenge({
       title: `${challenge.name} | ЛитКот`,
       description,
-    username: challenge.user.name,
-    difficulty: challenge.difficulty,
-    date: getRelativeTimeStrict(challenge.createdAt),
-  });
+      username: challenge.user.name,
+      difficulty: challenge.difficulty,
+      date: getRelativeTimeStrict(challenge.createdAt),
+    });
+  } catch {
+    return buildMetaForChallenge({
+      title: 'Задача не найдена | ЛитКот',
+      description: 'К сожалению, такая задача не существует или была удалена.',
+      username: '',
+      difficulty: 'EASY',
+      date: '',
+    });
+  }
 }
 
 export default async function Challenges({ params }: { params: Params }) {

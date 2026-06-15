@@ -16,7 +16,7 @@ export function DescriptionEditor({ form }: DescriptionEditorProps) {
   const description = useWatch({ control: form.control, name: 'description' });
   return (
     <div className="flex h-full flex-1 flex-col">
-      <TypographyH3 className="mx-auto mb-4 lg:mb-6">Create Challenge Description</TypographyH3>
+      <TypographyH3 className="mx-auto mb-4 lg:mb-6">Создание описания задачи</TypographyH3>
       <div className="flex flex-1 flex-wrap gap-2 md:flex-nowrap">
         <div className="flex w-full flex-col gap-2 overflow-hidden rounded-2xl border border-zinc-300 md:w-[500px] md:rounded-r-xl dark:border-zinc-700">
           <FormField
