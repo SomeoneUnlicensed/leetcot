@@ -13,6 +13,7 @@ export const getChallengeSubmissionById = cache(async (submissionId: string, use
       challenge: {
         select: {
           name: true,
+          language: true,
         },
       },
     },

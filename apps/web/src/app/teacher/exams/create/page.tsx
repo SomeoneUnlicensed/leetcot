@@ -59,16 +59,14 @@ export default function CreateExamPage() {
   };
 
   return (
-    <div className="container mx-auto py-10 max-w-2xl">
-      <h1 className="text-3xl font-bold mb-8">Создать новый тест</h1>
+    <div className="container mx-auto max-w-2xl py-10">
+      <h1 className="mb-8 text-3xl font-bold">Создать новый тест</h1>
 
       <Card className="p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
-            <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-              {error}
-            </div>
-          )}
+          {error ? (
+            <div className="rounded border border-red-400 bg-red-100 p-4 text-red-700">{error}</div>
+          ) : null}
 
           <div className="space-y-2">
             <Label htmlFor="title">Название теста *</Label>
@@ -88,7 +86,7 @@ export default function CreateExamPage() {
               placeholder="Опишите тест и его цели..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={4}
             />
           </div>
@@ -129,17 +127,10 @@ export default function CreateExamPage() {
           </div>
 
           <div className="flex gap-4 pt-4">
-            <Button
-              type="submit"
-              disabled={loading}
-            >
+            <Button type="submit" disabled={loading}>
               {loading ? 'Создание...' : 'Создать тест'}
             </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.back()}
-            >
+            <Button type="button" variant="outline" onClick={() => router.back()}>
               Отмена
             </Button>
           </div>

@@ -26,33 +26,21 @@ export async function POST(req: Request) {
     });
 
     if (!exam) {
-      return NextResponse.json(
-        { error: 'Тест не найден.' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Тест не найден.' }, { status: 404 });
     }
 
     if (exam.status !== 'ACTIVE') {
-      return NextResponse.json(
-        { error: 'Этот тест недоступен.' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Этот тест недоступен.' }, { status: 403 });
     }
 
     // Check timing
     const now = new Date();
     if (exam.startDate && exam.startDate > now) {
-      return NextResponse.json(
-        { error: 'Тест еще не начался.' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Тест еще не начался.' }, { status: 403 });
     }
 
     if (exam.endDate && exam.endDate < now) {
-      return NextResponse.json(
-        { error: 'Тест завершен.' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Тест завершен.' }, { status: 403 });
     }
 
     // Create the session
@@ -73,20 +61,20 @@ export async function POST(req: Request) {
         message: 'Сессия экзамена успешно создана!',
         session,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Мяу! Некорректные данные в запросе.', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error('Create exam session error:', error);
     return NextResponse.json(
       { error: 'Что-то пошло не так при создании сессии экзамена.' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

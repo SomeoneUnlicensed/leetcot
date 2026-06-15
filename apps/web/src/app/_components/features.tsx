@@ -40,7 +40,7 @@ export function Features() {
                   >
                     <path d="m19.2 36.4-4.75-10.45L4 21.2l10.45-4.75L19.2 6l4.75 10.45L34.4 21.2l-10.45 4.75ZM36.4 42l-2.35-5.25-5.25-2.35 5.25-2.4 2.35-5.2 2.4 5.2 5.2 2.4-5.2 2.35Z" />
                   </svg>
-                  Мяу, сколько фич! 🐾
+                  Мяу, сколько фич!
                 </span>
               </div>
             </a>
@@ -117,7 +117,7 @@ export function Features() {
                 step2light2: Step2Light2,
                 step3dark: Step3Dark,
                 step3light: Step3Light,
-                alt: 'Something',
+                alt: 'Создание задач',
               }}
               title="Создание задач"
             />

@@ -34,8 +34,9 @@ function Results({ onClick }: HitsProps) {
   if (results.length === 0) {
     return (
       <div className="flex h-full flex-grow flex-col justify-between">
-        <Text intent="leading" className="my-8 flex items-center justify-center text-center px-4">
-          Ничего не найдено по запросу "<strong className="max-w-[50%] md:max-w-[400px] truncate">{query}</strong>"
+        <Text intent="leading" className="my-8 flex items-center justify-center px-4 text-center">
+          Ничего не найдено по запросу "
+          <strong className="max-w-[50%] truncate md:max-w-[400px]">{query}</strong>"
         </Text>
         <ProposedPhrases />
       </div>
@@ -67,7 +68,7 @@ function Result({ result, onClick }: { result: Challenge; onClick: OnClick }) {
     >
       <div className="flex items-center gap-4">
         <DifficultyBadge difficulty={result.difficulty} className="w-[80px] justify-center" />
-        <span className="text-sm font-medium text-foreground">{result.name}</span>
+        <span className="text-foreground text-sm font-medium">{result.name}</span>
       </div>
     </Link>
   );
@@ -85,13 +86,13 @@ function ProposedPhrases() {
       <span className="text-muted-foreground border-b px-4 pb-4">Попробуйте поискать:</span>
       <button
         onClick={updateQuery('Easy')}
-        className="focus-visible:ring-ring hover:bg-foreground/10 flex w-full flex-col items-start justify-center gap-2 overflow-hidden border-b p-6 transition-colors text-left"
+        className="focus-visible:ring-ring hover:bg-foreground/10 flex w-full flex-col items-start justify-center gap-2 overflow-hidden border-b p-6 text-left transition-colors"
       >
         Easy (Простые)
       </button>
       <button
         onClick={updateQuery('Extreme')}
-        className="focus-visible:ring-ring hover:bg-foreground/10 flex w-full flex-col items-start justify-center gap-2 overflow-hidden border-b p-6 transition-colors text-left"
+        className="focus-visible:ring-ring hover:bg-foreground/10 flex w-full flex-col items-start justify-center gap-2 overflow-hidden border-b p-6 text-left transition-colors"
       >
         Extreme (Экстремальные)
       </button>
@@ -139,7 +140,10 @@ function RecentSearches({ onClick }: { onClick: OnClick }) {
   if (results.length === 0) {
     return (
       <div className="flex h-full flex-grow flex-col justify-between">
-        <Text intent="leading" className="my-8 flex items-center justify-center text-muted-foreground">
+        <Text
+          intent="leading"
+          className="text-muted-foreground my-8 flex items-center justify-center"
+        >
           Нет недавних поисков
         </Text>
       </div>
@@ -164,7 +168,7 @@ function RecentSearches({ onClick }: { onClick: OnClick }) {
             className="flex w-full items-center gap-2 overflow-hidden py-6 focus:outline-none"
           >
             <DifficultyBadge difficulty={result.difficulty} className="w-[80px] justify-center" />
-            <p className="text-foreground/60 text-sm truncate">{result.name}</p>
+            <p className="text-foreground/60 truncate text-sm">{result.name}</p>
           </Link>
           <button onClick={() => onRemove(result.id)} aria-label={`Удалить ${result.name}`}>
             <XIcon className="h-6 w-6" />

@@ -55,8 +55,8 @@ export function ShareUrl({ desciprtion, isChallenge = false, code, longUrl }: Sh
         await navigator.clipboard.writeText(short);
         setState('copied');
         toast({
-          title: 'URL Copied!!',
-          description: 'Share url is copied to your clipboard.',
+          title: 'Ссылка скопирована!',
+          description: 'Ссылка для отправки скопирована в буфер обмена.',
         });
         window.setTimeout(() => setState('idle'), 3000);
       }
@@ -64,7 +64,7 @@ export function ShareUrl({ desciprtion, isChallenge = false, code, longUrl }: Sh
       console.error('copyToClipboard', e);
       setState('idle');
       toast({
-        title: 'Copy Failed!!',
+        title: 'Ошибка копирования!',
         variant: 'destructive',
       });
     }
@@ -76,12 +76,12 @@ export function ShareUrl({ desciprtion, isChallenge = false, code, longUrl }: Sh
 
   return (
     <div className="flex flex-col space-y-4">
-      <p>{desciprtion ?? 'Copy this url to share with your friends!'}</p>
+      <p>{desciprtion ?? 'Скопируйте эту ссылку, чтобы поделиться с друзьями!'}</p>
       <code
         aria-disabled={state === 'loading'}
         className="break-all rounded-lg border border-black/20 bg-white px-4 py-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 dark:border-white/20 dark:bg-black"
       >
-        {shortUrl.length === 0 ? (code ? 'Copy to Generate URL!' : url) : shortUrl}
+        {shortUrl.length === 0 ? (code ? 'Скопируйте, чтобы сгенерировать ссылку!' : url) : shortUrl}
       </code>
       <DialogFooter>
         <div className="flex items-center justify-end gap-2">
@@ -93,7 +93,7 @@ export function ShareUrl({ desciprtion, isChallenge = false, code, longUrl }: Sh
                 checked={copyWithCode}
                 onCheckedChange={onCopyWithCodeChange}
               />
-              <label htmlFor="copy-with-code">Copy with code</label>
+              <label htmlFor="copy-with-code">Скопировать вместе с кодом</label>
             </div>
           ) : null}
           <button
@@ -106,7 +106,7 @@ export function ShareUrl({ desciprtion, isChallenge = false, code, longUrl }: Sh
         }`}
             onClick={copyToClipboard}
           >
-            <span>{state === 'copied' ? 'Copied!' : 'Copy'}</span>
+            <span>{state === 'copied' ? 'Скопировано!' : 'Копировать'}</span>
             {state === 'copied' ? (
               <CheckCircle2 className="h-4 w-4" />
             ) : (

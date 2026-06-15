@@ -7,6 +7,7 @@ module.exports = {
     'packages/**',
     'tooling/**',
     'challenges/**',
+    'scratch/**',
     'monaco-editor.d.ts',
     'next-env.d.ts',
   ],

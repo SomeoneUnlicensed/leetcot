@@ -3,15 +3,12 @@ import { auth } from '~/server/auth';
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 
-export async function GET(req: Request) {
+export async function GET(_req: Request) {
   try {
     const session = await auth();
 
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Мяу! Нужно авторизоваться.' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Мяу! Нужно авторизоваться.' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
@@ -22,10 +19,7 @@ export async function GET(req: Request) {
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'Котик не найден.' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Котик не найден.' }, { status: 404 });
     }
 
     // Check if user has TEACHER role
@@ -33,7 +27,7 @@ export async function GET(req: Request) {
     if (!hasTeacherRole) {
       return NextResponse.json(
         { error: 'Мяу! Нет прав доступа. Требуется роль учителя.' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -52,7 +46,7 @@ export async function GET(req: Request) {
     console.error('Get exams error:', error);
     return NextResponse.json(
       { error: 'Что-то пошло не так при получении тестов.' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -62,10 +56,7 @@ export async function POST(req: Request) {
     const session = await auth();
 
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Мяу! Нужно авторизоваться.' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Мяу! Нужно авторизоваться.' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
@@ -76,10 +67,7 @@ export async function POST(req: Request) {
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'Котик не найден.' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Котик не найден.' }, { status: 404 });
     }
 
     // Check if user has TEACHER role
@@ -87,17 +75,22 @@ export async function POST(req: Request) {
     if (!hasTeacherRole) {
       return NextResponse.json(
         { error: 'Мяу! Нет прав доступа. Требуется роль учителя.' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
-    const { title, description, classLevel, startDate, endDate, maxAttempts, showResultsImmediately } = await req.json();
+    const {
+      title,
+      description,
+      classLevel,
+      startDate,
+      endDate,
+      maxAttempts,
+      showResultsImmediately,
+    } = await req.json();
 
     if (!title || !classLevel) {
-      return NextResponse.json(
-        { error: 'Мяу! Укажите название теста и класс.' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Мяу! Укажите название теста и класс.' }, { status: 400 });
     }
 
     const exam = await prisma.exam.create({
@@ -120,13 +113,10 @@ export async function POST(req: Request) {
         message: 'Тест успешно создан!',
         exam,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error('Create exam error:', error);
-    return NextResponse.json(
-      { error: 'Что-то пошло не так при создании теста.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Что-то пошло не так при создании теста.' }, { status: 500 });
   }
 }

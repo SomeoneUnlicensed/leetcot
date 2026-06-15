@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from 'fs';
+import { readdirSync, readFileSync, statSync, existsSync } from 'fs';
 import { join } from 'path';
 import Ajv from 'ajv';
 import {
@@ -76,17 +76,30 @@ export const getChallengeIds = () => {
   const challengeIds = readdirSync(challengesDir)
     .filter((id) => id !== 'blank')
     .filter((id) => id !== 'aot')
-    .filter((id) => statSync(join(challengesDir, id)).isDirectory())
-    .filter((id) => statSync(join(challengesDir, id, 'metadata.json')).isFile())
-    .filter((id) => statSync(join(challengesDir, id, 'tsconfig.json')).isFile());
-  const aotChallengeIds = {};
+    .filter((id) => {
+      const p = join(challengesDir, id);
+      return existsSync(p) && statSync(p).isDirectory();
+    })
+    .filter((id) => {
+      const p = join(challengesDir, id, 'metadata.json');
+      return existsSync(p) && statSync(p).isFile();
+    });
+  const aotChallengeIds: Record<string, string[]> = {};
 
-  const aotYears = readdirSync(aotChallengesDir).filter((file) => file !== 'metadata.schema.json');
+  const aotYears = existsSync(aotChallengesDir)
+    ? readdirSync(aotChallengesDir).filter((file) => file !== 'metadata.schema.json')
+    : [];
   aotYears.forEach((year) => {
-    aotChallengeIds[year] = readdirSync(join(aotChallengesDir, year))
-      .filter((id) => statSync(join(aotChallengesDir, year, id)).isDirectory())
-      .filter((id) => statSync(join(aotChallengesDir, year, id, 'metadata.json')).isFile())
-      .filter((id) => statSync(join(aotChallengesDir, year, id, 'tsconfig.json')).isFile());
+    const yearDir = join(aotChallengesDir, year);
+    aotChallengeIds[year] = readdirSync(yearDir)
+      .filter((id) => {
+        const p = join(yearDir, id);
+        return existsSync(p) && statSync(p).isDirectory();
+      })
+      .filter((id) => {
+        const p = join(yearDir, id, 'metadata.json');
+        return existsSync(p) && statSync(p).isFile();
+      });
   });
 
   return {
@@ -104,7 +117,7 @@ const getMetadata = (id: string, isAot = false, year: string | undefined = undef
   const metadataFile = readFileSync(metadataFilePath, 'utf8');
   const metadata = JSON.parse(metadataFile) as {
     id: string;
-    prerequisites: string[];
+    prerequisites?: string[];
   };
   return {
     metadataFilePath,
@@ -151,7 +164,7 @@ const ensureChallengeIdMatchesDirectory = (id: string) => {
 const validatePrerequisiteIds = (id: string, _: number, ids: string[]) => {
   const { metadataFilePath, metadata } = getMetadata(id);
 
-  metadata.prerequisites.forEach((prerequisite) => {
+  (metadata.prerequisites || []).forEach((prerequisite) => {
     if (!ids.includes(prerequisite)) {
       console.error(
         `[ERROR] the challenge metadata file ${metadataFilePath} contains a prerequisite "${prerequisite}" which does not match any known challenge id.`,
@@ -180,8 +193,14 @@ const validateTests = () => {
   const { challengeIds, aotChallengeIds } = getChallengeIds();
   challengeIds
     .filter((id) => {
+      const tsConfigPath = join(challengesDir, id, 'tsconfig.json');
+      if (!existsSync(tsConfigPath)) {
+        return false;
+      }
       const path = join(challengesDir, id, 'solutions');
-      statSync(path).isDirectory();
+      if (!existsSync(path) || !statSync(path).isDirectory()) {
+        return false;
+      }
       readdirSync(path).forEach((file) => {
         if (!/^\d+\.ts$/.test(file)) {
           throw new Error(

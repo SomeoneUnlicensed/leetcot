@@ -48,8 +48,43 @@ export function Suggestions({ track, challengeId }: SuggestionsProps) {
       : null;
   }, [currentIndex, trackDetails]);
 
+  const nextChallenge = useMemo(() => {
+    if (trackDetails && next) {
+      return {
+        slug: next.challenge.slug,
+        name: next.challenge.name,
+        query: `?slug=${track}`,
+      };
+    }
+    if (similarChallenges && similarChallenges.length > 0) {
+      const first = similarChallenges[0];
+      if (first) {
+        return {
+          slug: first.slug,
+          name: first.name,
+          query: '',
+        };
+      }
+    }
+    return null;
+  }, [trackDetails, next, similarChallenges, track]);
+
   return (
     <div className="w-full max-w-[1000px] md:py-4 md:pb-8">
+      {nextChallenge ? (
+        <div className="mb-6 px-3">
+          <Link href={`/challenge/${nextChallenge.slug}${nextChallenge.query}`}>
+            <Button className="group flex h-auto w-full items-center justify-center gap-2 rounded-xl border-0 bg-gradient-to-r from-fuchsia-500 via-pink-500 to-violet-600 py-3.5 text-xs font-bold uppercase tracking-wider text-white shadow-[0_0_15px_rgba(217,70,239,0.3)] transition-all duration-300 hover:from-fuchsia-400 hover:via-pink-400 hover:to-violet-500 hover:shadow-[0_0_20px_rgba(217,70,239,0.5)] active:scale-[0.98]">
+              <span>Следующая задача: {nextChallenge.name}</span>
+              <ChevronRight
+                size={16}
+                className="transition-transform duration-300 group-hover:translate-x-1"
+              />
+            </Button>
+          </Link>
+        </div>
+      ) : null}
+
       {trackDetails && next ? (
         <>
           <div className="flex items-center justify-between p-3">
@@ -79,7 +114,9 @@ export function Suggestions({ track, challengeId }: SuggestionsProps) {
       {similarChallenges ? (
         <>
           <div className="flex items-center justify-between p-3">
-            <h3 className="text-foreground/70 text-lg font-semibold md:text-xl">Больше испытаний</h3>
+            <h3 className="text-foreground/70 text-lg font-semibold md:text-xl">
+              Больше испытаний
+            </h3>
             <Link href="/explore">
               <Button size="sm" className="gap-1 rounded-full" variant="outline">
                 Исследовать <ChevronRight size={13} />

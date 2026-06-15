@@ -2,18 +2,12 @@ import { prisma } from '@repo/db';
 import { auth } from '~/server/auth';
 import { NextResponse } from 'next/server';
 
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
     const session = await auth();
 
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Мяу! Нужно авторизоваться.' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Мяу! Нужно авторизоваться.' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
@@ -21,10 +15,7 @@ export async function GET(
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'Котик не найден.' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Котик не найден.' }, { status: 404 });
     }
 
     // Verify exam belongs to teacher
@@ -33,10 +24,7 @@ export async function GET(
     });
 
     if (!exam || exam.teacherId !== user.id) {
-      return NextResponse.json(
-        { error: 'Мяу! Нет прав доступа к этому тесту.' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Мяу! Нет прав доступа к этому тесту.' }, { status: 403 });
     }
 
     // Get all sessions and results for this exam
@@ -58,12 +46,9 @@ export async function GET(
 
     // Calculate statistics
     const totalSessions = results.length;
-    const avgScore = totalSessions > 0
-      ? results.reduce((sum, r) => sum + r.totalScore, 0) / totalSessions
-      : 0;
-    const maxScoreOverall = results.length > 0
-      ? results[0].maxScore
-      : 0;
+    const avgScore =
+      totalSessions > 0 ? results.reduce((sum, r) => sum + r.totalScore, 0) / totalSessions : 0;
+    const maxScoreOverall = results.length > 0 ? results[0]?.maxScore : 0;
 
     return NextResponse.json({
       exam,
@@ -71,9 +56,8 @@ export async function GET(
       statistics: {
         totalSessions,
         avgScore,
-        avgPercentage: totalSessions > 0
-          ? results.reduce((sum, r) => sum + r.percentage, 0) / totalSessions
-          : 0,
+        avgPercentage:
+          totalSessions > 0 ? results.reduce((sum, r) => sum + r.percentage, 0) / totalSessions : 0,
         maxScoreOverall,
       },
     });
@@ -81,7 +65,7 @@ export async function GET(
     console.error('Get exam results error:', error);
     return NextResponse.json(
       { error: 'Что-то пошло не так при получении результатов.' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

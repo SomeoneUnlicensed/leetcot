@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-stock-trade",
+  "label": "Покупка и продажа рыбных акций (Best Time to Buy Stock)",
+  "description": "Найдите максимальную прибыль от покупки и продажи рыбных акций за один день.",
+  "difficulty": "easy",
+  "language": "python",
+  "author": "ЛитКот"
+}

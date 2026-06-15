@@ -30,10 +30,10 @@ export function ChallengeCardEditor({ form }: ChallengeCardEditorProps) {
     '_count' | 'difficulty' | 'name' | 'shortDescription' | 'updatedAt' | 'user'
   > = {
     difficulty,
-    name: title || 'Your Title Here',
-    shortDescription: shortDescription || 'Your Short Description Here',
+    name: title || 'Название вашей задачи',
+    shortDescription: shortDescription || 'Краткое описание вашей задачи',
     user: {
-      name: 'You',
+      name: 'Вы',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any,
     _count: {
@@ -45,7 +45,9 @@ export function ChallengeCardEditor({ form }: ChallengeCardEditorProps) {
   };
   return (
     <>
-      <TypographyH3 className="mx-auto mb-4 max-w-fit lg:mb-6">Create Challenge Card</TypographyH3>
+      <TypographyH3 className="mx-auto mb-4 max-w-fit lg:mb-6">
+        Создание карточки задачи
+      </TypographyH3>
       <div className="flex flex-wrap items-start justify-center gap-4 xl:px-24">
         <div className="w-full sm:w-2/3 lg:w-[333px] xl:w-[392px]">
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -58,31 +60,31 @@ export function ChallengeCardEditor({ form }: ChallengeCardEditorProps) {
             render={({ field }) => {
               return (
                 <FormItem>
-                  <FormLabel className="mt-2">Difficulty: </FormLabel>
+                  <FormLabel className="mt-2">Сложность: </FormLabel>
                   <Select
                     defaultValue={field.value}
                     onValueChange={field.onChange as (value: string) => void}
                   >
                     <FormControl>
                       <SelectTrigger className="rounded-xl bg-neutral-200 dark:bg-neutral-800">
-                        <SelectValue placeholder="Select a difficulty for your challenge" />
+                        <SelectValue placeholder="Выберите сложность вашей задачи" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="rounded-xl border border-neutral-300 bg-neutral-200 shadow-[0_0_2rem_#0008] dark:border-neutral-700 dark:bg-neutral-800">
                       <SelectItem className="rounded-t-lg brightness-150" value="BEGINNER">
-                        BEGINNER
+                        НОВИЧОК
                       </SelectItem>
                       <SelectItem className="brightness-150" value="EASY">
-                        EASY
+                        ЛЕГКО
                       </SelectItem>
                       <SelectItem className="brightness-150" value="MEDIUM">
-                        MEDIUM
+                        СРЕДНЕ
                       </SelectItem>
                       <SelectItem className="brightness-150" value="HARD">
-                        HARD
+                        СЛОЖНО
                       </SelectItem>
                       <SelectItem className="rounded-b-lg brightness-150" value="EXTREME">
-                        EXTREME
+                        ЭКСТРИМ
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -96,11 +98,11 @@ export function ChallengeCardEditor({ form }: ChallengeCardEditorProps) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Challenge Title:</FormLabel>
+                <FormLabel>Заголовок задачи:</FormLabel>
                 <FormControl>
                   <Input
                     className="rounded-xl bg-neutral-200 dark:bg-neutral-800"
-                    placeholder="Enter a Challenge Title"
+                    placeholder="Введите заголовок задачи"
                     {...field}
                   />
                 </FormControl>
@@ -113,11 +115,11 @@ export function ChallengeCardEditor({ form }: ChallengeCardEditorProps) {
             name="shortDescription"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Short Description:</FormLabel>
+                <FormLabel>Краткое описание:</FormLabel>
                 <FormControl>
                   <Textarea
                     className="resize-none rounded-xl bg-neutral-200 dark:bg-neutral-800"
-                    placeholder="Enter a Short Description"
+                    placeholder="Введите краткое описание"
                     {...field}
                   />
                 </FormControl>

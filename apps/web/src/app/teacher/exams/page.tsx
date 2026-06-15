@@ -1,12 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Button } from '@repo/ui/components/button';
 import { Card } from '@repo/ui/components/card';
 import { Badge } from '@repo/ui/components/badge';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle, AlertDialogTrigger } from '@repo/ui/components/alert-dialog';
-import { useRouter } from 'next/navigation';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@repo/ui/components/alert-dialog';
 
 interface Exam {
   id: string;
@@ -15,25 +22,20 @@ interface Exam {
   classLevel: string;
   status: string;
   createdAt: string;
-  questions: any[];
-  sessions: any[];
+  questions: unknown[];
+  sessions: unknown[];
 }
 
 export default function TeacherExamsPage() {
   const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
-  useEffect(() => {
-    fetchExams();
-  }, []);
-
-  const fetchExams = async () => {
+  const fetchExams = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/exams');
-      
+
       if (!response.ok) {
         const data = await response.json();
         setError(data.error || 'Ошибка при загрузке тестов');
@@ -48,7 +50,11 @@ export default function TeacherExamsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    void fetchExams();
+  }, [fetchExams]);
 
   const deleteExam = async (id: string) => {
     try {
@@ -62,7 +68,7 @@ export default function TeacherExamsPage() {
         return;
       }
 
-      setExams(exams.filter(exam => exam.id !== id));
+      setExams(exams.filter((exam) => exam.id !== id));
     } catch (err) {
       console.error('Error deleting exam:', err);
       setError('Ошибка при удалении теста');
@@ -70,7 +76,10 @@ export default function TeacherExamsPage() {
   };
 
   const getStatusBadge = (status: string) => {
-    const statusMap: Record<string, { label: string; variant: any }> = {
+    const statusMap: Record<
+      string,
+      { label: string; variant: 'default' | 'destructive' | 'outline' | 'secondary' }
+    > = {
       DRAFT: { label: 'Черновик', variant: 'default' },
       ACTIVE: { label: 'Активен', variant: 'default' },
       CLOSED: { label: 'Закрыт', variant: 'secondary' },
@@ -82,7 +91,7 @@ export default function TeacherExamsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <p className="text-lg">Загрузка...</p>
       </div>
     );
@@ -90,22 +99,22 @@ export default function TeacherExamsPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <div className="flex justify-between items-center mb-8">
+      <div className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-bold">Мои тесты</h1>
         <Link href="/teacher/exams/create">
           <Button>Создать новый тест</Button>
         </Link>
       </div>
 
-      {error && (
-        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+      {error ? (
+        <div className="mb-4 rounded border border-red-400 bg-red-100 p-4 text-red-700">
           {error}
         </div>
-      )}
+      ) : null}
 
       {exams.length === 0 ? (
         <Card className="p-8 text-center">
-          <p className="text-gray-600 mb-4">У вас еще нет тестов</p>
+          <p className="mb-4 text-gray-600">У вас еще нет тестов</p>
           <Link href="/teacher/exams/create">
             <Button>Создать первый тест</Button>
           </Link>
@@ -114,16 +123,16 @@ export default function TeacherExamsPage() {
         <div className="grid gap-4">
           {exams.map((exam) => (
             <Card key={exam.id} className="p-4">
-              <div className="flex justify-between items-start">
+              <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h2 className="text-xl font-semibold mb-2">{exam.title}</h2>
-                  <p className="text-gray-600 mb-2">{exam.description}</p>
-                  <div className="flex gap-4 text-sm text-gray-600 mb-3">
+                  <h2 className="mb-2 text-xl font-semibold">{exam.title}</h2>
+                  <p className="mb-2 text-gray-600">{exam.description}</p>
+                  <div className="mb-3 flex gap-4 text-sm text-gray-600">
                     <span>Класс: {exam.classLevel}</span>
                     <span>Вопросов: {exam.questions?.length || 0}</span>
                     <span>Попыток: {exam.sessions?.length || 0}</span>
                   </div>
-                  <div className="flex gap-2 items-center">
+                  <div className="flex items-center gap-2">
                     {getStatusBadge(exam.status)}
                     <span className="text-sm text-gray-500">
                       Создан: {new Date(exam.createdAt).toLocaleDateString('ru-RU')}

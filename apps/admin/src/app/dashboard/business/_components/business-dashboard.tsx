@@ -1,7 +1,10 @@
 'use client';
 
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui/components/card';
 import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
 import { Badge } from '@repo/ui/components/badge';
@@ -24,18 +27,17 @@ import {
   TrendingUpIcon,
   AtSign,
   Shield,
-  ShieldAlert,
 } from '@repo/ui/icons';
 
 interface Company {
   id: string;
   name: string;
   domain: string;
-  plan: 'ENTERPRISE' | 'PREMIUM' | 'BASIC';
+  plan: 'BASIC' | 'ENTERPRISE' | 'PREMIUM';
   licensesUsed: number;
   licensesMax: number;
   mrr: number;
-  status: 'ACTIVE' | 'SUSPENDED' | 'PENDING';
+  status: 'ACTIVE' | 'PENDING' | 'SUSPENDED';
   contactPerson: string;
   contactEmail: string;
   joinedDate: string;
@@ -106,7 +108,7 @@ const DEFAULT_COMPANIES: Company[] = [
     contactPerson: 'Николай Когтев',
     contactEmail: 'ceo@meowsoft.com',
     joinedDate: '2025-03-12',
-  }
+  },
 ];
 
 export function BusinessDashboard() {
@@ -125,8 +127,8 @@ export function BusinessDashboard() {
   });
 
   const [search, setSearch] = useState('');
-  const [planFilter, setPlanFilter] = useState<'ALL' | 'ENTERPRISE' | 'PREMIUM' | 'BASIC'>('ALL');
-  
+  const [planFilter, setPlanFilter] = useState<'ALL' | 'BASIC' | 'ENTERPRISE' | 'PREMIUM'>('ALL');
+
   // Dialog States
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -135,11 +137,11 @@ export function BusinessDashboard() {
   // Form Fields
   const [name, setName] = useState('');
   const [domain, setDomain] = useState('');
-  const [plan, setPlan] = useState<'ENTERPRISE' | 'PREMIUM' | 'BASIC'>('BASIC');
+  const [plan, setPlan] = useState<'BASIC' | 'ENTERPRISE' | 'PREMIUM'>('BASIC');
   const [licensesMax, setLicensesMax] = useState(50);
   const [licensesUsed, setLicensesUsed] = useState(0);
   const [mrr, setMrr] = useState(50000);
-  const [status, setStatus] = useState<'ACTIVE' | 'SUSPENDED' | 'PENDING'>('ACTIVE');
+  const [status, setStatus] = useState<'ACTIVE' | 'PENDING' | 'SUSPENDED'>('ACTIVE');
   const [contactPerson, setContactPerson] = useState('');
   const [contactEmail, setContactEmail] = useState('');
 
@@ -199,6 +201,7 @@ export function BusinessDashboard() {
   };
 
   const handleDelete = (id: string) => {
+    // eslint-disable-next-line no-alert
     if (confirm('Вы уверены, что хотите удалить этого корпоративного клиента? 😿')) {
       setCompanies(companies.filter((co) => co.id !== id));
     }
@@ -233,13 +236,17 @@ export function BusinessDashboard() {
   // Metrics
   const activeCount = companies.filter((c) => c.status === 'ACTIVE').length;
   const totalLicensesMax = companies.reduce((sum, c) => sum + c.licensesMax, 0);
-  const totalLicensesUsed = companies.reduce((sum, c) => sum + (c.status === 'ACTIVE' ? c.licensesUsed : 0), 0);
+  const totalLicensesUsed = companies.reduce(
+    (sum, c) => sum + (c.status === 'ACTIVE' ? c.licensesUsed : 0),
+    0,
+  );
   const totalMrr = companies.reduce((sum, c) => sum + (c.status === 'ACTIVE' ? c.mrr : 0), 0);
 
   const filteredCompanies = companies.filter((co) => {
-    const matchesSearch = co.name.toLowerCase().includes(search.toLowerCase()) || 
-                          co.domain.toLowerCase().includes(search.toLowerCase()) ||
-                          co.contactPerson.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch =
+      co.name.toLowerCase().includes(search.toLowerCase()) ||
+      co.domain.toLowerCase().includes(search.toLowerCase()) ||
+      co.contactPerson.toLowerCase().includes(search.toLowerCase());
     const matchesPlan = planFilter === 'ALL' || co.plan === planFilter;
     return matchesSearch && matchesPlan;
   });
@@ -249,75 +256,87 @@ export function BusinessDashboard() {
       {/* Metrics Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-950/10">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Активные B2B</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+              Активные B2B
+            </CardTitle>
             <Command className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-extrabold text-emerald-700 dark:text-emerald-300">{activeCount}</div>
-            <p className="text-xs text-muted-foreground mt-1">Клиентские компании</p>
+            <div className="text-2xl font-extrabold text-emerald-700 dark:text-emerald-300">
+              {activeCount}
+            </div>
+            <p className="text-muted-foreground mt-1 text-xs">Клиентские компании</p>
           </CardContent>
         </Card>
 
         <Card className="border-blue-500/20 bg-blue-50/50 dark:bg-blue-950/10">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-xs font-semibold text-blue-600 dark:text-blue-400">Выручка (MRR)</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+              Выручка (MRR)
+            </CardTitle>
             <TrendingUpIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-extrabold text-blue-700 dark:text-blue-300">
               {totalMrr.toLocaleString()} ₽
             </div>
-            <p className="text-xs text-muted-foreground mt-1">Месячный оборот</p>
+            <p className="text-muted-foreground mt-1 text-xs">Месячный оборот</p>
           </CardContent>
         </Card>
 
         <Card className="border-orange-500/20 bg-orange-50/50 dark:bg-orange-950/10">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-xs font-semibold text-orange-600 dark:text-orange-400">Лицензии</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-semibold text-orange-600 dark:text-orange-400">
+              Лицензии
+            </CardTitle>
             <User className="h-4 w-4 text-orange-600 dark:text-orange-400" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-extrabold text-orange-700 dark:text-orange-300">
               {totalLicensesUsed} / {totalLicensesMax}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">Активировано сотрудниками</p>
+            <p className="text-muted-foreground mt-1 text-xs">Активировано сотрудниками</p>
           </CardContent>
         </Card>
 
         <Card className="border-purple-500/20 bg-purple-50/50 dark:bg-purple-950/10">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-xs font-semibold text-purple-600 dark:text-purple-400">Всего клиентов</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-semibold text-purple-600 dark:text-purple-400">
+              Всего клиентов
+            </CardTitle>
             <Shield className="h-4 w-4 text-purple-600 dark:text-purple-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-extrabold text-purple-700 dark:text-purple-300">{companies.length}</div>
-            <p className="text-xs text-muted-foreground mt-1">База B2B клиентов</p>
+            <div className="text-2xl font-extrabold text-purple-700 dark:text-purple-300">
+              {companies.length}
+            </div>
+            <p className="text-muted-foreground mt-1 text-xs">База B2B клиентов</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Controls & Search */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative flex-1 max-w-sm">
-          <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <div className="relative max-w-sm flex-1">
+          <SearchIcon className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
           <Input
             placeholder="Поиск компании или домена..."
-            className="pl-9 bg-background/50"
+            className="bg-background/50 pl-9"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex rounded-lg border bg-card p-1 text-xs">
+          <div className="bg-card flex rounded-lg border p-1 text-xs">
             {(['ALL', 'ENTERPRISE', 'PREMIUM', 'BASIC'] as const).map((filter) => (
               <button
                 key={filter}
                 onClick={() => setPlanFilter(filter)}
                 className={`rounded-md px-3 py-1.5 font-medium transition-all ${
                   planFilter === filter
-                    ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 shadow-sm'
+                    ? 'bg-zinc-100 text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-zinc-50'
                     : 'text-muted-foreground hover:text-zinc-900 dark:hover:text-zinc-50'
                 }`}
               >
@@ -331,7 +350,7 @@ export function BusinessDashboard() {
 
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-1 rounded-xl">
+              <Button className="gap-1 rounded-xl bg-emerald-600 font-bold text-white hover:bg-emerald-700">
                 <Plus className="h-4 w-4" />
                 Добавить
               </Button>
@@ -346,49 +365,62 @@ export function BusinessDashboard() {
               <form onSubmit={handleCreate} className="space-y-4 py-2">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-muted-foreground">Название компании</label>
-                    <Input
-                      placeholder="Например: Яндекс Коты"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required
-                    />
+                    <label className="text-muted-foreground text-xs font-bold">
+                      Название компании
+                      <Input
+                        placeholder="Например: Яндекс Коты"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                      />
+                    </label>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-muted-foreground">Корпоративный домен</label>
-                    <Input
-                      placeholder="yandex.ru"
-                      value={domain}
-                      onChange={(e) => setDomain(e.target.value)}
-                      required
-                    />
+                    <label className="text-muted-foreground text-xs font-bold">
+                      Корпоративный домен
+                      <Input
+                        placeholder="yandex.ru"
+                        value={domain}
+                        onChange={(e) => setDomain(e.target.value)}
+                        required
+                      />
+                    </label>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-muted-foreground">Тарифный план</label>
-                    <select
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      value={plan}
-                      onChange={(e) => setPlan(e.target.value as any)}
-                    >
-                      <option value="BASIC">Basic</option>
-                      <option value="PREMIUM">Premium</option>
-                      <option value="ENTERPRISE">Enterprise</option>
-                    </select>
+                    <label className="text-muted-foreground text-xs font-bold">
+                      Тарифный план
+                      <select
+                        className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2"
+                        value={plan}
+                        onChange={(e) =>
+                          setPlan(e.target.value as 'BASIC' | 'ENTERPRISE' | 'PREMIUM')
+                        }
+                      >
+                        <option value="BASIC">Basic 🐱</option>
+                        <option value="PREMIUM">Premium 🦁</option>
+                        <option value="ENTERPRISE">Enterprise 🐉</option>
+                      </select>
+                    </label>
                   </div>
+
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-muted-foreground">Всего лицензий</label>
-                    <Input
-                      type="number"
-                      min={1}
-                      value={licensesMax}
-                      onChange={(e) => setLicensesMax(parseInt(e.target.value) || 50)}
-                    />
+                    <label className="text-muted-foreground text-xs font-bold">
+                      Всего лицензий
+                      <Input
+                        type="number"
+                        min={1}
+                        value={licensesMax}
+                        onChange={(e) => setLicensesMax(Number(e.target.value))}
+                        required
+                      />
+                    </label>
                   </div>
+
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-muted-foreground">Выручка (MRR)</label>
+                    <label className="text-muted-foreground text-xs font-bold">Выручка (MRR)</label>
                     <Input
                       type="number"
                       min={0}
@@ -400,7 +432,9 @@ export function BusinessDashboard() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-muted-foreground">Контактное лицо</label>
+                    <label className="text-muted-foreground text-xs font-bold">
+                      Контактное лицо
+                    </label>
                     <Input
                       placeholder="Иван Кот"
                       value={contactPerson}
@@ -409,7 +443,7 @@ export function BusinessDashboard() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-muted-foreground">Email</label>
+                    <label className="text-muted-foreground text-xs font-bold">Email</label>
                     <Input
                       type="email"
                       placeholder="contact@company.ru"
@@ -421,9 +455,11 @@ export function BusinessDashboard() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-muted-foreground">Статус контракта</label>
+                  <label className="text-muted-foreground text-xs font-bold">
+                    Статус контракта
+                  </label>
                   <select
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2"
                     value={status}
                     onChange={(e) => setStatus(e.target.value as any)}
                   >
@@ -444,7 +480,7 @@ export function BusinessDashboard() {
                   >
                     Отмена
                   </Button>
-                  <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                  <Button type="submit" className="bg-emerald-600 text-white hover:bg-emerald-700">
                     Зарегистрировать
                   </Button>
                 </DialogFooter>
@@ -458,9 +494,9 @@ export function BusinessDashboard() {
       <div className="grid gap-6">
         {filteredCompanies.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed p-12 text-center">
-            <span className="text-4xl mb-3">🏢💤</span>
+            <span className="mb-3 text-4xl">🏢💤</span>
             <h3 className="text-lg font-bold">Компании не найдены</h3>
-            <p className="text-sm text-muted-foreground max-w-sm mt-1">
+            <p className="text-muted-foreground mt-1 max-w-sm text-sm">
               Попробуйте изменить параметры поиска или фильтры.
             </p>
           </div>
@@ -478,59 +514,75 @@ export function BusinessDashboard() {
             >
               <div className="p-6">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                  <div className="space-y-2 flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h4 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{co.name}</h4>
+                  <div className="flex-1 space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h4 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+                        {co.name}
+                      </h4>
                       {co.status === 'ACTIVE' && (
-                        <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-400 border border-emerald-200">
+                        <Badge className="border border-emerald-200 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-400">
                           Контракт активен
                         </Badge>
                       )}
                       {co.status === 'SUSPENDED' && (
-                        <Badge className="bg-red-100 text-red-800 dark:bg-red-950/30 dark:text-red-400 border border-red-200">
+                        <Badge className="border border-red-200 bg-red-100 text-red-800 dark:bg-red-950/30 dark:text-red-400">
                           Приостановлен
                         </Badge>
                       )}
                       {co.status === 'PENDING' && (
-                        <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-950/30 dark:text-orange-400 border border-orange-200">
+                        <Badge className="border border-orange-200 bg-orange-100 text-orange-800 dark:bg-orange-950/30 dark:text-orange-400">
                           Ожидает оплаты
                         </Badge>
                       )}
-                      <Badge variant="outline" className="border-purple-300 text-purple-600 dark:text-purple-400">
+                      <Badge
+                        variant="outline"
+                        className="border-purple-300 text-purple-600 dark:text-purple-400"
+                      >
                         Plan: {co.plan}
                       </Badge>
                     </div>
 
-                    <div className="grid gap-x-6 gap-y-2 text-xs md:grid-cols-3 max-w-3xl">
-                      <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
+                    <div className="grid max-w-3xl gap-x-6 gap-y-2 text-xs md:grid-cols-3">
+                      <div className="text-muted-foreground flex items-center gap-1.5 font-medium">
                         <AtSign className="h-3.5 w-3.5" />
-                        <span>Домен: <b>{co.domain}</b></span>
+                        <span>
+                          Домен: <b>{co.domain}</b>
+                        </span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
+                      <div className="text-muted-foreground flex items-center gap-1.5 font-medium">
                         👥
-                        <span>Лицензии: <b>{co.licensesUsed} / {co.licensesMax}</b></span>
+                        <span>
+                          Лицензии:{' '}
+                          <b>
+                            {co.licensesUsed} / {co.licensesMax}
+                          </b>
+                        </span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
+                      <div className="text-muted-foreground flex items-center gap-1.5 font-medium">
                         💰
-                        <span>MRR: <b>{co.mrr.toLocaleString()} ₽</b></span>
+                        <span>
+                          MRR: <b>{co.mrr.toLocaleString()} ₽</b>
+                        </span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-muted-foreground font-medium col-span-2">
+                      <div className="text-muted-foreground col-span-2 flex items-center gap-1.5 font-medium">
                         👤
-                        <span>Контакты: <b>{co.contactPerson}</b> ({co.contactEmail})</span>
+                        <span>
+                          Контакты: <b>{co.contactPerson}</b> ({co.contactEmail})
+                        </span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-zinc-400 font-medium">
+                      <div className="flex items-center gap-1.5 font-medium text-zinc-400">
                         📅
                         <span>Дата подключения: {co.joinedDate}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 self-end md:self-center shrink-0">
+                  <div className="flex shrink-0 items-center gap-2 self-end md:self-center">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => openEditDialog(co)}
-                      className="rounded-lg gap-1 border-zinc-300 text-zinc-700 hover:bg-zinc-50"
+                      className="gap-1 rounded-lg border-zinc-300 text-zinc-700 hover:bg-zinc-50"
                     >
                       <Pencil className="h-3.5 w-3.5" />
                       Редактировать
@@ -539,7 +591,7 @@ export function BusinessDashboard() {
                       variant="outline"
                       size="sm"
                       onClick={() => handleDelete(co.id)}
-                      className="rounded-lg gap-1 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                      className="gap-1 rounded-lg border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                       Удалить
@@ -553,50 +605,47 @@ export function BusinessDashboard() {
       </div>
 
       {/* Edit Dialog */}
-      {selectedCompany && (
+      {selectedCompany ? (
         <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
           <DialogContent className="max-w-lg rounded-3xl">
             <DialogHeader>
               <DialogTitle>Редактирование B2B Клиента 🏢</DialogTitle>
-              <DialogDescription>
-                Измените информацию о компании.
-              </DialogDescription>
+              <DialogDescription>Измените информацию о компании.</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleEdit} className="space-y-4 py-2">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-muted-foreground">Название компании</label>
-                  <Input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
+                  <label className="text-muted-foreground text-xs font-bold">
+                    Название компании
+                  </label>
+                  <Input value={name} onChange={(e) => setName(e.target.value)} required />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-muted-foreground">Корпоративный домен</label>
-                  <Input
-                    value={domain}
-                    onChange={(e) => setDomain(e.target.value)}
-                    required
-                  />
+                  <label className="text-muted-foreground text-xs font-bold">
+                    Корпоративный домен
+                  </label>
+                  <Input value={domain} onChange={(e) => setDomain(e.target.value)} required />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-muted-foreground">Тарифный план</label>
-                  <select
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    value={plan}
-                    onChange={(e) => setPlan(e.target.value as any)}
-                  >
-                    <option value="BASIC">Basic</option>
-                    <option value="PREMIUM">Premium</option>
-                    <option value="ENTERPRISE">Enterprise</option>
-                  </select>
+                  <label className="text-muted-foreground text-xs font-bold">
+                    Тарифный план
+                    <select
+                      className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2"
+                      value={plan}
+                      onChange={(e) => setPlan(e.target.value as any)}
+                    >
+                      <option value="BASIC">Basic 🐱</option>
+                      <option value="PREMIUM">Premium 🦁</option>
+                      <option value="ENTERPRISE">Enterprise 🐉</option>
+                    </select>
+                  </label>
                 </div>
+
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-muted-foreground">Всего лицензий</label>
+                  <label className="text-muted-foreground text-xs font-bold">Всего лицензий</label>
                   <Input
                     type="number"
                     min={1}
@@ -605,7 +654,7 @@ export function BusinessDashboard() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-muted-foreground">Выручка (MRR)</label>
+                  <label className="text-muted-foreground text-xs font-bold">Выручка (MRR)</label>
                   <Input
                     type="number"
                     min={0}
@@ -617,7 +666,7 @@ export function BusinessDashboard() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-muted-foreground">Контактное лицо</label>
+                  <label className="text-muted-foreground text-xs font-bold">Контактное лицо</label>
                   <Input
                     value={contactPerson}
                     onChange={(e) => setContactPerson(e.target.value)}
@@ -625,7 +674,7 @@ export function BusinessDashboard() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-muted-foreground">Email</label>
+                  <label className="text-muted-foreground text-xs font-bold">Email</label>
                   <Input
                     type="email"
                     value={contactEmail}
@@ -636,9 +685,9 @@ export function BusinessDashboard() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-muted-foreground">Статус контракта</label>
+                <label className="text-muted-foreground text-xs font-bold">Статус контракта</label>
                 <select
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2"
                   value={status}
                   onChange={(e) => setStatus(e.target.value as any)}
                 >
@@ -660,14 +709,14 @@ export function BusinessDashboard() {
                 >
                   Отмена
                 </Button>
-                <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                <Button type="submit" className="bg-emerald-600 text-white hover:bg-emerald-700">
                   Сохранить изменения
                 </Button>
               </DialogFooter>
             </form>
           </DialogContent>
         </Dialog>
-      )}
+      ) : null}
     </div>
   );
 }

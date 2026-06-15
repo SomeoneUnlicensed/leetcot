@@ -7,7 +7,7 @@ export function DefaultAvatar(props: ComponentProps<'div'>) {
     <div
       {...props}
       className={cn(
-        'font-mono text-[7px] leading-[1] font-bold select-none text-center flex flex-col justify-center items-center w-full h-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25 rounded-full aspect-square',
+        'flex aspect-square h-full w-full select-none flex-col items-center justify-center rounded-full border border-amber-500/25 bg-amber-500/10 text-center font-mono text-[7px] font-bold leading-[1] text-amber-600 dark:text-amber-400',
         props.className,
       )}
     >

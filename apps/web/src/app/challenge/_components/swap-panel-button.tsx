@@ -9,11 +9,15 @@ const SwapPanelButton = ({ toggleDirection }: SwapPanelButtonProps) => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <button onClick={toggleDirection} className="hidden lg:block">
-          <ArrowRightLeft className="stroke-zinc-500 stroke-1 hover:stroke-zinc-400" size={20} />
+        <button
+          onClick={toggleDirection}
+          className="hidden items-center justify-center rounded-lg p-1.5 text-zinc-400 transition-all hover:bg-zinc-800/60 hover:text-zinc-200 focus:outline-none lg:flex"
+          aria-label="Поменять панели"
+        >
+          <ArrowRightLeft className="stroke-current stroke-[1.5]" size={18} />
         </button>
       </TooltipTrigger>
-      <TooltipContent className="px-2 py-1">Swap Panels</TooltipContent>
+      <TooltipContent className="px-2 py-1">Поменять панели местами</TooltipContent>
     </Tooltip>
   );
 };

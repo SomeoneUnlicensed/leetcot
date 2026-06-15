@@ -51,7 +51,7 @@ export async function enrollUserInCourse(courseId: number) {
         // User may already be enrolled in this track, skip
       }
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Ошибка при записи на курс:', e);
     return 'Ошибка при записи на курс';
   }
@@ -84,7 +84,7 @@ export async function unenrollUserFromCourse(courseId: number) {
         },
       },
     });
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Ошибка при отписке от курса:', e);
     return 'Ошибка при отписке от курса';
   }

@@ -162,10 +162,10 @@ export function ImageCard({
 }
 
 const steps = [
-  { id: '1', name: '💳' },
-  { id: '2', name: '📄' },
-  { id: '3', name: '📔' },
-  { id: '4', name: '🚀' },
+  { id: '1', name: '1' },
+  { id: '2', name: '2' },
+  { id: '3', name: '3' },
+  { id: '4', name: '4' },
 ];
 
 export function ChallengeCreationCard({
@@ -207,8 +207,7 @@ export function ChallengeCreationCard({
           'absolute left-1/2 top-1/2 flex w-[80%] -translate-x-1/2 -translate-y-[33%] flex-col gap-12 text-center text-2xl font-bold transition-all duration-500 md:w-[50%]',
         )}
       >
-        <div>🎉</div>
-        <div className="opacity-80">Thanks for creating a challenge!</div>
+        <div className="opacity-80">Спасибо за создание задачи!</div>
       </div>
       {resolvedTheme === 'light' && (
         <>
@@ -437,9 +436,7 @@ export function CollaborativeEnvironmentCard(props: CardProps) {
             <Badge name="ЛитКот" />
             <div className="text-xs text-neutral-500">только что</div>
           </div>
-          <div className="mt-2 text-sm font-bold text-pink-500">
-            Мяу! Барсик помог разобраться 🐾
-          </div>
+          <div className="mt-2 text-sm font-bold text-pink-500">Спасибочки)</div>
         </div>
       </div>
     </FeatureCard>
@@ -457,7 +454,7 @@ export function CuratedTracksCard(props: CardProps) {
       >
         <div className="flex w-[69%] items-center justify-between gap-3 rounded-b-lg rounded-t-xl bg-neutral-500/10 p-2 pl-3 md:w-[82%] xl:w-[69%]">
           <span className="flex items-center gap-1 text-xs font-semibold tracking-wide">
-            TypeScript Foundations
+            Основы алгоритмов
           </span>
         </div>
         <div className="flex w-[69%] flex-col md:w-[82%] xl:w-[69%]">
@@ -483,27 +480,27 @@ interface MockTrackChallenge {
 const mockChallenges: MockTrackChallenge[] = [
   {
     id: 1,
-    name: 'Generics',
+    name: 'Двумя указателями',
     difficulty: 'BEGINNER',
   },
   {
     id: 2,
-    name: 'Infer',
+    name: 'Бинарный поиск',
     difficulty: 'EASY',
   },
   {
     id: 3,
-    name: 'Map Types',
+    name: 'Стек и Очередь',
     difficulty: 'MEDIUM',
   },
   {
     id: 4,
-    name: 'Array/Object',
+    name: 'Графы (BFS/DFS)',
     difficulty: 'HARD',
   },
   {
     id: 5,
-    name: 'Classes',
+    name: 'Динамика',
     difficulty: 'EXTREME',
   },
 ];

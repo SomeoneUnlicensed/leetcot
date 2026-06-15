@@ -74,7 +74,7 @@ export function TestCasesEditor({ form, hasTsErrors, setTsErrors }: TestCasesEdi
 
   return (
     <div className="flex h-full flex-1 flex-col">
-      <TypographyH3 className="mx-auto mb-4 lg:mb-6">Create Test Cases</TypographyH3>
+      <TypographyH3 className="mx-auto mb-4 lg:mb-6">Создание тестовых случаев</TypographyH3>
       <FormField
         control={form.control}
         name="tests"
@@ -98,7 +98,7 @@ export function TestCasesEditor({ form, hasTsErrors, setTsErrors }: TestCasesEdi
                 <FormMessage className="pl-2" />
                 {!hasTsErrors && (
                   <div className="text-destructive pl-2 text-sm font-medium">
-                    You must have failing test cases
+                    У вас должны быть невалидные тестовые случаи
                   </div>
                 )}
               </div>

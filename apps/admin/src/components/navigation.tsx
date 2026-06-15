@@ -19,7 +19,10 @@ export function Navigation() {
         <div className="flex w-full items-center justify-between">
           <div className="relative flex gap-3">
             <Link className="flex items-center space-x-2 duration-300" href="/">
-              <span className="font-bold leading-3 text-xl" style={{ fontFamily: '"Dela Gothic One", sans-serif' }}>
+              <span
+                className="text-xl font-bold leading-3"
+                style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+              >
                 ЛитКот
               </span>
             </Link>

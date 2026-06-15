@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@repo/ui/components/button';
 import { Card } from '@repo/ui/components/card';
@@ -12,7 +12,7 @@ interface Exam {
   title: string;
   description: string;
   classLevel: string;
-  questions: any[];
+  questions: unknown[];
 }
 
 export default function ExamAccessPage() {
@@ -27,15 +27,11 @@ export default function ExamAccessPage() {
   const [isStarting, setIsStarting] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    fetchExam();
-  }, [shareToken]);
-
-  const fetchExam = async () => {
+  const fetchExam = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/exam-access/${shareToken}`);
-      
+
       if (!response.ok) {
         const data = await response.json();
         setError(data.error || 'Ошибка при загрузке теста');
@@ -50,11 +46,15 @@ export default function ExamAccessPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [shareToken]);
+
+  useEffect(() => {
+    void fetchExam();
+  }, [shareToken, fetchExam]);
 
   const handleStartExam = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!studentName || !studentClass) {
       setError('Пожалуйста, введите имя и класс');
       return;
@@ -99,7 +99,7 @@ export default function ExamAccessPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <p className="text-lg">Загрузка теста...</p>
       </div>
     );
@@ -107,10 +107,10 @@ export default function ExamAccessPage() {
 
   if (error && !exam) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="p-8 max-w-md w-full">
-          <div className="text-red-600 text-center">
-            <p className="text-lg font-semibold mb-2">Ошибка</p>
+      <div className="flex min-h-screen items-center justify-center">
+        <Card className="w-full max-w-md p-8">
+          <div className="text-center text-red-600">
+            <p className="mb-2 text-lg font-semibold">Ошибка</p>
             <p>{error}</p>
           </div>
         </Card>
@@ -120,8 +120,8 @@ export default function ExamAccessPage() {
 
   if (!exam) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="p-8 max-w-md w-full">
+      <div className="flex min-h-screen items-center justify-center">
+        <Card className="w-full max-w-md p-8">
           <div className="text-center">
             <p className="text-lg">Тест не найден</p>
           </div>
@@ -131,30 +131,30 @@ export default function ExamAccessPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12 px-4">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white px-4 py-12">
+      <div className="mx-auto max-w-2xl">
         <Card className="p-8 shadow-lg">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2 text-center">{exam.title}</h1>
-            {exam.description && (
-              <p className="text-gray-600 text-center mb-4">{exam.description}</p>
-            )}
-            <div className="bg-blue-50 p-4 rounded border border-blue-200 text-center">
+            <h1 className="mb-2 text-center text-3xl font-bold">{exam.title}</h1>
+            {exam.description ? (
+              <p className="mb-4 text-center text-gray-600">{exam.description}</p>
+            ) : null}
+            <div className="rounded border border-blue-200 bg-blue-50 p-4 text-center">
               <p className="text-sm text-gray-700">
                 <span className="font-semibold">Класс:</span> {exam.classLevel}
               </p>
-              <p className="text-sm text-gray-700 mt-1">
+              <p className="mt-1 text-sm text-gray-700">
                 <span className="font-semibold">Вопросов:</span> {exam.questions?.length || 0}
               </p>
             </div>
           </div>
 
           <form onSubmit={handleStartExam} className="space-y-6">
-            {error && (
-              <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error ? (
+              <div className="rounded border border-red-400 bg-red-100 p-4 text-red-700">
                 {error}
               </div>
-            )}
+            ) : null}
 
             <div className="space-y-2">
               <Label htmlFor="studentName">Ваше имя *</Label>
@@ -188,25 +188,24 @@ export default function ExamAccessPage() {
               />
             </div>
 
-            <div className="bg-yellow-50 p-4 rounded border border-yellow-200">
+            <div className="rounded border border-yellow-200 bg-yellow-50 p-4">
               <p className="text-sm text-gray-700">
-                <span className="font-semibold">⚠️ Внимание:</span> После начала теста вы не сможете вернуться на эту страницу. Убедитесь, что вы готовы.
+                <span className="font-semibold">⚠️ Внимание:</span> После начала теста вы не сможете
+                вернуться на эту страницу. Убедитесь, что вы готовы.
               </p>
             </div>
 
             <Button
               type="submit"
               disabled={isStarting}
-              className="w-full bg-blue-600 hover:bg-blue-700 py-6 text-lg"
+              className="w-full bg-blue-600 py-6 text-lg hover:bg-blue-700"
             >
               {isStarting ? 'Запуск теста...' : 'Начать тест'}
             </Button>
           </form>
         </Card>
 
-        <p className="text-center text-gray-500 text-sm mt-8">
-          © ЛитКот Экзамены
-        </p>
+        <p className="mt-8 text-center text-sm text-gray-500">© ЛитКот Экзамены</p>
       </div>
     </div>
   );
