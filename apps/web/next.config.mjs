@@ -1,4 +1,5 @@
-// NOTE: this whole package is bugged and once they fix this we can remove this workaround
+// NOTE: million/compiler is webpack-only and incompatible with turbopack.
+// In dev (turbopack) we skip it; in production builds webpack is used so million is applied.
 import bundleAnalyzer from '@next/bundle-analyzer';
 import { withSentryConfig } from '@sentry/nextjs';
 // eslint-disable-next-line import/no-unresolved
@@ -10,7 +11,10 @@ const millionConfig = {
   auto: { rsc: true },
 };
 const isProd = process.env.NODE_ENV === 'production';
-/** @type {import("next").NextConfig} */
+// Detect turbopack mode via CLI args (--turbopack flag)
+const isTurbopack = process.argv.includes('--turbopack');
+
+
 const nextConfig = {
   async headers() {
     return !isProd
@@ -37,12 +41,20 @@ const nextConfig = {
     ],
   },
 };
+
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
 const withVercelToolbar = vercelToolbar();
 
-const baseConfig = million.next(withBundleAnalyzer(withVercelToolbar(nextConfig)), millionConfig);
+// In turbopack (dev) mode: skip million compiler (webpack-only)
+// In webpack (prod) mode: apply million for optimization
+const withPlugins = (config) =>
+  isTurbopack
+    ? withBundleAnalyzer(withVercelToolbar(config))
+    : million.next(withBundleAnalyzer(withVercelToolbar(config)), millionConfig);
+
+const baseConfig = withPlugins(nextConfig);
 
 export default process.env.SENTRY_AUTH_TOKEN
   ? withSentryConfig(
