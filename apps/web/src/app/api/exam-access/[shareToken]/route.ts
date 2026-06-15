@@ -1,7 +1,7 @@
 import { prisma } from '@repo/db';
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request, { params }: { params: { shareToken: string } }) {
+export async function GET(req: Request, { params }: { params: { shareToken: string } }): Promise<NextResponse> {
   try {
     const exam = await prisma.exam.findUnique({
       where: { shareToken: params.shareToken },
