@@ -6,7 +6,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: dev
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev}
       POSTGRES_DB: leetcot
     volumes:
       - leetcot-data:/var/lib/postgresql/data
@@ -38,9 +38,9 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgresql://postgres:dev@db:5432/leetcot?schema=public
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-dev}@db:5432/leetcot?schema=public
       - REDIS_URL=redis://redis:6379
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV:-production}
     depends_on:
       db:
         condition: service_healthy
