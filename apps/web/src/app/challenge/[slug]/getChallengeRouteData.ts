@@ -175,11 +175,11 @@ export const getChallengeRouteData = cache(async (slug: string, session: Session
 export type GetCurrentChallengeType = ChallengeRouteData['challenge'];
 
 export const isEnrolledInAnyTrack = cache(async (session: Session | null) => {
-  if (!session) {
+  if (!session || !session.user?.id) {
     return false;
   }
   const userWithTrackCount = await prisma.user.findUnique({
-    where: { id: session?.user?.id },
+    where: { id: session.user.id },
     select: {
       _count: {
         select: { tracks: true },

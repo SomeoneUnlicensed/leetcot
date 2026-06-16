@@ -17,6 +17,15 @@ const COLORS_BY_DIFFICULTY = {
   EVENT: 'dark:bg-difficulty-extreme-dark bg-difficulty-extreme',
 };
 
+const LABELS_BY_DIFFICULTY = {
+  BEGINNER: 'Новичок',
+  EASY: 'Легко',
+  MEDIUM: 'Средне',
+  HARD: 'Сложно',
+  EXTREME: 'Экстрим',
+  EVENT: 'Событие',
+};
+
 export function DifficultyBadge({ className, difficulty }: DifficultyBadgeProps) {
   return (
     <Badge
@@ -25,7 +34,7 @@ export function DifficultyBadge({ className, difficulty }: DifficultyBadgeProps)
         className,
       )}
     >
-      {difficulty}
+      {LABELS_BY_DIFFICULTY[difficulty] || difficulty}
     </Badge>
   );
 }

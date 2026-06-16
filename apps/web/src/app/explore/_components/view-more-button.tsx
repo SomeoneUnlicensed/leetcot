@@ -34,7 +34,7 @@ export function ViewMoreButton({ redirectRoute, tag }: ViewMoreButtonProps) {
       variant="ghost"
     >
       <Link href={redirectRoute}>
-        view more
+        показать все
         <ChevronRight className="ml-2 h-4 w-4 stroke-[3] duration-300 group-hover:translate-x-1" />
       </Link>
     </Button>
