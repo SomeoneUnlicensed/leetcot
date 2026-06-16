@@ -45,6 +45,6 @@ COPY --from=builder /app ./
 EXPOSE 3000 3001 3003
 
 # Production entrypoint
-RUN printf '#!/bin/sh\necho "Applying database migrations..."\nnpx prisma migrate deploy --schema /app/packages/db/schema.prisma\necho "Starting LeetCot in production mode..."\npnpm start\n' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
+RUN printf '#!/bin/sh\necho "Applying database migrations..."\npnpm --filter @repo/db exec prisma migrate deploy\necho "Starting LeetCot in production mode..."\npnpm start\n' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["/bin/sh", "/app/entrypoint.sh"]

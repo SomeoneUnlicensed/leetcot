@@ -87,6 +87,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ['var(--font-sans)', ...fontFamily.sans],
+        'dela-gothic': ['var(--font-dela-gothic)', ...fontFamily.sans],
       },
       keyframes: {
         'accordion-down': {
