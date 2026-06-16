@@ -52,8 +52,8 @@ services:
     image: dpage/pgadmin4:8
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@leetcot.local
-      PGADMIN_DEFAULT_PASSWORD: dev
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@leetcot.ru}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-dev}
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
     volumes:
       - ./pgadmin/servers.json:/pgadmin4/servers.json
