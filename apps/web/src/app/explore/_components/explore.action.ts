@@ -1,11 +1,41 @@
 'use server';
 
-import { prisma } from '@repo/db';
+import { prisma, Prisma } from '@repo/db';
 import { Tags } from '@repo/db/types';
 import type { Language, Difficulty } from '@repo/db/types';
 
 import { cache } from 'react';
 import { auth } from '~/server/auth';
+
+export type FilteredChallenge = Prisma.ChallengeGetPayload<{
+  include: {
+    _count: {
+      select: { vote: true; comment: true };
+    };
+    user: {
+      select: {
+        name: true;
+      };
+    };
+    submission: {
+      where: {
+        userId: string;
+        isSuccessful: boolean;
+      };
+      take: number;
+    };
+  };
+}>;
+
+export type SearchedChallenge = Prisma.ChallengeGetPayload<{
+  include: {
+    user: {
+      select: {
+        name: true;
+      };
+    };
+  };
+}>;
 
 export type ExploreChallengeData = ReturnType<typeof getChallengesByTagOrDifficulty>;
 const allTags: Tags[] = Object.values(Tags);
@@ -20,7 +50,7 @@ export interface FilterOptions {
 /**
  * Fetches challenges with comprehensive filtering.
  */
-export async function getFilteredChallenges(filters: FilterOptions, take?: number) {
+export async function getFilteredChallenges(filters: FilterOptions, take?: number): Promise<FilteredChallenge[]> {
   const session = await auth();
 
   const where: Record<string, unknown> = {
@@ -80,7 +110,7 @@ export async function getFilteredChallenges(filters: FilterOptions, take?: numbe
 /**
  * Fetches challenges either by tag or difficulty.
  */
-export async function getChallengesByTagOrDifficulty(str: string, take?: number) {
+export async function getChallengesByTagOrDifficulty(str: string, take?: number): Promise<FilteredChallenge[]> {
   const session = await auth();
   const formattedStr = str.trim().toUpperCase();
 
@@ -127,7 +157,7 @@ export async function getChallengesByTagOrDifficulty(str: string, take?: number)
 /**
  * Searches for challenges by name or slug.
  */
-export async function searchChallenges(query: string) {
+export async function searchChallenges(query: string): Promise<SearchedChallenge[]> {
   if (!query) return [];
 
   return prisma.challenge.findMany({
