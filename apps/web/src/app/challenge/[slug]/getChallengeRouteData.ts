@@ -179,7 +179,7 @@ export const isEnrolledInAnyTrack = cache(async (session: Session | null) => {
     return false;
   }
   const userWithTrackCount = await prisma.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: session.user?.id },
     select: {
       _count: {
         select: { tracks: true },
