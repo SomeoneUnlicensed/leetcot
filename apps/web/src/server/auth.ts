@@ -9,6 +9,7 @@ const cookieDomain = useSecureCookies ? 'leetcot.ru' : undefined;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const authOptions: any = {
   ...baseNextAuthConfig,
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'fallback_secret_key_12345',
   cookies: {
     sessionToken: {
       name: `${cookiePrefix}next-auth.session-token`,
