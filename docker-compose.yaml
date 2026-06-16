@@ -61,7 +61,6 @@ services:
       PGADMIN_CONFIG_SCRIPT_NAME: '/db'
     volumes:
       - ./pgadmin/servers.json:/pgadmin4/servers.json
-      - ./pgadmin/pgpass:/pgpassfile
       - pgadmin-data:/var/lib/pgadmin
     ports:
       - 5050:80
