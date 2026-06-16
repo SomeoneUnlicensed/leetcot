@@ -1,7 +1,8 @@
 'use server';
 
 import { type Session } from '@repo/auth/server';
-import { prisma, Prisma } from '@repo/db';
+import { prisma } from '@repo/db';
+import type { Prisma } from '@repo/db';
 import { revalidateTag } from 'next/cache';
 import { cache } from 'react';
 import { track } from '@vercel/analytics/server';

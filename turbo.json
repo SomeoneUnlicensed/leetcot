@@ -26,6 +26,8 @@
         "AUTH_REDIRECT_PROXY_URL",
         "RESEND_API_KEY",
         "SENTRY_AUTH_TOKEN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
         "PORT",
         "USERNAME",
         "PASSWORD",
