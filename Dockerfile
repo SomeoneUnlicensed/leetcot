@@ -1,6 +1,6 @@
 # --- Stage 1: Base ---
 FROM node:24-alpine AS base
-RUN apk add --no-cache openssl && \
+RUN apk add --no-cache openssl docker-cli && \
     npm install -g pnpm@10.11.0 dotenv-cli
 WORKDIR /app
 

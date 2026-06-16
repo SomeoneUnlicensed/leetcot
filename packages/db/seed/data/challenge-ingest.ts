@@ -75,7 +75,12 @@ async function buildChallenge(
         try {
           const fileContents = await fs.promises.readFile(itemPath, 'utf8');
           if (fileName === 'prompt') {
-            challengeToCreate.description = fileContents;
+            let cleaned = fileContents
+              .replace(/> 🏢 \*\*Эта задача часто встречается на собеседованиях в:\*\*.*$/gm, '')
+              .replace(/> 😺 \*\*ЛитКот напоминает:\*\*.*$/gm, '')
+              .replace(/>\s*$/gm, '');
+            cleaned = cleaned.replace(/\n{3,}/g, '\n\n').trim();
+            challengeToCreate.description = cleaned;
           }
           if (fileName === 'user') {
             challengeToCreate.code = fileContents;

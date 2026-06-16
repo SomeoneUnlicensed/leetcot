@@ -27,6 +27,26 @@ const nextConfig = {
         ]
       : [];
   },
+  async rewrites() {
+    return [
+      {
+        source: '/panel',
+        destination: 'http://localhost:3001/panel',
+      },
+      {
+        source: '/panel/:path*',
+        destination: 'http://localhost:3001/panel/:path*',
+      },
+      {
+        source: '/db',
+        destination: 'http://pgadmin:80/db',
+      },
+      {
+        source: '/db/:path*',
+        destination: 'http://pgadmin:80/db/:path*',
+      },
+    ];
+  },
   transpilePackages: ['@repo/db', '@repo/ui', '@repo/auth', '@repo/monaco'],
   images: {
     remotePatterns: [
