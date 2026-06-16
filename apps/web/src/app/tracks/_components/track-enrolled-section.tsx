@@ -3,6 +3,7 @@ import { prisma } from '@repo/db';
 import { EnrolledTrackSectionCarousel } from './track-enrolled-section-carousel';
 import { SkeletonTrack } from './SkeletonTrack';
 import { auth } from '~/server/auth';
+import { getUserEnrolledTracks, type EnrolledTracks } from './track.action';
 
 export async function EnrolledTrackSection() {
   const session = await auth();
@@ -58,42 +59,4 @@ export async function EnrolledTrackSection() {
   );
 }
 
-export type EnrolledTracks = Awaited<ReturnType<typeof getUserEnrolledTracks>>;
-
-/**
- * Fetches user enrolled tracks based on current session.
- */
-function getUserEnrolledTracks(session: Session) {
-  return prisma.track.findMany({
-    where: {
-      enrolledUsers: {
-        some: {
-          id: session.user?.id,
-        },
-      },
-    },
-    include: {
-      trackChallenges: {
-        include: {
-          challenge: {
-            include: {
-              submission: {
-                where: {
-                  userId: session.user?.id,
-                },
-              },
-            },
-          },
-        },
-      },
-      _count: {
-        select: {
-          enrolledUsers: true,
-        },
-      },
-    },
-    orderBy: {
-      name: 'asc',
-    },
-  });
-}
+export type { EnrolledTracks } from './track.action';
