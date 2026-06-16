@@ -24,11 +24,12 @@ COPY tooling/config-typescript/package.json ./tooling/config-typescript/package.
 COPY tooling/github-actions/package.json ./tooling/github-actions/package.json
 COPY tooling/scripts/package.json ./tooling/scripts/package.json
 COPY patches ./patches
-RUN pnpm install
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm config set store-dir /pnpm/store && pnpm install
 
 # --- Stage 3: Build ---
 FROM deps AS builder
 COPY . .
+ENV DATABASE_URL="postgresql://postgres:dev@localhost:5432/leetcot?schema=public"
 # We need environment variables at build time for Next.js in some cases, 
 # but usually it's better to provide them via .env during build if needed.
 # Limit concurrency to 1 to prevent OOM kills in Docker

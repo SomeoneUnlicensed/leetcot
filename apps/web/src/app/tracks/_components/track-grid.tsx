@@ -1,8 +1,36 @@
 import { type Session } from '@repo/auth/server';
-import { prisma } from '@repo/db';
+import { prisma, Prisma } from '@repo/db';
 import { TrackCard } from './track-card';
 import { TrackCardSoon } from './track-card-soon';
 import { auth } from '~/server/auth';
+
+export type GridTrack = Prisma.TrackGetPayload<{
+  include: {
+    _count: {
+      select: {
+        trackChallenges: true;
+      };
+    };
+    enrolledUsers: {
+      where: {
+        id: string;
+      };
+    };
+    trackChallenges: {
+      include: {
+        challenge: {
+          include: {
+            submission: {
+              where: {
+                userId: string;
+              };
+            };
+          };
+        };
+      };
+    };
+  };
+}>;
 
 export async function TrackGrid() {
   const session = await auth();
@@ -24,9 +52,9 @@ export async function TrackGrid() {
   );
 }
 
-export type Tracks = Awaited<ReturnType<typeof getTracks>>;
+export type Tracks = GridTrack[];
 
-function getTracks(session: Session | null) {
+function getTracks(session: Session | null): Promise<GridTrack[]> {
   return prisma.track.findMany({
     include: {
       _count: {

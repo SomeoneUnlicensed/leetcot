@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
+    "start": "turbo run start --filter=web --filter=admin --filter=auth-proxy",
     "checks": "turbo run format lint typecheck --continue",
     "checks:fix": "turbo run format:fix lint:fix typecheck --continue --force",
     "clean": "turbo run clean && rm -rf node_modules && rm -rf .turbo",
