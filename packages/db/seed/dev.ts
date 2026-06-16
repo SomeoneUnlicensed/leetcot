@@ -20,17 +20,11 @@ async function main() {
   const emailArg = args.find((arg) => arg.startsWith('--email='));
   const passwordArg = args.find((arg) => arg.startsWith('--password='));
 
-  if (!emailArg || !passwordArg) {
-    console.error('Ошибка: Необходимо указать email и пароль админа.');
-    console.error('Пример: pnpm db:seed -- --email=admin@leetcot.ru --password=my-secure-password');
-    process.exit(1);
-  }
-
-  const adminEmail = emailArg.split('=')[1];
-  const adminPassword = passwordArg.split('=')[1];
+  const adminEmail = emailArg ? emailArg.split('=')[1] : process.env.ADMIN_EMAIL;
+  const adminPassword = passwordArg ? passwordArg.split('=')[1] : process.env.ADMIN_PASSWORD;
 
   if (!adminEmail || !adminPassword) {
-    console.error('Ошибка: Некорректный формат email или пароля.');
+    console.error('Ошибка: Необходимо указать email и пароль админа (аргументами --email/--password или через переменные окружения ADMIN_EMAIL/ADMIN_PASSWORD).');
     process.exit(1);
   }
 
