@@ -43,8 +43,8 @@ function NoComments() {
           <circle cx="433.63626" cy="105.17383" fill="#888a" r="20" />
           <circle cx="433.63626" cy="105.17383" fill="#444a" r="12.18187" />
         </svg>
-        No comments yet,
-        <br /> be the first to comment!
+        Комментариев пока нет,
+        <br /> станьте первым!
       </p>
     </div>
   );

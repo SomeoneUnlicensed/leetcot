@@ -43,15 +43,15 @@ test('challenge page', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Comment', exact: true })).toBeDisabled();
 
   await page.getByRole('button', { name: 'Comments' }).click();
-  await expect(page.getByText('No comments yet, be the first to comment!')).toBeVisible();
+  await expect(page.getByText('Комментариев пока нет, станьте первым!')).toBeVisible();
 
   await page.getByRole('tab', { name: 'Solutions' }).click();
   await expect(
-    page.getByText('No solutions yet, complete the challenge to submit one!'),
+    page.getByText('Решений пока нет, выполните испытание, чтобы добавить свое!'),
   ).toBeVisible();
 
   await page.getByRole('tab', { name: 'Submissions' }).click();
-  await expect(page.getByText('No submissions yet, submit the challenge!')).toBeVisible();
+  await expect(page.getByText('Решений пока нет, отправьте задачу!')).toBeVisible();
 
   await page.getByRole('button', { name: 'Tests' }).click();
 

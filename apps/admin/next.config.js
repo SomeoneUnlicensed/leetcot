@@ -7,6 +7,7 @@ const millionConfig = {
 
 /** @type {import("next").NextConfig} */
 const config = {
+  basePath: '/panel',
   webpack: (config) => {
     config.module.rules.push({
       test: /\.md$/,
