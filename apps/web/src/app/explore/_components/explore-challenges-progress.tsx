@@ -5,7 +5,7 @@ interface ExploreChallengesProgressionProps {
   total: number;
 }
 
-const SOLVED = 'Solved';
+const SOLVED = 'Решено';
 
 export function ExploreChallengesProgression({
   completed,
