@@ -43,8 +43,8 @@ function NoSubmissions() {
           <circle cx="433.63626" cy="105.17383" fill="#888a" r="20" />
           <circle cx="433.63626" cy="105.17383" fill="#444a" r="12.18187" />
         </svg>
-        No submissions yet,
-        <br /> submit the challenge!
+        Решений пока нет,
+        <br /> отправьте задачу!
       </p>
     </div>
   );

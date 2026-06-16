@@ -35,6 +35,9 @@ services:
       - 3000:3000
       - 3001:3001
       - 3003:3003
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp
     env_file:
       - .env
     environment:
@@ -55,6 +58,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@leetcot.ru}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-dev}
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+      PGADMIN_CONFIG_SCRIPT_NAME: '/db'
     volumes:
       - ./pgadmin/servers.json:/pgadmin4/servers.json
       - ./pgadmin/pgpass:/pgpassfile
