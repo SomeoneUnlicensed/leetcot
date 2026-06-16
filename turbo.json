@@ -1,6 +1,6 @@
 {
   "$schema": "https://turborepo.com/schema.v2.json",
-  "globalEnv": ["DATABASE_URL"],
+  "globalEnv": ["DATABASE_URL", "AUTH_TRUST_HOST"],
   "globalDependencies": [".env", ".env.*"],
   "tasks": {
     "build": {
@@ -87,6 +87,11 @@
     },
     "dev": {
       "dependsOn": ["@repo/db#db:generate"],
+      "persistent": true,
+      "cache": false
+    },
+    "start": {
+      "dependsOn": ["^build"],
       "persistent": true,
       "cache": false
     },

@@ -1,10 +1,16 @@
 import type { MetadataRoute } from 'next';
 import { prisma } from '@repo/db';
+import type { Challenge } from '@repo/db/types';
 
 const URL = 'https://leetcot.ru';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const allChallenges = await prisma.challenge.findMany();
+  let allChallenges: Challenge[] = [];
+  try {
+    allChallenges = await prisma.challenge.findMany();
+  } catch (error) {
+    console.warn('Warning: Database not available during sitemap build, skipping challenges:', error);
+  }
 
   return [
     {

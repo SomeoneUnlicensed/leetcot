@@ -68,8 +68,8 @@ function LoginForm() {
           <p className="mt-2 text-sm text-zinc-400">С возвращением в нашу кошачью банду</p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
+        <form className="mt-8 flex flex-col gap-8" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-4">
             <div>
               <Label htmlFor="email">Email</Label>
               <Input

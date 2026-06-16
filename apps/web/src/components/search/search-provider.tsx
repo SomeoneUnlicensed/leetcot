@@ -47,13 +47,13 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useSearchStatus() {
+export function useSearchStatus(): { status: 'error' | 'idle' | 'loading' | 'success' } {
   const context = React.useContext(SearchContext);
   if (!context) throw new Error('useSearchStatus must be used within SearchProvider');
   return { status: context.status };
 }
 
-export function useSearchResult() {
+export function useSearchResult(): { results: Challenge[]; query: string } {
   const context = React.useContext(SearchContext);
   if (!context) throw new Error('useSearchResult must be used within SearchProvider');
   return { results: context.results, query: context.query };
@@ -61,13 +61,13 @@ export function useSearchResult() {
 
 export type Result = Challenge;
 
-export function useSearchProviderInput() {
+export function useSearchProviderInput(): { query: string; update: (query: string) => void } {
   const context = React.useContext(SearchContext);
   if (!context) throw new Error('useSearchProviderInput must be used within SearchProvider');
   return { query: context.query, update: context.setQuery };
 }
 
-export function useSearchBox() {
+export function useSearchBox(): { query: string; setQuery: (query: string) => void } {
   const context = React.useContext(SearchContext);
   if (!context) throw new Error('useSearchBox must be used within SearchProvider');
   return { query: context.query, setQuery: context.setQuery };

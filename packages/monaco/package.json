@@ -67,6 +67,8 @@
   "devDependencies": {
     "@repo/lint": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@types/lodash": "^4.14.195",
+    "@types/react": "19.1.0",
     "eslint": "^8.57.0",
     "monaco-editor": "^0.52.2",
     "typescript": "^5.3.3"
