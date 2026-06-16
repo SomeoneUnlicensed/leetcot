@@ -517,6 +517,9 @@ importers:
 
   packages/auth:
     dependencies:
+      '@auth/core':
+        specifier: 0.37.4
+        version: 0.37.4
       '@auth/prisma-adapter':
         specifier: ^1.0.13
         version: 1.6.0(@prisma/client@5.21.1(prisma@5.21.1))
@@ -661,6 +664,9 @@ importers:
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/config-typescript
+      '@types/react':
+        specifier: npm:types-react@rc
+        version: types-react@19.0.0-rc.1
       eslint:
         specifier: ^8.57.0
         version: 8.57.1

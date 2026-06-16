@@ -66,8 +66,8 @@ export default process.env.SENTRY_AUTH_TOKEN
         // Suppresses source map uploading logs during build
         silent: true,
 
-        org: 'typehero',
-        project: 'typehero-web-production',
+        org: process.env.SENTRY_ORG || 'typehero',
+        project: process.env.SENTRY_PROJECT || 'typehero-web-production',
       },
       {
         // For all available options, see:

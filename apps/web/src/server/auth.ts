@@ -6,7 +6,8 @@ const useSecureCookies = process.env.VERCEL_ENV === 'production';
 const cookiePrefix = useSecureCookies ? '__Secure-' : '';
 const cookieDomain = useSecureCookies ? 'leetcot.ru' : undefined;
 
-export const authOptions = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const authOptions: any = {
   ...baseNextAuthConfig,
   cookies: {
     sessionToken: {

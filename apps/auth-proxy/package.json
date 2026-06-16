@@ -6,6 +6,7 @@
     "build": "nitro build",
     "clean": "rm -rf .output .nitro node_modules",
     "dev": "nitro dev --port 3002",
+    "start": "PORT=3003 node .output/server/index.mjs",
     "format": "prettier . --check --cache --cache-location=\"node_modules/.cache/prettiercache\"",
     "format:fix": "prettier . --write --cache --cache-location=\"node_modules/.cache/prettiercache\" --log-level=warn",
     "lint": "eslint . --max-warnings 0",
