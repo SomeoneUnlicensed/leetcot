@@ -44,7 +44,7 @@ jobs:
         run: sleep 8
 
       - name: Apply database migrations
-        run: docker compose exec -T app npx prisma migrate deploy
+        run: docker compose exec -T app npx prisma migrate deploy --schema /app/packages/db/schema.prisma
 
       - name: Clean up build artifacts
         if: always()
