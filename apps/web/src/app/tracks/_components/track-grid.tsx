@@ -1,5 +1,6 @@
 import { type Session } from '@repo/auth/server';
-import { prisma, Prisma } from '@repo/db';
+import { prisma } from '@repo/db';
+import type { Prisma } from '@repo/db';
 import { TrackCard } from './track-card';
 import { TrackCardSoon } from './track-card-soon';
 import { auth } from '~/server/auth';

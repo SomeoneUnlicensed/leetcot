@@ -1,6 +1,7 @@
 'use server';
 
-import { prisma, Prisma } from '@repo/db';
+import { prisma } from '@repo/db';
+import type { Prisma } from '@repo/db';
 import { Tags } from '@repo/db/types';
 import type { Language, Difficulty } from '@repo/db/types';
 
