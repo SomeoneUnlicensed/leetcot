@@ -1,7 +1,7 @@
 'use server';
 
 import { type Session } from '@repo/auth/server';
-import { prisma } from '@repo/db';
+import { prisma, Prisma } from '@repo/db';
 import { revalidateTag } from 'next/cache';
 import { cache } from 'react';
 import { track } from '@vercel/analytics/server';
@@ -105,12 +105,35 @@ export const getTrackDetails = cache(async (slug: string) => {
   });
 });
 
-export type EnrolledTracks = Awaited<ReturnType<typeof getUserEnrolledTracks>>;
+export type EnrolledTrack = Prisma.TrackGetPayload<{
+  include: {
+    trackChallenges: {
+      include: {
+        challenge: {
+          include: {
+            submission: {
+              where: {
+                userId: string;
+              };
+            };
+          };
+        };
+      };
+    };
+    _count: {
+      select: {
+        enrolledUsers: true;
+      };
+    };
+  };
+}>;
+
+export type EnrolledTracks = EnrolledTrack[];
 
 /**
  * Fetches user enrolled tracks based on current session.
  */
-export async function getUserEnrolledTracks(session: Session) {
+export async function getUserEnrolledTracks(session: Session): Promise<EnrolledTracks> {
   return prisma.track.findMany({
     where: {
       enrolledUsers: {
