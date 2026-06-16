@@ -69,7 +69,7 @@ export async function Hero() {
             <div className="absolute right-1/2 top-1/2 -z-10 hidden h-56 w-56 -translate-y-[40%] rounded-full bg-fuchsia-600/20 blur-3xl dark:block" />
             <LeetCotLogo3D />
             <h1 className="animate-bg-gradient-to-center-title dark:to-69% select-none bg-gradient-to-br from-pink-500 from-[69%] to-black/0 bg-clip-text bg-right-bottom text-6xl font-extrabold text-transparent sm:text-8xl sm:leading-[5.5rem] dark:from-white dark:from-30% dark:via-pink-400 dark:to-fuchsia-600 dark:bg-[length:300%_300%]">
-              ЛитКот
+              <span className="font-dela-gothic font-black">ЛитКот</span>
             </h1>
           </div>
 
