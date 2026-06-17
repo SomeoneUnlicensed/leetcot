@@ -41,6 +41,7 @@ const createExploreCardSchema = z.object({
       .min(10, 'Краткое описание должно быть длиннее 10 символов')
       .max(191, 'Краткое описание должно быть короче 191 символа'),
   ),
+  isInfoOnly: z.boolean().default(false),
 });
 
 const createDescriptionSchema = z.object({
@@ -50,24 +51,37 @@ const createDescriptionSchema = z.object({
 });
 
 const createTestCasesSchema = z.object({
-  tests: createNoProfanitySchemaWithValidate((zodString) =>
-    zodString
-      .min(20, 'Тестовые случаи должны быть длиннее 20 символов')
-      .max(65536)
-      .regex(testCaseRegex, 'В задаче должны быть тестовые случаи'),
-  ),
-  code: createNoProfanitySchema(),
+  tests: z.string().optional(),
+  code: z.string().optional(),
 });
+
 export const createChallengeSchema = createExploreCardSchema
   .merge(createDescriptionSchema)
-  .merge(createTestCasesSchema);
-
-const steps: Step[] = [
-  { id: '1', name: 'Карточка задачи', schema: createExploreCardSchema },
-  { id: '2', name: 'Описание', schema: createDescriptionSchema },
-  { id: '3', name: 'Тестовые случаи', schema: createTestCasesSchema },
-  { id: '4', name: 'Итог' },
-];
+  .merge(createTestCasesSchema)
+  .superRefine((data, ctx) => {
+    if (!data.isInfoOnly) {
+      if (!data.tests || data.tests.length < 20) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Тестовые случаи должны быть длиннее 20 символов',
+          path: ['tests'],
+        });
+      } else if (!testCaseRegex.test(data.tests)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'В задаче должны быть тестовые случаи',
+          path: ['tests'],
+        });
+      }
+      if (!data.code || data.code.trim().length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Код шаблона решения обязателен',
+          path: ['code'],
+        });
+      }
+    }
+  });
 
 export interface Step {
   id: string;
@@ -100,8 +114,27 @@ export function Wizard() {
       description: DEFAULT_DESCRIPTION,
       tests: DEFAULT_TEST_CASES,
       code: DEFAULT_CHALLENGE_TEMPLATE,
+      isInfoOnly: false,
     },
   });
+
+  const isInfoOnly = form.watch('isInfoOnly');
+
+  const currentSteps = useMemo(() => {
+    if (isInfoOnly) {
+      return [
+        { id: '1', name: 'Карточка задачи', schema: createExploreCardSchema },
+        { id: '2', name: 'Описание', schema: createDescriptionSchema },
+        { id: '4', name: 'Итог' },
+      ];
+    }
+    return [
+      { id: '1', name: 'Карточка задачи', schema: createExploreCardSchema },
+      { id: '2', name: 'Описание', schema: createDescriptionSchema },
+      { id: '3', name: 'Тестовые случаи', schema: createTestCasesSchema },
+      { id: '4', name: 'Итог' },
+    ];
+  }, [isInfoOnly]);
 
   useEffect(() => {
     setRendered(true);
@@ -120,14 +153,22 @@ export function Wizard() {
     };
   }, []);
 
+  // Reset step if currentSteps changes and current step index is out of bounds
+  useEffect(() => {
+    if (step >= currentSteps.length) {
+      setStep(currentSteps.length - 1);
+    }
+  }, [currentSteps, step]);
+
   const handleNextClick = async () => {
-    const schema = steps[step]!.schema;
+    const currentStepObj = currentSteps[step];
+    const schema = currentStepObj?.schema;
     const success = schema ? schema.safeParse(form.getValues()).success : true;
 
     if (success) {
       // if they are currently on test cases do not let them go to next step
       // until a type error exists
-      if (step === STEPS.TestCases) {
+      if (currentStepObj?.id === '3') {
         if (!hasTsErrors) return;
       }
       setStep((step) => step + 1);
@@ -137,7 +178,12 @@ export function Wizard() {
   };
 
   async function onSubmit(data: CreateChallengeSchema) {
-    const { id } = await uploadChallenge(data, isUserACreator);
+    const finalData = {
+      ...data,
+      code: data.isInfoOnly ? (data.code || '') : (data.code ?? ''),
+      tests: data.isInfoOnly ? (data.tests || '') : (data.tests ?? ''),
+    };
+    const { id } = await uploadChallenge(finalData, isUserACreator);
 
     router.refresh();
 
@@ -148,23 +194,25 @@ export function Wizard() {
     }
   }
 
+  const currentStepId = currentSteps[step]?.id;
+
   return (
     <div className="flex h-full flex-col gap-4 pb-4 pt-4 lg:gap-6 lg:pb-8">
       {/* we cant nest this in the form because it causes the editor to resize inifinitely hence the onSubmit(wtf..) */}
-      <Steps current={step} onChange={(idx) => setStep(idx)} steps={steps} />
+      <Steps current={step} onChange={(idx) => setStep(idx)} steps={currentSteps} />
       {rendered ? (
         <Form {...form}>
           <form
             className={`container ${
-              (step === STEPS.Description || step === STEPS.TestCases) && 'h-full'
+              (currentStepId === '2' || currentStepId === '3') && 'h-full'
             }`}
           >
-            {step === STEPS.ChallengeCard && <ChallengeCardEditor form={form} />}
-            {step === STEPS.Description && <DescriptionEditor form={form} />}
-            {step === STEPS.TestCases && (
+            {currentStepId === '1' && <ChallengeCardEditor form={form} />}
+            {currentStepId === '2' && <DescriptionEditor form={form} />}
+            {currentStepId === '3' && (
               <TestCasesEditor form={form} hasTsErrors={hasTsErrors} setTsErrors={setTsErrors} />
             )}
-            {step === 3 && <Summary isUserACreator={isUserACreator} />}
+            {currentStepId === '4' && <Summary isUserACreator={isUserACreator} />}
           </form>
         </Form>
       ) : null}
