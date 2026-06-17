@@ -1,18 +1,19 @@
 'use server';
 
 import { auth } from '~/server/auth';
+import type { Prisma } from '@repo/db';
 import { prisma } from '@repo/db';
 import { revalidatePath } from 'next/cache';
 import { assertAdmin } from '~/utils/auth-guards';
 
-export type BannedUsers = NonNullable<Awaited<ReturnType<typeof getBannedUsers>>>;
-export async function getBannedUsers() {
+export type BannedUsers = NonNullable<Awaited<ReturnType<typeof getUsers>>>;
+export async function getUsers() {
   const session = await auth();
   assertAdmin(session);
 
   return prisma.user.findMany({
-    where: {
-      status: 'BANNED',
+    orderBy: {
+      createdAt: 'desc',
     },
   });
 }
@@ -20,14 +21,14 @@ export async function getBannedUsers() {
  * The function updates the user to indicate a status
  * of `BANNED`.
  * @param userId The id of the user.
- * @param reportId The id of the report.
+ * @param reportId Optional id of the report.
  * @returns
  */
-export async function banUser(userId: string, reportId: number, banReason?: string) {
+export async function banUser(userId: string, reportId?: number | null, banReason?: string) {
   const session = await auth();
   assertAdmin(session);
 
-  await prisma.$transaction([
+  const updates: Prisma.PrismaPromise<unknown>[] = [
     prisma.user.update({
       where: {
         id: userId,
@@ -50,16 +51,6 @@ export async function banUser(userId: string, reportId: number, banReason?: stri
         userId,
       },
     }),
-    prisma.report.update({
-      where: {
-        id: reportId,
-      },
-      data: {
-        status: 'CLEARED',
-        moderatorId: session?.user?.id,
-        updatedAt: new Date(),
-      },
-    }),
     prisma.comment.updateMany({
       where: {
         userId,
@@ -68,7 +59,25 @@ export async function banUser(userId: string, reportId: number, banReason?: stri
         visible: false,
       },
     }),
-  ]);
+  ];
+
+  if (reportId !== undefined && reportId !== null) {
+    updates.push(
+      prisma.report.update({
+        where: {
+          id: reportId,
+        },
+        data: {
+          status: 'CLEARED',
+          moderatorId: session?.user?.id,
+          updatedAt: new Date(),
+        },
+      }),
+    );
+  }
+
+  await prisma.$transaction(updates);
+  revalidatePath('/dashboard/users');
 }
 /**
  * The function lifts the ban off the user i.e. updates
@@ -80,7 +89,7 @@ export async function unbanUser(userId: string) {
   const session = await auth();
   assertAdmin(session);
 
-  revalidatePath('/');
+  revalidatePath('/dashboard/users');
   return prisma.$transaction([
     prisma.challenge.updateMany({
       where: {

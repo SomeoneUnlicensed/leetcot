@@ -1,4 +1,4 @@
-import NextAuth from '@repo/auth/next-auth';
+import NextAuth, { type NextAuthConfig } from '@repo/auth/next-auth';
 
 import { baseNextAuthConfig, createCredentialsProvider } from '@repo/auth/server';
 
@@ -6,7 +6,7 @@ const useSecureCookies = process.env.VERCEL_ENV === 'production';
 const cookiePrefix = useSecureCookies ? '__Secure-' : '';
 const cookieDomain = useSecureCookies ? 'leetcot.ru' : undefined;
 
-export const authOptions = {
+export const authOptions: NextAuthConfig = {
   ...baseNextAuthConfig,
   secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'fallback_secret_key_12345',
   cookies: {

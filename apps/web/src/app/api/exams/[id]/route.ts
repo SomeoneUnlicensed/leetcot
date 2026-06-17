@@ -2,7 +2,10 @@ import { prisma } from '@repo/db';
 import { auth } from '~/server/auth';
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request, { params }: { params: { id: string } }): Promise<NextResponse> {
+export async function GET(
+  req: Request,
+  { params }: { params: { id: string } },
+): Promise<NextResponse> {
   try {
     const session = await auth();
 
@@ -50,7 +53,10 @@ export async function GET(req: Request, { params }: { params: { id: string } }):
   }
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }): Promise<NextResponse> {
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } },
+): Promise<NextResponse> {
   try {
     const session = await auth();
 
@@ -124,7 +130,10 @@ export async function PUT(req: Request, { params }: { params: { id: string } }):
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }): Promise<NextResponse> {
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } },
+): Promise<NextResponse> {
   try {
     const session = await auth();
 

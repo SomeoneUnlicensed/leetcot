@@ -16,10 +16,7 @@ import { Summary } from './Summary';
 import { TestCasesEditor } from './TestCasesEditor';
 import { uploadChallenge } from './create.action';
 import { DEFAULT_CHALLENGE_TEMPLATE, DEFAULT_TEST_CASES, DEFAULT_DESCRIPTION } from './templates';
-import {
-  createNoProfanitySchema,
-  createNoProfanitySchemaWithValidate,
-} from '~/utils/antiProfanityZod';
+import { createNoProfanitySchemaWithValidate } from '~/utils/antiProfanityZod';
 
 export const enum STEPS {
   ChallengeCard,
@@ -180,8 +177,8 @@ export function Wizard() {
   async function onSubmit(data: CreateChallengeSchema) {
     const finalData = {
       ...data,
-      code: data.isInfoOnly ? (data.code || '') : (data.code ?? ''),
-      tests: data.isInfoOnly ? (data.tests || '') : (data.tests ?? ''),
+      code: data.isInfoOnly ? data.code || '' : (data.code ?? ''),
+      tests: data.isInfoOnly ? data.tests || '' : (data.tests ?? ''),
     };
     const { id } = await uploadChallenge(finalData, isUserACreator);
 
@@ -203,9 +200,7 @@ export function Wizard() {
       {rendered ? (
         <Form {...form}>
           <form
-            className={`container ${
-              (currentStepId === '2' || currentStepId === '3') && 'h-full'
-            }`}
+            className={`container ${(currentStepId === '2' || currentStepId === '3') && 'h-full'}`}
           >
             {currentStepId === '1' && <ChallengeCardEditor form={form} />}
             {currentStepId === '2' && <DescriptionEditor form={form} />}

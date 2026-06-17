@@ -52,7 +52,7 @@ export const ExtraActionsButton = ({ report }: { report: ReportWithInfo }) => {
       return (
         <Button
           disabled={report.moderatorId !== null}
-          onClick={() => handleDisableChallenge(report.challengeId!, report.id)}
+          onClick={() => handleDisableChallenge(report.challengeId ?? 0, report.id)}
         >
           Disable Challenge
         </Button>
@@ -62,7 +62,7 @@ export const ExtraActionsButton = ({ report }: { report: ReportWithInfo }) => {
       return (
         <Button
           disabled={report.moderator !== null}
-          onClick={() => handleRemoveSolution(report.solutionId!)}
+          onClick={() => handleRemoveSolution(report.solutionId ?? 0)}
         >
           Remove Solution
         </Button>
@@ -72,7 +72,7 @@ export const ExtraActionsButton = ({ report }: { report: ReportWithInfo }) => {
       return (
         <Button
           disabled={report.moderatorId !== null}
-          onClick={() => handleDeleteComment(report.commentId!, report.id)}
+          onClick={() => handleDeleteComment(report.commentId ?? 0, report.id)}
           variant="destructive"
         >
           Delete Comment

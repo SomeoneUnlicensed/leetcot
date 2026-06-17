@@ -51,10 +51,10 @@ function formatTraceback(errorStr: string) {
   ) {
     const lines = errorStr.split('\n');
     const cleanedLines = lines.map((line, lineIdx) => {
-      let cleaned = line
+      const cleaned = line
         .replace(/\/code\/main\.py/g, 'решение.py')
-        .replace(/\/tmp\/litkot-run-[^\/]+\/main\.py/g, 'решение.py')
-        .replace(/\/tmp\/litkot-run-[^\/]+\/main\.js/g, 'решение.js');
+        .replace(/\/tmp\/litkot-run-[^/]+\/main\.py/g, 'решение.py')
+        .replace(/\/tmp\/litkot-run-[^/]+\/main\.js/g, 'решение.js');
 
       if (
         cleaned.includes('line ') &&
@@ -387,196 +387,194 @@ export function CodePanel(props: CodePanelProps) {
       </div>
 
       {checkingState !== 'editor' && (
-        <div
-          className="animate-fade-in-overlay absolute inset-x-0 bottom-0 top-[48px] z-50 flex flex-col items-center justify-center overflow-y-auto bg-zinc-50/80 p-6 backdrop-blur-md dark:bg-zinc-950/85"
-        >
-            {checkingState === 'verifying' && (
-              <>
-                <div className="mb-6 flex animate-pulse flex-col items-center">
-                  <pre className="text-left font-mono text-lg font-bold leading-none text-zinc-700 dark:text-zinc-300">
-                    {`  /\\_/\\
+        <div className="animate-fade-in-overlay absolute inset-x-0 bottom-0 top-[48px] z-50 flex flex-col items-center justify-center overflow-y-auto bg-zinc-50/80 p-6 backdrop-blur-md dark:bg-zinc-950/85">
+          {checkingState === 'verifying' && (
+            <>
+              <div className="mb-6 flex animate-pulse flex-col items-center">
+                <pre className="text-left font-mono text-lg font-bold leading-none text-zinc-700 dark:text-zinc-300">
+                  {`  /\\_/\\
  ( o.o )
   > ^ <`}
-                  </pre>
-                  <span className="mt-4 text-center font-sans text-sm font-bold text-zinc-500 dark:text-zinc-400">
-                    мурр... проверяем ваш код
-                  </span>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <div className="h-12 w-12 animate-spin rounded-full border-4 border-fuchsia-500 border-t-transparent" />
-                  <span className="mt-2 font-mono text-sm font-semibold text-zinc-500 dark:text-zinc-400">
-                    Проверяем...
-                  </span>
-                </div>
-              </>
-            )}
+                </pre>
+                <span className="mt-4 text-center font-sans text-sm font-bold text-zinc-500 dark:text-zinc-400">
+                  мурр... проверяем ваш код
+                </span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <div className="h-12 w-12 animate-spin rounded-full border-4 border-fuchsia-500 border-t-transparent" />
+                <span className="mt-2 font-mono text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+                  Проверяем...
+                </span>
+              </div>
+            </>
+          )}
 
-            {checkingState === 'success' && (
-              <>
-                <div className="mb-6 flex flex-col items-center">
-                  <pre className="text-left font-mono text-lg font-bold leading-none text-emerald-600 dark:text-emerald-400">
-                    {`  /\\_/\\
+          {checkingState === 'success' && (
+            <>
+              <div className="mb-6 flex flex-col items-center">
+                <pre className="text-left font-mono text-lg font-bold leading-none text-emerald-600 dark:text-emerald-400">
+                  {`  /\\_/\\
  ( ^.^ )
   > ^ <`}
-                  </pre>
-                  <span className="mt-4 text-center font-sans text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                    УРА! Все тесты пройдены!
-                  </span>
-                </div>
-                <span className="mb-2 text-center font-sans text-xl font-extrabold text-zinc-800 dark:text-zinc-100">
-                  Мур-мяу! Задание выполнено! 🎉
+                </pre>
+                <span className="mt-4 text-center font-sans text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                  УРА! Все тесты пройдены!
                 </span>
-                <span className="mb-6 text-center font-mono text-sm text-zinc-500 dark:text-zinc-400">
-                  Код успешно проверен и сохранен.
-                </span>
+              </div>
+              <span className="mb-2 text-center font-sans text-xl font-extrabold text-zinc-800 dark:text-zinc-100">
+                Мур-мяу! Задание выполнено! 🎉
+              </span>
+              <span className="mb-6 text-center font-mono text-sm text-zinc-500 dark:text-zinc-400">
+                Код успешно проверен и сохранен.
+              </span>
 
-                <div className="flex w-full max-w-xs flex-col gap-3">
-                  {props.nextChallengeSlug ? (
-                    <Link
-                      href={`/challenge/${props.nextChallengeSlug}${props.trackSlug ? `?slug=${props.trackSlug}` : ''}`}
-                      onClick={() => setCheckingState('editor')}
-                    >
-                      <Button className="group flex h-auto w-full items-center justify-center gap-2 rounded-xl border-0 bg-gradient-to-r from-fuchsia-500 via-pink-500 to-violet-600 py-3.5 text-xs font-bold uppercase tracking-wider text-white shadow-[0_0_15px_rgba(217,70,239,0.3)] transition-all duration-300 hover:from-fuchsia-400 hover:via-pink-400 hover:to-violet-500 hover:shadow-[0_0_20px_rgba(217,70,239,0.5)]">
-                        <span>Следующая задача</span>
-                        <kbd className="hidden rounded bg-white/20 px-1.5 py-0.5 font-mono text-[9px] lowercase tracking-normal text-white/95 sm:inline-block">
-                          Enter
-                        </kbd>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="transition-transform duration-300 group-hover:translate-x-1"
-                        >
-                          <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
-                      </Button>
-                    </Link>
-                  ) : null}
-
-                  {latestSubmissionId ? (
-                    <Link
-                      href={`/challenge/${props.challenge.slug}/submissions/${latestSubmissionId}?success=true${props.trackSlug ? `&slug=${props.trackSlug}` : ''}`}
-                      onClick={() => setCheckingState('editor')}
-                    >
-                      <Button className="h-auto w-full rounded-xl border border-zinc-700 bg-zinc-900 py-3.5 text-xs font-bold text-white hover:bg-zinc-800 dark:border-zinc-300 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200">
-                        Посмотреть решения 🐾
-                      </Button>
-                    </Link>
-                  ) : null}
-
-                  <Button
+              <div className="flex w-full max-w-xs flex-col gap-3">
+                {props.nextChallengeSlug ? (
+                  <Link
+                    href={`/challenge/${props.nextChallengeSlug}${props.trackSlug ? `?slug=${props.trackSlug}` : ''}`}
                     onClick={() => setCheckingState('editor')}
-                    variant="ghost"
-                    className="w-full py-2 text-xs font-semibold text-zinc-500 hover:bg-transparent hover:text-zinc-300"
                   >
-                    <span>Вернуться в редактор</span>
-                    <kbd className="ml-1 hidden rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[9px] text-zinc-400 sm:inline-block">
-                      Esc
-                    </kbd>
-                  </Button>
-                </div>
-              </>
-            )}
-
-            {checkingState === 'failure' && (
-              <>
-                <div className="mb-6 flex flex-col items-center">
-                  <pre className="text-left font-mono text-lg font-bold leading-none text-red-600 dark:text-red-400">
-                    {`  /\\_/\\
- ( x.x )
-  > ^ <`}
-                  </pre>
-                  <span className="mt-4 text-center font-sans text-sm font-bold text-red-600 dark:text-red-400">
-                    грустное мяу...
-                  </span>
-                </div>
-                <span className="mb-2 text-center text-lg font-extrabold text-zinc-800 dark:text-zinc-100">
-                  Код не прошел тесты! 😿
-                </span>
-                <div className="mt-4 w-full max-w-2xl rounded-xl border border-red-500/20 bg-zinc-950 shadow-2xl shadow-red-950/25">
-                  <div className="flex items-center justify-between border-b border-zinc-900 bg-zinc-900/40 px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <div className="h-2.5 w-2.5 animate-pulse rounded-full bg-red-500/85" />
-                      <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-red-500/80">
-                        Системный отчет об ошибках
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        onClick={() => {
-                          const textToCopy = checkingErrors.join('\n');
-                          navigator.clipboard.writeText(textToCopy);
-                          toast({
-                            title: 'Отчет скопирован!',
-                            description: 'Текст ошибок скопирован в буфер обмена.',
-                            variant: 'success',
-                          });
-                        }}
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 gap-1 rounded border border-zinc-800 bg-zinc-900/50 px-2 font-mono text-[9px] text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 active:scale-95"
+                    <Button className="group flex h-auto w-full items-center justify-center gap-2 rounded-xl border-0 bg-gradient-to-r from-fuchsia-500 via-pink-500 to-violet-600 py-3.5 text-xs font-bold uppercase tracking-wider text-white shadow-[0_0_15px_rgba(217,70,239,0.3)] transition-all duration-300 hover:from-fuchsia-400 hover:via-pink-400 hover:to-violet-500 hover:shadow-[0_0_20px_rgba(217,70,239,0.5)]">
+                      <span>Следующая задача</span>
+                      <kbd className="hidden rounded bg-white/20 px-1.5 py-0.5 font-mono text-[9px] lowercase tracking-normal text-white/95 sm:inline-block">
+                        Enter
+                      </kbd>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="transition-transform duration-300 group-hover:translate-x-1"
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="10"
-                          height="10"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-                        </svg>
-                        Копировать
-                      </Button>
-                      <span className="rounded border border-red-500/20 bg-red-500/10 px-2 py-0.5 font-mono text-[9px] font-bold text-red-400">
-                        FAILED
-                      </span>
-                    </div>
-                  </div>
-                  <div className="max-h-[300px] select-text overflow-y-auto p-5 font-mono text-xs leading-relaxed text-red-200/90 selection:bg-red-500/30 selection:text-red-100">
-                    <div className="space-y-4">
-                      {Array.from(new Set(checkingErrors)).map((err, idx) => (
-                        <div key={idx} className="group flex gap-3">
-                          <span className="select-none font-bold text-red-500/40">0{idx + 1}</span>
-                          <div className="flex-1 select-text">{formatTraceback(err)}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                      </svg>
+                    </Button>
+                  </Link>
+                ) : null}
+
+                {latestSubmissionId ? (
+                  <Link
+                    href={`/challenge/${props.challenge.slug}/submissions/${latestSubmissionId}?success=true${props.trackSlug ? `&slug=${props.trackSlug}` : ''}`}
+                    onClick={() => setCheckingState('editor')}
+                  >
+                    <Button className="h-auto w-full rounded-xl border border-zinc-700 bg-zinc-900 py-3.5 text-xs font-bold text-white hover:bg-zinc-800 dark:border-zinc-300 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200">
+                      Посмотреть решения 🐾
+                    </Button>
+                  </Link>
+                ) : null}
+
                 <Button
                   onClick={() => setCheckingState('editor')}
-                  className="mt-6 flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-6 py-2 font-bold text-white transition-all hover:bg-zinc-800 dark:border-zinc-300 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200"
+                  variant="ghost"
+                  className="w-full py-2 text-xs font-semibold text-zinc-500 hover:bg-transparent hover:text-zinc-300"
                 >
-                  <span>Попробовать еще раз 🐾</span>
-                  <kbd className="hidden rounded bg-white/10 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400 sm:inline-block">
+                  <span>Вернуться в редактор</span>
+                  <kbd className="ml-1 hidden rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[9px] text-zinc-400 sm:inline-block">
                     Esc
                   </kbd>
                 </Button>
-              </>
-            )}
+              </div>
+            </>
+          )}
 
-            <div className="absolute bottom-6 left-0 right-0 flex select-none items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider text-zinc-500/80">
-              <img
-                src="https://arlist.tech/icon.svg"
-                alt="Arlist Logo"
-                className="h-4 w-4 drop-shadow-[0_0_12px_rgba(168,85,247,0.8)]"
-              />
-              <span className="bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-emerald-400 bg-clip-text text-transparent opacity-90 drop-shadow-sm">
-                Исполняется на Арлист.инфраструктура
+          {checkingState === 'failure' && (
+            <>
+              <div className="mb-6 flex flex-col items-center">
+                <pre className="text-left font-mono text-lg font-bold leading-none text-red-600 dark:text-red-400">
+                  {`  /\\_/\\
+ ( x.x )
+  > ^ <`}
+                </pre>
+                <span className="mt-4 text-center font-sans text-sm font-bold text-red-600 dark:text-red-400">
+                  грустное мяу...
+                </span>
+              </div>
+              <span className="mb-2 text-center text-lg font-extrabold text-zinc-800 dark:text-zinc-100">
+                Код не прошел тесты! 😿
               </span>
-            </div>
+              <div className="mt-4 w-full max-w-2xl rounded-xl border border-red-500/20 bg-zinc-950 shadow-2xl shadow-red-950/25">
+                <div className="flex items-center justify-between border-b border-zinc-900 bg-zinc-900/40 px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2.5 w-2.5 animate-pulse rounded-full bg-red-500/85" />
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-red-500/80">
+                      Системный отчет об ошибках
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={() => {
+                        const textToCopy = checkingErrors.join('\n');
+                        navigator.clipboard.writeText(textToCopy);
+                        toast({
+                          title: 'Отчет скопирован!',
+                          description: 'Текст ошибок скопирован в буфер обмена.',
+                          variant: 'success',
+                        });
+                      }}
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 gap-1 rounded border border-zinc-800 bg-zinc-900/50 px-2 font-mono text-[9px] text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 active:scale-95"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="10"
+                        height="10"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                      </svg>
+                      Копировать
+                    </Button>
+                    <span className="rounded border border-red-500/20 bg-red-500/10 px-2 py-0.5 font-mono text-[9px] font-bold text-red-400">
+                      FAILED
+                    </span>
+                  </div>
+                </div>
+                <div className="max-h-[300px] select-text overflow-y-auto p-5 font-mono text-xs leading-relaxed text-red-200/90 selection:bg-red-500/30 selection:text-red-100">
+                  <div className="space-y-4">
+                    {Array.from(new Set(checkingErrors)).map((err, idx) => (
+                      <div key={idx} className="group flex gap-3">
+                        <span className="select-none font-bold text-red-500/40">0{idx + 1}</span>
+                        <div className="flex-1 select-text">{formatTraceback(err)}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <Button
+                onClick={() => setCheckingState('editor')}
+                className="mt-6 flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-6 py-2 font-bold text-white transition-all hover:bg-zinc-800 dark:border-zinc-300 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200"
+              >
+                <span>Попробовать еще раз 🐾</span>
+                <kbd className="hidden rounded bg-white/10 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400 sm:inline-block">
+                  Esc
+                </kbd>
+              </Button>
+            </>
+          )}
+
+          <div className="absolute bottom-6 left-0 right-0 flex select-none items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider text-zinc-500/80">
+            <img
+              src="https://arlist.tech/icon.svg"
+              alt="Arlist Logo"
+              className="h-4 w-4 drop-shadow-[0_0_12px_rgba(168,85,247,0.8)]"
+            />
+            <span className="bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-emerald-400 bg-clip-text text-transparent opacity-90 drop-shadow-sm">
+              Исполняется на Арлист.инфраструктура
+            </span>
           </div>
+        </div>
       )}
 
       <SplitEditor

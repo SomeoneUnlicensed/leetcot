@@ -1,22 +1,40 @@
 import { NextResponse } from 'next/server';
+import { prisma } from '@repo/db';
 
-export async function GET(request: Request, { params }: { params: Promise<{ org: string }> }) {
+export async function GET(_request: Request, { params }: { params: Promise<{ org: string }> }) {
   const { org } = await params;
 
-  // This is a mock API endpoint for demonstration purposes.
-  // In a real application, this would fetch live scoreboard data from the database.
+  const championship = await prisma.championship.findUnique({
+    where: { slug: org },
+    include: {
+      participants: {
+        select: {
+          score: true,
+          joinedAt: true,
+          user: { select: { name: true } },
+        },
+        orderBy: { score: 'desc' },
+        take: 20,
+      },
+      challenges: {
+        select: { challengeId: true },
+      },
+    },
+  });
 
-  const mockData = {
+  if (!championship) {
+    return NextResponse.json({ error: 'Championship not found' }, { status: 404 });
+  }
+
+  return NextResponse.json({
     organization: org,
-    status: 'active',
-    participants: 142,
-    top_scores: [
-      { user: 'AlexCoder', score: 850, completed_tasks: 3 },
-      { user: 'MeowMaster', score: 600, completed_tasks: 2 },
-      { user: 'TopCat', score: 350, completed_tasks: 1 },
-    ],
+    name: championship.name,
+    status: championship.status,
+    participants: championship.participants.length,
+    top_scores: championship.participants.map((p) => ({
+      user: p.user.name,
+      score: p.score,
+    })),
     timestamp: new Date().toISOString(),
-  };
-
-  return NextResponse.json(mockData);
+  });
 }

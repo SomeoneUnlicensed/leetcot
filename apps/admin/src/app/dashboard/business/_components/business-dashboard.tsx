@@ -1,9 +1,6 @@
 'use client';
 
-/* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui/components/card';
 import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
@@ -15,708 +12,538 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@repo/ui/components/dialog';
+import { Plus, SearchIcon, Trash2, User, Shield, AtSign, Command } from '@repo/ui/icons';
+import { useToast } from '@repo/ui/components/use-toast';
 import {
-  Plus,
-  SearchIcon,
-  Trash2,
-  Pencil,
-  Command,
-  User,
-  TrendingUpIcon,
-  AtSign,
-  Shield,
-} from '@repo/ui/icons';
+  getCompanies,
+  createCompany,
+  deleteCompany,
+  getCompanyEmployees,
+  addEmployee,
+  removeEmployee,
+  toggleCompanyAdmin,
+} from '../business.actions';
+
+function errMsg(err: unknown, fallback: string): string {
+  if (err instanceof Error) return err.message;
+  return fallback;
+}
 
 interface Company {
   id: string;
   name: string;
   domain: string;
-  plan: 'BASIC' | 'ENTERPRISE' | 'PREMIUM';
-  licensesUsed: number;
-  licensesMax: number;
-  mrr: number;
-  status: 'ACTIVE' | 'PENDING' | 'SUSPENDED';
-  contactPerson: string;
-  contactEmail: string;
-  joinedDate: string;
+  status: string;
+  createdAt: Date;
+  _count?: {
+    employees: number;
+  };
 }
 
-const DEFAULT_COMPANIES: Company[] = [
-  {
-    id: 'co-1',
-    name: 'Яндекс Коты 🐱🚀',
-    domain: 'yandex-cats.ru',
-    plan: 'ENTERPRISE',
-    licensesUsed: 150,
-    licensesMax: 150,
-    mrr: 350000,
-    status: 'ACTIVE',
-    contactPerson: 'Василий Усатов',
-    contactEmail: 'vasily@yandex-cats.ru',
-    joinedDate: '2025-05-10',
-  },
-  {
-    id: 'co-2',
-    name: 'СберКот Технологии 🏦🐾',
-    domain: 'sbercat-tech.ru',
-    plan: 'PREMIUM',
-    licensesUsed: 120,
-    licensesMax: 150,
-    mrr: 240000,
-    status: 'ACTIVE',
-    contactPerson: 'Анна Муркина',
-    contactEmail: 'a.murkina@sbercat-tech.ru',
-    joinedDate: '2025-09-01',
-  },
-  {
-    id: 'co-3',
-    name: 'ТиньКофф Котс 💛',
-    domain: 'tinkoff-cats.ru',
-    plan: 'PREMIUM',
-    licensesUsed: 80,
-    licensesMax: 100,
-    mrr: 160000,
-    status: 'ACTIVE',
-    contactPerson: 'Дмитрий Хвостов',
-    contactEmail: 'd.hvostov@tinkoff-cats.ru',
-    joinedDate: '2025-11-15',
-  },
-  {
-    id: 'co-4',
-    name: 'КотКод Лабс 💻',
-    domain: 'kotkod.ru',
-    plan: 'BASIC',
-    licensesUsed: 35,
-    licensesMax: 100,
-    mrr: 70000,
-    status: 'SUSPENDED',
-    contactPerson: 'Елена Лапкина',
-    contactEmail: 'hr@kotkod.ru',
-    joinedDate: '2026-01-20',
-  },
-  {
-    id: 'co-5',
-    name: 'МяуСофт 🐾💿',
-    domain: 'meowsoft.com',
-    plan: 'ENTERPRISE',
-    licensesUsed: 85,
-    licensesMax: 200,
-    mrr: 220000,
-    status: 'ACTIVE',
-    contactPerson: 'Николай Когтев',
-    contactEmail: 'ceo@meowsoft.com',
-    joinedDate: '2025-03-12',
-  },
-];
+interface Employee {
+  id: string;
+  name: string;
+  email: string;
+  companyRole: string | null;
+  createdAt: Date;
+}
 
 export function BusinessDashboard() {
-  const [companies, setCompanies] = useState<Company[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('leetcot_companies');
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    }
-    return DEFAULT_COMPANIES;
-  });
-
+  const { toast } = useToast();
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [planFilter, setPlanFilter] = useState<'ALL' | 'BASIC' | 'ENTERPRISE' | 'PREMIUM'>('ALL');
 
   // Dialog States
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isEmployeesOpen, setIsEmployeesOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [loadingEmployees, setLoadingEmployees] = useState(false);
 
   // Form Fields
-  const [name, setName] = useState('');
-  const [domain, setDomain] = useState('');
-  const [plan, setPlan] = useState<'BASIC' | 'ENTERPRISE' | 'PREMIUM'>('BASIC');
-  const [licensesMax, setLicensesMax] = useState(50);
-  const [licensesUsed, setLicensesUsed] = useState(0);
-  const [mrr, setMrr] = useState(50000);
-  const [status, setStatus] = useState<'ACTIVE' | 'PENDING' | 'SUSPENDED'>('ACTIVE');
-  const [contactPerson, setContactPerson] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
+  const [newCompanyName, setNewCompanyName] = useState('');
+  const [newCompanyDomain, setNewCompanyDomain] = useState('');
+  const [newEmployeeEmail, setNewEmployeeEmail] = useState('');
+  const [submittingEmployee, setSubmittingEmployee] = useState(false);
+
+  const loadData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getCompanies();
+      setCompanies(data);
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Ошибка загрузки',
+        description: errMsg(err, 'Не удалось загрузить список компаний'),
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
 
   useEffect(() => {
-    localStorage.setItem('leetcot_companies', JSON.stringify(companies));
-  }, [companies]);
+    void loadData();
+  }, [loadData]);
 
-  const handleCreate = (e: React.FormEvent) => {
+  const handleCreateCompany = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !domain || !contactPerson || !contactEmail) return;
+    if (!newCompanyName || !newCompanyDomain) return;
 
-    const newCompany: Company = {
-      id: `co-${Date.now()}`,
-      name,
-      domain,
-      plan,
-      licensesUsed: Number(licensesUsed) || 0,
-      licensesMax: Number(licensesMax) || 50,
-      mrr: Number(mrr) || 50000,
-      status,
-      contactPerson,
-      contactEmail,
-      joinedDate: new Date().toISOString().split('T')[0] ?? '',
-    };
-
-    setCompanies([newCompany, ...companies]);
-    setIsCreateOpen(false);
-    resetForm();
-  };
-
-  const handleEdit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedCompany || !name || !domain || !contactPerson || !contactEmail) return;
-
-    const updated = companies.map((co) => {
-      if (co.id === selectedCompany.id) {
-        return {
-          ...co,
-          name,
-          domain,
-          plan,
-          licensesUsed: Number(licensesUsed),
-          licensesMax: Number(licensesMax),
-          mrr: Number(mrr),
-          status,
-          contactPerson,
-          contactEmail,
-        };
-      }
-      return co;
-    });
-
-    setCompanies(updated);
-    setIsEditOpen(false);
-    setSelectedCompany(null);
-    resetForm();
-  };
-
-  const handleDelete = (id: string) => {
-    // eslint-disable-next-line no-alert
-    if (confirm('Вы уверены, что хотите удалить этого корпоративного клиента? 😿')) {
-      setCompanies(companies.filter((co) => co.id !== id));
+    try {
+      await createCompany(newCompanyName, newCompanyDomain);
+      toast({
+        variant: 'success',
+        title: 'Успешно',
+        description: 'Компания успешно добавлена',
+      });
+      setIsCreateOpen(false);
+      setNewCompanyName('');
+      setNewCompanyDomain('');
+      loadData();
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Ошибка создания',
+        description: errMsg(err, 'Не удалось создать компанию'),
+      });
     }
   };
 
-  const openEditDialog = (co: Company) => {
-    setSelectedCompany(co);
-    setName(co.name);
-    setDomain(co.domain);
-    setPlan(co.plan);
-    setLicensesMax(co.licensesMax);
-    setLicensesUsed(co.licensesUsed);
-    setMrr(co.mrr);
-    setStatus(co.status);
-    setContactPerson(co.contactPerson);
-    setContactEmail(co.contactEmail);
-    setIsEditOpen(true);
+  const handleDeleteCompany = async (id: string) => {
+    // eslint-disable-next-line no-alert
+    const confirmed = confirm(
+      'Вы уверены, что хотите удалить эту компанию? Все сотрудники будут отвязаны. 😿',
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await deleteCompany(id);
+      toast({
+        variant: 'success',
+        title: 'Удалено',
+        description: 'Компания успешно удалена',
+      });
+      loadData();
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Ошибка удаления',
+        description: errMsg(err, 'Не удалось удалить компанию'),
+      });
+    }
   };
 
-  const resetForm = () => {
-    setName('');
-    setDomain('');
-    setPlan('BASIC');
-    setLicensesMax(50);
-    setLicensesUsed(0);
-    setMrr(50000);
-    setStatus('ACTIVE');
-    setContactPerson('');
-    setContactEmail('');
+  const openEmployeesDialog = async (company: Company) => {
+    setSelectedCompany(company);
+    setIsEmployeesOpen(true);
+    setLoadingEmployees(true);
+    setNewEmployeeEmail('');
+    try {
+      const data = await getCompanyEmployees(company.id);
+      setEmployees(data);
+    } catch {
+      toast({
+        variant: 'destructive',
+        title: 'Ошибка',
+        description: 'Не удалось загрузить сотрудников компании',
+      });
+    } finally {
+      setLoadingEmployees(false);
+    }
   };
 
-  // Metrics
-  const activeCount = companies.filter((c) => c.status === 'ACTIVE').length;
-  const totalLicensesMax = companies.reduce((sum, c) => sum + c.licensesMax, 0);
-  const totalLicensesUsed = companies.reduce(
-    (sum, c) => sum + (c.status === 'ACTIVE' ? c.licensesUsed : 0),
-    0,
-  );
-  const totalMrr = companies.reduce((sum, c) => sum + (c.status === 'ACTIVE' ? c.mrr : 0), 0);
+  const handleAddEmployee = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedCompany || !newEmployeeEmail || submittingEmployee) return;
+
+    try {
+      setSubmittingEmployee(true);
+      await addEmployee(selectedCompany.id, newEmployeeEmail.trim());
+      toast({
+        variant: 'success',
+        title: 'Сотрудник добавлен',
+        description: `Пользователь ${newEmployeeEmail} привязан к компании`,
+      });
+      setNewEmployeeEmail('');
+      // Reload employees list
+      const data = await getCompanyEmployees(selectedCompany.id);
+      setEmployees(data);
+      loadData();
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Ошибка добавления',
+        description: errMsg(err, 'Не удалось привязать сотрудника'),
+      });
+    } finally {
+      setSubmittingEmployee(false);
+    }
+  };
+
+  const handleRemoveEmployee = async (userId: string) => {
+    if (!selectedCompany) return;
+
+    try {
+      await removeEmployee(userId);
+      toast({
+        variant: 'success',
+        title: 'Сотрудник удален',
+        description: 'Пользователь отвязан от компании',
+      });
+      // Reload employees list
+      const data = await getCompanyEmployees(selectedCompany.id);
+      setEmployees(data);
+      loadData();
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Ошибка удаления',
+        description: errMsg(err, 'Не удалось отвязать сотрудника'),
+      });
+    }
+  };
+
+  const handleToggleAdmin = async (userId: string, currentRole: string | null) => {
+    if (!selectedCompany) return;
+    const makeAdmin = currentRole !== 'ADMIN';
+
+    try {
+      await toggleCompanyAdmin(userId, makeAdmin);
+      toast({
+        variant: 'success',
+        title: 'Роль обновлена',
+        description: makeAdmin
+          ? 'Сотрудник назначен администратором компании'
+          : 'Права администратора сняты',
+      });
+      // Reload employees list
+      const data = await getCompanyEmployees(selectedCompany.id);
+      setEmployees(data);
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Ошибка изменения прав',
+        description: errMsg(err, 'Не удалось обновить роль сотрудника'),
+      });
+    }
+  };
 
   const filteredCompanies = companies.filter((co) => {
-    const matchesSearch =
+    return (
       co.name.toLowerCase().includes(search.toLowerCase()) ||
-      co.domain.toLowerCase().includes(search.toLowerCase()) ||
-      co.contactPerson.toLowerCase().includes(search.toLowerCase());
-    const matchesPlan = planFilter === 'ALL' || co.plan === planFilter;
-    return matchesSearch && matchesPlan;
+      co.domain.toLowerCase().includes(search.toLowerCase())
+    );
   });
 
   return (
     <div className="space-y-6 pb-12">
       {/* Metrics Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2">
         <Card className="border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-950/10">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-              Активные B2B
+              Всего компаний
             </CardTitle>
             <Command className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-extrabold text-emerald-700 dark:text-emerald-300">
-              {activeCount}
+              {companies.length}
             </div>
-            <p className="text-muted-foreground mt-1 text-xs">Клиентские компании</p>
+            <p className="text-muted-foreground mt-1 text-xs">Зарегистрированные B2B клиенты</p>
           </CardContent>
         </Card>
 
         <Card className="border-blue-500/20 bg-blue-50/50 dark:bg-blue-950/10">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs font-semibold text-blue-600 dark:text-blue-400">
-              Выручка (MRR)
+              Всего сотрудников
             </CardTitle>
-            <TrendingUpIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-extrabold text-blue-700 dark:text-blue-300">
-              {totalMrr.toLocaleString()} ₽
+              {companies.reduce((sum, c) => sum + (c._count?.employees || 0), 0)}
             </div>
-            <p className="text-muted-foreground mt-1 text-xs">Месячный оборот</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-orange-500/20 bg-orange-50/50 dark:bg-orange-950/10">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-semibold text-orange-600 dark:text-orange-400">
-              Лицензии
-            </CardTitle>
-            <User className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-extrabold text-orange-700 dark:text-orange-300">
-              {totalLicensesUsed} / {totalLicensesMax}
-            </div>
-            <p className="text-muted-foreground mt-1 text-xs">Активировано сотрудниками</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-purple-500/20 bg-purple-50/50 dark:bg-purple-950/10">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-semibold text-purple-600 dark:text-purple-400">
-              Всего клиентов
-            </CardTitle>
-            <Shield className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-extrabold text-purple-700 dark:text-purple-300">
-              {companies.length}
-            </div>
-            <p className="text-muted-foreground mt-1 text-xs">База B2B клиентов</p>
+            <p className="text-muted-foreground mt-1 text-xs">Привязанных пользователей</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Controls & Search */}
+      {/* Control Panel */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative max-w-sm flex-1">
-          <SearchIcon className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+          <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
           <Input
-            placeholder="Поиск компании или домена..."
-            className="bg-background/50 pl-9"
+            placeholder="Поиск по названию или домену..."
+            className="pl-9"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="bg-card flex rounded-lg border p-1 text-xs">
-            {(['ALL', 'ENTERPRISE', 'PREMIUM', 'BASIC'] as const).map((filter) => (
-              <button
-                key={filter}
-                onClick={() => setPlanFilter(filter)}
-                className={`rounded-md px-3 py-1.5 font-medium transition-all ${
-                  planFilter === filter
-                    ? 'bg-zinc-100 text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-zinc-50'
-                    : 'text-muted-foreground hover:text-zinc-900 dark:hover:text-zinc-50'
-                }`}
-              >
-                {filter === 'ALL' && 'Все тарифы'}
-                {filter === 'ENTERPRISE' && 'Enterprise'}
-                {filter === 'PREMIUM' && 'Premium'}
-                {filter === 'BASIC' && 'Basic'}
-              </button>
-            ))}
-          </div>
-
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild>
-              <Button className="gap-1 rounded-xl bg-emerald-600 font-bold text-white hover:bg-emerald-700">
-                <Plus className="h-4 w-4" />
-                Добавить
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-lg rounded-3xl">
-              <DialogHeader>
-                <DialogTitle>Добавление B2B Клиента 🏢</DialogTitle>
-                <DialogDescription>
-                  Зарегистрируйте новую компанию и выделите ей пул лицензий.
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleCreate} className="space-y-4 py-2">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-muted-foreground text-xs font-bold">
-                      Название компании
-                      <Input
-                        placeholder="Например: Яндекс Коты"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                      />
-                    </label>
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-muted-foreground text-xs font-bold">
-                      Корпоративный домен
-                      <Input
-                        placeholder="yandex.ru"
-                        value={domain}
-                        onChange={(e) => setDomain(e.target.value)}
-                        required
-                      />
-                    </label>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-muted-foreground text-xs font-bold">
-                      Тарифный план
-                      <select
-                        className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2"
-                        value={plan}
-                        onChange={(e) =>
-                          setPlan(e.target.value as 'BASIC' | 'ENTERPRISE' | 'PREMIUM')
-                        }
-                      >
-                        <option value="BASIC">Basic 🐱</option>
-                        <option value="PREMIUM">Premium 🦁</option>
-                        <option value="ENTERPRISE">Enterprise 🐉</option>
-                      </select>
-                    </label>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-muted-foreground text-xs font-bold">
-                      Всего лицензий
-                      <Input
-                        type="number"
-                        min={1}
-                        value={licensesMax}
-                        onChange={(e) => setLicensesMax(Number(e.target.value))}
-                        required
-                      />
-                    </label>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-muted-foreground text-xs font-bold">Выручка (MRR)</label>
-                    <Input
-                      type="number"
-                      min={0}
-                      value={mrr}
-                      onChange={(e) => setMrr(parseInt(e.target.value) || 50000)}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-muted-foreground text-xs font-bold">
-                      Контактное лицо
-                    </label>
-                    <Input
-                      placeholder="Иван Кот"
-                      value={contactPerson}
-                      onChange={(e) => setContactPerson(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-muted-foreground text-xs font-bold">Email</label>
-                    <Input
-                      type="email"
-                      placeholder="contact@company.ru"
-                      value={contactEmail}
-                      onChange={(e) => setContactEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-muted-foreground text-xs font-bold">
-                    Статус контракта
-                  </label>
-                  <select
-                    className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2"
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value as any)}
-                  >
-                    <option value="ACTIVE">Активен (Active)</option>
-                    <option value="SUSPENDED">Приостановлен (Suspended)</option>
-                    <option value="PENDING">Ожидает оплаты (Pending)</option>
-                  </select>
-                </div>
-
-                <DialogFooter className="pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setIsCreateOpen(false);
-                      resetForm();
-                    }}
-                  >
-                    Отмена
-                  </Button>
-                  <Button type="submit" className="bg-emerald-600 text-white hover:bg-emerald-700">
-                    Зарегистрировать
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
+        <Button
+          onClick={() => setIsCreateOpen(true)}
+          className="flex items-center gap-2 bg-gradient-to-r from-fuchsia-600 to-pink-600 font-bold text-white hover:from-fuchsia-500 hover:to-pink-500"
+        >
+          <Plus className="h-4 w-4" />
+          Добавить компанию
+        </Button>
       </div>
 
       {/* Companies List */}
-      <div className="grid gap-6">
-        {filteredCompanies.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed p-12 text-center">
-            <span className="mb-3 text-4xl">🏢💤</span>
-            <h3 className="text-lg font-bold">Компании не найдены</h3>
-            <p className="text-muted-foreground mt-1 max-w-sm text-sm">
-              Попробуйте изменить параметры поиска или фильтры.
-            </p>
-          </div>
-        ) : (
-          filteredCompanies.map((co) => (
-            <Card
-              key={co.id}
-              className={`overflow-hidden border-l-4 transition-all hover:shadow-md ${
-                co.status === 'ACTIVE'
-                  ? 'border-l-emerald-500'
-                  : co.status === 'SUSPENDED'
-                    ? 'border-l-red-500'
-                    : 'border-l-orange-500'
-              }`}
-            >
-              <div className="p-6">
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                  <div className="flex-1 space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h4 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
-                        {co.name}
-                      </h4>
-                      {co.status === 'ACTIVE' && (
-                        <Badge className="border border-emerald-200 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-400">
-                          Контракт активен
-                        </Badge>
-                      )}
-                      {co.status === 'SUSPENDED' && (
-                        <Badge className="border border-red-200 bg-red-100 text-red-800 dark:bg-red-950/30 dark:text-red-400">
-                          Приостановлен
-                        </Badge>
-                      )}
-                      {co.status === 'PENDING' && (
-                        <Badge className="border border-orange-200 bg-orange-100 text-orange-800 dark:bg-orange-950/30 dark:text-orange-400">
-                          Ожидает оплаты
-                        </Badge>
-                      )}
-                      <Badge
-                        variant="outline"
-                        className="border-purple-300 text-purple-600 dark:text-purple-400"
-                      >
-                        Plan: {co.plan}
+      <div className="rounded-2xl border border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-left">
+            <thead>
+              <tr className="border-b border-neutral-200 bg-neutral-50 text-xs font-bold uppercase tracking-wider text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900/50">
+                <th className="px-6 py-3.5">Компания</th>
+                <th className="px-6 py-3.5">Домен</th>
+                <th className="px-6 py-3.5">Статус</th>
+                <th className="px-6 py-3.5">Сотрудники</th>
+                <th className="px-6 py-3.5">Дата регистрации</th>
+                <th className="px-6 py-3.5 text-right">Действия</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-200 text-sm dark:divide-neutral-800">
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-neutral-500">
+                    Загрузка списка компаний...
+                  </td>
+                </tr>
+              ) : filteredCompanies.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-neutral-500">
+                    Компании не найдены
+                  </td>
+                </tr>
+              ) : (
+                filteredCompanies.map((co) => (
+                  <tr
+                    key={co.id}
+                    className="transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/20"
+                  >
+                    <td className="px-6 py-4 font-semibold text-neutral-900 dark:text-neutral-100">
+                      {co.name}
+                    </td>
+                    <td className="px-6 py-4 font-mono text-xs text-neutral-500">{co.domain}</td>
+                    <td className="px-6 py-4">
+                      <Badge className="border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                        {co.status}
                       </Badge>
-                    </div>
-
-                    <div className="grid max-w-3xl gap-x-6 gap-y-2 text-xs md:grid-cols-3">
-                      <div className="text-muted-foreground flex items-center gap-1.5 font-medium">
-                        <AtSign className="h-3.5 w-3.5" />
-                        <span>
-                          Домен: <b>{co.domain}</b>
-                        </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-1.5 font-medium">
+                        <User className="h-3.5 w-3.5 text-neutral-400" />
+                        <span>{co._count?.employees || 0}</span>
                       </div>
-                      <div className="text-muted-foreground flex items-center gap-1.5 font-medium">
-                        👥
-                        <span>
-                          Лицензии:{' '}
-                          <b>
-                            {co.licensesUsed} / {co.licensesMax}
-                          </b>
-                        </span>
-                      </div>
-                      <div className="text-muted-foreground flex items-center gap-1.5 font-medium">
-                        💰
-                        <span>
-                          MRR: <b>{co.mrr.toLocaleString()} ₽</b>
-                        </span>
-                      </div>
-                      <div className="text-muted-foreground col-span-2 flex items-center gap-1.5 font-medium">
-                        👤
-                        <span>
-                          Контакты: <b>{co.contactPerson}</b> ({co.contactEmail})
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5 font-medium text-zinc-400">
-                        📅
-                        <span>Дата подключения: {co.joinedDate}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex shrink-0 items-center gap-2 self-end md:self-center">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => openEditDialog(co)}
-                      className="gap-1 rounded-lg border-zinc-300 text-zinc-700 hover:bg-zinc-50"
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                      Редактировать
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDelete(co.id)}
-                      className="gap-1 rounded-lg border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                      Удалить
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          ))
-        )}
+                    </td>
+                    <td className="px-6 py-4 text-xs text-neutral-500">
+                      {new Date(co.createdAt).toLocaleDateString('ru-RU')}
+                    </td>
+                    <td className="space-x-2 px-6 py-4 text-right">
+                      <Button size="sm" variant="outline" onClick={() => openEmployeesDialog(co)}>
+                        Сотрудники
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => handleDeleteCompany(co.id)}
+                        className="h-8 w-8 text-red-500 hover:bg-red-500/10 hover:text-red-600"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* Edit Dialog */}
-      {selectedCompany ? (
-        <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-          <DialogContent className="max-w-lg rounded-3xl">
+      {/* Dialog: Create Company */}
+      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <DialogContent className="max-w-md rounded-2xl border border-neutral-300 bg-white p-6 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
+          <form onSubmit={handleCreateCompany}>
             <DialogHeader>
-              <DialogTitle>Редактирование B2B Клиента 🏢</DialogTitle>
-              <DialogDescription>Измените информацию о компании.</DialogDescription>
+              <DialogTitle className="text-xl font-bold">Добавить новую компанию</DialogTitle>
+              <DialogDescription>
+                Создайте карточку компании. Сотрудники смогут связываться с ней по почтовому домену.
+              </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleEdit} className="space-y-4 py-2">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-muted-foreground text-xs font-bold">
-                    Название компании
-                  </label>
-                  <Input value={name} onChange={(e) => setName(e.target.value)} required />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-muted-foreground text-xs font-bold">
-                    Корпоративный домен
-                  </label>
-                  <Input value={domain} onChange={(e) => setDomain(e.target.value)} required />
-                </div>
+
+            <div className="my-6 space-y-4">
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="company-name"
+                  className="text-xs font-bold uppercase text-neutral-500"
+                >
+                  Название компании
+                </label>
+                <Input
+                  id="company-name"
+                  required
+                  placeholder="Например: Яндекс Коты"
+                  value={newCompanyName}
+                  onChange={(e) => setNewCompanyName(e.target.value)}
+                />
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-1">
-                  <label className="text-muted-foreground text-xs font-bold">
-                    Тарифный план
-                    <select
-                      className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2"
-                      value={plan}
-                      onChange={(e) => setPlan(e.target.value as any)}
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="company-domain"
+                  className="text-xs font-bold uppercase text-neutral-500"
+                >
+                  Домен почты
+                </label>
+                <Input
+                  id="company-domain"
+                  required
+                  placeholder="Например: yandex.ru"
+                  value={newCompanyDomain}
+                  onChange={(e) => setNewCompanyDomain(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <DialogFooter className="gap-2">
+              <Button type="button" variant="ghost" onClick={() => setIsCreateOpen(false)}>
+                Отмена
+              </Button>
+              <Button
+                type="submit"
+                className="bg-gradient-to-r from-fuchsia-600 to-pink-600 font-bold text-white"
+              >
+                Создать
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: Manage Employees */}
+      <Dialog open={isEmployeesOpen} onOpenChange={setIsEmployeesOpen}>
+        <DialogContent className="max-w-3xl rounded-2xl border border-neutral-300 bg-white p-6 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl font-bold">
+              <span>Сотрудники компании:</span>
+              <span className="font-extrabold text-fuchsia-500">{selectedCompany?.name}</span>
+            </DialogTitle>
+            <DialogDescription>
+              Управляйте привязкой пользователей к компании и выдавайте доступы администратора.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Add Employee Form */}
+          <form onSubmit={handleAddEmployee} className="my-4 flex items-end gap-2">
+            <div className="flex-1 space-y-1.5">
+              <label
+                htmlFor="employee-email"
+                className="flex items-center gap-1 text-xs font-bold uppercase text-neutral-500"
+              >
+                <AtSign className="h-3 w-3" />
+                Email пользователя для добавления
+              </label>
+              <Input
+                id="employee-email"
+                type="email"
+                required
+                placeholder="user@domain.com"
+                value={newEmployeeEmail}
+                onChange={(e) => setNewEmployeeEmail(e.target.value)}
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={submittingEmployee}
+              className="bg-zinc-900 font-bold text-white hover:opacity-90 dark:bg-zinc-100 dark:text-zinc-950"
+            >
+              Добавить
+            </Button>
+          </form>
+
+          {/* Employees List */}
+          <div className="max-h-[300px] overflow-hidden overflow-y-auto rounded-xl border border-neutral-200 dark:border-neutral-800">
+            <table className="w-full border-collapse text-left text-xs">
+              <thead>
+                <tr className="border-b border-neutral-200 bg-neutral-50 font-bold uppercase text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900/50">
+                  <th className="px-4 py-2.5">Имя</th>
+                  <th className="px-4 py-2.5">Email</th>
+                  <th className="px-4 py-2.5">Роль в компании</th>
+                  <th className="px-4 py-2.5 text-right">Действия</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
+                {loadingEmployees ? (
+                  <tr>
+                    <td colSpan={4} className="py-6 text-center text-neutral-500">
+                      Загрузка сотрудников...
+                    </td>
+                  </tr>
+                ) : employees.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="py-6 text-center text-neutral-500">
+                      Нет привязанных сотрудников
+                    </td>
+                  </tr>
+                ) : (
+                  employees.map((emp) => (
+                    <tr
+                      key={emp.id}
+                      className="hover:bg-neutral-50/50 dark:hover:bg-neutral-900/20"
                     >
-                      <option value="BASIC">Basic 🐱</option>
-                      <option value="PREMIUM">Premium 🦁</option>
-                      <option value="ENTERPRISE">Enterprise 🐉</option>
-                    </select>
-                  </label>
-                </div>
+                      <td className="px-4 py-3 font-semibold">{emp.name}</td>
+                      <td className="px-4 py-3 font-mono">{emp.email}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1.5">
+                          {emp.companyRole === 'ADMIN' ? (
+                            <Badge className="border border-fuchsia-500/20 bg-fuchsia-500/10 text-fuchsia-600">
+                              <Shield className="mr-1 h-3 w-3" />
+                              Администратор
+                            </Badge>
+                          ) : (
+                            <Badge variant="secondary">Сотрудник</Badge>
+                          )}
+                        </div>
+                      </td>
+                      <td className="space-x-2 px-4 py-3 text-right">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleToggleAdmin(emp.id, emp.companyRole)}
+                          className="h-7 px-2 text-xs"
+                        >
+                          {emp.companyRole === 'ADMIN' ? 'Снять админа' : 'Сделать админом'}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleRemoveEmployee(emp.id)}
+                          className="h-7 px-2 text-xs text-red-500 hover:bg-red-500/10 hover:text-red-600"
+                        >
+                          Исключить
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
 
-                <div className="space-y-1">
-                  <label className="text-muted-foreground text-xs font-bold">Всего лицензий</label>
-                  <Input
-                    type="number"
-                    min={1}
-                    value={licensesMax}
-                    onChange={(e) => setLicensesMax(parseInt(e.target.value) || 50)}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-muted-foreground text-xs font-bold">Выручка (MRR)</label>
-                  <Input
-                    type="number"
-                    min={0}
-                    value={mrr}
-                    onChange={(e) => setMrr(parseInt(e.target.value) || 50000)}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-muted-foreground text-xs font-bold">Контактное лицо</label>
-                  <Input
-                    value={contactPerson}
-                    onChange={(e) => setContactPerson(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-muted-foreground text-xs font-bold">Email</label>
-                  <Input
-                    type="email"
-                    value={contactEmail}
-                    onChange={(e) => setContactEmail(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-muted-foreground text-xs font-bold">Статус контракта</label>
-                <select
-                  className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2"
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value as any)}
-                >
-                  <option value="ACTIVE">Активен (Active)</option>
-                  <option value="SUSPENDED">Приостановлен (Suspended)</option>
-                  <option value="PENDING">Ожидает оплаты (Pending)</option>
-                </select>
-              </div>
-
-              <DialogFooter className="pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setIsEditOpen(false);
-                    setSelectedCompany(null);
-                    resetForm();
-                  }}
-                >
-                  Отмена
-                </Button>
-                <Button type="submit" className="bg-emerald-600 text-white hover:bg-emerald-700">
-                  Сохранить изменения
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      ) : null}
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={() => setIsEmployeesOpen(false)}>
+              Закрыть
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

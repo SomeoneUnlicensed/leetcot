@@ -51,7 +51,10 @@ export interface FilterOptions {
 /**
  * Fetches challenges with comprehensive filtering.
  */
-export async function getFilteredChallenges(filters: FilterOptions, take?: number): Promise<FilteredChallenge[]> {
+export async function getFilteredChallenges(
+  filters: FilterOptions,
+  take?: number,
+): Promise<FilteredChallenge[]> {
   const session = await auth();
 
   const where: Record<string, unknown> = {
@@ -111,7 +114,10 @@ export async function getFilteredChallenges(filters: FilterOptions, take?: numbe
 /**
  * Fetches challenges either by tag or difficulty.
  */
-export async function getChallengesByTagOrDifficulty(str: string, take?: number): Promise<FilteredChallenge[]> {
+export async function getChallengesByTagOrDifficulty(
+  str: string,
+  take?: number,
+): Promise<FilteredChallenge[]> {
   const session = await auth();
   const formattedStr = str.trim().toUpperCase();
 

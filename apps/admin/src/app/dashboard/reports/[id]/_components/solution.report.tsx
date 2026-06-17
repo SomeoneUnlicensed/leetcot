@@ -8,7 +8,7 @@ import { cache } from 'react';
 import type { ReportWithInfo } from '../_actions';
 
 const getSolutionChallenge = cache(async (challengeId: number) => {
-  return prisma.challenge.findFirstOrThrow({
+  return await prisma.challenge.findFirstOrThrow({
     where: {
       id: challengeId,
     },

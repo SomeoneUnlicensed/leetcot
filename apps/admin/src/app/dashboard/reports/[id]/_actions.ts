@@ -21,7 +21,7 @@ export async function addReport(
   info: ChallengeInfo | UserInfo,
   issues: Prisma.ReportIssueCreateManyReportInput[] = [{ type: 'OTHER' }],
 ) {
-  return prisma.report.create({
+  return await prisma.report.create({
     data: {
       status: 'PENDING',
       ...info,
@@ -37,7 +37,7 @@ export async function addReport(
 export type BannedUsers = Awaited<ReturnType<typeof getBannedUsers>>;
 
 export async function deleteComment(commentId: number, reportId: number) {
-  return prisma.$transaction([
+  return await prisma.$transaction([
     prisma.comment.delete({
       where: {
         id: commentId,
@@ -61,7 +61,7 @@ export async function deleteComment(commentId: number, reportId: number) {
  */
 export type GetBannedUsers = NonNullable<Awaited<ReturnType<typeof getBannedUsers>>>;
 export async function getBannedUsers() {
-  return prisma.user.findMany({
+  return await prisma.user.findMany({
     where: {
       status: 'BANNED',
     },
@@ -205,7 +205,7 @@ export async function banUser(userId: string, reportId: number, banReason?: stri
  * @returns
  */
 export async function unbanUser(userId: string) {
-  return prisma.$transaction([
+  return await prisma.$transaction([
     prisma.challenge.updateMany({
       where: {
         userId,
@@ -226,7 +226,7 @@ export async function unbanUser(userId: string) {
 }
 
 export const getChallenge = cache(async (id: number) => {
-  return prisma.challenge.findFirstOrThrow({
+  return await prisma.challenge.findFirstOrThrow({
     where: {
       id,
     },
@@ -292,7 +292,7 @@ export const getReportedUserInformation = async (userId: string) => {
 export type ReportWithInfo = Awaited<ReturnType<typeof getReport>>;
 
 export async function getReport(id: number) {
-  return prisma.report.findFirstOrThrow({
+  return await prisma.report.findFirstOrThrow({
     where: {
       id: Number(id),
     },
