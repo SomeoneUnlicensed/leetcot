@@ -65,15 +65,15 @@ export async function POST(req: Request) {
       : `docker run --rm --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code node:20-alpine node main.js`;
 
     try {
-      // Таймаут 5 секунд на выполнение кода
-      const { stdout, stderr } = await execAsync(cmd, { timeout: 5000 });
+      // Таймаут 7 секунд на выполнение кода
+      const { stdout, stderr } = await execAsync(cmd, { timeout: 7000 });
       return NextResponse.json({ success: true, output: stdout, error: stderr });
     } catch (execError: unknown) {
       const err = execError as { killed?: boolean; stderr?: string; stdout?: string };
       if (err.killed) {
         return NextResponse.json({
           success: false,
-          error: 'Time Limit Exceeded (Код выполнялся дольше 5 секунд)',
+          error: 'Time Limit Exceeded (Код выполнялся дольше 7 секунд)',
         });
       }
 
