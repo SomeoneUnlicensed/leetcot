@@ -43,7 +43,10 @@ export function SubmissionOverview({ submissionId, userId }: SubmissionOverviewP
     queryFn: () => getChallengeSubmissionById(submissionId, userId),
   });
 
-  const code = codifyForMarkdown(submission?.code.trimStart() ?? '', submission?.challenge.language);
+  const code = codifyForMarkdown(
+    submission?.code.trimStart() ?? '',
+    submission?.challenge.language,
+  );
 
   const track = searchParams.get('slug');
 

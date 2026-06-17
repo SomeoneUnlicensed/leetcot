@@ -24,7 +24,9 @@ async function main() {
   const adminPassword = passwordArg ? passwordArg.split('=')[1] : process.env.ADMIN_PASSWORD;
 
   if (!adminEmail || !adminPassword) {
-    console.error('Ошибка: Необходимо указать email и пароль админа (аргументами --email/--password или через переменные окружения ADMIN_EMAIL/ADMIN_PASSWORD).');
+    console.error(
+      'Ошибка: Необходимо указать email и пароль админа (аргументами --email/--password или через переменные окружения ADMIN_EMAIL/ADMIN_PASSWORD).',
+    );
     process.exit(1);
   }
 

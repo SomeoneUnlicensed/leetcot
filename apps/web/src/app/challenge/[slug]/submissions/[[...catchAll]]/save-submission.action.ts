@@ -30,6 +30,57 @@ export async function saveSubmission({ challenge, code, isSuccessful }: Args) {
       isSuccessful,
     },
   });
+
+  if (isSuccessful) {
+    const activeParticipants = await prisma.championshipParticipant.findMany({
+      where: {
+        userId,
+        championship: {
+          status: 'ACTIVE',
+          challenges: {
+            some: {
+              challengeId: challenge.id,
+            },
+          },
+        },
+      },
+    });
+
+    if (activeParticipants.length > 0) {
+      const pointsMap: Record<string, number> = {
+        BEGINNER: 50,
+        EASY: 100,
+        MEDIUM: 250,
+        HARD: 500,
+        EXTREME: 1000,
+        EVENT: 200,
+      };
+      const points = pointsMap[challenge.difficulty] || 100;
+
+      for (const participant of activeParticipants) {
+        const existingSuccessful = await prisma.submission.findFirst({
+          where: {
+            userId,
+            challengeId: challenge.id,
+            isSuccessful: true,
+            id: { not: submission.id },
+          },
+        });
+
+        if (!existingSuccessful) {
+          await prisma.championshipParticipant.update({
+            where: { id: participant.id },
+            data: {
+              score: {
+                increment: points,
+              },
+            },
+          });
+        }
+      }
+    }
+  }
+
   revalidateTag(createChallengeSubmissionCacheKey(challenge.slug));
   revalidateTag(createCacheKeyForSolutions(challenge.slug));
   revalidateTag(createInProgressSubmissionCacheKey(userId));

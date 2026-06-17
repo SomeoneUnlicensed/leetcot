@@ -35,12 +35,14 @@
     "typecheck": "turbo run typecheck --continue"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "ajv": "^8.12.0",
+    "bcryptjs": "^2.4.3",
     "cspell": "^7.3.8",
+    "eslint": "^8.57.1",
+    "eslint-plugin-turbo": "^2.9.18",
     "markdownlint-cli2": "^0.10.0",
     "picocolors": "^1.0.0",
-    "bcryptjs": "^2.4.3",
-    "@types/bcryptjs": "^2.4.6",
     "prettier": "^3.1.1",
     "prettier-plugin-tailwindcss": "^0.5.9",
     "tsx": "4.19.0",

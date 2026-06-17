@@ -1,4 +1,6 @@
+import type { Prisma } from '@repo/db';
 import { prisma } from '@repo/db';
+import type { Challenge } from '@repo/db/types';
 import { auth } from '~/server/auth';
 import { assertAdmin } from '~/utils/auth-guards';
 import { UpdateTrackForm } from './_components/update-track-form';
@@ -19,7 +21,9 @@ export default async function TracksPage({ params }: { params: Params }) {
 }
 
 export type TrackToManage = NonNullable<Awaited<ReturnType<typeof getTrackById>>>;
-const getTrackById = (id: number) => {
+const getTrackById = (
+  id: number,
+): Promise<Prisma.TrackGetPayload<{ include: { trackChallenges: true } }>> => {
   return prisma.track.findFirstOrThrow({
     where: {
       id,
@@ -31,7 +35,7 @@ const getTrackById = (id: number) => {
 };
 
 export type ChallengesForTrack = NonNullable<Awaited<ReturnType<typeof getChallenges>>>;
-function getChallenges() {
+function getChallenges(): Promise<Challenge[]> {
   return prisma.challenge.findMany({
     where: {
       status: 'ACTIVE',

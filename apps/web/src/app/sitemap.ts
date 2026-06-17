@@ -9,7 +9,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     allChallenges = await prisma.challenge.findMany();
   } catch (error) {
-    console.warn('Warning: Database not available during sitemap build, skipping challenges:', error);
+    console.warn(
+      'Warning: Database not available during sitemap build, skipping challenges:',
+      error,
+    );
   }
 
   return [

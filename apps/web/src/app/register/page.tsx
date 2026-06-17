@@ -42,7 +42,9 @@ function OtpInput({ value, onChange }: { value: string; onChange: (v: string) =>
       {Array.from({ length: 6 }).map((_, i) => (
         <input
           key={i}
-          ref={(el) => { inputs.current[i] = el; }}
+          ref={(el) => {
+            inputs.current[i] = el;
+          }}
           type="text"
           inputMode="numeric"
           maxLength={1}
@@ -152,7 +154,6 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-950 px-4">
       <div className="w-full max-w-md space-y-8 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8 shadow-2xl backdrop-blur-sm">
-
         {/* Header */}
         <div className="text-center">
           <pre className="mx-auto mb-4 text-[10px] font-bold leading-3 text-pink-500">
@@ -166,9 +167,14 @@ export default function RegisterPage() {
             {step === 'form' ? 'Регистрация в ЛитКот' : 'Подтверди email'}
           </h2>
           <p className="mt-2 text-sm text-zinc-400">
-            {step === 'form'
-              ? 'Стань частью нашей кошачьей банды'
-              : <>Мы отправили 6-значный код на <span className="font-medium text-pink-400">{email}</span></>}
+            {step === 'form' ? (
+              'Стань частью нашей кошачьей банды'
+            ) : (
+              <>
+                Мы отправили 6-значный код на{' '}
+                <span className="font-medium text-pink-400">{email}</span>
+              </>
+            )}
           </p>
         </div>
 
