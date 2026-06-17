@@ -48,7 +48,9 @@ jobs:
       - name: Clean up build artifacts
         if: always()
         run: |
-          docker image prune -f || true
+          docker system prune -f || true
+          docker image prune -a -f || true
           docker builder prune -a -f || true
+          docker volume prune -f || true
           echo "=== Disk after deploy ==="
           df -h /
