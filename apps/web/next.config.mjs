@@ -28,13 +28,7 @@ const nextConfig = {
       : [];
   },
   async redirects() {
-    return [
-      {
-        source: '/db',
-        destination: '/db/',
-        permanent: true,
-      },
-    ];
+    return [];
   },
   async rewrites() {
     return [
@@ -45,10 +39,6 @@ const nextConfig = {
       {
         source: '/panel/:path*',
         destination: 'http://localhost:3001/panel/:path*',
-      },
-      {
-        source: '/db/:path*',
-        destination: 'http://pgadmin:80/db/:path*',
       },
     ];
   },
