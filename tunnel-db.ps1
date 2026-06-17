@@ -1,4 +1,4 @@
-# Safe SSH Tunnel for pgAdmin and Database
+﻿# Safe SSH Tunnel for pgAdmin and Database
 Clear-Host
 Write-Host "==========================================================" -ForegroundColor Green
 Write-Host "🐾  ЛитКот: Безопасное SSH-подключение к базе данных 🐾" -ForegroundColor Green
