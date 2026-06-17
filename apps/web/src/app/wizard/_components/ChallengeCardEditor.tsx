@@ -1,5 +1,3 @@
-'use client';
-
 import { useWatch } from 'react-hook-form';
 import type { WizardForm } from '.';
 import type { ExploreChallengeData } from '~/app/explore/_components/explore.action';
@@ -15,6 +13,7 @@ import {
   SelectValue,
 } from '@repo/ui/components/select';
 import { Input } from '@repo/ui/components/input';
+import { Checkbox } from '@repo/ui/components/checkbox';
 
 interface ChallengeCardEditorProps {
   form: WizardForm;
@@ -62,8 +61,8 @@ export function ChallengeCardEditor({ form }: ChallengeCardEditorProps) {
                 <FormItem>
                   <FormLabel className="mt-2">Сложность: </FormLabel>
                   <Select
-                    defaultValue={field.value}
-                    onValueChange={field.onChange as (value: string) => void}
+                     defaultValue={field.value}
+                     onValueChange={field.onChange as (value: string) => void}
                   >
                     <FormControl>
                       <SelectTrigger className="rounded-xl bg-neutral-200 dark:bg-neutral-800">
@@ -127,8 +126,29 @@ export function ChallengeCardEditor({ form }: ChallengeCardEditorProps) {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="isInfoOnly"
+            render={({ field }) => (
+              <FormItem className="mt-4 flex flex-row items-start space-x-3 space-y-0 rounded-xl border border-neutral-300 bg-neutral-200 p-4 dark:border-neutral-800 dark:bg-neutral-800">
+                <FormControl>
+                  <Checkbox
+                    id="isInfoOnly"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel htmlFor="isInfoOnly" className="cursor-pointer font-semibold">
+                    Только теория (без редактора кода)
+                  </FormLabel>
+                  <p className="text-xs text-neutral-500">
+                    Урок теории для курса. Пользователю будет показан только теоретический блок без возможности писать код.
+                  </p>
+                </div>
+              </FormItem>
+            )}
+          />
         </div>
-      </div>
-    </>
   );
 }
