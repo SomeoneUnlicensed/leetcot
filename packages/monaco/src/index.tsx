@@ -387,31 +387,9 @@ export function CodePanel(props: CodePanelProps) {
       </div>
 
       {checkingState !== 'editor' && (
-        <>
-          <style
-            dangerouslySetInnerHTML={{
-              __html: `
-            @keyframes fadeInOverlay {
-              from {
-                opacity: 0;
-                backdrop-filter: blur(0px);
-                transform: translateY(8px);
-              }
-              to {
-                opacity: 1;
-                backdrop-filter: blur(12px);
-                transform: translateY(0);
-              }
-            }
-          `,
-            }}
-          />
-          <div
-            className="absolute inset-x-0 bottom-0 top-[48px] z-50 flex flex-col items-center justify-center overflow-y-auto bg-zinc-50/80 p-6 backdrop-blur-md dark:bg-zinc-950/85"
-            style={{
-              animation: 'fadeInOverlay 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-            }}
-          >
+        <div
+          className="animate-fade-in-overlay absolute inset-x-0 bottom-0 top-[48px] z-50 flex flex-col items-center justify-center overflow-y-auto bg-zinc-50/80 p-6 backdrop-blur-md dark:bg-zinc-950/85"
+        >
             {checkingState === 'verifying' && (
               <>
                 <div className="mb-6 flex animate-pulse flex-col items-center">
@@ -599,7 +577,6 @@ export function CodePanel(props: CodePanelProps) {
               </span>
             </div>
           </div>
-        </>
       )}
 
       <SplitEditor
