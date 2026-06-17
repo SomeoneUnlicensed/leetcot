@@ -157,6 +157,11 @@ model User {
   /// Exams created by teachers
   createdExams ExamSession[] @relation("exam_student")
   teacherExams Exam[] @relation("exam_teacher")
+
+  companyId            String?
+  company              Company?   @relation(fields: [companyId], references: [id])
+  companyRole          String?    // "ADMIN" | "EMPLOYEE"
+  championships        ChampionshipParticipant[]
 }
 
 model VerificationToken {
@@ -254,6 +259,7 @@ model Challenge {
   Report         Report[]         @relation("report_challenge")
   TrackChallenge TrackChallenge[]
   Notification   Notification[]
+  championships  ChampionshipChallenge[]
 
   @@index([userId])
 }
@@ -743,4 +749,55 @@ model ShortURL {
 
   @@index([userId])
   @@index([shortUrlSlug])
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  domain    String   @unique
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  employees User[]
+  championships Championship[]
+}
+
+model Championship {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String   @db.Text
+  status      String   @default("DRAFT") // DRAFT, ACTIVE, PAST
+  startDate   DateTime
+  endDate     DateTime
+  companyId   String?
+  company     Company? @relation(fields: [companyId], references: [id])
+  challenges  ChampionshipChallenge[]
+  participants ChampionshipParticipant[]
+
+  @@index([companyId])
+}
+
+model ChampionshipParticipant {
+  id             String       @id @default(uuid())
+  championshipId String
+  championship   Championship @relation(fields: [championshipId], references: [id])
+  userId         String
+  user           User         @relation(fields: [userId], references: [id])
+  score          Int          @default(0)
+  joinedAt       DateTime     @default(now())
+
+  @@index([championshipId])
+  @@index([userId])
+}
+
+model ChampionshipChallenge {
+  championshipId String
+  championship   Championship @relation(fields: [championshipId], references: [id])
+  challengeId    Int
+  challenge      Challenge    @relation(fields: [challengeId], references: [id])
+
+  @@id([championshipId, challengeId])
+  @@index([championshipId])
+  @@index([challengeId])
 }
