@@ -1,7 +1,7 @@
 'use server';
 
 import { auth } from '~/server/auth';
-import type { Prisma } from '@repo/db';
+import type { Prisma, RoleTypes } from '@repo/db';
 import { prisma } from '@repo/db';
 import { revalidatePath } from 'next/cache';
 import { assertAdmin } from '~/utils/auth-guards';
@@ -14,6 +14,9 @@ export async function getUsers() {
   return prisma.user.findMany({
     orderBy: {
       createdAt: 'desc',
+    },
+    include: {
+      roles: true,
     },
   });
 }
@@ -108,4 +111,33 @@ export async function unbanUser(userId: string) {
       },
     }),
   ]);
+}
+
+export async function updateUserRoles(userId: string, roles: string[]) {
+  const session = await auth();
+  assertAdmin(session);
+
+  // Get all target roles from database, creating them if they don't exist
+  const roleIds = await Promise.all(
+    roles.map(async (roleName) => {
+      const roleRow = await prisma.role.upsert({
+        where: { role: roleName as RoleTypes },
+        update: {},
+        create: { role: roleName as RoleTypes },
+      });
+      return { id: roleRow.id };
+    }),
+  );
+
+  // Update user's roles
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      roles: {
+        set: roleIds,
+      },
+    },
+  });
+
+  revalidatePath('/dashboard/users');
 }
