@@ -58,7 +58,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@leetcot.ru}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-dev}
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
-      PGADMIN_CONFIG_SCRIPT_NAME: '/db'
+      PGADMIN_CONFIG_SCRIPT_NAME: "'/db'"
     volumes:
       - ./pgadmin/servers.json:/pgadmin4/servers.json
       - pgadmin-data:/var/lib/pgadmin
