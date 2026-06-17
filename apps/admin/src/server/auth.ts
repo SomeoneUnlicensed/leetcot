@@ -8,6 +8,7 @@ const cookieDomain = useSecureCookies ? 'leetcot.ru' : undefined;
 
 export const authOptions = {
   ...baseNextAuthConfig,
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'fallback_secret_key_12345',
   cookies: {
     sessionToken: {
       name: `${cookiePrefix}next-auth.session-token`,
