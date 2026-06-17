@@ -50,7 +50,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html suppressHydrationWarning lang="ru" className="dark">
-      <body className="font-sans flex flex-col bg-zinc-950 text-white">
+      <body className="flex flex-col bg-zinc-950 font-sans text-white">
         <Providers>
           <PromoBlock variant="banner" text="ИНФОРМАЦИЯ (ГЛОБАЛЬНЫЙ БАННЕР)" />
           <Navigation />

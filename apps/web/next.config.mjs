@@ -14,7 +14,6 @@ const isProd = process.env.NODE_ENV === 'production';
 // Detect turbopack mode via CLI args (--turbopack flag)
 const isTurbopack = process.argv.includes('--turbopack');
 
-
 const nextConfig = {
   async headers() {
     return !isProd

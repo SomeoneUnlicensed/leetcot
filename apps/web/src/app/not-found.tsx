@@ -21,16 +21,16 @@ export default async function NotFound() {
         <div className="stars absolute -left-full -z-50 mt-[56px] h-screen w-[200%]" />
         <div className="stars absolute -left-full -z-40 mt-[56px] h-1/2 w-[400%] scale-[2]" />
         <div className="stars absolute -left-full -z-30 mt-[56px] h-1/3 w-[600%] scale-[3]" />
-        
+
         <div className="flex flex-col items-center justify-center gap-2">
-          <h1 className="font-sans text-8xl font-extrabold tracking-tighter bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent opacity-80 md:text-9xl">
+          <h1 className="bg-gradient-to-b from-white to-zinc-400 bg-clip-text font-sans text-8xl font-extrabold tracking-tighter text-transparent opacity-80 md:text-9xl">
             404
           </h1>
           <p className="px-6 text-center font-sans text-base text-zinc-400 md:px-0 md:text-lg">
             Упс! Страница, которую вы ищете, не существует.
           </p>
         </div>
-        
+
         {randomChallengeSlug !== null ? (
           <div className="flex flex-col gap-4 sm:flex-row">
             <Link href="/explore">

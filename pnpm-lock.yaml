@@ -33,6 +33,12 @@ importers:
       cspell:
         specifier: ^7.3.8
         version: 7.3.9
+      eslint:
+        specifier: ^8.57.1
+        version: 8.57.1
+      eslint-plugin-turbo:
+        specifier: ^2.9.18
+        version: 2.9.18(eslint@8.57.1)(turbo@2.6.1)
       markdownlint-cli2:
         specifier: ^0.10.0
         version: 0.10.0
@@ -5904,6 +5910,12 @@ packages:
 
   eslint-plugin-turbo@2.5.0:
     resolution: {integrity: sha512-qQk54MrUZv0gnpxV23sccTc+FL3UJ8q7vG7HmXuS2RP8gdjWDwI1CCJTJD8EdRIDjsMxF0xi0AKcMY0CwIlXVg==}
+    peerDependencies:
+      eslint: '>6.6.0'
+      turbo: '>2.0.0'
+
+  eslint-plugin-turbo@2.9.18:
+    resolution: {integrity: sha512-WbvNDtwxyNQnX6ODtWs39EutD8a2Eoh25EgGkSqbqRpw8llHG/waCgBUwUUG7i1yh73d6p4HNBWEk+C+mvx9Xw==}
     peerDependencies:
       eslint: '>6.6.0'
       turbo: '>2.0.0'
@@ -14820,6 +14832,12 @@ snapshots:
       '@microsoft/tsdoc-config': 0.16.2
 
   eslint-plugin-turbo@2.5.0(eslint@8.57.1)(turbo@2.6.1):
+    dependencies:
+      dotenv: 16.0.3
+      eslint: 8.57.1
+      turbo: 2.6.1
+
+  eslint-plugin-turbo@2.9.18(eslint@8.57.1)(turbo@2.6.1):
     dependencies:
       dotenv: 16.0.3
       eslint: 8.57.1

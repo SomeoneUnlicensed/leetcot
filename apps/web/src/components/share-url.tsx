@@ -81,7 +81,11 @@ export function ShareUrl({ desciprtion, isChallenge = false, code, longUrl }: Sh
         aria-disabled={state === 'loading'}
         className="break-all rounded-lg border border-black/20 bg-white px-4 py-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 dark:border-white/20 dark:bg-black"
       >
-        {shortUrl.length === 0 ? (code ? 'Скопируйте, чтобы сгенерировать ссылку!' : url) : shortUrl}
+        {shortUrl.length === 0
+          ? code
+            ? 'Скопируйте, чтобы сгенерировать ссылку!'
+            : url
+          : shortUrl}
       </code>
       <DialogFooter>
         <div className="flex items-center justify-end gap-2">

@@ -61,8 +61,8 @@ export function ChallengeCardEditor({ form }: ChallengeCardEditorProps) {
                 <FormItem>
                   <FormLabel className="mt-2">Сложность: </FormLabel>
                   <Select
-                     defaultValue={field.value}
-                     onValueChange={field.onChange as (value: string) => void}
+                    defaultValue={field.value}
+                    onValueChange={field.onChange as (value: string) => void}
                   >
                     <FormControl>
                       <SelectTrigger className="rounded-xl bg-neutral-200 dark:bg-neutral-800">
@@ -143,12 +143,15 @@ export function ChallengeCardEditor({ form }: ChallengeCardEditorProps) {
                     Только теория (без редактора кода)
                   </FormLabel>
                   <p className="text-xs text-neutral-500">
-                    Урок теории для курса. Пользователю будет показан только теоретический блок без возможности писать код.
+                    Урок теории для курса. Пользователю будет показан только теоретический блок без
+                    возможности писать код.
                   </p>
                 </div>
               </FormItem>
             )}
           />
         </div>
+      </div>
+    </>
   );
 }

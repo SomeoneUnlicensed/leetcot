@@ -129,7 +129,9 @@ export const getChallengeRouteData = cache(async (slug: string, session: Session
 
   let nextChallenge: { slug: string; name: string } | null = null;
   if (trackForNavigation) {
-    const index = trackForNavigation.trackChallenges.findIndex((x) => x.challengeId === challenge.id);
+    const index = trackForNavigation.trackChallenges.findIndex(
+      (x) => x.challengeId === challenge.id,
+    );
     if (index !== -1 && index + 1 < trackForNavigation.trackChallenges.length) {
       const nextChallengeData = trackForNavigation.trackChallenges[index + 1]?.challenge;
       if (nextChallengeData) {

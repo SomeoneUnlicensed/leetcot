@@ -14,7 +14,10 @@ export async function POST(req: Request) {
     });
 
     if (!token) {
-      return NextResponse.json({ error: 'Неверный код. Проверь и попробуй снова.' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Неверный код. Проверь и попробуй снова.' },
+        { status: 400 },
+      );
     }
 
     if (token.expires < new Date()) {
