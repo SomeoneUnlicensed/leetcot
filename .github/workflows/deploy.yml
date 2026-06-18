@@ -36,8 +36,14 @@ jobs:
       - name: Pull Docker images
         run: docker compose pull
 
-      - name: Build and start containers
-        run: docker compose up -d --build --remove-orphans
+      - name: Build app image
+        run: docker compose build app
+
+      - name: Start containers (no-recreate for db/redis/pgadmin)
+        run: docker compose up -d --no-recreate
+
+      - name: Deploy new app image
+        run: docker compose up -d --force-recreate --no-build app
 
       - name: Wait for database readiness
         run: sleep 8
