@@ -31,18 +31,59 @@ const AvatarFallback = ({
   />
 );
 
+interface DefaultAvatarProps extends React.ComponentProps<'div'> {
+  username?: string | null;
+}
+
 // million-ignore
-function DefaultAvatar(props: React.ComponentProps<'div'>) {
+function DefaultAvatar({ username, className, ...props }: DefaultAvatarProps) {
+  const getAvatarIndex = (name: string | null | undefined) => {
+    if (!name) return 0;
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash += name.charCodeAt(i);
+    }
+    return hash % 5;
+  };
+
+  const index = getAvatarIndex(username);
+
+  const variants = [
+    {
+      face: '( o.o )',
+      style: 'border-amber-500/25 bg-amber-500/10 text-amber-600 dark:text-amber-400',
+    },
+    {
+      face: '( =^.^= )',
+      style: 'border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    },
+    {
+      face: '( -.- )',
+      style: 'border-indigo-500/25 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400',
+    },
+    {
+      face: '( >.< )',
+      style: 'border-rose-500/25 bg-rose-500/10 text-rose-600 dark:text-rose-400',
+    },
+    {
+      face: '( o_o )',
+      style: 'border-violet-500/25 bg-violet-500/10 text-violet-600 dark:text-violet-400',
+    },
+  ];
+
+  const variant = variants[index] ?? variants[0]!;
+
   return (
     <div
       {...props}
       className={cn(
-        'flex aspect-square h-full w-full select-none flex-col items-center justify-center rounded-full border border-amber-500/25 bg-amber-500/10 text-center font-mono text-[7px] font-bold leading-[1] text-amber-600 dark:text-amber-400',
-        props.className,
+        'flex aspect-square h-full w-full select-none flex-col items-center justify-center rounded-full border text-center font-mono text-[7px] font-bold leading-[1]',
+        variant.style,
+        className,
       )}
     >
       <div className="-mb-0.5">/\_/\</div>
-      <div>( o.o )</div>
+      <div>{variant.face}</div>
     </div>
   );
 }

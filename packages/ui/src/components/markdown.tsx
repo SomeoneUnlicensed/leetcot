@@ -107,14 +107,12 @@ export function Markdown({
             <div className="relative">
               {!disableCopy ? <CopyButton text={String(children).replace(/\n$/, '')} /> : null}
               <SyntaxHighlighter
-                ref={ref as Ref<SyntaxHighlighter> | undefined}
-                // TODO: react-syntax-highlighter is not react 19 compatible yet.
-                // ref: https://github.com/react-syntax-highlighter/react-syntax-highlighter/issues/581
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                PreTag={'section' as any} // parent tag
+                {...(props as Record<string, unknown>)}
+                ref={ref as Ref<SyntaxHighlighter>}
+                PreTag="div"
                 className={clsx(className, 'rounded-xl dark:rounded-md')}
                 language={match[1]}
-                style={syntaxHighlighterTheme} // theme
+                style={syntaxHighlighterTheme}
                 customStyle={{ fontSize: 'inherit', padding: '30px' }}
                 codeTagProps={{
                   style: {
@@ -126,7 +124,6 @@ export function Markdown({
                   // https://dequeuniversity.com/rules/axe/4.8/scrollable-region-focusable
                   tabIndex: 0,
                 }}
-                {...props}
               >
                 {String(children).replace(/\n$/, '')}
               </SyntaxHighlighter>

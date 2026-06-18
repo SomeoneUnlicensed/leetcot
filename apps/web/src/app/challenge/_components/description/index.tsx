@@ -59,7 +59,8 @@ export function Description({ challenge }: DescriptionProps) {
 
   return (
     <div
-      // TODO: Fix this accessibility issue!
+      role="region"
+      aria-label="Описание задачи"
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
       tabIndex={0}
       className="custom-scrollable-element h-full overflow-y-auto px-4 pb-36 pt-3 outline-none"

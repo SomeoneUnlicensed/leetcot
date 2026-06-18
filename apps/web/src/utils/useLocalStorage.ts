@@ -1,26 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-export function useLocalStorage(key: string, initialValue: string): [string, (v: string) => void] {
-  const [storedValue, setStoredValue] = useState<string>(() => {
+export function useLocalStorage<T>(key: string, initialValue: T): [T, (v: T) => void] {
+  // Use a state that starts with initialValue to avoid hydration mismatch
+  const [storedValue, setStoredValue] = useState<T>(initialValue);
+
+  // Synchronize with localStorage after mount
+  useEffect(() => {
     try {
-      if (typeof window !== 'undefined') {
-        return window.localStorage.getItem(key) || initialValue;
+      const item = window.localStorage.getItem(key);
+      if (item !== null) {
+        // Try to parse if it looks like JSON, otherwise return as is (for strings)
+        try {
+          setStoredValue(JSON.parse(item));
+        } catch {
+          setStoredValue(item as unknown as T);
+        }
       }
-      return initialValue;
     } catch (error) {
-      console.error(error);
-      return initialValue;
+      console.error('Error reading from localStorage', error);
     }
-  });
+  }, [key]);
 
-  const setValue = (value: string) => {
+  const setValue = (value: T) => {
     try {
       setStoredValue(value);
-      window.localStorage.setItem(key, value);
-
-      localStorage.setItem(key, value);
+      const valueToStore = typeof value === 'string' ? value : JSON.stringify(value);
+      window.localStorage.setItem(key, valueToStore);
     } catch (error) {
-      console.error(error);
+      console.error('Error saving to localStorage', error);
     }
   };
 

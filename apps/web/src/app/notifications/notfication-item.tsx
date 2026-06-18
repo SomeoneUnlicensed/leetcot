@@ -12,11 +12,11 @@ import { getRelativeTime } from '~/utils/relativeTime';
 import type { Notification } from './notification.actions';
 
 const BLURBS = {
-  MENTION: 'mentioned you in a comment',
-  LIKE: (type: string) => `liked your ${type}`,
+  MENTION: 'упомянул(а) вас в комментарии',
+  LIKE: (type: string) => `поставил(а) лайк вашему ${type}`,
   SYSTEM: '',
   MISC: '',
-  REPLY: 'replied to you',
+  REPLY: 'ответил(а) вам',
 } satisfies Record<NotificationType, string | ((v: string) => string)>;
 
 export function NotificationItem({
@@ -37,7 +37,7 @@ export function NotificationItem({
   const router = useRouter();
   const getBlurb = (notification: Notification) => {
     if (notification.type === 'LIKE') {
-      const type = notification.comment ? 'comment' : 'solution';
+      const type = notification.comment ? 'комментарию' : 'решению';
       return BLURBS.LIKE(type);
     }
 

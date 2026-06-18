@@ -29,7 +29,7 @@ export function NotificationsMentions({ onSeen }: { onSeen: (v: number) => void 
     <>
       <InfiniteList
         isLoadingNext={isFetchingNextPage}
-        loader={<div>loading...</div>}
+        loader={<div>Загрузка...</div>}
         hasNext={hasNextPage}
         next={fetchNextPage}
         key="mentions"

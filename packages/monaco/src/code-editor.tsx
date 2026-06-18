@@ -45,6 +45,15 @@ export function CodeEditor({
   return (
     <Editor
       {...props}
+      loading={
+        <div className="flex flex-col items-center justify-center gap-3 font-sans">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-fuchsia-500 border-t-transparent" />
+          <div className="text-center">
+            <p className="text-sm font-bold text-zinc-300">Загружаем редактор...</p>
+            <p className="text-xs text-zinc-500">Это займет пару секунд 🐾</p>
+          </div>
+        </div>
+      }
       language={language || 'typescript'}
       onChange={onChange}
       onMount={onMount}
