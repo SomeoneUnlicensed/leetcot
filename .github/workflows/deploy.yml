@@ -12,14 +12,14 @@ jobs:
       - name: Free disk space before build
         run: |
           echo "=== Disk before cleanup ==="
-          df -h /
-          docker image prune -a -f || true
+          df -h /mnt/data /
+          docker system prune -a -f || true
           docker builder prune -a -f || true
           docker volume prune -f || true
           sudo journalctl --vacuum-size=30M || true
           sudo apt-get clean || true
           echo "=== Disk after cleanup ==="
-          df -h /
+          df -h /mnt/data /
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -48,9 +48,8 @@ jobs:
       - name: Clean up build artifacts
         if: always()
         run: |
-          docker system prune -f || true
-          docker image prune -a -f || true
+          docker system prune -a -f || true
           docker builder prune -a -f || true
           docker volume prune -f || true
           echo "=== Disk after deploy ==="
-          df -h /
+          df -h /mnt/data /
