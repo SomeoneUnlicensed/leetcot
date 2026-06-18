@@ -165,17 +165,17 @@ function LoginForm() {
             </div>
           </div>
 
-          {error && (
+          {error ? (
             <div className="rounded-lg border border-pink-500/20 bg-pink-500/10 py-2 text-center text-sm text-pink-400">
               {error}
             </div>
-          )}
+          ) : null}
 
-          {success && (
+          {success ? (
             <div className="rounded-lg border border-green-500/20 bg-green-500/10 py-2 text-center text-sm text-green-400">
               {success}
             </div>
-          )}
+          ) : null}
 
           <Button
             type="submit"
