@@ -36,6 +36,11 @@ ENV DATABASE_URL="postgresql://postgres:dev@localhost:5432/leetcot?schema=public
 ENV NODE_OPTIONS="--max-old-space-size=3072"
 RUN npx turbo run build --concurrency=1
 
+# Remove source maps and dev-only files to shrink the image
+RUN find /app/node_modules -name "*.map" -delete && \
+    find /app/node_modules -name "*.d.ts" -delete && \
+    find /app/node_modules/.cache -type f -delete 2>/dev/null || true
+
 # --- Stage 4: Production ---
 FROM base AS runner
 ENV NODE_ENV=production
