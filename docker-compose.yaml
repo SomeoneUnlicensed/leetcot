@@ -44,7 +44,6 @@ services:
       - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-dev}@db:5432/leetcot?schema=public
       - REDIS_URL=redis://redis:6379
       - NODE_ENV=${NODE_ENV:-production}
-      - NEXTAUTH_URL=http://localhost:3002
       - AUTH_TRUST_HOST=true
     depends_on:
       db:
