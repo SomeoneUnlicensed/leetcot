@@ -25,6 +25,10 @@ const sidebarNavItems = [
     title: 'Чемпионаты',
     href: '/dashboard/championships',
   },
+  {
+    title: 'Уведомления',
+    href: '/dashboard/notifications',
+  },
 ];
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (

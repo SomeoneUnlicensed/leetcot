@@ -152,5 +152,10 @@ export interface BadgeInfo {
 }
 
 export function getBadges(_userId: string): BadgeInfo[] {
-  return [];
+  return [
+    {
+      slug: 'registered',
+      name: 'Участник ЛитКот (За регистрацию)',
+    },
+  ];
 }

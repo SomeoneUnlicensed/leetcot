@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { signIn } from '@repo/auth/react';
 import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
 import { Label } from '@repo/ui/components/label';
@@ -59,6 +60,52 @@ function OtpInput({ value, onChange }: { value: string; onChange: (v: string) =>
   );
 }
 
+function ArlistButton() {
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = async () => {
+    setLoading(true);
+    await signIn('arlist', { callbackUrl: '/' });
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={loading}
+      className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl border border-violet-500/30 bg-gradient-to-r from-violet-600/20 to-indigo-600/20 px-4 py-3 font-semibold text-white shadow-[0_0_24px_-8px_#7c3aed] transition-all duration-300 hover:border-violet-400/60 hover:from-violet-600/30 hover:to-indigo-600/30 hover:shadow-[0_0_32px_-6px_#7c3aed] disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-400 to-indigo-500 text-xs font-black text-white shadow-md">
+        A
+      </span>
+      <span className="text-sm">
+        {loading ? 'Переходим на Arlist...' : 'Зарегистрироваться через Arlist ID'}
+      </span>
+      {!loading && (
+        <svg
+          className="ml-auto h-4 w-4 text-violet-400 transition-transform duration-200 group-hover:translate-x-0.5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
+function Divider() {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="h-px flex-1 bg-zinc-700" />
+      <span className="text-xs text-zinc-500">или зарегистрируйся с паролем</span>
+      <div className="h-px flex-1 bg-zinc-700" />
+    </div>
+  );
+}
+
 // ──────────────────────────────────────────
 // Main page
 // ──────────────────────────────────────────
@@ -72,7 +119,6 @@ export default function RegisterPage() {
   const [otp, setOtp] = useState('');
   const [resendCooldown, setResendCooldown] = useState(0);
 
-  // Countdown timer for resend
   useEffect(() => {
     if (resendCooldown <= 0) return;
     const t = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
@@ -153,7 +199,7 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-950 px-4">
-      <div className="w-full max-w-md space-y-8 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8 shadow-2xl backdrop-blur-sm">
+      <div className="w-full max-w-md space-y-6 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8 shadow-2xl backdrop-blur-sm">
         {/* Header */}
         <div className="text-center">
           <pre className="mx-auto mb-4 text-[10px] font-bold leading-3 text-pink-500">
@@ -180,57 +226,76 @@ export default function RegisterPage() {
 
         {/* ── STEP 1: Form ── */}
         {step === 'form' && (
-          <form className="mt-8 flex flex-col gap-8" onSubmit={handleRegister}>
-            <div className="flex flex-col gap-4">
-              <div>
-                <Label htmlFor="name">Кошачье имя</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  className="mt-1 border-zinc-700 bg-zinc-800 text-white"
-                  placeholder="Например, Барсик"
-                />
-              </div>
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  className="mt-1 border-zinc-700 bg-zinc-800 text-white"
-                  placeholder="meow@example.com"
-                />
-              </div>
-              <div>
-                <Label htmlFor="password">Пароль</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  className="mt-1 border-zinc-700 bg-zinc-800 text-white"
-                  placeholder="••••••••"
-                />
-              </div>
+          <>
+            {/* Arlist ID — primary */}
+            <div className="flex flex-col gap-2">
+              <ArlistButton />
+              <p className="text-center text-[11px] text-zinc-500">
+                Рекомендуем — мгновенная регистрация через Arlist
+              </p>
             </div>
 
-            {error ? (
-              <div className="rounded-lg border border-pink-500/20 bg-pink-500/10 py-2 text-center text-sm text-pink-500">
-                {error}
-              </div>
-            ) : null}
+            <Divider />
 
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-xl bg-pink-600 py-3 font-bold text-white shadow-[0_0_20px_-5px_#db2777] transition-all duration-300 hover:bg-pink-700"
-            >
-              {loading ? 'Создаём профиль...' : 'Зарегистрироваться'}
-            </Button>
-          </form>
+            {/* Credentials — secondary */}
+            <form className="flex flex-col gap-4" onSubmit={handleRegister}>
+              <div className="flex flex-col gap-3">
+                <div>
+                  <Label htmlFor="name" className="text-zinc-400">
+                    Кошачье имя
+                  </Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    type="text"
+                    required
+                    className="mt-1 border-zinc-700 bg-zinc-800 text-white"
+                    placeholder="Например, Барсик"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="email" className="text-zinc-400">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    className="mt-1 border-zinc-700 bg-zinc-800 text-white"
+                    placeholder="meow@example.com"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="password" className="text-zinc-400">
+                    Пароль
+                  </Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    className="mt-1 border-zinc-700 bg-zinc-800 text-white"
+                    placeholder="••••••••"
+                  />
+                </div>
+              </div>
+
+              {error && (
+                <div className="rounded-lg border border-pink-500/20 bg-pink-500/10 py-2 text-center text-sm text-pink-400">
+                  {error}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-xl bg-pink-600 py-3 font-bold text-white shadow-[0_0_20px_-5px_#db2777] transition-all duration-300 hover:bg-pink-700"
+              >
+                {loading ? 'Создаём профиль...' : 'Зарегистрироваться'}
+              </Button>
+            </form>
+          </>
         )}
 
         {/* ── STEP 2: OTP ── */}
@@ -239,11 +304,11 @@ export default function RegisterPage() {
             <div className="flex flex-col gap-6">
               <OtpInput value={otp} onChange={setOtp} />
 
-              {error ? (
-                <div className="rounded-lg border border-pink-500/20 bg-pink-500/10 py-2 text-center text-sm text-pink-500">
+              {error && (
+                <div className="rounded-lg border border-pink-500/20 bg-pink-500/10 py-2 text-center text-sm text-pink-400">
                   {error}
                 </div>
-              ) : null}
+              )}
 
               <Button
                 onClick={handleVerify}

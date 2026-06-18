@@ -9,6 +9,7 @@ import { FeatureFlagContext } from '~/app/feature-flag-provider';
 import { cn } from '@repo/ui/cn';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/tabs';
 import { FlaskConical, History, Text } from '@repo/ui/icons';
+import { useLocalStorage } from '~/utils/useLocalStorage';
 
 import type { ChallengeRouteData } from './getChallengeRouteData';
 import { useTrackNavigationVisiblity } from './use-track-visibility.hook';
@@ -33,6 +34,7 @@ export function LeftWrapper({
   const pathname = usePathname();
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  useLocalStorage('beta-banner-dismissed', 'true');
 
   const featureFlags = useContext(FeatureFlagContext);
 

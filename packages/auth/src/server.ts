@@ -2,9 +2,15 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import type { Role, RoleTypes, User } from '@repo/db/types';
 import GitHubProvider from 'next-auth/providers/github';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { CredentialsSignin } from 'next-auth';
+import type { OAuthConfig } from 'next-auth/providers';
 import { prisma } from '@repo/db';
 import type { NextAuthConfig } from 'next-auth';
 import bcrypt from 'bcryptjs';
+
+class ArlistRequiredError extends CredentialsSignin {
+  code = 'ArlistRequired';
+}
 
 export type { Session, DefaultSession as DefaultAuthSession } from 'next-auth';
 
@@ -100,12 +106,18 @@ export const createCredentialsProvider = () => {
 
       const user = await prisma.user.findUnique({
         where: { email: credentials.email as string },
+        include: { accounts: true },
       });
 
-      if (!user?.password) return null;
+      if (!user) return null;
+
+      // If the user has linked an Arlist account, block password login
+      const hasArlist = user.accounts.some((a) => a.provider === 'arlist');
+      if (hasArlist) throw new ArlistRequiredError();
+
+      if (!user.password) return null;
 
       const isPasswordValid = await bcrypt.compare(credentials.password as string, user.password);
-
       if (!isPasswordValid) return null;
 
       return {
@@ -115,6 +127,36 @@ export const createCredentialsProvider = () => {
       };
     },
   });
+};
+
+interface ArlistProfile {
+  sub: string;
+  email: string;
+  name?: string;
+  picture?: string;
+  role?: string;
+  isVerified?: boolean;
+}
+
+export const createArlistProvider = (clientId: string, clientSecret: string): OAuthConfig<ArlistProfile> => {
+  return {
+    id: 'arlist',
+    name: 'Arlist ID',
+    type: 'oidc',
+    issuer: 'https://arlist.ru/oidc',
+    clientId,
+    clientSecret,
+    allowDangerousEmailAccountLinking: true,
+    authorization: { params: { scope: 'openid email profile' } },
+    profile(profile) {
+      return {
+        id: profile.sub,
+        name: profile.name ?? '',
+        email: profile.email,
+        image: profile.picture ?? null,
+      };
+    },
+  };
 };
 
 export const createGitHubProvider = (clientId: string, clientSecret: string) => {

@@ -1,8 +1,21 @@
 import { TooltipProvider } from '@repo/ui/components/tooltip';
 import type { BadgeInfo } from '../user-info';
 import type { FC } from 'react';
+import { cn } from '@repo/ui/cn';
+import { Sparkles } from '@repo/ui/icons';
 
-export const SlugToBadgeIcon: Record<BadgeInfo['slug'], FC<{ className: string }>> = {};
+export const SlugToBadgeIcon: Record<BadgeInfo['slug'], FC<{ className?: string }>> = {
+  registered: ({ className }) => (
+    <div
+      className={cn(
+        'relative flex h-16 w-16 items-center justify-center rounded-full border-2 border-white/20 bg-gradient-to-br from-pink-500 to-purple-600 shadow-md duration-300 hover:scale-105',
+        className,
+      )}
+    >
+      <Sparkles className="h-8 w-8 animate-pulse text-white" />
+    </div>
+  ),
+};
 
 export function Badges(props: { data: BadgeInfo[] }) {
   return (
@@ -18,7 +31,14 @@ function BadgesStuff(props: { data: BadgeInfo[] }) {
   return (
     <div className="mx-auto grid w-fit grid-cols-4 gap-4  ">
       {props.data.map((b) => {
-        // Fallback for icons if any badges are still passed
+        const Icon = SlugToBadgeIcon[b.slug];
+        if (Icon) {
+          return (
+            <div key={b.slug} className="group relative" title={b.name}>
+              <Icon className="h-16 w-16" />
+            </div>
+          );
+        }
         return <div key={b.slug} className="bg-muted h-16 w-16 rounded-full" title={b.name} />;
       })}
       {props.data.length < 12

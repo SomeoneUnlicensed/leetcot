@@ -49,8 +49,8 @@ export default function NotificationPage() {
     await client.refetchQueries({ queryKey: ['notifications-mentions'] });
     toast({
       variant: 'success',
-      title: 'All notifications marked as read.',
-      action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
+      title: 'Все уведомления отмечены как прочитанные.',
+      action: <ToastAction altText="Скрыть">Скрыть</ToastAction>,
     });
   };
 
@@ -59,16 +59,16 @@ export default function NotificationPage() {
       <div className="flex items-center justify-between py-4">
         <h2 className="text-foreground flex items-center text-xl font-bold">
           <Bell className="mr-2 h-5 w-5" />
-          Notifications
+          Уведомления
         </h2>
         <Button size="sm" variant="outline" onClick={onMarkAllAsReadClick}>
-          Mark all as read
+          Отметить все как прочитанные
         </Button>
       </div>
       <Tabs defaultValue="all" className="w-full">
         <TabsList className="bg-muted grid w-full grid-cols-2">
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="mentions">Mentions</TabsTrigger>
+          <TabsTrigger value="all">Все</TabsTrigger>
+          <TabsTrigger value="mentions">Упоминания</TabsTrigger>
         </TabsList>
         <TabsContent value="all" className="border-border border">
           <NotificationsAll onSeen={onSeen} />
