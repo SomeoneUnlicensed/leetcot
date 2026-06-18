@@ -73,10 +73,17 @@ function ArlistButton() {
       type="button"
       onClick={handleClick}
       disabled={loading}
-      className="flex w-full items-center gap-4 rounded-2xl bg-black px-5 py-3.5 text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+      className="group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl bg-black px-5 py-2.5 text-white transition-all disabled:cursor-not-allowed disabled:opacity-50"
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.boxShadow =
+          'inset 0 0 0 0.5px rgba(139,92,246,0.5), 0 0 12px -4px rgba(139,92,246,0.3)';
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.boxShadow = '';
+      }}
     >
       <span
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-sm text-white"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/20 text-[13px] text-white"
         style={{ fontFamily: 'var(--font-dela)' }}
       >
         ID

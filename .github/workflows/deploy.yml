@@ -15,7 +15,6 @@ jobs:
           df -h /mnt/data /
           docker system prune -a -f || true
           docker builder prune -a -f || true
-          docker volume prune -f || true
           sudo journalctl --vacuum-size=30M || true
           sudo apt-get clean || true
           echo "=== Disk after cleanup ==="
@@ -56,6 +55,5 @@ jobs:
         run: |
           docker system prune -a -f || true
           docker builder prune -a -f || true
-          docker volume prune -f || true
           echo "=== Disk after deploy ==="
           df -h /mnt/data /
