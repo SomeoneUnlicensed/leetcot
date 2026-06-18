@@ -143,7 +143,7 @@ export const createArlistProvider = (clientId: string, clientSecret: string): OA
     id: 'arlist',
     name: 'Arlist ID',
     type: 'oidc',
-    issuer: 'https://arlist.ru/oidc',
+    issuer: 'https://arlist.ru',
     clientId,
     clientSecret,
     allowDangerousEmailAccountLinking: true,
