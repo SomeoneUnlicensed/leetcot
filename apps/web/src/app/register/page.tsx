@@ -281,11 +281,11 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {error && (
+              {error ? (
                 <div className="rounded-lg border border-pink-500/20 bg-pink-500/10 py-2 text-center text-sm text-pink-400">
                   {error}
                 </div>
-              )}
+              ) : null}
 
               <Button
                 type="submit"
@@ -304,11 +304,11 @@ export default function RegisterPage() {
             <div className="flex flex-col gap-6">
               <OtpInput value={otp} onChange={setOtp} />
 
-              {error && (
+              {error ? (
                 <div className="rounded-lg border border-pink-500/20 bg-pink-500/10 py-2 text-center text-sm text-pink-400">
                   {error}
                 </div>
-              )}
+              ) : null}
 
               <Button
                 onClick={handleVerify}
