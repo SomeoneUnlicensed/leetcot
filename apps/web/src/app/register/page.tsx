@@ -83,7 +83,7 @@ function ArlistButton() {
       }}
     >
       <span
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/20 text-[13px] text-white"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[13px] text-white"
         style={{ fontFamily: 'var(--font-dela)' }}
       >
         ID

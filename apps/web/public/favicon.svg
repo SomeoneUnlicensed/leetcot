@@ -1,12 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" rx="15" fill="#f59e0b"/>
-  <g fill="white">
-    <!-- Ears: /\_/\ - Big and Thick -->
-    <path d="M15,45 L35,15 L50,45 M50,45 L65,15 L85,45" fill="white"/>
-    <!-- Eyes: ( o.o ) - Giant circles for scale -->
-    <circle cx="32" cy="65" r="10"/>
-    <circle cx="68" cy="65" r="10"/>
-    <!-- Nose: ^ -->
-    <path d="M45,75 L50,70 L55,75" fill="none" stroke="white" stroke-width="8" stroke-linecap="round"/>
-  </g>
+  <rect width="100" height="100" rx="16" fill="#09090b"/>
+  <!-- Ears: /\_/\ -->
+  <polygon points="10,48 28,12 46,48" fill="#ec4899"/>
+  <polygon points="54,48 72,12 90,48" fill="#ec4899"/>
+  <!-- Face -->
+  <rect x="10" y="44" width="80" height="46" rx="12" fill="#1c1c1c"/>
+  <!-- Eyes: o.o -->
+  <circle cx="34" cy="65" r="9" fill="white"/>
+  <circle cx="66" cy="65" r="9" fill="white"/>
+  <circle cx="36" cy="63" r="4" fill="#09090b"/>
+  <circle cx="68" cy="63" r="4" fill="#09090b"/>
+  <!-- Nose: ^ -->
+  <path d="M44,78 L50,72 L56,78" fill="none" stroke="#ec4899" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
