@@ -48,7 +48,9 @@
         "MAILCHIMP_AUDIENCE_ID",
         "MAILCHIMP_API_SERVER",
         "NEXT_PUBLIC_ALGOLIA_API_KEY",
-        "NEXT_PUBLIC_ALGOLIA_APP_ID"
+        "NEXT_PUBLIC_ALGOLIA_APP_ID",
+        "ARLIST_CLIENT_ID",
+        "ARLIST_CLIENT_SECRET"
       ]
     },
     "topo": {
