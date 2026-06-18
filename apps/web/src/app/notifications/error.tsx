@@ -9,7 +9,7 @@ export default function ErrorBounds() {
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 text-center sm:w-[450px]">
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="mb-5 text-4xl font-bold tracking-tight text-neutral-900 dark:text-white">
-              You must be logged in to see notifications.
+              Вы должны войти, чтобы просматривать уведомления.
             </h1>
           </div>
           <LoginButton redirectTo="/notifications" />

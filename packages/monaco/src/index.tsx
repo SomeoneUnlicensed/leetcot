@@ -10,7 +10,7 @@ import lzstring from 'lz-string';
 import type * as monaco from 'monaco-editor';
 import type * as monaco_editor from 'monaco-editor/esm/vs/editor/editor.api';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { useResetEditor } from './editor-hooks';
 import SplitEditor from './split-editor';
@@ -152,6 +152,13 @@ export function CodePanel(props: CodePanelProps) {
     setLocalStorageCode(props.challenge.code);
   });
 
+  const codeRef = useRef(code);
+  useEffect(() => {
+    codeRef.current = code;
+  }, [code]);
+
+  const isCheckingRef = useRef(false);
+
   const [userEditorState, setUserEditorState] = useState<monaco.editor.IStandaloneCodeEditor>();
   const [monacoInstance, setMonacoInstance] = useState<typeof monaco_editor>();
 
@@ -166,19 +173,21 @@ export function CodePanel(props: CodePanelProps) {
   }
 
   const handleSubmit = useCallback(async () => {
-    if (monacoInstance == null) {
+    if (monacoInstance == null || isCheckingRef.current) {
       return;
     }
 
+    isCheckingRef.current = true;
     setCheckingState('verifying');
     setCheckingErrors([]);
 
     // Cute thinking animation delay
     await new Promise((resolve) => {
-      setTimeout(resolve, 1500);
+      setTimeout(resolve, 800);
     });
 
     try {
+      const currentCode = codeRef.current;
       const extension =
         props.challenge.language.toLowerCase() === 'python'
           ? 'py'
@@ -191,7 +200,7 @@ export function CodePanel(props: CodePanelProps) {
       const formattedErrors: string[] = [];
 
       try {
-        validator(code);
+        validator(currentCode);
       } catch (err) {
         formattedErrors.push((err as Error).message || 'Ошибка валидации кода');
       }
@@ -254,7 +263,7 @@ export function CodePanel(props: CodePanelProps) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              code,
+              code: currentCode,
               tests: props.challenge.tests,
               language: 'python',
             }),
@@ -282,11 +291,11 @@ export function CodePanel(props: CodePanelProps) {
           description: 'Код не прошел компиляцию или тесты.',
         });
       } else {
-        setCheckingState('success');
-        const submission = await props.saveSubmission(code ?? '', true);
+        const submission = await props.saveSubmission(currentCode ?? '', true);
         if (submission && typeof submission === 'object' && 'id' in submission) {
           setLatestSubmissionId(submission.id);
         }
+        setCheckingState('success');
         toast({
           variant: 'success',
           title: 'Успешно!',
@@ -302,10 +311,12 @@ export function CodePanel(props: CodePanelProps) {
         title: 'Упс!',
         description: 'Произошла ошибка во время выполнения тестов.',
       });
+    } finally {
+      isCheckingRef.current = false;
     }
-  }, [code, monacoInstance, props.saveSubmission]);
+  }, [monacoInstance, props.saveSubmission, props.challenge.language, props.challenge.tests]);
 
-  const debouncedHandleSubmit = useCallback(debounce(handleSubmit, 500), [handleSubmit]);
+  const debouncedHandleSubmit = useMemo(() => debounce(handleSubmit, 500), [handleSubmit]);
 
   useEffect(() => {
     const onSubmit = (e: KeyboardEvent) => {
@@ -387,7 +398,10 @@ export function CodePanel(props: CodePanelProps) {
       </div>
 
       {checkingState !== 'editor' && (
-        <div className="animate-fade-in-overlay absolute inset-x-0 bottom-0 top-[48px] z-50 flex flex-col items-center justify-center overflow-y-auto bg-zinc-50/80 p-6 backdrop-blur-md dark:bg-zinc-950/85">
+        <div
+          onMouseDown={(e) => e.stopPropagation()}
+          className="animate-fade-in-overlay absolute inset-x-0 bottom-0 top-[48px] z-50 flex flex-col items-center justify-center overflow-y-auto bg-zinc-50/80 p-6 backdrop-blur-md dark:bg-zinc-950/85"
+        >
           {checkingState === 'verifying' && (
             <>
               <div className="mb-6 flex animate-pulse flex-col items-center">

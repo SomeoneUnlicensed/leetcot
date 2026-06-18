@@ -1,6 +1,6 @@
 import NextAuth from '@repo/auth/next-auth';
 
-import { baseNextAuthConfig, createCredentialsProvider } from '@repo/auth/server';
+import { baseNextAuthConfig, createArlistProvider, createCredentialsProvider } from '@repo/auth/server';
 
 const useSecureCookies = process.env.VERCEL_ENV === 'production';
 const cookiePrefix = useSecureCookies ? '__Secure-' : '';
@@ -23,7 +23,13 @@ export const authOptions: any = {
       },
     },
   },
-  providers: [createCredentialsProvider()],
+  providers: [
+    ...(process.env.ARLIST_CLIENT_ID && process.env.ARLIST_CLIENT_SECRET
+      ? [createArlistProvider(process.env.ARLIST_CLIENT_ID, process.env.ARLIST_CLIENT_SECRET)]
+      : []),
+    createCredentialsProvider(),
+  ],
 };
 
-export const { handlers, auth } = NextAuth(authOptions);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const { handlers, auth } = NextAuth(authOptions) as any;
