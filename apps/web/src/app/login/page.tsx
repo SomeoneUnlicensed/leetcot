@@ -21,24 +21,17 @@ function ArlistButton({ redirectTo }: { redirectTo?: string }) {
       type="button"
       onClick={handleClick}
       disabled={loading}
-      className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl border border-violet-500/30 bg-gradient-to-r from-violet-600/20 to-indigo-600/20 px-4 py-3 font-semibold text-white shadow-[0_0_24px_-8px_#7c3aed] transition-all duration-300 hover:border-violet-400/60 hover:from-violet-600/30 hover:to-indigo-600/30 hover:shadow-[0_0_32px_-6px_#7c3aed] disabled:cursor-not-allowed disabled:opacity-60"
+      className="flex w-full items-center gap-4 rounded-2xl bg-black px-5 py-3.5 text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
     >
-      {/* Arlist logo mark */}
-      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-400 to-indigo-500 text-xs font-black text-white shadow-md">
-        A
+      <span
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-sm text-white"
+        style={{ fontFamily: 'var(--font-dela)' }}
+      >
+        ID
       </span>
-      <span className="text-sm">{loading ? 'Переходим на Arlist...' : 'Войти с Arlist ID'}</span>
-      {!loading && (
-        <svg
-          className="ml-auto h-4 w-4 text-violet-400 transition-transform duration-200 group-hover:translate-x-0.5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-      )}
+      <span className="text-[15px] font-semibold">
+        {loading ? 'Переходим на Arlist...' : 'Войти с Arlist ID'}
+      </span>
     </button>
   );
 }
