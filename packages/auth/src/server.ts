@@ -33,6 +33,7 @@ declare module '@auth/core/adapters' {
 }
 
 export const baseNextAuthConfig: Omit<NextAuthConfig, 'providers'> = {
+  trustHost: true,
   pages: {
     signIn: '/login',
   },
