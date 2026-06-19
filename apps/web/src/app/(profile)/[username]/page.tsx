@@ -92,6 +92,7 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
           <UserAvatar
             className="h-56 w-56 rounded-lg transition group-hover:-translate-x-1 group-hover:-translate-y-1 group-hover:-rotate-1"
             src={user.image ?? ''}
+            username={user.name}
           />
           <div className="flex flex-col items-center space-y-1">
             <h1
@@ -158,6 +159,7 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
               <UserAvatar
                 className="z-10 h-56 w-56 rounded-lg transition group-hover:-translate-x-1 group-hover:-translate-y-1 group-hover:-rotate-1"
                 src={user.image ?? ''}
+                username={user.name}
               />
               <div className="ml-56 flex flex-col space-y-2">
                 <div className="flex flex-row items-baseline space-x-2">

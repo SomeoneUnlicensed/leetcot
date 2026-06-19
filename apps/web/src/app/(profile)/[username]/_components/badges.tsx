@@ -1,4 +1,4 @@
-import { TooltipProvider } from '@repo/ui/components/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@repo/ui/components/tooltip';
 import type { BadgeInfo } from '../user-info';
 import type { FC } from 'react';
 import { cn } from '@repo/ui/cn';
@@ -32,14 +32,16 @@ function BadgesStuff(props: { data: BadgeInfo[] }) {
     <div className="mx-auto grid w-fit grid-cols-4 gap-4  ">
       {props.data.map((b) => {
         const Icon = SlugToBadgeIcon[b.slug];
-        if (Icon) {
-          return (
-            <div key={b.slug} className="group relative" title={b.name}>
-              <Icon className="h-16 w-16" />
-            </div>
-          );
-        }
-        return <div key={b.slug} className="bg-muted h-16 w-16 rounded-full" title={b.name} />;
+        return (
+          <Tooltip key={b.slug}>
+            <TooltipTrigger asChild>
+              <div className="group relative">
+                {Icon ? <Icon className="h-16 w-16" /> : <div className="bg-muted h-16 w-16 rounded-full" />}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>{b.name}</TooltipContent>
+          </Tooltip>
+        );
       })}
       {props.data.length < 12
         ? Array.from({ length: 12 - props.data.length }).map((_, i) => (
