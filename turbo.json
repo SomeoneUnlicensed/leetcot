@@ -10,7 +10,18 @@
     "SMTP_PASS",
     "EMAIL_FROM",
     "ADMIN_EMAIL",
-    "ADMIN_PASSWORD"
+    "ADMIN_PASSWORD",
+    "NODE_ENV",
+    "REDIS_URL",
+    "AUTH_SECRET",
+    "NEXTAUTH_SECRET",
+    "AUTH_URL",
+    "NEXTAUTH_URL",
+    "ARLIST_CLIENT_ID",
+    "ARLIST_CLIENT_SECRET",
+    "GITHUB_ID",
+    "GITHUB_SECRET",
+    "PORT"
   ],
   "globalDependencies": [".env", ".env.*"],
   "tasks": {
