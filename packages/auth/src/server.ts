@@ -71,8 +71,18 @@ export const baseNextAuthConfig: Omit<NextAuthConfig, 'providers'> = {
     },
   },
   callbacks: {
-    jwt: async ({ token, user }) => {
+    jwt: async ({ token, user, account, profile }) => {
       if (user) {
+        if (account?.provider === 'arlist') {
+          const arlistProfile = profile as unknown as { picture?: string; name?: string };
+          await prisma.user.update({
+            where: { id: user.id },
+            data: {
+              ...(arlistProfile.picture ? { image: arlistProfile.picture } : {}),
+              ...(arlistProfile.name ? { name: arlistProfile.name } : {}),
+            },
+          });
+        }
         const u = await prisma.user.findUnique({
           where: { id: user.id },
           include: { roles: true },
