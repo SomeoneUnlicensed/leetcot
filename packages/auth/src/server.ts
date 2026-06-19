@@ -142,12 +142,17 @@ export const createArlistProvider = (clientId: string, clientSecret: string): OA
   return {
     id: 'arlist',
     name: 'Arlist ID',
-    type: 'oidc',
-    issuer: 'https://arlist.ru',
+    type: 'oauth',
     clientId,
     clientSecret,
     allowDangerousEmailAccountLinking: true,
-    authorization: { params: { scope: 'openid email profile' } },
+    authorization: {
+      url: 'https://arlist.ru/auth',
+      params: { scope: 'openid email profile', response_type: 'code' },
+    },
+    token: 'https://arlist.ru/token',
+    userinfo: 'https://arlist.ru/me',
+    checks: ['pkce', 'state'],
     profile(profile) {
       return {
         id: profile.sub,
