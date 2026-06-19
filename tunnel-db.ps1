@@ -11,7 +11,7 @@ Write-Host "    Email:      admin@leetcot.ru"
 Write-Host "    Password:   LitKotPgAdmin982!#" -ForegroundColor Yellow
 Write-Host ""
 Write-Host "  PostgreSQL (inside pgAdmin):"
-Write-Host "    DB Password: zX8vN2mK9pQ1!rT" -ForegroundColor Yellow
+Write-Host "    DB Password: LeetCotDB2026" -ForegroundColor Yellow
 Write-Host ""
 Write-Host "----------------------------------------------------------"
 Write-Host "  DB server is pre-loaded in pgAdmin."
