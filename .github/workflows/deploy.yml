@@ -25,10 +25,10 @@ jobs:
 
       - name: Copy .env file
         run: |
-          if [ -f /home/user1/actions-runner/.env ]; then
-            cp /home/user1/actions-runner/.env ./.env
+          if [ -f /home/user1/actions-runner/secrets.env ]; then
+            cp /home/user1/actions-runner/secrets.env ./.env
           else
-            echo "❌ Error: Host .env file not found!"
+            echo "❌ Error: Host secrets.env file not found!"
             exit 1
           fi
 
