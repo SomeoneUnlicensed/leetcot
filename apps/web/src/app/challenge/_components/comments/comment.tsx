@@ -15,7 +15,6 @@ import {
   Flag,
   MoreHorizontal,
   Pencil,
-  Reply,
   Share,
   Trash2,
 } from '@repo/ui/icons';
@@ -46,7 +45,6 @@ interface SingleCommentProps {
   readonly?: boolean;
   isReply?: boolean;
   isToggleReply?: boolean;
-  onClickReply?: (replyingTo: string) => void;
   onClickToggleReply?: () => void;
   preselectedCommentMetadata?: PreselectedCommentMetadata;
   deleteComment: (commentId: number) => Promise<void>;
@@ -88,13 +86,11 @@ export function Comment({
     preselectedCommentMetadata?.selectedComment?.id === comment.id && Boolean(replyId);
 
   const [showReplies, setShowReplies] = useState(hasPreselectedReply);
-  const [isReplying, setIsReplying] = useState(false);
 
   const {
     status,
     data,
     fetchNextPage,
-    addReplyComment,
     updateReplyComment,
     deleteReplyComment,
     showLoadMoreRepliesBtn,
@@ -107,49 +103,12 @@ export function Comment({
   } as UseCommentRepliesProps);
 
   const toggleReplies = () => {
-    if (showReplies) {
-      setIsReplying(false);
-    }
-
     setShowReplies(!showReplies);
   };
-  const toggleIsReplying = () => setIsReplying(!isReplying);
-
-  const commentInputRef = useRef<{
-    textarea: HTMLTextAreaElement;
-    setInputValue: (value: string) => void;
-  }>(null);
 
   useEffect(() => {
     return () => clearTimeout(timeoutRef.current);
   }, []);
-
-  function prefillReplyInput(replyingTo: string) {
-    if (commentInputRef?.current) {
-      const name = `@${replyingTo} `;
-      commentInputRef.current.setInputValue(name);
-      commentInputRef.current.textarea?.setSelectionRange(name.length, name.length);
-      commentInputRef.current.textarea?.focus();
-      window.requestAnimationFrame(() =>
-        commentInputRef.current?.textarea?.scrollIntoView({
-          block: 'nearest',
-          behavior: 'smooth',
-        }),
-      );
-    }
-  }
-
-  const showReplyInput = (replyingTo: string) => {
-    setIsReplying(true);
-    clearTimeout(timeoutRef.current);
-
-    timeoutRef.current = setTimeout(() => prefillReplyInput(replyingTo));
-  };
-
-  const hideReplyInput = () => {
-    setIsReplying(false);
-    clearTimeout(timeoutRef.current);
-  };
 
   return (
     <div className="flex flex-col px-2 py-1">
@@ -157,7 +116,6 @@ export function Comment({
         preselectedCommentMetadata={preselectedCommentMetadata}
         comment={comment}
         isToggleReply={showReplies}
-        onClickReply={toggleIsReplying}
         onClickToggleReply={toggleReplies}
         readonly={readonly}
         deleteComment={deleteComment}
@@ -178,7 +136,6 @@ export function Comment({
                   preselectedCommentMetadata={preselectedCommentMetadata}
                   deleteComment={deleteReplyComment}
                   updateComment={updateReplyComment}
-                  onClickReply={(replyingTo) => showReplyInput(replyingTo)}
                 />
               )),
             )}
@@ -196,22 +153,6 @@ export function Comment({
           ) : null}
         </>
       ) : null}
-
-      {isReplying ? (
-        <div className="relative mt-2 pb-2 pl-8">
-          <Reply className="absolute left-2 top-2 h-4 w-4 opacity-50" />
-          <CommentInput
-            mode="edit"
-            onCancel={() => hideReplyInput()}
-            onSubmit={async (text) => {
-              await addReplyComment(text);
-              hideReplyInput();
-              setShowReplies(true);
-            }}
-            ref={commentInputRef}
-          />
-        </div>
-      ) : null}
     </div>
   );
 }
@@ -223,7 +164,6 @@ function SingleComment({
   comment,
   isReply,
   isToggleReply,
-  onClickReply,
   onClickToggleReply,
   readonly = false,
   preselectedCommentMetadata,
@@ -485,22 +425,6 @@ function SingleComment({
                     comment._count.vote = Number(comment._count.vote) + (didUpvote ? 1 : -1);
                   }}
                 />
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="secondary"
-                      size="xs"
-                      onClick={() => onClickReply?.(comment?.user?.name)}
-                    >
-                      <Reply className="h-3 w-3" />
-                      <span className="sr-only">Create a reply</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Reply</p>
-                  </TooltipContent>
-                </Tooltip>
               </div>
             </>
           )}
