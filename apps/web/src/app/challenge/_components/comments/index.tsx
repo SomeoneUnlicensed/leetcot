@@ -5,7 +5,6 @@ import { ChevronDown, MessageCircle } from '@repo/ui/icons';
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
 import { Comment } from './comment';
-import { CommentInput } from './comment-input';
 import { CommentSkeleton } from './comment-skeleton';
 import { type PreselectedCommentMetadata } from './getCommentRouteData';
 import NoComments from './nocomments';
@@ -36,7 +35,6 @@ export function Comments({
   const commentContainerRef = useRef<HTMLDivElement>(null);
   const {
     data,
-    addComment,
     commentsMeta,
     status,
     changePage,
@@ -99,9 +97,6 @@ export function Comments({
           )}
           ref={commentContainerRef}
         >
-          <div className="m-2 mb-4 mt-0">
-            <CommentInput mode="create" onSubmit={addComment} />
-          </div>
           {(data?.comments.length ?? 0) > 0 && (
             <SortSelect
               currentSortKey={commentsMeta.sort}
