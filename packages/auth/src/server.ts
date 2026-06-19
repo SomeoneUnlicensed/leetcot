@@ -145,6 +145,7 @@ export const createArlistProvider = (clientId: string, clientSecret: string): OA
     type: 'oauth',
     clientId,
     clientSecret,
+    issuer: 'https://arlist.ru',
     allowDangerousEmailAccountLinking: true,
     authorization: {
       url: 'https://arlist.ru/auth',
