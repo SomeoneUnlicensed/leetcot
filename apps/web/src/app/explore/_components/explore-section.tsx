@@ -104,7 +104,7 @@ export async function ExploreSection({ title, tag, redirectRoute }: SectionProps
             />
             {title}
           </h2>
-          {session ? (
+          {session && challengesLength > 0 ? (
             <ExploreChallengesProgression
               completed={completedChallenges.length}
               total={challengesLength}

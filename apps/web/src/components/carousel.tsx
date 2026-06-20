@@ -84,25 +84,25 @@ export function Carousel({ children }: CarouselProps) {
       {children}
       <button
         className={clsx(
-          'absolute left-40 top-1/2 hidden -translate-y-1/2 rounded-[5rem] border border-neutral-400 bg-neutral-200/50 px-2 py-4 backdrop-blur-sm duration-300 focus:outline-none focus-visible:ring-2 active:scale-75 dark:border-neutral-600 dark:bg-neutral-700/50',
+          'absolute left-40 top-1/2 hidden -translate-y-1/2 rounded-[5rem] border border-neutral-400 bg-neutral-200/90 px-2 py-4 shadow-lg backdrop-blur-sm duration-300 hover:bg-neutral-200 focus:outline-none focus-visible:ring-2 active:scale-75 dark:border-neutral-600 dark:bg-neutral-700/90 dark:hover:bg-neutral-700',
           showLeftButton && 'sm:block',
         )}
         id={`slideLeft-${id}`}
         aria-hidden={!showLeftButton}
         aria-label="Slide carousel of challenges to the left"
       >
-        <ChevronLeft className="h-4 w-4 stroke-[3]" />
+        <ChevronLeft className="h-5 w-5 stroke-[3]" />
       </button>
       <button
         className={clsx(
-          'absolute right-40 top-1/2 hidden -translate-y-1/2 rounded-[5rem] border border-neutral-400 bg-neutral-200/50 px-2 py-4 backdrop-blur-sm duration-300 focus:outline-none focus-visible:ring-2 active:scale-75 dark:border-neutral-600 dark:bg-neutral-700/50',
+          'absolute right-40 top-1/2 hidden -translate-y-1/2 rounded-[5rem] border border-neutral-400 bg-neutral-200/90 px-2 py-4 shadow-lg backdrop-blur-sm duration-300 hover:bg-neutral-200 focus:outline-none focus-visible:ring-2 active:scale-75 dark:border-neutral-600 dark:bg-neutral-700/90 dark:hover:bg-neutral-700',
           showRightButton && 'sm:block',
         )}
         id={`slideRight-${id}`}
         aria-hidden={!showRightButton}
         aria-label="Slide carousel of challenges to the right"
       >
-        <ChevronRight className="h-4 w-4 stroke-[3]" />
+        <ChevronRight className="h-5 w-5 stroke-[3]" />
       </button>
     </div>
   );

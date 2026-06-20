@@ -109,6 +109,8 @@ export interface ExploreCardProps {
 }
 export function ExploreCard({ challenge, className }: ExploreCardProps & { className?: string }) {
   const hasBeenSolved = challenge.submission.length > 0;
+  const authorName =
+    challenge.user.name === 'Администратор' ? 'ЛитКот' : challenge.user.name;
 
   return (
     <Card
@@ -122,7 +124,7 @@ export function ExploreCard({ challenge, className }: ExploreCardProps & { class
     >
       <ChallengeDifficultyIcon difficulty={challenge.difficulty} />
       <CardHeader className="relative flex flex-col items-start gap-1 py-5">
-        <CardTitle className="max-w-[75%] truncate text-2xl duration-300">
+        <CardTitle className="line-clamp-2 max-w-[90%] text-2xl duration-300">
           {challenge.name}
         </CardTitle>
         <div className="flex items-center gap-5 text-center duration-300">
@@ -143,7 +145,7 @@ export function ExploreCard({ challenge, className }: ExploreCardProps & { class
       <CardContent className="relative flex flex-col justify-between gap-2 rounded-xl p-6 pb-0 duration-300">
         <div className="flex items-center gap-2">
           <div className="-ml-[0.33rem] flex h-auto w-fit items-center whitespace-nowrap rounded-full bg-transparent py-1 pl-[0.33rem] pr-2 text-xs font-bold text-neutral-700 duration-300 hover:bg-black/10 dark:text-white dark:hover:bg-white/20">
-            @{challenge.user.name}
+            @{authorName}
           </div>
           <div className="text-muted-foreground whitespace-nowrap text-sm">
             <RelativeTime date={challenge.updatedAt} />
