@@ -1,7 +1,9 @@
 import { prisma } from '@repo/db';
 import type { Difficulty as DifficultyWithEvent } from '@repo/db/types';
 import {
+  differenceInCalendarDays,
   eachDayOfInterval,
+  format,
   getDay,
   getMonth,
   getWeek,
@@ -144,6 +146,40 @@ export async function getUserActivity(userId: string) {
   });
 
   return days;
+}
+
+export async function getUserStreak(userId: string) {
+  const submissions = await prisma.submission.findMany({
+    where: { userId, isSuccessful: true },
+    select: { createdAt: true },
+  });
+
+  const solvedDays = new Set(submissions.map((s) => format(s.createdAt, 'yyyy-MM-dd')));
+
+  let cursor = new Date();
+  if (!solvedDays.has(format(cursor, 'yyyy-MM-dd'))) {
+    cursor = subDays(cursor, 1);
+  }
+  let currentStreak = 0;
+  while (solvedDays.has(format(cursor, 'yyyy-MM-dd'))) {
+    currentStreak++;
+    cursor = subDays(cursor, 1);
+  }
+
+  const sortedDays = [...solvedDays].sort();
+  let longestStreak = 0;
+  let run = 0;
+  sortedDays.forEach((day, i) => {
+    if (i === 0) {
+      run = 1;
+    } else {
+      const diff = differenceInCalendarDays(new Date(day), new Date(sortedDays[i - 1]!));
+      run = diff === 1 ? run + 1 : 1;
+    }
+    longestStreak = Math.max(longestStreak, run);
+  });
+
+  return { currentStreak, longestStreak };
 }
 
 export interface BadgeInfo {
