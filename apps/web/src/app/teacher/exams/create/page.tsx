@@ -59,83 +59,112 @@ export default function CreateExamPage() {
   };
 
   return (
-    <div className="container mx-auto max-w-2xl py-10">
-      <h1 className="mb-8 text-3xl font-bold">Создать новый тест</h1>
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 py-10 px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto max-w-2xl">
+        <div className="mb-8">
+          <button
+            onClick={() => router.back()}
+            className="text-xs font-semibold text-amber-500 hover:text-amber-400 transition-colors flex items-center gap-1.5 mb-2"
+          >
+            ← Назад к списку
+          </button>
+          <h1 className="text-3xl font-extrabold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
+            Создать новый тест
+          </h1>
+        </div>
 
-      <Card className="p-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {error ? (
-            <div className="rounded border border-red-400 bg-red-100 p-4 text-red-700">{error}</div>
-          ) : null}
+        <Card className="p-8 border border-zinc-800 bg-zinc-900/40 backdrop-blur-md rounded-2xl dark:border-zinc-800 dark:bg-zinc-900/40">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {error ? (
+              <div className="rounded-xl border border-red-500/20 bg-red-950/20 p-4 text-red-400 text-sm">
+                {error}
+              </div>
+            ) : null}
 
-          <div className="space-y-2">
-            <Label htmlFor="title">Название теста *</Label>
-            <Input
-              id="title"
-              placeholder="Например: Математика 9 класс - Геометрия"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="title" className="text-zinc-300 font-medium">Название теста *</Label>
+              <Input
+                id="title"
+                placeholder="Например: Математика 9 класс - Геометрия"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                className="bg-zinc-900/50 border-zinc-800 text-zinc-100 placeholder-zinc-600 focus:border-amber-500"
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Описание</Label>
-            <textarea
-              id="description"
-              placeholder="Опишите тест и его цели..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={4}
-            />
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="description" className="text-zinc-300 font-medium">Описание</Label>
+              <textarea
+                id="description"
+                placeholder="Опишите тест и его цели..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full rounded-lg border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all"
+                rows={4}
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="classLevel">Класс/Группа *</Label>
-            <Input
-              id="classLevel"
-              placeholder="Например: 9А, 10Б, 11В"
-              value={classLevel}
-              onChange={(e) => setClassLevel(e.target.value)}
-              required
-            />
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="classLevel" className="text-zinc-300 font-medium">Класс/Группа *</Label>
+                <Input
+                  id="classLevel"
+                  placeholder="Например: 9А, 10Б"
+                  value={classLevel}
+                  onChange={(e) => setClassLevel(e.target.value)}
+                  required
+                  className="bg-zinc-900/50 border-zinc-800 text-zinc-100 placeholder-zinc-600 focus:border-amber-500"
+                />
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="maxAttempts">Максимум попыток</Label>
-            <Input
-              id="maxAttempts"
-              type="number"
-              min="1"
-              value={maxAttempts}
-              onChange={(e) => setMaxAttempts(e.target.value)}
-            />
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="maxAttempts" className="text-zinc-300 font-medium">Максимум попыток</Label>
+                <Input
+                  id="maxAttempts"
+                  type="number"
+                  min="1"
+                  value={maxAttempts}
+                  onChange={(e) => setMaxAttempts(e.target.value)}
+                  className="bg-zinc-900/50 border-zinc-800 text-zinc-100 placeholder-zinc-600 focus:border-amber-500"
+                />
+              </div>
+            </div>
 
-          <div className="flex items-center space-x-2">
-            <input
-              id="showResults"
-              type="checkbox"
-              checked={showResultsImmediately}
-              onChange={(e) => setShowResultsImmediately(e.target.checked)}
-              className="rounded border-gray-300"
-            />
-            <Label htmlFor="showResults" className="mb-0">
-              Показывать результаты студентам сразу после отправки
-            </Label>
-          </div>
+            <div className="flex items-center space-x-3 bg-zinc-900/30 border border-zinc-850 p-3 rounded-lg">
+              <input
+                id="showResults"
+                type="checkbox"
+                checked={showResultsImmediately}
+                onChange={(e) => setShowResultsImmediately(e.target.checked)}
+                className="rounded border-zinc-800 bg-zinc-900 text-amber-500 focus:ring-amber-500 focus:ring-offset-zinc-950 h-4 w-4"
+              />
+              <Label htmlFor="showResults" className="mb-0 text-xs font-semibold text-zinc-400 cursor-pointer select-none">
+                Показывать результаты студентам сразу после отправки
+              </Label>
+            </div>
 
-          <div className="flex gap-4 pt-4">
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Создание...' : 'Создать тест'}
-            </Button>
-            <Button type="button" variant="outline" onClick={() => router.back()}>
-              Отмена
-            </Button>
-          </div>
-        </form>
-      </Card>
+            <div className="flex gap-4 pt-4">
+              <Button
+                type="submit"
+                disabled={loading}
+                className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-semibold shadow-lg shadow-amber-500/10 border-0"
+              >
+                {loading ? 'Создание...' : 'Создать тест'}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.back()}
+                className="border-zinc-800 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-white"
+              >
+                Отмена
+              </Button>
+            </div>
+          </form>
+        </Card>
+      </div>
     </div>
   );
 }
+
