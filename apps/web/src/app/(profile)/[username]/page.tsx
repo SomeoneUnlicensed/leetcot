@@ -14,13 +14,13 @@ import {
 } from '~/app/challenge/_components/comments/enhanced-user-badge.getTitles';
 import { auth } from '~/server/auth';
 import { getRelativeTime } from '~/utils/relativeTime';
-import { ActivityChart } from './_components/activity-chart';
+import { ActivityHoneycomb } from './_components/activity-honeycomb';
 import { Badges, EmptyBadge } from './_components/badges';
 import { CardWithRadialBg } from './_components/card-radial-bg';
 import { MovingGrid } from './_components/moving-grid';
 import { ProgressChart } from './_components/progress-chart';
 import { SharedSolutionCard } from './_components/shared-solution-card';
-import { getBadges, getProgressData, getUserActivity } from './user-info';
+import { getBadges, getProgressData, getUserActivity, getUserStreak } from './user-info';
 
 export default async function ProfilePage(props: { params: Promise<{ username: string }> }) {
   const { username: rawUserName } = await props.params;
@@ -80,6 +80,7 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
   const gradient = getGradient(user.roles);
   const progressData = await getProgressData(user.id);
   const activityData = await getUserActivity(user.id);
+  const streak = await getUserStreak(user.id);
   const userLinks = user.userLinks.filter((u) => u.url !== '');
 
   const session = await auth();
@@ -308,12 +309,17 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
 
         <CardWithRadialBg className="h-fit max-w-sm basis-full md:basis-1/2 lg:basis-1/3">
           <CardHeader>
-            <h1 className="text-muted-foreground pl-2 text-lg tracking-wide">
-              Недавняя активность
-            </h1>
+            <div className="flex items-center justify-between pl-2">
+              <h1 className="text-muted-foreground text-lg tracking-wide">Недавняя активность</h1>
+              {streak.currentStreak > 0 ? (
+                <span className="flex items-center gap-1 text-sm font-semibold text-orange-500">
+                  🔥 {streak.currentStreak} {streak.currentStreak === 1 ? 'день' : 'дней'}
+                </span>
+              ) : null}
+            </div>
           </CardHeader>
           <CardContent className="flex flex-col justify-center">
-            <ActivityChart data={activityData} />
+            <ActivityHoneycomb data={activityData} />
           </CardContent>
         </CardWithRadialBg>
 
