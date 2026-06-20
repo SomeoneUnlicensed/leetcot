@@ -22,7 +22,7 @@ export type { Session, DefaultSession as DefaultAuthSession } from 'next-auth';
  */
 declare module 'next-auth' {
   interface Session {
-    user: User & { role: RoleTypes[] };
+    user: User & { role: RoleTypes[]; arlistJustLinked?: boolean };
   }
 }
 
@@ -36,6 +36,7 @@ declare module '@auth/core/jwt' {
   interface JWT {
     id?: string;
     roles?: RoleTypes[];
+    arlistJustLinked?: boolean;
   }
 }
 
@@ -97,14 +98,18 @@ export const baseNextAuthConfig: Omit<NextAuthConfig, 'providers'> = {
         if (u) {
           token.id = u.id;
           token.roles = u.roles.map((r) => r.role);
+          token.arlistJustLinked = Boolean(
+            u.arlistLinkedNotifiedAt && Date.now() - u.arlistLinkedNotifiedAt.getTime() < 60_000,
+          );
         }
       }
       return token;
     },
     session: ({ session, token }) => {
       if (session.user && token) {
-        session.user.id = token.id as string;
-        session.user.role = token.roles as RoleTypes[];
+        session.user.id = token.id!;
+        session.user.role = token.roles!;
+        session.user.arlistJustLinked = Boolean(token.arlistJustLinked);
       }
       return session;
     },

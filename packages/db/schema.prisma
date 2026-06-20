@@ -129,6 +129,8 @@ model User {
   status    UserStatus @default(ACTIVE)
   banReason String?    @db.Text
 
+  arlistLinkedNotifiedAt DateTime?
+
   accounts   Account[]
   sessions   Session[]
   challenge  Challenge[]
