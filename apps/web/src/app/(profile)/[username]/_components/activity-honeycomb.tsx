@@ -12,9 +12,10 @@ interface DayActivity {
   activity: number;
 }
 
-const HEX_R = 12;
+const HEX_R = 11;
 const HEX_W = HEX_R * 1.5;
 const HEX_H = HEX_R * Math.sqrt(3);
+const PADDING = 4;
 
 function hexPoints(cx: number, cy: number, r: number) {
   return Array.from({ length: 6 }, (_, i) => {
@@ -33,19 +34,24 @@ function getColorClass(count: number) {
 
 export function ActivityHoneycomb(props: { data: DayActivity[] }) {
   const [hovered, setHovered] = useState<number | null>(null);
-  const columns = Math.ceil(props.data.length / 7);
-  const width = columns * HEX_W + HEX_R * 2;
-  const height = 7 * HEX_H + HEX_H / 2 + HEX_R * 2;
+  const columns = Math.max(1, Math.ceil(props.data.length / 7));
+  const width = columns * HEX_W + HEX_R * 2 + PADDING * 2;
+  const height = 7 * HEX_H + HEX_H / 2 + HEX_R * 2 + PADDING * 2;
   const hoveredDay = hovered === null ? null : props.data[hovered];
 
   return (
     <div>
       <div className="overflow-x-auto">
-        <svg viewBox={`0 0 ${width} ${height}`} className="h-[180px] w-full min-w-[420px]">
+        <svg
+          width={width}
+          height={height}
+          viewBox={`0 0 ${width} ${height}`}
+          className="mx-auto block"
+        >
           {props.data.map((d, i) => {
             const col = Math.floor(i / 7);
-            const cx = col * HEX_W + HEX_R + 2;
-            const cy = d.day * HEX_H + (col % 2 === 0 ? 0 : HEX_H / 2) + HEX_R + 2;
+            const cx = col * HEX_W + HEX_R + PADDING;
+            const cy = d.day * HEX_H + (col % 2 === 0 ? 0 : HEX_H / 2) + HEX_R + PADDING;
             return (
               <polygon
                 key={d.date.toISOString()}
