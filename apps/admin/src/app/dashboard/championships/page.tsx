@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { auth } from '~/server/auth';
-import { assertAdmin } from '~/utils/auth-guards';
+import { assertAdminOrChampionshipManager } from '~/utils/auth-guards';
 import { ChampionshipDashboard } from './_components/championships-dashboard';
 
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default async function ChampionshipsPage() {
   const session = await auth();
-  assertAdmin(session);
+  assertAdminOrChampionshipManager(session);
 
   return (
     <div className="space-y-6">

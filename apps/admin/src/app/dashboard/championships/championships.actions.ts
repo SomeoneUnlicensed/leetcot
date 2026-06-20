@@ -3,12 +3,12 @@
 import { auth } from '~/server/auth';
 import { prisma } from '@repo/db';
 import type { Challenge } from '@repo/db/types';
-import { assertAdmin } from '~/utils/auth-guards';
+import { assertAdminOrChampionshipManager } from '~/utils/auth-guards';
 import { revalidatePath } from 'next/cache';
 
 export async function getChampionships() {
   const session = await auth();
-  assertAdmin(session);
+  assertAdminOrChampionshipManager(session);
 
   return prisma.championship.findMany({
     orderBy: { startDate: 'desc' },
@@ -34,7 +34,7 @@ export async function createChampionship(data: {
   companyId?: string | null;
 }) {
   const session = await auth();
-  assertAdmin(session);
+  assertAdminOrChampionshipManager(session);
 
   const existing = await prisma.championship.findUnique({
     where: { slug: data.slug },
@@ -73,7 +73,7 @@ export async function updateChampionship(
   },
 ) {
   const session = await auth();
-  assertAdmin(session);
+  assertAdminOrChampionshipManager(session);
 
   const updated = await prisma.championship.update({
     where: { id },
@@ -94,7 +94,7 @@ export async function updateChampionship(
 
 export async function deleteChampionship(id: string) {
   const session = await auth();
-  assertAdmin(session);
+  assertAdminOrChampionshipManager(session);
 
   // Clean relations
   await prisma.championshipChallenge.deleteMany({
@@ -114,7 +114,7 @@ export async function deleteChampionship(id: string) {
 
 export async function getChampionshipChallenges(championshipId: string): Promise<Challenge[]> {
   const session = await auth();
-  assertAdmin(session);
+  assertAdminOrChampionshipManager(session);
 
   const links = await prisma.championshipChallenge.findMany({
     where: { championshipId },
@@ -128,7 +128,7 @@ export async function getChampionshipChallenges(championshipId: string): Promise
 
 export async function getAvailableChallenges() {
   const session = await auth();
-  assertAdmin(session);
+  assertAdminOrChampionshipManager(session);
 
   return prisma.challenge.findMany({
     where: { status: 'ACTIVE' },
@@ -143,7 +143,7 @@ export async function getAvailableChallenges() {
 
 export async function addChallengeToChampionship(championshipId: string, challengeId: number) {
   const session = await auth();
-  assertAdmin(session);
+  assertAdminOrChampionshipManager(session);
 
   const link = await prisma.championshipChallenge.create({
     data: {
@@ -158,7 +158,7 @@ export async function addChallengeToChampionship(championshipId: string, challen
 
 export async function removeChallengeFromChampionship(championshipId: string, challengeId: number) {
   const session = await auth();
-  assertAdmin(session);
+  assertAdminOrChampionshipManager(session);
 
   await prisma.championshipChallenge.delete({
     where: {
@@ -174,7 +174,7 @@ export async function removeChallengeFromChampionship(championshipId: string, ch
 
 export async function getChampionshipParticipants(championshipId: string) {
   const session = await auth();
-  assertAdmin(session);
+  assertAdminOrChampionshipManager(session);
 
   return prisma.championshipParticipant.findMany({
     where: { championshipId },

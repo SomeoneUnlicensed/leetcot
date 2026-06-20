@@ -23,6 +23,8 @@ interface ExamQuestion {
   points: number;
   language?: string;
   testCases: unknown[];
+  options?: string[];
+  correctAnswers?: number[];
 }
 
 interface Exam {
@@ -49,6 +51,14 @@ export default function ExamEditorPage() {
   const [questionOptions, setQuestionOptions] = useState<string[]>(['', '', '', '']);
   const [correctAnswerIndex, setCorrectAnswerIndex] = useState('0');
 
+  // New state variables for editing and test-cases
+  const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
+  const [isManagingTestCases, setIsManagingTestCases] = useState(false);
+  const [selectedQuestionForTestCases, setSelectedQuestionForTestCases] = useState<ExamQuestion | null>(null);
+  const [newTestCaseInput, setNewTestCaseInput] = useState('');
+  const [newTestCaseExpected, setNewTestCaseExpected] = useState('');
+  const [isCopied, setIsCopied] = useState(false);
+
   const fetchExam = useCallback(async () => {
     try {
       setLoading(true);
@@ -70,13 +80,27 @@ export default function ExamEditorPage() {
     }
   }, [examId]);
 
+  const fetchExamAndReturn = async () => {
+    try {
+      const response = await fetch(`/api/exams/${examId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setExam(data.exam);
+        return data.exam as Exam;
+      }
+    } catch (err) {
+      console.error('Error fetching exam:', err);
+    }
+    return null;
+  };
+
   useEffect(() => {
     if (examId) {
       void fetchExam();
     }
   }, [examId, fetchExam]);
 
-  const addQuestion = async () => {
+  const saveQuestion = async () => {
     if (!questionContent) {
       setError('Пожалуйста, введите текст вопроса');
       return;
@@ -95,19 +119,29 @@ export default function ExamEditorPage() {
         examId,
         type: questionType,
         content: questionContent,
-        order: (exam?.questions?.length || 0) + 1,
         points: parseInt(questionPoints),
       };
+
+      if (!editingQuestionId) {
+        body.order = (exam?.questions?.length || 0) + 1;
+      }
 
       if (questionType === 'CODE_TASK') {
         body.language = questionLanguage;
       } else if (questionType === 'MULTIPLE_CHOICE') {
         body.options = questionOptions.filter((opt) => opt.trim().length > 0);
         body.correctAnswers = [parseInt(correctAnswerIndex)];
+      } else {
+        body.language = null;
+        body.options = null;
+        body.correctAnswers = null;
       }
 
-      const response = await fetch('/api/questions', {
-        method: 'POST',
+      const url = editingQuestionId ? `/api/questions/${editingQuestionId}` : '/api/questions';
+      const method = editingQuestionId ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -116,7 +150,7 @@ export default function ExamEditorPage() {
 
       if (!response.ok) {
         const data = await response.json();
-        setError(data.error || 'Ошибка при добавлении вопроса');
+        setError(data.error || 'Ошибка при сохранении вопроса');
         return;
       }
 
@@ -126,12 +160,29 @@ export default function ExamEditorPage() {
       setQuestionPoints('1');
       setQuestionOptions(['', '', '', '']);
       setCorrectAnswerIndex('0');
+      setQuestionLanguage('PYTHON');
+      setEditingQuestionId(null);
       setIsAddingQuestion(false);
       await fetchExam();
     } catch (err) {
-      console.error('Error adding question:', err);
-      setError('Ошибка при добавлении вопроса');
+      console.error('Error saving question:', err);
+      setError('Ошибка при сохранении вопроса');
     }
+  };
+
+  const startEditingQuestion = (q: ExamQuestion) => {
+    setEditingQuestionId(q.id);
+    setQuestionType(q.type);
+    setQuestionContent(q.content);
+    setQuestionPoints(q.points.toString());
+    setQuestionLanguage(q.language || 'PYTHON');
+    if (q.type === 'MULTIPLE_CHOICE') {
+      const opts = (q.options as string[]) || ['', '', '', ''];
+      const correct = Array.isArray(q.correctAnswers) ? q.correctAnswers[0]?.toString() : '0';
+      setQuestionOptions([...opts, '', '', '', ''].slice(0, 4));
+      setCorrectAnswerIndex(correct || '0');
+    }
+    setIsAddingQuestion(true);
   };
 
   const deleteQuestion = async (questionId: string) => {
@@ -150,6 +201,73 @@ export default function ExamEditorPage() {
     } catch (err) {
       console.error('Error deleting question:', err);
       setError('Ошибка при удалении вопроса');
+    }
+  };
+
+  const addTestCase = async () => {
+    if (!selectedQuestionForTestCases) return;
+    if (!newTestCaseExpected) {
+      setError('Пожалуйста, укажите ожидаемый результат');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/test-cases', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          questionId: selectedQuestionForTestCases.id,
+          input: newTestCaseInput,
+          expectedOutput: newTestCaseExpected,
+          points: 1,
+          timeout: 5000,
+          isHidden: false,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error || 'Ошибка при добавлении тест-кейса');
+        return;
+      }
+
+      setNewTestCaseInput('');
+      setNewTestCaseExpected('');
+      
+      const updatedExam = await fetchExamAndReturn();
+      if (updatedExam) {
+        const q = updatedExam.questions.find((x) => x.id === selectedQuestionForTestCases.id);
+        if (q) setSelectedQuestionForTestCases(q);
+      }
+    } catch (err) {
+      console.error('Error adding testcase:', err);
+      setError('Ошибка при добавлении тест-кейса');
+    }
+  };
+
+  const deleteTestCase = async (id: string) => {
+    if (!selectedQuestionForTestCases) return;
+    try {
+      const response = await fetch(`/api/test-cases/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error || 'Ошибка при удалении тест-кейса');
+        return;
+      }
+
+      const updatedExam = await fetchExamAndReturn();
+      if (updatedExam) {
+        const q = updatedExam.questions.find((x) => x.id === selectedQuestionForTestCases.id);
+        if (q) setSelectedQuestionForTestCases(q);
+      }
+    } catch (err) {
+      console.error('Error deleting test case:', err);
+      setError('Ошибка при удалении тест-кейса');
     }
   };
 
@@ -178,6 +296,12 @@ export default function ExamEditorPage() {
     }
   };
 
+  const handleCopy = () => {
+    void navigator.clipboard.writeText(shareUrl);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -197,41 +321,50 @@ export default function ExamEditorPage() {
   const shareUrl = `${window.location.origin}/exam/${exam.shareToken}`;
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-10 px-4 min-h-screen bg-zinc-950 text-white">
       {error ? (
-        <div className="mb-4 rounded border border-red-400 bg-red-100 p-4 text-red-700">
+        <div className="mb-4 rounded-xl border border-red-950 bg-red-950/40 p-4 text-red-400 text-sm">
           {error}
         </div>
       ) : null}
 
       <div className="mb-8">
-        <div className="mb-4 flex items-start justify-between">
+        <div className="mb-4 flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div>
-            <h1 className="mb-2 text-3xl font-bold">{exam.title}</h1>
-            <p className="mb-2 text-gray-600">{exam.description}</p>
-            <div className="flex items-center gap-2">
-              <Badge>{exam.status === 'DRAFT' ? 'Черновик' : 'Активен'}</Badge>
-              <span className="text-sm text-gray-600">Класс: {exam.classLevel}</span>
+            <h1 className="mb-2 text-3xl font-extrabold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">{exam.title}</h1>
+            <p className="mb-3 text-sm text-zinc-400">{exam.description}</p>
+            <div className="flex items-center gap-3 text-xs font-semibold">
+              <Badge className="border-zinc-800 bg-zinc-800 text-zinc-300">{exam.status === 'DRAFT' ? 'Черновик' : 'Активен'}</Badge>
+              <span className="text-zinc-500">Класс: <span className="text-zinc-300">{exam.classLevel}</span></span>
             </div>
           </div>
           {exam.status === 'DRAFT' && (
-            <Button onClick={activateExam} className="bg-green-600 hover:bg-green-700">
+            <Button onClick={activateExam} className="bg-green-600 hover:bg-green-700 font-bold border-0 rounded-xl text-white py-5">
               Активировать тест
             </Button>
           )}
         </div>
 
         {exam.status === 'ACTIVE' && (
-          <Card className="border-blue-200 bg-blue-50 p-4">
-            <h3 className="mb-2 font-semibold">Ссылка на тест (поделитесь со студентами):</h3>
-            <div className="flex items-center gap-2 rounded border bg-white p-3">
-              <code className="flex-1 break-all text-sm">{shareUrl}</code>
+          <Card className="border-amber-500/20 bg-gradient-to-r from-amber-500/5 to-orange-500/5 p-6 shadow-md dark:border-amber-500/10">
+            <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-amber-500">
+              🚀 Тест активен! Поделитесь ссылкой со студентами:
+            </h3>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <div className="flex-1 flex items-center justify-between gap-3 rounded-xl border border-zinc-850 bg-zinc-950 p-3.5 font-mono text-sm shadow-inner text-neutral-200">
+                <span className="break-all font-semibold">
+                  {shareUrl}
+                </span>
+              </div>
               <Button
-                size="sm"
-                variant="outline"
-                onClick={() => navigator.clipboard.writeText(shareUrl)}
+                onClick={handleCopy}
+                className={`px-6 py-3.5 font-bold transition-all duration-300 rounded-xl text-white ${
+                  isCopied
+                    ? 'bg-emerald-600 hover:bg-emerald-700'
+                    : 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 shadow-md hover:shadow-lg border-0'
+                }`}
               >
-                Копировать
+                {isCopied ? '✓ Скопировано!' : 'Копировать'}
               </Button>
             </div>
           </Card>
@@ -240,23 +373,36 @@ export default function ExamEditorPage() {
 
       <div className="mb-8">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Вопросы ({exam.questions.length})</h2>
-          <Dialog open={isAddingQuestion} onOpenChange={setIsAddingQuestion}>
+          <h2 className="text-2xl font-bold text-white">Вопросы ({exam.questions.length})</h2>
+          <Dialog
+            open={isAddingQuestion}
+            onOpenChange={(open) => {
+              setIsAddingQuestion(open);
+              if (!open) {
+                setEditingQuestionId(null);
+                setQuestionType('MULTIPLE_CHOICE');
+                setQuestionContent('');
+                setQuestionPoints('1');
+                setQuestionOptions(['', '', '', '']);
+                setCorrectAnswerIndex('0');
+              }
+            }}
+          >
             <DialogTrigger asChild>
-              <Button>Добавить вопрос</Button>
+              <Button className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold border-0 py-5 rounded-xl">Добавить вопрос</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="bg-zinc-900 border-zinc-800 text-white rounded-2xl">
               <DialogHeader>
-                <DialogTitle>Добавить новый вопрос</DialogTitle>
+                <DialogTitle className="text-xl font-bold text-white">{editingQuestionId ? 'Редактировать вопрос' : 'Добавить новый вопрос'}</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="type">Тип вопроса</Label>
+              <div className="space-y-4 text-sm mt-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="type" className="text-xs font-bold text-neutral-400 uppercase">Тип вопроса</Label>
                   <select
                     id="type"
                     value={questionType}
                     onChange={(e) => setQuestionType(e.target.value)}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2"
+                    className="w-full rounded-xl bg-zinc-950 border-zinc-800 text-white px-3 py-2.5 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500/30"
                   >
                     <option value="MULTIPLE_CHOICE">Множественный выбор</option>
                     <option value="CODE_TASK">Задача программирования</option>
@@ -264,37 +410,38 @@ export default function ExamEditorPage() {
                   </select>
                 </div>
 
-                <div>
-                  <Label htmlFor="content">Текст вопроса</Label>
+                <div className="space-y-1.5">
+                  <Label htmlFor="content" className="text-xs font-bold text-neutral-400 uppercase">Текст вопроса</Label>
                   <textarea
                     id="content"
                     value={questionContent}
                     onChange={(e) => setQuestionContent(e.target.value)}
                     placeholder="Введите текст вопроса..."
-                    className="w-full rounded-md border border-gray-300 px-3 py-2"
+                    className="w-full rounded-xl bg-zinc-950 border-zinc-800 text-white px-3 py-2.5 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500/30"
                     rows={4}
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="points">Баллы</Label>
+                <div className="space-y-1.5">
+                  <Label htmlFor="points" className="text-xs font-bold text-neutral-400 uppercase">Баллы</Label>
                   <Input
                     id="points"
                     type="number"
                     min="1"
                     value={questionPoints}
                     onChange={(e) => setQuestionPoints(e.target.value)}
+                    className="rounded-xl bg-zinc-950 border-zinc-800 text-white px-3 py-2.5 focus:border-amber-500 focus:ring-amber-500/20"
                   />
                 </div>
 
                 {questionType === 'CODE_TASK' && (
-                  <div>
-                    <Label htmlFor="language">Язык программирования</Label>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="language" className="text-xs font-bold text-neutral-400 uppercase">Язык программирования</Label>
                     <select
                       id="language"
                       value={questionLanguage}
                       onChange={(e) => setQuestionLanguage(e.target.value)}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2"
+                      className="w-full rounded-xl bg-zinc-950 border-zinc-800 text-white px-3 py-2.5 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500/30"
                     >
                       <option value="PYTHON">Python</option>
                       <option value="JAVASCRIPT">JavaScript</option>
@@ -307,7 +454,7 @@ export default function ExamEditorPage() {
 
                 {questionType === 'MULTIPLE_CHOICE' && (
                   <div className="space-y-3">
-                    <Label>Варианты ответов</Label>
+                    <Label className="text-xs font-bold text-neutral-400 uppercase">Варианты ответов</Label>
                     {questionOptions.map((option, idx) => (
                       <div key={idx} className="flex items-center gap-2">
                         <input
@@ -315,7 +462,7 @@ export default function ExamEditorPage() {
                           name="correct"
                           checked={parseInt(correctAnswerIndex) === idx}
                           onChange={() => setCorrectAnswerIndex(idx.toString())}
-                          className="h-4 w-4"
+                          className="h-4 w-4 text-amber-500 border-zinc-800 bg-zinc-950 focus:ring-amber-500/20"
                         />
                         <Input
                           value={option}
@@ -325,16 +472,17 @@ export default function ExamEditorPage() {
                             setQuestionOptions(newOptions);
                           }}
                           placeholder={`Вариант ${idx + 1}`}
+                          className="rounded-xl bg-zinc-950 border-zinc-800 text-white px-3 py-2.5"
                         />
                       </div>
                     ))}
-                    <p className="text-xs text-gray-600">Выберите правильный ответ</p>
+                    <p className="text-xs text-zinc-500">Выберите правильный ответ</p>
                   </div>
                 )}
 
-                <div className="flex gap-2">
-                  <Button onClick={addQuestion}>Добавить</Button>
-                  <Button variant="outline" onClick={() => setIsAddingQuestion(false)}>
+                <div className="flex gap-2 pt-2">
+                  <Button onClick={saveQuestion} className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold border-0 rounded-xl">{editingQuestionId ? 'Сохранить' : 'Добавить'}</Button>
+                  <Button variant="outline" onClick={() => setIsAddingQuestion(false)} className="rounded-xl border-zinc-800 bg-zinc-955 hover:bg-zinc-800 hover:text-white">
                     Отмена
                   </Button>
                 </div>
@@ -345,38 +493,56 @@ export default function ExamEditorPage() {
 
         <div className="space-y-4">
           {exam.questions.length === 0 ? (
-            <Card className="p-8 text-center">
-              <p className="text-gray-600">Нет вопросов. Добавьте первый вопрос.</p>
+            <Card className="p-8 text-center border-zinc-800 bg-zinc-900/40 rounded-2xl shadow-xl">
+              <p className="text-zinc-400">Нет вопросов. Добавьте первый вопрос.</p>
             </Card>
           ) : (
             exam.questions.map((question, index) => (
-              <Card key={question.id} className="p-4">
-                <div className="flex items-start justify-between">
+              <Card key={question.id} className="p-5 border-zinc-800 bg-zinc-900/40 rounded-2xl shadow-xl hover:border-zinc-700 transition-colors">
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                   <div className="flex-1">
-                    <h3 className="mb-2 font-semibold">
-                      Вопрос {index + 1}: {question.content.substring(0, 100)}...
+                    <h3 className="mb-2 font-bold text-lg text-white">
+                      Вопрос {index + 1}: {question.content}
                     </h3>
-                    <div className="flex gap-4 text-sm text-gray-600">
+                    <div className="flex flex-wrap gap-4 text-xs font-bold uppercase tracking-wider text-zinc-500">
                       <span>
                         Тип:{' '}
-                        {question.type === 'MULTIPLE_CHOICE'
-                          ? 'Множественный выбор'
-                          : question.type === 'CODE_TASK'
-                            ? 'Программирование'
-                            : 'Короткий ответ'}
+                        <span className="text-zinc-300">
+                          {question.type === 'MULTIPLE_CHOICE'
+                            ? 'Множественный выбор'
+                            : question.type === 'CODE_TASK'
+                              ? 'Программирование'
+                              : 'Короткий ответ'}
+                        </span>
                       </span>
-                      <span>Баллы: {question.points}</span>
-                      {question.language ? <span>Язык: {question.language}</span> : null}
-                      <span>Тестовых случаев: {question.testCases?.length || 0}</span>
+                      <span>Баллы: <span className="text-zinc-300">{question.points}</span></span>
+                      {question.language ? <span>Язык: <span className="text-zinc-300">{question.language}</span></span> : null}
+                      {question.type === 'CODE_TASK' && (
+                        <span>Тестов: <span className="text-zinc-300">{question.testCases?.length || 0}</span></span>
+                      )}
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
+                    {question.type === 'CODE_TASK' && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-xl border-amber-500/20 bg-amber-500/5 text-amber-400 hover:bg-amber-500/10 hover:text-white"
+                        onClick={() => {
+                          setSelectedQuestionForTestCases(question);
+                          setIsManagingTestCases(true);
+                        }}
+                      >
+                        Тесты
+                      </Button>
+                    )}
+                    <Button variant="outline" size="sm" className="rounded-xl border-zinc-800 bg-zinc-900 text-neutral-300 hover:bg-zinc-800 hover:text-white" onClick={() => startEditingQuestion(question)}>
                       Редактировать
                     </Button>
                     <Button
                       variant="destructive"
                       size="sm"
+                      className="rounded-xl border-0 bg-red-950/40 text-red-400 hover:bg-red-900 hover:text-white"
                       onClick={() => deleteQuestion(question.id)}
                     >
                       Удалить
@@ -388,6 +554,97 @@ export default function ExamEditorPage() {
           )}
         </div>
       </div>
+
+      {/* Test Cases Management Dialog */}
+      <Dialog open={isManagingTestCases} onOpenChange={setIsManagingTestCases}>
+        <DialogContent className="max-w-2xl bg-zinc-900 border-zinc-800 text-white rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-white">Управление тест-кейсами для задачи</DialogTitle>
+          </DialogHeader>
+          {selectedQuestionForTestCases && (
+            <div className="space-y-6 text-sm mt-4">
+              <div className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-4">
+                <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Задача:</p>
+                <p className="font-mono text-xs whitespace-pre-wrap text-zinc-300 leading-relaxed">{selectedQuestionForTestCases.content}</p>
+              </div>
+
+              {/* Add testcase form */}
+              <div className="space-y-4 rounded-xl border border-amber-500/20 bg-gradient-to-r from-amber-500/5 to-orange-500/5 p-5">
+                <h4 className="font-bold text-sm text-amber-400">Добавить новый тест-кейс</h4>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="tc-input" className="text-xs font-bold text-neutral-400 uppercase">
+                      Входные данные (stdin)
+                    </Label>
+                    <textarea
+                      id="tc-input"
+                      value={newTestCaseInput}
+                      onChange={(e) => setNewTestCaseInput(e.target.value)}
+                      placeholder="Например: 2 3"
+                      className="w-full rounded-xl bg-zinc-950 border-zinc-800 text-white px-3 py-2.5 text-xs font-mono focus:border-amber-500 focus:outline-none"
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <div className="space-y-1.5">
+                    <Label htmlFor="tc-expected" className="text-xs font-bold text-neutral-400 uppercase">
+                      Ожидаемый результат *
+                    </Label>
+                    <textarea
+                      id="tc-expected"
+                      value={newTestCaseExpected}
+                      onChange={(e) => setNewTestCaseExpected(e.target.value)}
+                      placeholder="Например: 5"
+                      className="w-full rounded-xl bg-zinc-950 border-zinc-800 text-white px-3 py-2.5 text-xs font-mono focus:border-amber-500 focus:outline-none"
+                      rows={3}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button onClick={addTestCase} className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold border-0 rounded-xl">
+                    Добавить тест-кейс
+                  </Button>
+                </div>
+              </div>
+
+              {/* List testcases */}
+              <div className="space-y-3">
+                <h4 className="font-bold text-sm text-white">Список текущих тестов</h4>
+                {(!selectedQuestionForTestCases.testCases || selectedQuestionForTestCases.testCases.length === 0) ? (
+                  <p className="text-xs text-neutral-500">У этой задачи еще нет тест-кейсов. Добавьте первый тест выше.</p>
+                ) : (
+                  <div className="divide-y divide-zinc-800 rounded-xl border border-zinc-800 max-h-64 overflow-y-auto bg-zinc-950">
+                    {(selectedQuestionForTestCases.testCases as any[]).map((tc, idx) => (
+                      <div key={tc.id} className="p-3.5 flex items-start justify-between bg-zinc-900/30 text-xs gap-3">
+                        <div className="flex-1 grid grid-cols-2 gap-4">
+                          <div>
+                            <span className="font-bold text-neutral-500 uppercase text-[10px]">Ввод:</span>
+                            <pre className="bg-zinc-950 border border-zinc-850 p-2 rounded-lg mt-1.5 font-mono text-[11px] overflow-x-auto whitespace-pre text-zinc-300">{tc.input || '(пусто)'}</pre>
+                          </div>
+                          <div>
+                            <span className="font-bold text-neutral-500 uppercase text-[10px]">Ожидаемый вывод:</span>
+                            <pre className="bg-zinc-950 border border-zinc-850 p-2 rounded-lg mt-1.5 font-mono text-[11px] overflow-x-auto whitespace-pre text-zinc-300">{tc.expectedOutput}</pre>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="rounded-lg text-red-500 hover:bg-red-950/40 hover:text-red-400 self-center"
+                          onClick={() => deleteTestCase(tc.id)}
+                        >
+                          Удалить
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
