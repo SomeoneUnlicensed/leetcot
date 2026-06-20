@@ -39,7 +39,7 @@ export async function sendArlistLinkedEmail(to: string, name: string) {
           <div class="box">
             Твой аккаунт ЛитКот теперь привязан к <strong>Arlist ID</strong>. С этого момента входи на сайт только через кнопку «Войти с Arlist ID» — вход по email и паролю для этого аккаунта больше не доступен.
           </div>
-          <div class="footer">Если это не ты — напиши нам на meow@arlist.tech.</div>
+          <div class="footer">Если это не ты — напиши нам на meow@leetcot.ru.</div>
         </div>
       </body>
       </html>
