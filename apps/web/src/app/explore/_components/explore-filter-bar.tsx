@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import {
   Select,
   SelectContent,
@@ -15,6 +15,15 @@ import { SearchIcon } from '@repo/ui/icons';
 export function ExploreFilterBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, []);
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -42,11 +51,11 @@ export function ExploreFilterBar() {
           className="border-zinc-800 bg-zinc-900/50 pl-10 focus:border-pink-500/50"
           defaultValue={searchParams.get('query') ?? ''}
           onChange={(e) => {
-            // Debounce would be better here, but for now simple change
             const query = e.target.value;
-            // Simple delay to avoid too many redirects
-            const timeoutId = setTimeout(() => onFilterChange('query', query), 500);
-            return () => clearTimeout(timeoutId);
+            if (debounceRef.current) {
+              clearTimeout(debounceRef.current);
+            }
+            debounceRef.current = setTimeout(() => onFilterChange('query', query), 500);
           }}
         />
       </div>

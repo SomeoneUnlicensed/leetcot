@@ -14,7 +14,12 @@ export function useRecentSearchesStorage({ limit = 5 }: UseRecentSearchesStorage
   const [storage, setStorage] = useLocalStorage(SEARCH_LOCAL_STORAGE_KEY, '[]');
 
   const getItems = () => {
-    return JSON.parse(storage) as Item[];
+    try {
+      const parsed = JSON.parse(storage);
+      return Array.isArray(parsed) ? (parsed as Item[]) : [];
+    } catch {
+      return [];
+    }
   };
 
   return {
