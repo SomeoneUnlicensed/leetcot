@@ -32,6 +32,13 @@ declare module '@auth/core/adapters' {
   }
 }
 
+declare module '@auth/core/jwt' {
+  interface JWT {
+    id?: string;
+    roles?: RoleTypes[];
+  }
+}
+
 export const baseNextAuthConfig: Omit<NextAuthConfig, 'providers'> = {
   trustHost: true,
   pages: {
