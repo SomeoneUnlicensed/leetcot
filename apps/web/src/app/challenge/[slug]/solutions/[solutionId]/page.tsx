@@ -1,7 +1,6 @@
 import { prisma } from '@repo/db';
 import { SolutionDetails } from '../_components/solution-detail';
 import { auth } from '~/server/auth';
-import { Comments } from '~/app/challenge/_components/comments';
 import { getSolutionIdRouteData } from './getSolutionIdRouteData';
 
 interface ChallengeSolutionProps {
@@ -24,7 +23,7 @@ export default async function SolutionPage(props: ChallengeSolutionProps) {
   return (
     <div className="relative h-full">
       <SolutionDetails solution={solution} />
-      <Comments root={solution} type="SOLUTION" />
+      {/* TODO: comments temporarily hidden, re-enable when ready */}
     </div>
   );
 }
