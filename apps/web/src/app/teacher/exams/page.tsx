@@ -91,81 +91,85 @@ export default function TeacherExamsPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-lg">Загрузка...</p>
+      <div className="flex min-h-screen items-center justify-center bg-zinc-950">
+        <p className="text-lg text-neutral-400">Загрузка...</p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-10 px-4 min-h-screen bg-zinc-950 text-white">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Мои тесты</h1>
+        <h1 className="text-3xl font-extrabold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">Мои тесты</h1>
         <Link href="/teacher/exams/create">
-          <Button>Создать новый тест</Button>
+          <Button className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 font-bold border-0 text-white py-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
+            Создать новый тест
+          </Button>
         </Link>
       </div>
 
       {error ? (
-        <div className="mb-4 rounded border border-red-400 bg-red-100 p-4 text-red-700">
+        <div className="mb-4 rounded-xl border border-red-950 bg-red-950/40 p-4 text-red-400 text-sm">
           {error}
         </div>
       ) : null}
 
       {exams.length === 0 ? (
-        <Card className="p-8 text-center">
-          <p className="mb-4 text-gray-600">У вас еще нет тестов</p>
+        <Card className="p-8 text-center border-zinc-800 bg-zinc-900/40 rounded-2xl shadow-xl">
+          <p className="mb-6 text-zinc-400">У вас еще нет тестов</p>
           <Link href="/teacher/exams/create">
-            <Button>Создать первый тест</Button>
+            <Button className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 font-bold text-white border-0 py-5 rounded-xl">
+              Создать первый тест
+            </Button>
           </Link>
         </Card>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-5">
           {exams.map((exam) => (
-            <Card key={exam.id} className="p-4">
-              <div className="flex items-start justify-between">
+            <Card key={exam.id} className="p-6 border-zinc-800 bg-zinc-900/40 rounded-2xl shadow-xl hover:border-zinc-700 transition-colors">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex-1">
-                  <h2 className="mb-2 text-xl font-semibold">{exam.title}</h2>
-                  <p className="mb-2 text-gray-600">{exam.description}</p>
-                  <div className="mb-3 flex gap-4 text-sm text-gray-600">
-                    <span>Класс: {exam.classLevel}</span>
-                    <span>Вопросов: {exam.questions?.length || 0}</span>
-                    <span>Попыток: {exam.sessions?.length || 0}</span>
+                  <h2 className="mb-2 text-xl font-bold text-white">{exam.title}</h2>
+                  <p className="mb-3 text-sm text-zinc-400">{exam.description}</p>
+                  <div className="mb-4 flex flex-wrap gap-4 text-xs font-bold uppercase tracking-wider text-zinc-500">
+                    <span>Класс: <span className="text-zinc-300">{exam.classLevel}</span></span>
+                    <span>Вопросов: <span className="text-zinc-300">{exam.questions?.length || 0}</span></span>
+                    <span>Попыток: <span className="text-zinc-300">{exam.sessions?.length || 0}</span></span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3 text-xs">
                     {getStatusBadge(exam.status)}
-                    <span className="text-sm text-gray-500">
+                    <span className="text-zinc-500 font-medium">
                       Создан: {new Date(exam.createdAt).toLocaleDateString('ru-RU')}
                     </span>
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2.5">
                   <Link href={`/teacher/exams/${exam.id}`}>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="rounded-xl border-zinc-800 bg-zinc-900 text-neutral-300 hover:bg-zinc-850 hover:text-white">
                       Редактировать
                     </Button>
                   </Link>
                   <Link href={`/teacher/exams/${exam.id}/results`}>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="rounded-xl border-zinc-800 bg-zinc-900 text-neutral-300 hover:bg-zinc-850 hover:text-white">
                       Результаты
                     </Button>
                   </Link>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="destructive" size="sm">
+                      <Button variant="destructive" size="sm" className="rounded-xl border-0 bg-red-950/40 text-red-400 hover:bg-red-900 hover:text-white transition-colors">
                         Удалить
                       </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent>
+                    <AlertDialogContent className="rounded-2xl bg-zinc-900 border-zinc-800 text-white">
                       <AlertDialogTitle>Удалить тест?</AlertDialogTitle>
-                      <AlertDialogDescription>
+                      <AlertDialogDescription className="text-zinc-400">
                         Это действие нельзя отменить. Тест будет удален навсегда.
                       </AlertDialogDescription>
-                      <div className="flex justify-end gap-2">
-                        <AlertDialogCancel>Отмена</AlertDialogCancel>
+                      <div className="flex justify-end gap-2 mt-4">
+                        <AlertDialogCancel className="rounded-xl border-zinc-800 bg-zinc-950 text-neutral-300 hover:bg-zinc-900">Отмена</AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => deleteExam(exam.id)}
-                          className="bg-red-600 hover:bg-red-700"
+                          className="rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold border-0"
                         >
                           Удалить
                         </AlertDialogAction>

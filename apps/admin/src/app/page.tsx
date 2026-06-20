@@ -9,8 +9,12 @@ async function Admin() {
 
   const isMod = roles.includes(RoleTypes.MODERATOR);
   const isAdmin = roles.includes(RoleTypes.ADMIN);
+  const isChampManager = roles.includes(RoleTypes.CHAMPIONSHIP_MANAGER);
   const isModOrAdmin = isAdmin || isMod;
+
   if (isModOrAdmin) redirect('/dashboard/reports');
+  if (isChampManager) redirect('/dashboard/championships');
+
   return (
     <div>
       <div className="flex flex-col gap-4">

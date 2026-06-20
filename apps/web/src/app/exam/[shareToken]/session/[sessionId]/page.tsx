@@ -188,67 +188,72 @@ export default function ExamSessionPage() {
   const answeredCount = Object.keys(answers).length;
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-8">
+    <div className="min-h-screen bg-zinc-950 text-neutral-100 px-4 py-12">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold">{session.exam.title}</h1>
-              <p className="mt-1 text-sm text-gray-600">
+              <h1 className="text-3xl font-extrabold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
+                {session.exam.title}
+              </h1>
+              <p className="mt-1.5 text-sm text-neutral-400">
                 Вопрос {currentQuestionIndex + 1} из {totalQuestions}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-600">Ответено:</p>
-              <p className="text-2xl font-bold text-blue-600">
+              <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Отвечено</p>
+              <p className="text-2xl font-black text-amber-500">
                 {answeredCount}/{totalQuestions}
               </p>
             </div>
           </div>
-          <div className="h-2 w-full rounded-full bg-gray-200">
+          <div className="h-2 w-full rounded-full bg-zinc-900 overflow-hidden">
             <div
-              className="h-2 rounded-full bg-blue-600 transition-all"
+              className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-300"
               style={{ width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%` }}
             />
           </div>
         </div>
 
         {error ? (
-          <div className="mb-4 rounded border border-red-400 bg-red-100 p-4 text-red-700">
+          <div className="mb-5 rounded-xl border border-red-950 bg-red-950/40 p-4 text-red-400 text-sm">
             {error}
           </div>
         ) : null}
 
-        <div className="mb-8 grid grid-cols-4 gap-4">
+        {/* Questions Grid */}
+        <div className="mb-8 grid grid-cols-4 sm:grid-cols-8 gap-3">
           {session.exam.questions.map((q, idx) => (
             <button
               key={q.id}
               onClick={() => setCurrentQuestionIndex(idx)}
-              className={`rounded border-2 p-3 transition-all ${
+              className={`rounded-xl border-2 py-3.5 transition-all text-sm font-bold ${
                 idx === currentQuestionIndex
-                  ? 'border-blue-600 bg-blue-50 font-bold'
+                  ? 'border-amber-500 bg-amber-500/10 text-amber-400'
                   : answers[q.id]
-                    ? 'border-green-400 bg-green-50'
-                    : 'border-gray-300 bg-white hover:border-gray-400'
+                    ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400'
+                    : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-amber-500/50 hover:text-neutral-200'
               }`}
             >
               {idx + 1}
-              {answers[q.id] ? <span className="ml-1 text-green-600">✓</span> : null}
+              {answers[q.id] ? <span className="ml-1 text-emerald-500">✓</span> : null}
             </button>
           ))}
         </div>
 
-        {/* Question */}
-        <Card className="mb-8 p-8">
+        {/* Question Card */}
+        <Card className="mb-8 p-8 border border-zinc-800 bg-zinc-900/40 backdrop-blur-md rounded-2xl shadow-xl">
           <div className="mb-6">
             <div className="mb-4 flex items-start justify-between">
-              <h2 className="flex-1 text-xl font-semibold">{currentQuestion.content}</h2>
-              <Badge variant="outline" className="ml-4">
+              <h2 className="flex-1 text-xl font-bold text-neutral-100">
+                {currentQuestion.content}
+              </h2>
+              <Badge variant="outline" className="ml-4 px-3 py-1 font-bold text-amber-400 border-amber-500/20 bg-amber-500/10">
                 {currentQuestion.points} баллов
               </Badge>
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
               Тип:{' '}
               {currentQuestion.type === 'MULTIPLE_CHOICE'
                 ? 'Множественный выбор'
@@ -265,7 +270,11 @@ export default function ExamSessionPage() {
                 {(currentQuestion.options || []).map((option, idx) => (
                   <label
                     key={idx}
-                    className="flex cursor-pointer items-center rounded border border-gray-300 p-4 hover:bg-gray-50"
+                    className={`flex cursor-pointer items-center rounded-xl border p-4.5 transition-colors ${
+                      currentAnswer === idx.toString()
+                        ? 'border-amber-500 bg-amber-500/10 font-semibold text-amber-300'
+                        : 'border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900/80 text-neutral-300'
+                    }`}
                   >
                     <input
                       type="radio"
@@ -273,29 +282,36 @@ export default function ExamSessionPage() {
                       value={idx.toString()}
                       checked={currentAnswer === idx.toString()}
                       onChange={(e) => saveAnswer(currentQuestion.id, e.target.value)}
-                      className="mr-3 h-4 w-4"
+                      className="mr-3.5 h-4.5 w-4.5 text-amber-500 border-zinc-800 bg-zinc-950 focus:ring-amber-500/20"
                     />
                     <span>{option}</span>
                   </label>
                 ))}
               </div>
             ) : currentQuestion.type === 'CODE_TASK' ? (
-              <div>
-                <p className="mb-3 text-sm text-gray-600">Язык: {currentQuestion.language}</p>
+              <div className="space-y-2">
+                <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
+                  Режим: {currentQuestion.language}
+                </p>
                 <textarea
                   value={currentAnswer}
                   onChange={(e) => saveAnswer(currentQuestion.id, e.target.value)}
-                  placeholder="Введите код..."
-                  className="h-48 w-full rounded border border-gray-300 p-4 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="// Напишите ваше решение здесь..."
+                  className="h-64 w-full rounded-xl border border-zinc-800 bg-zinc-950 p-4 font-mono text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-amber-500/20 text-white placeholder-zinc-700"
                 />
               </div>
             ) : (
-              <textarea
-                value={currentAnswer}
-                onChange={(e) => saveAnswer(currentQuestion.id, e.target.value)}
-                placeholder="Введите ответ..."
-                className="h-24 w-full rounded border border-gray-300 p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="space-y-2">
+                <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
+                  Ваш ответ
+                </p>
+                <textarea
+                  value={currentAnswer}
+                  onChange={(e) => saveAnswer(currentQuestion.id, e.target.value)}
+                  placeholder="Введите ваш ответ здесь..."
+                  className="h-28 w-full rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 text-white placeholder-zinc-700"
+                />
+              </div>
             )}
           </div>
         </Card>
@@ -306,6 +322,7 @@ export default function ExamSessionPage() {
             variant="outline"
             disabled={currentQuestionIndex === 0}
             onClick={() => setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))}
+            className="rounded-xl px-6 py-5 shadow-sm border-zinc-800 bg-zinc-900 text-neutral-300 hover:bg-zinc-800 hover:text-white"
           >
             ← Предыдущий
           </Button>
@@ -316,26 +333,28 @@ export default function ExamSessionPage() {
                 onClick={() =>
                   setCurrentQuestionIndex((prev) => Math.min(totalQuestions - 1, prev + 1))
                 }
+                className="rounded-xl px-6 py-5 bg-gradient-to-r from-amber-600 to-orange-600 text-white font-bold hover:from-amber-500 hover:to-orange-500 hover:shadow-lg shadow-md border-0"
               >
                 Следующий →
               </Button>
             ) : (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button className="bg-green-600 hover:bg-green-700">Отправить тест</Button>
+                  <Button className="rounded-xl px-6 py-5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold hover:from-emerald-500 hover:to-teal-500 hover:shadow-lg shadow-md border-0">
+                    Отправить тест
+                  </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent>
+                <AlertDialogContent className="rounded-2xl bg-zinc-900 border-zinc-800 text-white">
                   <AlertDialogTitle>Отправить тест?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Вы ответили на {answeredCount} из {totalQuestions} вопросов. Вы уверены, что
-                    хотите отправить тест?
+                  <AlertDialogDescription className="text-zinc-400">
+                    Вы ответили на {answeredCount} из {totalQuestions} вопросов. Вы уверены, что хотите завершить прохождение теста?
                   </AlertDialogDescription>
-                  <div className="flex justify-end gap-2">
-                    <AlertDialogCancel>Отмена</AlertDialogCancel>
+                  <div className="flex justify-end gap-2 mt-4">
+                    <AlertDialogCancel className="rounded-xl border-zinc-800 bg-zinc-950 text-neutral-300 hover:bg-zinc-900 hover:text-white">Отмена</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleSubmit}
                       disabled={isSubmitting}
-                      className="bg-green-600 hover:bg-green-700"
+                      className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold border-0"
                     >
                       {isSubmitting ? 'Отправка...' : 'Отправить'}
                     </AlertDialogAction>

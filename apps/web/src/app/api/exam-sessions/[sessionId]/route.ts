@@ -1,7 +1,26 @@
+import { exec } from 'node:child_process';
+import { writeFile, mkdir, rm } from 'node:fs/promises';
+import path from 'node:path';
+import os from 'node:os';
 import { prisma } from '@repo/db';
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
+
+// Helper function to execute code with stdin
+function runCodeWithStdin(cmd: string, stdinText: string, timeoutMs = 5000): Promise<{ stdout: string; stderr: string; error?: any }> {
+  return new Promise((resolve) => {
+    const child = exec(cmd, { timeout: timeoutMs }, (error, stdout, stderr) => {
+      resolve({ stdout, stderr, error });
+    });
+    if (child.stdin) {
+      if (stdinText) {
+        child.stdin.write(stdinText);
+      }
+      child.stdin.end();
+    }
+  });
+}
 
 // Validation schemas
 const SaveAnswerSchema = z.object({
@@ -87,7 +106,11 @@ export async function PUT(
         answers: true,
         exam: {
           include: {
-            questions: true,
+            questions: {
+              include: {
+                testCases: true,
+              },
+            },
           },
         },
       },
@@ -104,71 +127,151 @@ export async function PUT(
         return NextResponse.json({ error: 'Тест уже отправлен.' }, { status: 409 });
       }
 
-      // Use transaction to ensure consistency
-      const result = await prisma.$transaction(async (tx) => {
-        // Calculate total score with proper grading
-        let totalScore = 0;
-        let maxScore = 0;
+      // Pre-calculate grades for all questions, including executing CODE_TASKs
+      const gradedAnswers: {
+        answerId: string;
+        score: number;
+        testResults?: any;
+      }[] = [];
 
-        // Create/update answers with grades
-        for (const question of session.exam.questions) {
-          maxScore += question.points;
+      let codeTasksScore = 0;
+      let multipleChoiceScore = 0;
 
-          // Find answer for this question
-          const answer = session.answers.find(
-            (a: { questionId: string; id: string; answer: string }) => a.questionId === question.id,
-          );
+      for (const question of session.exam.questions) {
+        const answer = session.answers.find(
+          (a: { questionId: string; id: string; answer: string }) => a.questionId === question.id,
+        );
 
-          if (!answer) {
-            // No answer given
+        if (!answer) continue;
+
+        if (question.type === 'MULTIPLE_CHOICE' && question.correctAnswers) {
+          // Parse correct answers
+          let correctAnswerIndices: number[] = [];
+          if (Array.isArray(question.correctAnswers)) {
+            correctAnswerIndices = (question.correctAnswers as unknown[]).map((v) => Number(v));
+          } else if (typeof question.correctAnswers === 'number') {
+            correctAnswerIndices = [question.correctAnswers];
+          } else {
+            try {
+              const parsed = JSON.parse(question.correctAnswers as string);
+              correctAnswerIndices = Array.isArray(parsed)
+                ? (parsed as unknown[]).map((v) => Number(v))
+                : [Number(parsed)];
+            } catch {
+              const parsed = parseInt(question.correctAnswers as string);
+              if (!isNaN(parsed)) correctAnswerIndices = [parsed];
+            }
+          }
+
+          const studentAnswerIndex = parseInt(answer.answer);
+          if (!isNaN(studentAnswerIndex) && correctAnswerIndices.includes(studentAnswerIndex)) {
+            multipleChoiceScore += question.points;
+            gradedAnswers.push({
+              answerId: answer.id,
+              score: question.points,
+            });
+          } else {
+            gradedAnswers.push({
+              answerId: answer.id,
+              score: 0,
+            });
+          }
+        } else if (question.type === 'CODE_TASK' && question.language) {
+          const code = answer.answer;
+          const testCases = (question as any).testCases || [];
+
+          if (testCases.length === 0) {
+            // No test cases defined - 0 score
+            gradedAnswers.push({
+              answerId: answer.id,
+              score: 0,
+              testResults: [],
+            });
             continue;
           }
 
-          // Score based on question type
-          if (question.type === 'MULTIPLE_CHOICE' && question.correctAnswers) {
-            // Parse correct answers (could be array or JSON)
-            let correctAnswerIndices: number[] = [];
-            if (Array.isArray(question.correctAnswers)) {
-              correctAnswerIndices = (question.correctAnswers as unknown[]).map((v: unknown) =>
-                Number(v),
-              );
-            } else if (typeof question.correctAnswers === 'number') {
-              correctAnswerIndices = [question.correctAnswers];
-            } else {
-              try {
-                const parsed = JSON.parse(question.correctAnswers as string);
-                correctAnswerIndices = Array.isArray(parsed)
-                  ? (parsed as unknown[]).map((v: unknown) => Number(v))
-                  : [Number(parsed)];
-              } catch {
-                const parsed = parseInt(question.correctAnswers as string);
-                if (!isNaN(parsed)) {
-                  correctAnswerIndices = [parsed];
-                }
-              }
-            }
+          // Run tests in sandbox
+          const runId = uuidv4();
+          const tmpDir = path.join(os.tmpdir(), `litkot-exam-run-${runId}`);
+          
+          try {
+            await mkdir(tmpDir, { recursive: true });
 
-            // Check if student's answer is correct
-            const studentAnswerIndex = parseInt(answer.answer);
-            if (!isNaN(studentAnswerIndex) && correctAnswerIndices.includes(studentAnswerIndex)) {
-              totalScore += question.points;
+            const isPython = question.language.toLowerCase() === 'python';
+            const fileName = isPython ? 'main.py' : 'main.js';
+            const filePath = path.join(tmpDir, fileName);
+            await writeFile(filePath, code);
 
-              // Update answer status
-              await tx.examAnswer.update({
-                where: { id: answer.id },
-                data: {
-                  score: question.points,
-                  status: 'GRADED',
-                },
+            const normalizedTmpDir = tmpDir.replace(/\\/g, '/');
+            const cmd = isPython
+              ? `docker run -i --rm --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code python:3.11-alpine python main.py`
+              : `docker run -i --rm --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code node:20-alpine node main.js`;
+
+            const results = [];
+            let passedCount = 0;
+
+            for (const tc of testCases) {
+              const start = Date.now();
+              const { stdout, stderr, error } = await runCodeWithStdin(cmd, tc.input || '', tc.timeout || 5000);
+              const duration = Date.now() - start;
+
+              const actualOutput = stdout ? stdout.trim() : '';
+              const expectedOutput = tc.expectedOutput ? tc.expectedOutput.trim() : '';
+              const passed = !error && !stderr && actualOutput === expectedOutput;
+
+              if (passed) passedCount++;
+
+              results.push({
+                testCaseId: tc.id,
+                input: tc.input,
+                expected: expectedOutput,
+                actual: actualOutput,
+                error: stderr || (error ? error.message : null),
+                duration,
+                passed,
               });
             }
-          } else if (question.type === 'SHORT_ANSWER') {
-            // Short answers need manual grading - mark as answered
-            // Don't award points automatically
-          } else if (question.type === 'CODE_TASK') {
-            // Code tasks need auto-grading later - mark as answered
-            // Don't award points automatically
+
+            const calculatedScore = Math.round(question.points * (passedCount / testCases.length));
+            codeTasksScore += calculatedScore;
+
+            gradedAnswers.push({
+              answerId: answer.id,
+              score: calculatedScore,
+              testResults: results,
+            });
+          } catch (err: any) {
+            console.error('Code task evaluation failed:', err);
+            gradedAnswers.push({
+              answerId: answer.id,
+              score: 0,
+              testResults: [{ error: `Ошибка тестирования: ${err.message}`, passed: false }],
+            });
+          } finally {
+            await rm(tmpDir, { recursive: true, force: true }).catch(() => {});
           }
+        }
+      }
+
+      // Calculate total final scores
+      const totalScore = multipleChoiceScore + codeTasksScore;
+      let maxScore = 0;
+      for (const q of session.exam.questions) {
+        maxScore += q.points;
+      }
+
+      // Use transaction to save all results in DB
+      const result = await prisma.$transaction(async (tx) => {
+        // Update answers status to GRADED and record their scores/results
+        for (const graded of gradedAnswers) {
+          await tx.examAnswer.update({
+            where: { id: graded.answerId },
+            data: {
+              score: graded.score,
+              status: 'GRADED',
+              testResults: graded.testResults ? JSON.stringify(graded.testResults) : undefined,
+            },
+          });
         }
 
         // Update session
@@ -192,7 +295,7 @@ export async function PUT(
             totalScore,
             maxScore,
             percentage: maxScore > 0 ? (totalScore / maxScore) * 100 : 0,
-            isGraded: maxScore > 0, // Marked as graded only for multiple choice
+            isGraded: true, // Marked as fully graded since code tasks are now autograded
           },
         });
 
@@ -200,7 +303,7 @@ export async function PUT(
       });
 
       return NextResponse.json({
-        message: 'Тест успешно отправлен!',
+        message: 'Тест успешно отправлен и оценен!',
         session: result.updatedSession,
         result: result.examResult,
       });
