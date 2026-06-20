@@ -2,7 +2,6 @@ import { type Session } from '@repo/auth/server';
 import { buildMetaForChallenge } from '~/app/metadata';
 import { auth } from '~/server/auth';
 import { getRelativeTimeStrict } from '~/utils/relativeTime';
-import { Comments } from '../_components/comments';
 import { Description } from '../_components/description';
 import { getChallengeRouteData } from './getChallengeRouteData';
 
@@ -41,7 +40,7 @@ export default async function Challenges({ params }: { params: Params }) {
   return (
     <div className="relative h-full ">
       <Description challenge={challenge} />
-      <Comments root={challenge} type="CHALLENGE" />
+      {/* TODO: comments temporarily hidden, re-enable when ready */}
     </div>
   );
 }
