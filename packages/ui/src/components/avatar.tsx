@@ -77,13 +77,39 @@ function DefaultAvatar({ username, className, ...props }: DefaultAvatarProps) {
     <div
       {...props}
       className={cn(
-        'flex aspect-square h-full w-full select-none flex-col items-center justify-center rounded-full border text-center font-mono text-[7px] font-bold leading-[1]',
+        'flex aspect-square h-full w-full select-none items-center justify-center rounded-full border',
         variant.style,
         className,
       )}
     >
-      <div className="-mb-0.5">/\_/\</div>
-      <div>{variant.face}</div>
+      <svg viewBox="0 0 100 36" className="h-full w-full p-[18%]" aria-hidden="true">
+        <text
+          x="50"
+          y="16"
+          textLength="90"
+          lengthAdjust="spacingAndGlyphs"
+          textAnchor="middle"
+          fontFamily="Consolas, Monaco, 'Courier New', monospace"
+          fontWeight="900"
+          fontSize="16"
+          fill="currentColor"
+        >
+          /\_/\
+        </text>
+        <text
+          x="50"
+          y="33"
+          textLength="90"
+          lengthAdjust="spacingAndGlyphs"
+          textAnchor="middle"
+          fontFamily="Consolas, Monaco, 'Courier New', monospace"
+          fontWeight="900"
+          fontSize="16"
+          fill="currentColor"
+        >
+          {variant.face}
+        </text>
+      </svg>
     </div>
   );
 }
