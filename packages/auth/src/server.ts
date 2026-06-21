@@ -160,7 +160,10 @@ interface ArlistProfile {
   isVerified?: boolean;
 }
 
-export const createArlistProvider = (clientId: string, clientSecret: string): OAuthConfig<ArlistProfile> => {
+export const createArlistProvider = (
+  clientId: string,
+  clientSecret: string,
+): OAuthConfig<ArlistProfile> => {
   return {
     id: 'arlist',
     name: 'Arlist ID',

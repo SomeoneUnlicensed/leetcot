@@ -1,6 +1,10 @@
 import NextAuth from '@repo/auth/next-auth';
 
-import { baseNextAuthConfig, createArlistProvider, createCredentialsProvider } from '@repo/auth/server';
+import {
+  baseNextAuthConfig,
+  createArlistProvider,
+  createCredentialsProvider,
+} from '@repo/auth/server';
 import { prisma } from '@repo/db';
 import { sendArlistLinkedEmail } from '~/lib/mailer';
 

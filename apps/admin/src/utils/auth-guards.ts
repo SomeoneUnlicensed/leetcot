@@ -18,4 +18,3 @@ export const assertAdminOrChampionshipManager = (session: Session | null) => {
     throw new Error('You are not authorized to perform this action.');
   }
 };
-

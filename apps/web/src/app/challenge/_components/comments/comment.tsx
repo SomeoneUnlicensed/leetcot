@@ -107,7 +107,8 @@ export function Comment({
   };
 
   useEffect(() => {
-    return () => clearTimeout(timeoutRef.current);
+    const currentTimeout = timeoutRef.current;
+    return () => clearTimeout(currentTimeout);
   }, []);
 
   return (

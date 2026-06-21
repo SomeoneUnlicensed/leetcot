@@ -131,40 +131,45 @@ export default function ExamAccessPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-neutral-100 px-4 py-16 flex items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center bg-zinc-950 px-4 py-16 text-neutral-100">
       <div className="w-full max-w-xl">
-        <Card className="p-8 shadow-2xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-md rounded-2xl dark:border-zinc-800 dark:bg-zinc-900/40">
+        <Card className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-8 shadow-2xl backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/40">
           <div className="mb-8">
-            <h1 className="mb-3 text-center text-3xl font-extrabold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
+            <h1 className="mb-3 bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-center text-3xl font-extrabold text-transparent">
               {exam.title}
             </h1>
             {exam.description ? (
-              <p className="mb-5 text-center text-neutral-400 text-sm">
-                {exam.description}
-              </p>
+              <p className="mb-5 text-center text-sm text-neutral-400">{exam.description}</p>
             ) : null}
-            
+
             <div className="grid grid-cols-2 gap-4 rounded-xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 to-orange-500/10 p-4 text-center">
               <div>
-                <p className="text-xs text-neutral-400 font-bold uppercase tracking-wider">Класс</p>
-                <p className="mt-1 font-bold text-neutral-200 text-lg">{exam.classLevel}</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-neutral-400">Класс</p>
+                <p className="mt-1 text-lg font-bold text-neutral-200">{exam.classLevel}</p>
               </div>
               <div>
-                <p className="text-xs text-neutral-400 font-bold uppercase tracking-wider">Вопросов</p>
-                <p className="mt-1 font-bold text-neutral-200 text-lg">{exam.questions?.length || 0}</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+                  Вопросов
+                </p>
+                <p className="mt-1 text-lg font-bold text-neutral-200">
+                  {exam.questions?.length || 0}
+                </p>
               </div>
             </div>
           </div>
 
           <form onSubmit={handleStartExam} className="space-y-5">
             {error ? (
-              <div className="rounded-xl border border-red-950 bg-red-950/40 p-4 text-red-400 text-sm">
+              <div className="rounded-xl border border-red-950 bg-red-950/40 p-4 text-sm text-red-400">
                 {error}
               </div>
             ) : null}
 
             <div className="space-y-1.5">
-              <Label htmlFor="studentName" className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
+              <Label
+                htmlFor="studentName"
+                className="text-xs font-bold uppercase tracking-wider text-neutral-400"
+              >
                 Ваше имя *
               </Label>
               <Input
@@ -172,13 +177,16 @@ export default function ExamAccessPage() {
                 placeholder="Например: Иван"
                 value={studentName}
                 onChange={(e) => setStudentName(e.target.value)}
-                className="rounded-xl bg-zinc-950 border-zinc-800 text-white placeholder-zinc-600 focus:border-amber-500 focus:ring-amber-500/20"
+                className="rounded-xl border-zinc-800 bg-zinc-950 text-white placeholder-zinc-600 focus:border-amber-500 focus:ring-amber-500/20"
                 required
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="studentSurname" className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
+              <Label
+                htmlFor="studentSurname"
+                className="text-xs font-bold uppercase tracking-wider text-neutral-400"
+              >
                 Фамилия
               </Label>
               <Input
@@ -186,12 +194,15 @@ export default function ExamAccessPage() {
                 placeholder="Например: Петров"
                 value={studentSurname}
                 onChange={(e) => setStudentSurname(e.target.value)}
-                className="rounded-xl bg-zinc-950 border-zinc-800 text-white placeholder-zinc-600 focus:border-amber-500 focus:ring-amber-500/20"
+                className="rounded-xl border-zinc-800 bg-zinc-950 text-white placeholder-zinc-600 focus:border-amber-500 focus:ring-amber-500/20"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="studentClass" className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
+              <Label
+                htmlFor="studentClass"
+                className="text-xs font-bold uppercase tracking-wider text-neutral-400"
+              >
                 Ваш класс *
               </Label>
               <Input
@@ -199,19 +210,21 @@ export default function ExamAccessPage() {
                 placeholder="Например: 9А"
                 value={studentClass}
                 onChange={(e) => setStudentClass(e.target.value)}
-                className="rounded-xl bg-zinc-950 border-zinc-800 text-white placeholder-zinc-600 focus:border-amber-500 focus:ring-amber-500/20"
+                className="rounded-xl border-zinc-800 bg-zinc-950 text-white placeholder-zinc-600 focus:border-amber-500 focus:ring-amber-500/20"
                 required
               />
             </div>
 
-            <div className="rounded-xl border border-amber-900/30 bg-amber-950/20 p-4 text-amber-300 text-xs">
-              <span className="font-bold">⚠️ Внимание:</span> После запуска теста страница зафиксирует ваше участие. Пожалуйста, не закрывайте вкладку до окончания отправки результатов.
+            <div className="rounded-xl border border-amber-900/30 bg-amber-950/20 p-4 text-xs text-amber-300">
+              <span className="font-bold">⚠️ Внимание:</span> После запуска теста страница
+              зафиксирует ваше участие. Пожалуйста, не закрывайте вкладку до окончания отправки
+              результатов.
             </div>
 
             <Button
               type="submit"
               disabled={isStarting}
-              className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold transition-all duration-300 py-6 rounded-xl shadow-md hover:shadow-lg border-0 text-md"
+              className="text-md w-full rounded-xl border-0 bg-gradient-to-r from-amber-600 to-orange-600 py-6 font-bold text-white shadow-md transition-all duration-300 hover:from-amber-500 hover:to-orange-500 hover:shadow-lg"
             >
               {isStarting ? 'Запуск теста...' : 'Начать тест'}
             </Button>

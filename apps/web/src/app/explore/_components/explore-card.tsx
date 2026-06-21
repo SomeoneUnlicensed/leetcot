@@ -109,8 +109,7 @@ export interface ExploreCardProps {
 }
 export function ExploreCard({ challenge, className }: ExploreCardProps & { className?: string }) {
   const hasBeenSolved = challenge.submission.length > 0;
-  const authorName =
-    challenge.user.name === 'Администратор' ? 'ЛитКот' : challenge.user.name;
+  const authorName = challenge.user.name === 'Администратор' ? 'ЛитКот' : challenge.user.name;
 
   return (
     <Card
