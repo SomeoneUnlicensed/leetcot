@@ -59,87 +59,98 @@ export default function CreateExamPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-zinc-950 px-4 py-10 text-zinc-100 sm:px-6 lg:px-8">
       <div className="container mx-auto max-w-2xl">
         <div className="mb-8">
           <button
             onClick={() => router.back()}
-            className="text-xs font-semibold text-amber-500 hover:text-amber-400 transition-colors flex items-center gap-1.5 mb-2"
+            className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-amber-500 transition-colors hover:text-amber-400"
           >
             ← Назад к списку
           </button>
-          <h1 className="text-3xl font-extrabold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
+          <h1 className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-3xl font-extrabold text-transparent">
             Создать новый тест
           </h1>
         </div>
 
-        <Card className="p-8 border border-zinc-800 bg-zinc-900/40 backdrop-blur-md rounded-2xl dark:border-zinc-800 dark:bg-zinc-900/40">
+        <Card className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-8 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/40">
           <form onSubmit={handleSubmit} className="space-y-6">
             {error ? (
-              <div className="rounded-xl border border-red-500/20 bg-red-950/20 p-4 text-red-400 text-sm">
+              <div className="rounded-xl border border-red-500/20 bg-red-950/20 p-4 text-sm text-red-400">
                 {error}
               </div>
             ) : null}
 
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-zinc-300 font-medium">Название теста *</Label>
+              <Label htmlFor="title" className="font-medium text-zinc-300">
+                Название теста *
+              </Label>
               <Input
                 id="title"
                 placeholder="Например: Математика 9 класс - Геометрия"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="bg-zinc-900/50 border-zinc-800 text-zinc-100 placeholder-zinc-600 focus:border-amber-500"
+                className="border-zinc-800 bg-zinc-900/50 text-zinc-100 placeholder-zinc-600 focus:border-amber-500"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description" className="text-zinc-300 font-medium">Описание</Label>
+              <Label htmlFor="description" className="font-medium text-zinc-300">
+                Описание
+              </Label>
               <textarea
                 id="description"
                 placeholder="Опишите тест и его цели..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full rounded-lg border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all"
+                className="w-full rounded-lg border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm text-zinc-100 placeholder-zinc-600 transition-all focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
                 rows={4}
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="classLevel" className="text-zinc-300 font-medium">Класс/Группа *</Label>
+                <Label htmlFor="classLevel" className="font-medium text-zinc-300">
+                  Класс/Группа *
+                </Label>
                 <Input
                   id="classLevel"
                   placeholder="Например: 9А, 10Б"
                   value={classLevel}
                   onChange={(e) => setClassLevel(e.target.value)}
                   required
-                  className="bg-zinc-900/50 border-zinc-800 text-zinc-100 placeholder-zinc-600 focus:border-amber-500"
+                  className="border-zinc-800 bg-zinc-900/50 text-zinc-100 placeholder-zinc-600 focus:border-amber-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="maxAttempts" className="text-zinc-300 font-medium">Максимум попыток</Label>
+                <Label htmlFor="maxAttempts" className="font-medium text-zinc-300">
+                  Максимум попыток
+                </Label>
                 <Input
                   id="maxAttempts"
                   type="number"
                   min="1"
                   value={maxAttempts}
                   onChange={(e) => setMaxAttempts(e.target.value)}
-                  className="bg-zinc-900/50 border-zinc-800 text-zinc-100 placeholder-zinc-600 focus:border-amber-500"
+                  className="border-zinc-800 bg-zinc-900/50 text-zinc-100 placeholder-zinc-600 focus:border-amber-500"
                 />
               </div>
             </div>
 
-            <div className="flex items-center space-x-3 bg-zinc-900/30 border border-zinc-850 p-3 rounded-lg">
+            <div className="border-zinc-850 flex items-center space-x-3 rounded-lg border bg-zinc-900/30 p-3">
               <input
                 id="showResults"
                 type="checkbox"
                 checked={showResultsImmediately}
                 onChange={(e) => setShowResultsImmediately(e.target.checked)}
-                className="rounded border-zinc-800 bg-zinc-900 text-amber-500 focus:ring-amber-500 focus:ring-offset-zinc-950 h-4 w-4"
+                className="h-4 w-4 rounded border-zinc-800 bg-zinc-900 text-amber-500 focus:ring-amber-500 focus:ring-offset-zinc-950"
               />
-              <Label htmlFor="showResults" className="mb-0 text-xs font-semibold text-zinc-400 cursor-pointer select-none">
+              <Label
+                htmlFor="showResults"
+                className="mb-0 cursor-pointer select-none text-xs font-semibold text-zinc-400"
+              >
                 Показывать результаты студентам сразу после отправки
               </Label>
             </div>
@@ -148,7 +159,7 @@ export default function CreateExamPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-semibold shadow-lg shadow-amber-500/10 border-0"
+                className="border-0 bg-gradient-to-r from-amber-500 to-orange-600 font-semibold text-white shadow-lg shadow-amber-500/10 hover:from-amber-600 hover:to-orange-700"
               >
                 {loading ? 'Создание...' : 'Создать тест'}
               </Button>
@@ -167,4 +178,3 @@ export default function CreateExamPage() {
     </div>
   );
 }
-

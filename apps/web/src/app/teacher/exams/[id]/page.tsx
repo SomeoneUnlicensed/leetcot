@@ -10,10 +10,10 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@repo/ui/components/dialog';
 import { Input } from '@repo/ui/components/input';
 import { Label } from '@repo/ui/components/label';
+import { SearchIcon } from '@repo/ui/icons';
 
 interface ExamQuestion {
   id: string;
@@ -22,9 +22,20 @@ interface ExamQuestion {
   content: string;
   points: number;
   language?: string;
-  testCases: unknown[];
+  testCases: {
+    id: string;
+    input: string;
+    expectedOutput: string;
+  }[];
   options?: string[];
   correctAnswers?: number[];
+}
+
+interface PlatformChallenge {
+  id: string;
+  name: string;
+  shortDescription: string;
+  difficulty: string;
 }
 
 interface Exam {
@@ -58,6 +69,15 @@ export default function ExamEditorPage() {
   const [newTestCaseInput, setNewTestCaseInput] = useState('');
   const [newTestCaseExpected, setNewTestCaseExpected] = useState('');
   const [isCopied, setIsCopied] = useState(false);
+
+  // Import state variables
+
+  const [isImportOpen, setIsImportOpen] = useState(false);
+  const [importSearch, setImportSearch] = useState('');
+  const [importLoading, setImportLoading] = useState(false);
+  const [allChallenges, setAllChallenges] = useState<PlatformChallenge[]>([]);
+  const [selectedImportChallengeId, setSelectedImportChallengeId] = useState('');
+  const [importPoints, setImportPoints] = useState('3');
 
   const fetchExam = useCallback(async () => {
     try {
@@ -177,7 +197,7 @@ export default function ExamEditorPage() {
     setQuestionPoints(q.points.toString());
     setQuestionLanguage(q.language || 'PYTHON');
     if (q.type === 'MULTIPLE_CHOICE') {
-      const opts = (q.options as string[]) || ['', '', '', ''];
+      const opts = q.options! || ['', '', '', ''];
       const correct = Array.isArray(q.correctAnswers) ? q.correctAnswers[0]?.toString() : '0';
       setQuestionOptions([...opts, '', '', '', ''].slice(0, 4));
       setCorrectAnswerIndex(correct || '0');
@@ -302,6 +322,63 @@ export default function ExamEditorPage() {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
+  const fetchChallenges = useCallback(async () => {
+    try {
+      setImportLoading(true);
+      const response = await fetch('/api/teacher/challenges');
+      if (response.ok) {
+        const data = await response.json();
+        setAllChallenges(data.challenges || []);
+      }
+    } catch (err) {
+      console.error('Error fetching challenges:', err);
+    } finally {
+      setImportLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isImportOpen) {
+      void fetchChallenges();
+    }
+  }, [isImportOpen, fetchChallenges]);
+
+  const importChallenge = async () => {
+    if (!selectedImportChallengeId) {
+      setError('Выберите задачу для импорта');
+      return;
+    }
+    try {
+      setImportLoading(true);
+      const response = await fetch('/api/teacher/import-challenge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          examId,
+          challengeId: selectedImportChallengeId,
+          points: parseInt(importPoints) || 3,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error || 'Ошибка при импорте задачи');
+        return;
+      }
+
+      setIsImportOpen(false);
+      setSelectedImportChallengeId('');
+      setImportPoints('3');
+      setImportSearch('');
+      await fetchExam();
+    } catch (err) {
+      console.error('Error importing challenge:', err);
+      setError('Ошибка при импорте задачи');
+    } finally {
+      setImportLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -372,124 +449,259 @@ export default function ExamEditorPage() {
       </div>
 
       <div className="mb-8">
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <h2 className="text-2xl font-bold text-white">Вопросы ({exam.questions.length})</h2>
-          <Dialog
-            open={isAddingQuestion}
-            onOpenChange={(open) => {
-              setIsAddingQuestion(open);
-              if (!open) {
-                setEditingQuestionId(null);
-                setQuestionType('MULTIPLE_CHOICE');
-                setQuestionContent('');
-                setQuestionPoints('1');
-                setQuestionOptions(['', '', '', '']);
-                setCorrectAnswerIndex('0');
-              }
-            }}
-          >
-            <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold border-0 py-5 rounded-xl">Добавить вопрос</Button>
-            </DialogTrigger>
-            <DialogContent className="bg-zinc-900 border-zinc-800 text-white rounded-2xl">
-              <DialogHeader>
-                <DialogTitle className="text-xl font-bold text-white">{editingQuestionId ? 'Редактировать вопрос' : 'Добавить новый вопрос'}</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 text-sm mt-4">
+          
+          <div className="flex flex-wrap gap-2">
+
+            {/* Platform Challenges Import Button */}
+            <Button
+              onClick={() => setIsImportOpen(true)}
+              className="bg-amber-600 hover:bg-amber-700 text-white font-bold py-5 rounded-xl border-0 flex items-center gap-1.5"
+            >
+              📚 База задач ЛитКот
+            </Button>
+
+            {/* Manual Add Question */}
+            <Button
+              onClick={() => setIsAddingQuestion(true)}
+              className="bg-zinc-850 hover:bg-zinc-800 text-white font-bold py-5 rounded-xl border border-zinc-750 flex items-center gap-1.5"
+            >
+              ➕ Добавить вручную
+            </Button>
+          </div>
+        </div>
+
+        {/* Manual Add/Edit Question Dialog */}
+        <Dialog
+          open={isAddingQuestion}
+          onOpenChange={(open) => {
+            setIsAddingQuestion(open);
+            if (!open) {
+              setEditingQuestionId(null);
+              setQuestionType('MULTIPLE_CHOICE');
+              setQuestionContent('');
+              setQuestionPoints('1');
+              setQuestionOptions(['', '', '', '']);
+              setCorrectAnswerIndex('0');
+            }
+          }}
+        >
+          <DialogContent className="bg-zinc-900 border-zinc-800 text-white rounded-2xl">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-white">
+                {editingQuestionId ? 'Редактировать вопрос' : 'Добавить новый вопрос'}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 text-sm mt-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="type" className="text-xs font-bold text-neutral-400 uppercase">
+                  Тип вопроса
+                </Label>
+                <select
+                  id="type"
+                  value={questionType}
+                  onChange={(e) => setQuestionType(e.target.value)}
+                  className="w-full rounded-xl bg-zinc-950 border-zinc-800 text-white px-3 py-2.5 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500/30"
+                >
+                  <option value="MULTIPLE_CHOICE">Множественный выбор</option>
+                  <option value="CODE_TASK">Задача программирования</option>
+                  <option value="SHORT_ANSWER">Короткий ответ</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="content" className="text-xs font-bold text-neutral-400 uppercase">
+                  Текст вопроса
+                </Label>
+                <textarea
+                  id="content"
+                  value={questionContent}
+                  onChange={(e) => setQuestionContent(e.target.value)}
+                  placeholder="Введите text вопроса..."
+                  className="w-full rounded-xl bg-zinc-950 border-zinc-800 text-white px-3 py-2.5 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500/30"
+                  rows={4}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="points" className="text-xs font-bold text-neutral-400 uppercase">
+                  Баллы
+                </Label>
+                <Input
+                  id="points"
+                  type="number"
+                  min="1"
+                  value={questionPoints}
+                  onChange={(e) => setQuestionPoints(e.target.value)}
+                  className="rounded-xl bg-zinc-950 border-zinc-800 text-white px-3 py-2.5 focus:border-amber-500 focus:ring-amber-500/20"
+                />
+              </div>
+
+              {questionType === 'CODE_TASK' && (
                 <div className="space-y-1.5">
-                  <Label htmlFor="type" className="text-xs font-bold text-neutral-400 uppercase">Тип вопроса</Label>
+                  <Label htmlFor="language" className="text-xs font-bold text-neutral-400 uppercase">
+                    Язык программирования
+                  </Label>
                   <select
-                    id="type"
-                    value={questionType}
-                    onChange={(e) => setQuestionType(e.target.value)}
+                    id="language"
+                    value={questionLanguage}
+                    onChange={(e) => setQuestionLanguage(e.target.value)}
                     className="w-full rounded-xl bg-zinc-950 border-zinc-800 text-white px-3 py-2.5 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500/30"
                   >
-                    <option value="MULTIPLE_CHOICE">Множественный выбор</option>
-                    <option value="CODE_TASK">Задача программирования</option>
-                    <option value="SHORT_ANSWER">Короткий ответ</option>
+                    <option value="PYTHON">Python</option>
+                    <option value="JAVASCRIPT">JavaScript</option>
+                    <option value="TYPESCRIPT">TypeScript</option>
+                    <option value="JAVA">Java</option>
+                    <option value="CPP">C++</option>
                   </select>
                 </div>
+              )}
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="content" className="text-xs font-bold text-neutral-400 uppercase">Текст вопроса</Label>
-                  <textarea
-                    id="content"
-                    value={questionContent}
-                    onChange={(e) => setQuestionContent(e.target.value)}
-                    placeholder="Введите текст вопроса..."
-                    className="w-full rounded-xl bg-zinc-950 border-zinc-800 text-white px-3 py-2.5 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500/30"
-                    rows={4}
-                  />
+              {questionType === 'MULTIPLE_CHOICE' && (
+                <div className="space-y-3">
+                  <Label className="text-xs font-bold text-neutral-400 uppercase">
+                    Варианны ответов
+                  </Label>
+                  {questionOptions.map((option, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="correct"
+                        checked={parseInt(correctAnswerIndex) === idx}
+                        onChange={() => setCorrectAnswerIndex(idx.toString())}
+                        className="h-4 w-4 text-amber-500 border-zinc-800 bg-zinc-955 focus:ring-amber-500/20"
+                      />
+                      <Input
+                        value={option}
+                        onChange={(e) => {
+                          const newOptions = [...questionOptions];
+                          newOptions[idx] = e.target.value;
+                          setQuestionOptions(newOptions);
+                        }}
+                        placeholder={`Вариант ${idx + 1}`}
+                        className="rounded-xl bg-zinc-955 border-zinc-800 text-white px-3 py-2.5"
+                      />
+                    </div>
+                  ))}
+                  <p className="text-xs text-zinc-500">Выберите правильный ответ</p>
                 </div>
+              )}
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="points" className="text-xs font-bold text-neutral-400 uppercase">Баллы</Label>
+              <div className="flex gap-2 pt-2">
+                <Button
+                  onClick={saveQuestion}
+                  className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold border-0 rounded-xl"
+                >
+                  {editingQuestionId ? 'Сохранить' : 'Добавить'}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsAddingQuestion(false)}
+                  className="rounded-xl border-zinc-800 bg-zinc-955 hover:bg-zinc-800 hover:text-white"
+                >
+                  Отмена
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+
+
+        {/* Import Challenges Dialog */}
+        <Dialog open={isImportOpen} onOpenChange={setIsImportOpen}>
+          <DialogContent className="bg-zinc-900 border-zinc-800 text-white rounded-2xl max-w-xl">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
+                <span>📚 База задач ЛитКот</span>
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 text-sm mt-4">
+              <p className="text-xs text-zinc-400 text-left">
+                Выберите любую готовую задачу платформы для автоматического добавления ее в тест как задачу по программированию с автотестами.
+              </p>
+
+              <div className="relative">
+                <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                <Input
+                  placeholder="Поиск по названию задачи..."
+                  className="pl-9 bg-zinc-950 border-zinc-800 text-sm text-white"
+                  value={importSearch}
+                  onChange={(e) => setImportSearch(e.target.value)}
+                />
+              </div>
+
+              {/* List of platform challenges */}
+              <div className="border border-zinc-800 rounded-xl max-h-56 overflow-y-auto bg-zinc-950 divide-y divide-zinc-900 text-left">
+                {importLoading ? (
+                  <div className="text-center py-8 text-zinc-500 text-xs">Загрузка базы задач...</div>
+                ) : allChallenges.length === 0 ? (
+                  <div className="text-center py-8 text-zinc-500 text-xs">Задачи не найдены</div>
+                ) : (
+                  allChallenges
+                    .filter((ch) => ch.name.toLowerCase().includes(importSearch.toLowerCase()))
+                    .map((ch) => {
+                      const isSelected = selectedImportChallengeId === ch.id.toString();
+                      return (
+                        <div
+                          key={ch.id}
+                          onClick={() => setSelectedImportChallengeId(ch.id.toString())}
+                          className={`p-3 text-xs flex justify-between items-center cursor-pointer transition-all ${
+                            isSelected
+                              ? 'bg-amber-500/10 text-amber-400 font-bold'
+                              : 'text-zinc-300 hover:bg-zinc-900/50'
+                          }`}
+                        >
+                          <div className="space-y-0.5">
+                            <div className="font-bold">{ch.name}</div>
+                            <div className="text-[10px] text-zinc-500">{ch.shortDescription}</div>
+                          </div>
+                          <Badge variant="outline" className="text-[9px] uppercase border-zinc-800 font-bold text-zinc-400">
+                            {ch.difficulty}
+                          </Badge>
+                        </div>
+                      );
+                    })
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5 text-left">
+                  <Label htmlFor="import-points" className="text-xs font-bold text-neutral-400 uppercase">
+                    Баллы за решение
+                  </Label>
                   <Input
-                    id="points"
+                    id="import-points"
                     type="number"
                     min="1"
-                    value={questionPoints}
-                    onChange={(e) => setQuestionPoints(e.target.value)}
-                    className="rounded-xl bg-zinc-950 border-zinc-800 text-white px-3 py-2.5 focus:border-amber-500 focus:ring-amber-500/20"
+                    value={importPoints}
+                    onChange={(e) => setImportPoints(e.target.value)}
+                    className="rounded-xl bg-zinc-950 border-zinc-800 text-white focus:border-amber-500"
                   />
                 </div>
-
-                {questionType === 'CODE_TASK' && (
-                  <div className="space-y-1.5">
-                    <Label htmlFor="language" className="text-xs font-bold text-neutral-400 uppercase">Язык программирования</Label>
-                    <select
-                      id="language"
-                      value={questionLanguage}
-                      onChange={(e) => setQuestionLanguage(e.target.value)}
-                      className="w-full rounded-xl bg-zinc-950 border-zinc-800 text-white px-3 py-2.5 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500/30"
-                    >
-                      <option value="PYTHON">Python</option>
-                      <option value="JAVASCRIPT">JavaScript</option>
-                      <option value="TYPESCRIPT">TypeScript</option>
-                      <option value="JAVA">Java</option>
-                      <option value="CPP">C++</option>
-                    </select>
-                  </div>
-                )}
-
-                {questionType === 'MULTIPLE_CHOICE' && (
-                  <div className="space-y-3">
-                    <Label className="text-xs font-bold text-neutral-400 uppercase">Варианты ответов</Label>
-                    {questionOptions.map((option, idx) => (
-                      <div key={idx} className="flex items-center gap-2">
-                        <input
-                          type="radio"
-                          name="correct"
-                          checked={parseInt(correctAnswerIndex) === idx}
-                          onChange={() => setCorrectAnswerIndex(idx.toString())}
-                          className="h-4 w-4 text-amber-500 border-zinc-800 bg-zinc-950 focus:ring-amber-500/20"
-                        />
-                        <Input
-                          value={option}
-                          onChange={(e) => {
-                            const newOptions = [...questionOptions];
-                            newOptions[idx] = e.target.value;
-                            setQuestionOptions(newOptions);
-                          }}
-                          placeholder={`Вариант ${idx + 1}`}
-                          className="rounded-xl bg-zinc-950 border-zinc-800 text-white px-3 py-2.5"
-                        />
-                      </div>
-                    ))}
-                    <p className="text-xs text-zinc-500">Выберите правильный ответ</p>
-                  </div>
-                )}
-
-                <div className="flex gap-2 pt-2">
-                  <Button onClick={saveQuestion} className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold border-0 rounded-xl">{editingQuestionId ? 'Сохранить' : 'Добавить'}</Button>
-                  <Button variant="outline" onClick={() => setIsAddingQuestion(false)} className="rounded-xl border-zinc-800 bg-zinc-955 hover:bg-zinc-800 hover:text-white">
-                    Отмена
-                  </Button>
-                </div>
               </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+
+              <div className="flex gap-2 pt-2">
+                <Button
+                  onClick={importChallenge}
+                  disabled={importLoading || !selectedImportChallengeId}
+                  className="bg-amber-600 hover:bg-amber-700 text-white font-bold border-0 rounded-xl px-5 flex-1"
+                >
+                  {importLoading ? 'Импорт...' : 'Импортировать в тест'}
+                </Button>
+                <Button
+                  variant="outline"
+                  disabled={importLoading}
+                  onClick={() => setIsImportOpen(false)}
+                  className="rounded-xl border-zinc-800 bg-zinc-955 hover:bg-zinc-800 hover:text-white"
+                >
+                  Отмена
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <div className="space-y-4">
           {exam.questions.length === 0 ? (
@@ -561,8 +773,8 @@ export default function ExamEditorPage() {
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-white">Управление тест-кейсами для задачи</DialogTitle>
           </DialogHeader>
-          {selectedQuestionForTestCases && (
-            <div className="space-y-6 text-sm mt-4">
+          {selectedQuestionForTestCases ? (
+            <div className="space-y-6 text-sm mt-4 font-normal">
               <div className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-4">
                 <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Задача:</p>
                 <p className="font-mono text-xs whitespace-pre-wrap text-zinc-300 leading-relaxed">{selectedQuestionForTestCases.content}</p>
@@ -616,7 +828,7 @@ export default function ExamEditorPage() {
                   <p className="text-xs text-neutral-500">У этой задачи еще нет тест-кейсов. Добавьте первый тест выше.</p>
                 ) : (
                   <div className="divide-y divide-zinc-800 rounded-xl border border-zinc-800 max-h-64 overflow-y-auto bg-zinc-950">
-                    {(selectedQuestionForTestCases.testCases as any[]).map((tc, idx) => (
+                    {selectedQuestionForTestCases.testCases.map((tc) => (
                       <div key={tc.id} className="p-3.5 flex items-start justify-between bg-zinc-900/30 text-xs gap-3">
                         <div className="flex-1 grid grid-cols-2 gap-4">
                           <div>
@@ -642,7 +854,7 @@ export default function ExamEditorPage() {
                 )}
               </div>
             </div>
-          )}
+          ) : null}
         </DialogContent>
       </Dialog>
     </div>

@@ -33,20 +33,13 @@ export function Comments({
   const { isTrackTitleVisible } = useTrackNavigationVisiblity();
   const [showComments, setShowComments] = useState(expanded);
   const commentContainerRef = useRef<HTMLDivElement>(null);
-  const {
-    data,
-    commentsMeta,
-    status,
-    changePage,
-    changeSorting,
-    deleteComment,
-    updateComment,
-  } = useComments({
-    rootType: type,
-    root,
-    initialPage: preselectedCommentMetadata?.page,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } as any);
+  const { data, commentsMeta, status, changePage, changeSorting, deleteComment, updateComment } =
+    useComments({
+      rootType: type,
+      root,
+      initialPage: preselectedCommentMetadata?.page,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
 
   const handleChangePage = (page: number) => {
     changePage(page);

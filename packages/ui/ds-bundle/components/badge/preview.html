@@ -1,0 +1,49 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Badge Component</title>
+    <style>
+      body {
+        font-family: system-ui;
+        margin: 20px;
+      }
+      .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-right: 8px;
+        margin-bottom: 8px;
+      }
+      .badge-default {
+        background: #f3f4f6;
+        color: #111827;
+      }
+      .badge-secondary {
+        background: #e5e7eb;
+        color: #1f2937;
+      }
+      .badge-destructive {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .badge-outline {
+        background: transparent;
+        border: 1px solid #d1d5db;
+        color: #374151;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h3>Badges</h3>
+      <span class="badge badge-default">Default</span>
+      <span class="badge badge-secondary">Secondary</span>
+      <span class="badge badge-destructive">Destructive</span>
+      <span class="badge badge-outline">Outline</span>
+    </div>
+  </body>
+</html>

@@ -7,8 +7,18 @@ import {
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
 import { UserAvatar } from '@repo/ui/components/user-avatar';
-import { ExternalLink, Palette, Play, Settings, Settings2, User } from '@repo/ui/icons';
+import {
+  Award,
+  ExternalLink,
+  Palette,
+  Play,
+  Settings,
+  Settings2,
+  Trophy,
+  User,
+} from '@repo/ui/icons';
 import Link from 'next/link';
+import { RoleTypes } from '@repo/db/types';
 import { Suspense } from 'react';
 import { auth } from '~/server/auth';
 import { isAdmin, isAdminOrModerator } from '~/utils/auth-guards';
@@ -43,10 +53,23 @@ export async function Navigation() {
   const isAdminOrMod = isAdminOrModerator(session);
   const isAdminRole = isAdmin(session);
 
+  const isTeacher = Boolean(
+    session?.user?.role?.includes(RoleTypes.TEACHER) ||
+      session?.user?.role?.includes(RoleTypes.ADMIN),
+  );
+  const isChampionshipManager = Boolean(
+    session?.user?.role?.includes(RoleTypes.CHAMPIONSHIP_MANAGER) ||
+      session?.user?.role?.includes(RoleTypes.ADMIN),
+  );
+
   const TopSectionLinks = (
     <>
       <NavLink title="Задачки" href="/explore" />
       <NavLink title="Алгоритмы" href="/algorithms" />
+      {isTeacher ? <NavLink title="Панель учителя" href="/teacher/exams" /> : null}
+      {isChampionshipManager ? (
+        <NavLink title="Панель чемпионатов" href={`${getAdminUrl()}/dashboard/championships`} />
+      ) : null}
     </>
   );
 
@@ -121,7 +144,13 @@ export async function Navigation() {
               </Suspense>
               {session ? <NotificationLink notificationCount={notificationCount} /> : null}
               {featureFlags?.enableLogin ? (
-                <LoginButton isAdminOrMod={isAdminOrMod} session={session} isAdmin={isAdminRole} />
+                <LoginButton
+                  isAdminOrMod={isAdminOrMod}
+                  session={session}
+                  isAdmin={isAdminRole}
+                  isTeacher={isTeacher}
+                  isChampionshipManager={isChampionshipManager}
+                />
               ) : null}
               <MobileNav>{NavLinks}</MobileNav>
             </div>
@@ -136,10 +165,14 @@ function LoginButton({
   isAdminOrMod,
   isAdmin,
   session,
+  isTeacher,
+  isChampionshipManager,
 }: {
   isAdminOrMod: boolean;
   isAdmin: boolean;
   session: Session | null;
+  isTeacher: boolean;
+  isChampionshipManager: boolean;
 }) {
   return session?.user ? (
     <DropdownMenu>
@@ -175,6 +208,22 @@ function LoginButton({
           </div>
           <ThemeButton />
         </div>
+        {isTeacher ? (
+          <Link className="block" href="/teacher/exams">
+            <DropdownMenuItem className="focus:bg-accent rounded-lg p-2 duration-300 focus:outline-none dark:hover:bg-neutral-700/50">
+              <Award className="mr-2 h-4 w-4" />
+              <span>Панель учителя</span>
+            </DropdownMenuItem>
+          </Link>
+        ) : null}
+        {isChampionshipManager ? (
+          <Link className="block" href={`${getAdminUrl()}/dashboard/championships`}>
+            <DropdownMenuItem className="focus:bg-accent rounded-lg p-2 duration-300 focus:outline-none dark:hover:bg-neutral-700/50">
+              <Trophy className="mr-2 h-4 w-4" />
+              <span>Панель чемпионатов</span>
+            </DropdownMenuItem>
+          </Link>
+        ) : null}
         {isAdminOrMod ? (
           <Link className="block" href={getAdminUrl()}>
             <DropdownMenuItem className="focus:bg-accent rounded-lg p-2 duration-300 focus:outline-none dark:hover:bg-neutral-700/50">

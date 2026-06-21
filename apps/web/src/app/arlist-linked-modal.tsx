@@ -26,9 +26,8 @@ export function ArlistLinkedModal() {
         <DialogHeader>
           <DialogTitle>Аккаунт привязан к Arlist ID</DialogTitle>
           <DialogDescription>
-            Теперь входи на сайт через кнопку «Войти с Arlist ID». Вход по email и паролю для
-            этого аккаунта больше не доступен. Мы также отправили письмо с подтверждением на твою
-            почту.
+            Теперь входи на сайт через кнопку «Войти с Arlist ID». Вход по email и паролю для этого
+            аккаунта больше не доступен. Мы также отправили письмо с подтверждением на твою почту.
           </DialogDescription>
         </DialogHeader>
       </DialogContent>

@@ -30,7 +30,8 @@ function ArlistButton({ redirectTo }: { redirectTo?: string }) {
           'inset 0 0 0 0.5px rgba(139,92,246,0.5), 0 0 12px -4px rgba(139,92,246,0.3)';
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLButtonElement).style.boxShadow = 'inset 0 0 0 1px rgba(255,255,255,0)';
+        (e.currentTarget as HTMLButtonElement).style.boxShadow =
+          'inset 0 0 0 1px rgba(255,255,255,0)';
       }}
     >
       <span
@@ -98,7 +99,9 @@ function LoginForm() {
         if (res.error === 'ArlistRequired') {
           setError('Этот аккаунт привязан к Arlist ID. Войди через кнопку выше.');
         } else {
-          setError('Неправильный email или пароль. Кот недоволен. Причиной также может быть что этот аккаунт привязан к Arlist ID. В таком случае войдите пожалуйста через кнопку выше. ');
+          setError(
+            'Неправильный email или пароль. Кот недоволен. Причиной также может быть что этот аккаунт привязан к Arlist ID. В таком случае войдите пожалуйста через кнопку выше. ',
+          );
         }
       } else {
         router.push('/');

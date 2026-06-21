@@ -77,10 +77,25 @@ export default function ExamResultsPage() {
   }, [sessionId, fetchResults]);
 
   const getScoreBadge = (percentage: number) => {
-    if (percentage >= 80) return { label: 'Отлично', color: 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-400' };
-    if (percentage >= 60) return { label: 'Хорошо', color: 'bg-amber-500/20 border border-amber-500/30 text-amber-400' };
-    if (percentage >= 40) return { label: 'Удовлетворительно', color: 'bg-yellow-500/20 border border-yellow-500/30 text-yellow-400' };
-    return { label: 'Неудовлетворительно', color: 'bg-red-500/20 border border-red-500/30 text-red-400' };
+    if (percentage >= 80)
+      return {
+        label: 'Отлично',
+        color: 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-400',
+      };
+    if (percentage >= 60)
+      return {
+        label: 'Хорошо',
+        color: 'bg-amber-500/20 border border-amber-500/30 text-amber-400',
+      };
+    if (percentage >= 40)
+      return {
+        label: 'Удовлетворительно',
+        color: 'bg-yellow-500/20 border border-yellow-500/30 text-yellow-400',
+      };
+    return {
+      label: 'Неудовлетворительно',
+      color: 'bg-red-500/20 border border-red-500/30 text-red-400',
+    };
   };
 
   if (loading) {
@@ -94,7 +109,7 @@ export default function ExamResultsPage() {
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-950 text-white">
-        <Card className="w-full max-w-md p-8 border-zinc-800 bg-zinc-900/40 text-center">
+        <Card className="w-full max-w-md border-zinc-800 bg-zinc-900/40 p-8 text-center">
           <div className="text-red-400">
             <p className="mb-2 text-lg font-semibold">Ошибка</p>
             <p>{error}</p>
@@ -107,7 +122,7 @@ export default function ExamResultsPage() {
   if (!data) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-950 text-white">
-        <Card className="w-full max-w-md p-8 border-zinc-800 bg-zinc-900/40 text-center">
+        <Card className="w-full max-w-md border-zinc-800 bg-zinc-900/40 p-8 text-center">
           <div>
             <p className="text-lg text-neutral-400">Результаты не найдены</p>
           </div>
@@ -120,51 +135,55 @@ export default function ExamResultsPage() {
   const badge = getScoreBadge(result.percentage);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-neutral-100 px-4 py-12">
+    <div className="min-h-screen bg-zinc-950 px-4 py-12 text-neutral-100">
       <Confetti />
       <div className="mx-auto max-w-2xl">
         {/* Success Header */}
         <div className="mb-8 text-center">
-          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
             <span className="text-3xl">✓</span>
           </div>
           <h1 className="mb-2 text-3xl font-extrabold text-white">Тест завершен!</h1>
-          <p className="text-neutral-400 text-sm">Спасибо за прохождение теста</p>
+          <p className="text-sm text-neutral-400">Спасибо за прохождение теста</p>
         </div>
 
         {/* Exam Info */}
-        <Card className="mb-8 border-amber-500/20 bg-gradient-to-r from-amber-500/10 to-orange-500/10 p-6 rounded-2xl shadow-xl">
+        <Card className="mb-8 rounded-2xl border-amber-500/20 bg-gradient-to-r from-amber-500/10 to-orange-500/10 p-6 shadow-xl">
           <h2 className="mb-2 text-xl font-bold text-white">{session.exam.title}</h2>
           {session.exam.description ? (
-            <p className="mb-4 text-neutral-300 text-sm">{session.exam.description}</p>
+            <p className="mb-4 text-sm text-neutral-300">{session.exam.description}</p>
           ) : null}
           <div className="grid grid-cols-2 gap-4 text-xs tracking-wide">
             <div>
-              <p className="text-neutral-500 font-bold uppercase">Студент</p>
-              <p className="font-semibold text-neutral-200 mt-1 text-sm">
+              <p className="font-bold uppercase text-neutral-500">Студент</p>
+              <p className="mt-1 text-sm font-semibold text-neutral-200">
                 {session.studentName} {session.studentSurname || ''}
               </p>
             </div>
             <div>
-              <p className="text-neutral-500 font-bold uppercase">Класс</p>
-              <p className="font-semibold text-neutral-200 mt-1 text-sm">{session.studentClass}</p>
+              <p className="font-bold uppercase text-neutral-500">Класс</p>
+              <p className="mt-1 text-sm font-semibold text-neutral-200">{session.studentClass}</p>
             </div>
           </div>
         </Card>
 
         {/* Results */}
-        <Card className="mb-8 p-8 border border-zinc-800 bg-zinc-900/40 backdrop-blur-md rounded-2xl shadow-xl">
+        <Card className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-8 shadow-xl backdrop-blur-md">
           <div className="mb-8 text-center">
-            <p className="mb-2 text-xs font-bold text-neutral-500 uppercase tracking-wider">Ваш результат</p>
+            <p className="mb-2 text-xs font-bold uppercase tracking-wider text-neutral-500">
+              Ваш результат
+            </p>
             <div className="mb-6 flex items-center justify-center gap-4">
-              <div className="text-6xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
+              <div className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-6xl font-black text-transparent">
                 {result.percentage.toFixed(1)}%
               </div>
               <div className="text-left">
                 <p className="text-2xl font-extrabold text-neutral-200">
                   {result.totalScore}/{result.maxScore}
                 </p>
-                <p className="text-xs text-neutral-500 font-bold uppercase tracking-wider">баллов</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+                  баллов
+                </p>
               </div>
             </div>
             <Badge className={`${badge.color} px-4 py-2 text-sm font-bold`}>{badge.label}</Badge>
@@ -173,12 +192,12 @@ export default function ExamResultsPage() {
           {/* Progress Bar */}
           <div className="mb-8">
             <div className="mb-2 flex justify-between text-xs text-neutral-400">
-              <span className="font-bold text-neutral-500 uppercase">Прогресс</span>
+              <span className="font-bold uppercase text-neutral-500">Прогресс</span>
               <span>
                 {result.totalScore}/{result.maxScore}
               </span>
             </div>
-            <div className="h-4 w-full rounded-full bg-zinc-950 border border-zinc-800 overflow-hidden">
+            <div className="h-4 w-full overflow-hidden rounded-full border border-zinc-800 bg-zinc-950">
               <div
                 className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-300"
                 style={{ width: `${result.percentage}%` }}
@@ -189,12 +208,14 @@ export default function ExamResultsPage() {
           {/* Status */}
           <div className="grid grid-cols-2 gap-4 border-t border-zinc-800 pt-4 text-xs">
             <div>
-              <p className="text-neutral-500 font-bold uppercase tracking-wider">Статус проверки</p>
-              <p className="font-semibold text-neutral-200 mt-1 text-sm">{result.isGraded ? 'Проверено' : 'На проверке'}</p>
+              <p className="font-bold uppercase tracking-wider text-neutral-500">Статус проверки</p>
+              <p className="mt-1 text-sm font-semibold text-neutral-200">
+                {result.isGraded ? 'Проверено' : 'На проверке'}
+              </p>
             </div>
             <div>
-              <p className="text-neutral-500 font-bold uppercase tracking-wider">Время отправки</p>
-              <p className="font-semibold text-neutral-200 mt-1 text-sm">
+              <p className="font-bold uppercase tracking-wider text-neutral-500">Время отправки</p>
+              <p className="mt-1 text-sm font-semibold text-neutral-200">
                 {new Date(session.submittedAt).toLocaleString('ru-RU')}
               </p>
             </div>
@@ -202,19 +223,23 @@ export default function ExamResultsPage() {
 
           {result.comments ? (
             <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-950 p-4">
-              <p className="mb-2 text-xs font-bold text-neutral-500 uppercase tracking-wider">Комментарии учителя</p>
-              <p className="text-neutral-300 text-sm">{result.comments}</p>
+              <p className="mb-2 text-xs font-bold uppercase tracking-wider text-neutral-500">
+                Комментарии учителя
+              </p>
+              <p className="text-sm text-neutral-300">{result.comments}</p>
             </div>
           ) : null}
         </Card>
 
         {/* Footer */}
         <div className="text-center">
-          <p className="mb-6 text-neutral-400 text-sm">Результаты автоматически сохранены и отправлены учителю.</p>
+          <p className="mb-6 text-sm text-neutral-400">
+            Результаты автоматически сохранены и отправлены учителю.
+          </p>
           <Button
             variant="outline"
             onClick={() => router.push('/')}
-            className="rounded-xl px-6 py-5 shadow-sm border-zinc-800 bg-zinc-900 text-neutral-300 hover:bg-zinc-800 hover:text-white"
+            className="rounded-xl border-zinc-800 bg-zinc-900 px-6 py-5 text-neutral-300 shadow-sm hover:bg-zinc-800 hover:text-white"
           >
             Вернуться на главную
           </Button>
