@@ -189,3 +189,41 @@ export async function getChampionshipParticipants(championshipId: string) {
     orderBy: { score: 'desc' },
   });
 }
+
+export async function removeParticipantFromChampionship(
+  championshipId: string,
+  participantId: string,
+) {
+  const session = await auth();
+  assertAdminOrChampionshipManager(session);
+
+  const result = await prisma.championshipParticipant.delete({
+    where: {
+      id: participantId,
+    },
+  });
+
+  revalidatePath('/dashboard/championships');
+  return result;
+}
+
+export async function updateParticipantScore(
+  championshipId: string,
+  participantId: string,
+  newScore: number,
+) {
+  const session = await auth();
+  assertAdminOrChampionshipManager(session);
+
+  const result = await prisma.championshipParticipant.update({
+    where: {
+      id: participantId,
+    },
+    data: {
+      score: newScore,
+    },
+  });
+
+  revalidatePath('/dashboard/championships');
+  return result;
+}

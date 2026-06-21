@@ -1,4 +1,9 @@
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@repo/ui/components/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@repo/ui/components/tooltip';
 import type { BadgeInfo } from '../user-info';
 import type { FC } from 'react';
 import { cn } from '@repo/ui/cn';
@@ -36,7 +41,11 @@ function BadgesStuff(props: { data: BadgeInfo[] }) {
           <Tooltip key={b.slug}>
             <TooltipTrigger asChild>
               <div className="group relative">
-                {Icon ? <Icon className="h-16 w-16" /> : <div className="bg-muted h-16 w-16 rounded-full" />}
+                {Icon ? (
+                  <Icon className="h-16 w-16" />
+                ) : (
+                  <div className="bg-muted h-16 w-16 rounded-full" />
+                )}
               </div>
             </TooltipTrigger>
             <TooltipContent>{b.name}</TooltipContent>

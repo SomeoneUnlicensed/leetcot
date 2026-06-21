@@ -8,7 +8,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 
 // Helper function to execute code with stdin
-function runCodeWithStdin(cmd: string, stdinText: string, timeoutMs = 5000): Promise<{ stdout: string; stderr: string; error?: any }> {
+function runCodeWithStdin(
+  cmd: string,
+  stdinText: string,
+  timeoutMs = 5000,
+): Promise<{ stdout: string; stderr: string; error?: unknown }> {
   return new Promise((resolve) => {
     const child = exec(cmd, { timeout: timeoutMs }, (error, stdout, stderr) => {
       resolve({ stdout, stderr, error });
@@ -131,7 +135,7 @@ export async function PUT(
       const gradedAnswers: {
         answerId: string;
         score: number;
-        testResults?: any;
+        testResults?: unknown;
       }[] = [];
 
       let codeTasksScore = 0;
@@ -178,7 +182,9 @@ export async function PUT(
           }
         } else if (question.type === 'CODE_TASK' && question.language) {
           const code = answer.answer;
-          const testCases = (question as any).testCases || [];
+          const testCases = (question as {
+            testCases?: { id: string; input: string | null; expectedOutput: string; timeout?: number }[];
+          }).testCases || [];
 
           if (testCases.length === 0) {
             // No test cases defined - 0 score
@@ -193,7 +199,7 @@ export async function PUT(
           // Run tests in sandbox
           const runId = uuidv4();
           const tmpDir = path.join(os.tmpdir(), `litkot-exam-run-${runId}`);
-          
+
           try {
             await mkdir(tmpDir, { recursive: true });
 
@@ -212,7 +218,11 @@ export async function PUT(
 
             for (const tc of testCases) {
               const start = Date.now();
-              const { stdout, stderr, error } = await runCodeWithStdin(cmd, tc.input || '', tc.timeout || 5000);
+              const { stdout, stderr, error } = await runCodeWithStdin(
+                cmd,
+                tc.input || '',
+                tc.timeout || 5000,
+              );
               const duration = Date.now() - start;
 
               const actualOutput = stdout ? stdout.trim() : '';
@@ -226,7 +236,7 @@ export async function PUT(
                 input: tc.input,
                 expected: expectedOutput,
                 actual: actualOutput,
-                error: stderr || (error ? error.message : null),
+                error: stderr || (error ? (error as Error).message : null),
                 duration,
                 passed,
               });
@@ -240,15 +250,16 @@ export async function PUT(
               score: calculatedScore,
               testResults: results,
             });
-          } catch (err: any) {
+          } catch (err) {
+            const errorMsg = err instanceof Error ? err.message : String(err);
             console.error('Code task evaluation failed:', err);
             gradedAnswers.push({
               answerId: answer.id,
               score: 0,
-              testResults: [{ error: `Ошибка тестирования: ${err.message}`, passed: false }],
+              testResults: [{ error: `Ошибка тестирования: ${errorMsg}`, passed: false }],
             });
           } finally {
-            await rm(tmpDir, { recursive: true, force: true }).catch(() => {});
+            await rm(tmpDir, { recursive: true, force: true }).catch(() => undefined);
           }
         }
       }
