@@ -70,7 +70,7 @@ export async function getSimilarChallenges(
 
     return challengesByDifficulty;
   } catch (e) {
-    console.log(e);
+    console.error(e);
     return [];
   }
 }
