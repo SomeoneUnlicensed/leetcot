@@ -61,3 +61,6 @@ yarn-error.log*
 .idea
 .pnpm-store
 playwright-report
+
+# local-only scripts with personal/server credentials, never commit
+tunnel-db.ps1
