@@ -318,6 +318,30 @@ export function CodePanel(props: CodePanelProps) {
 
   const debouncedHandleSubmit = useMemo(() => debounce(handleSubmit, 500), [handleSubmit]);
 
+  const handleCodeChange = useCallback(
+    (newCode: string) => {
+      if (!monacoInstance) return;
+      if (isPlayground) {
+        props.updatePlaygroundCodeLocalStorage?.(newCode ?? '');
+      }
+      setCode(newCode);
+      setLocalStorageCode(newCode);
+    },
+    [monacoInstance, isPlayground, props],
+  );
+
+  const handleTestsChange = useCallback(
+    (newTests: string) => {
+      if (isPlayground) {
+        props.updatePlaygroundTestsLocalStorage?.(newTests ?? '');
+        if (!monacoInstance) return;
+        setTests(newTests);
+        setLocalStorageCode(newTests);
+      }
+    },
+    [isPlayground, monacoInstance, props],
+  );
+
   useEffect(() => {
     const onSubmit = (e: KeyboardEvent) => {
       // If success screen is shown and user presses Enter, go to next challenge
@@ -611,23 +635,8 @@ export function CodePanel(props: CodePanelProps) {
           },
         }}
         onChange={{
-          tests: (code = '') => {
-            if (isPlayground) {
-              props.updatePlaygroundTestsLocalStorage?.(code ?? '');
-
-              if (!monacoInstance) return;
-              setTests(code);
-              setLocalStorageCode(code);
-            }
-          },
-          user: (code = '') => {
-            if (!monacoInstance) return;
-            if (isPlayground) {
-              props.updatePlaygroundCodeLocalStorage?.(code ?? '');
-            }
-            setCode(code);
-            setLocalStorageCode(code);
-          },
+          tests: handleTestsChange,
+          user: handleCodeChange,
         }}
       />
     </div>
