@@ -13,7 +13,7 @@ import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { useResetEditor } from './editor-hooks';
-import SplitEditor from './split-editor';
+import SplitEditor, { type SplitEditorProps } from './split-editor';
 import { useLocalStorage } from './useLocalStorage';
 
 export interface CodePanelProps {
@@ -318,6 +318,54 @@ export function CodePanel(props: CodePanelProps) {
 
   const debouncedHandleSubmit = useMemo(() => debounce(handleSubmit, 500), [handleSubmit]);
 
+  const handleCodeChange = useCallback(
+    (newCode?: string) => {
+      if (!monacoInstance) return;
+      const code = newCode ?? '';
+      if (isPlayground) {
+        props.updatePlaygroundCodeLocalStorage?.(code);
+      }
+      setCode(code);
+      setLocalStorageCode(code);
+    },
+    [monacoInstance, isPlayground, props],
+  );
+
+  const handleTestsChange = useCallback(
+    (newTests?: string) => {
+      if (!isPlayground) return;
+      const tests = newTests ?? '';
+      props.updatePlaygroundTestsLocalStorage?.(tests);
+      if (!monacoInstance) return;
+      setTests(tests);
+      setLocalStorageCode(tests);
+    },
+    [isPlayground, monacoInstance, props],
+  );
+
+  const handleUserEditorMount = useCallback<
+    NonNullable<NonNullable<SplitEditorProps['onMount']>['user']>
+  >((editor, monacoApi) => {
+    setMonacoInstance(monacoApi);
+    setUserEditorState(editor);
+  }, []);
+
+  const handleTestsEditorMount = useCallback<
+    NonNullable<NonNullable<SplitEditorProps['onMount']>['tests']>
+  >(() => {
+    /* noop: tests editor doesn't need parent state on mount */
+  }, []);
+
+  const onMount = useMemo(
+    () => ({ tests: handleTestsEditorMount, user: handleUserEditorMount }),
+    [handleTestsEditorMount, handleUserEditorMount],
+  );
+
+  const onChange = useMemo(
+    () => ({ tests: handleTestsChange, user: handleCodeChange }),
+    [handleTestsChange, handleCodeChange],
+  );
+
   useEffect(() => {
     const onSubmit = (e: KeyboardEvent) => {
       // If success screen is shown and user presses Enter, go to next challenge
@@ -601,34 +649,8 @@ export function CodePanel(props: CodePanelProps) {
         userCode={code}
         language={props.challenge.language.toLowerCase()}
         tsconfig={props.challenge.tsconfig}
-        onMount={{
-          tests: (_editor, _monaco) => {
-            console.log('Tests editor mounted');
-          },
-          user: (_editor, monaco) => {
-            setMonacoInstance(monaco);
-            setUserEditorState(_editor);
-          },
-        }}
-        onChange={{
-          tests: (code = '') => {
-            if (isPlayground) {
-              props.updatePlaygroundTestsLocalStorage?.(code ?? '');
-
-              if (!monacoInstance) return;
-              setTests(code);
-              setLocalStorageCode(code);
-            }
-          },
-          user: (code = '') => {
-            if (!monacoInstance) return;
-            if (isPlayground) {
-              props.updatePlaygroundCodeLocalStorage?.(code ?? '');
-            }
-            setCode(code);
-            setLocalStorageCode(code);
-          },
-        }}
+        onMount={onMount}
+        onChange={onChange}
       />
     </div>
   );
