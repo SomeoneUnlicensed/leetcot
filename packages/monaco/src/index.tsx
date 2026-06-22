@@ -319,24 +319,26 @@ export function CodePanel(props: CodePanelProps) {
   const debouncedHandleSubmit = useMemo(() => debounce(handleSubmit, 500), [handleSubmit]);
 
   const handleCodeChange = useCallback(
-    (newCode: string) => {
+    (newCode?: string) => {
       if (!monacoInstance) return;
+      const code = newCode ?? '';
       if (isPlayground) {
-        props.updatePlaygroundCodeLocalStorage?.(newCode ?? '');
+        props.updatePlaygroundCodeLocalStorage?.(code);
       }
-      setCode(newCode);
-      setLocalStorageCode(newCode);
+      setCode(code);
+      setLocalStorageCode(code);
     },
     [monacoInstance, isPlayground, props],
   );
 
   const handleTestsChange = useCallback(
-    (newTests: string) => {
+    (newTests?: string) => {
       if (isPlayground) {
-        props.updatePlaygroundTestsLocalStorage?.(newTests ?? '');
+        const tests = newTests ?? '';
+        props.updatePlaygroundTestsLocalStorage?.(tests);
         if (!monacoInstance) return;
-        setTests(newTests);
-        setLocalStorageCode(newTests);
+        setTests(tests);
+        setLocalStorageCode(tests);
       }
     },
     [isPlayground, monacoInstance, props],
