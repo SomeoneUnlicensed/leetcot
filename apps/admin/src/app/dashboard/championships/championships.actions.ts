@@ -13,7 +13,6 @@ export async function getChampionships() {
   return prisma.championship.findMany({
     orderBy: { startDate: 'desc' },
     include: {
-      company: true,
       _count: {
         select: {
           participants: true,
@@ -31,7 +30,6 @@ export async function createChampionship(data: {
   status?: string;
   startDate: Date;
   endDate: Date;
-  companyId?: string | null;
 }) {
   const session = await auth();
   assertAdminOrChampionshipManager(session);
@@ -52,7 +50,6 @@ export async function createChampionship(data: {
       status: data.status || 'DRAFT',
       startDate: data.startDate,
       endDate: data.endDate,
-      companyId: data.companyId || null,
     },
   });
 
@@ -69,7 +66,6 @@ export async function updateChampionship(
     status: string;
     startDate: Date;
     endDate: Date;
-    companyId?: string | null;
   },
 ) {
   const session = await auth();
@@ -84,7 +80,6 @@ export async function updateChampionship(
       status: data.status,
       startDate: data.startDate,
       endDate: data.endDate,
-      companyId: data.companyId || null,
     },
   });
 

@@ -80,7 +80,7 @@ export function TestCasesEditor({ form, hasTsErrors, setTsErrors }: TestCasesEdi
         name="tests"
         render={({ field }) => {
           return (
-            <FormItem className="flex-1">
+            <FormItem className="flex min-h-0 flex-1 flex-col">
               <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-300 dark:border-zinc-700">
                 <div className="sticky top-0 flex h-[40px] flex-row-reverse items-center border-b border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-[#1e1e1e]">
                   <SettingsButton />

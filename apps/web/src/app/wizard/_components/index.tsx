@@ -200,7 +200,7 @@ export function Wizard() {
       {rendered ? (
         <Form {...form}>
           <form
-            className={`container ${(currentStepId === '2' || currentStepId === '3') && 'h-full'}`}
+            className={`container ${currentStepId === '2' || currentStepId === '3' ? 'flex min-h-0 flex-1 flex-col' : ''}`}
           >
             {currentStepId === '1' && <ChallengeCardEditor form={form} />}
             {currentStepId === '2' && <DescriptionEditor form={form} />}

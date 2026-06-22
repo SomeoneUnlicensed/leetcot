@@ -7,6 +7,7 @@ import { Input } from '@repo/ui/components/input';
 import { Card } from '@repo/ui/components/card';
 import { Label } from '@repo/ui/components/label';
 
+// million-ignore
 export default function CreateExamPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');

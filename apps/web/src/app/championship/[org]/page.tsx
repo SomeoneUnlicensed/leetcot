@@ -48,7 +48,6 @@ export default async function OrgChampionshipPage({ params }: PageProps) {
   const championship = await prisma.championship.findUnique({
     where: { slug: org },
     include: {
-      company: true,
       challenges: {
         include: {
           challenge: {
@@ -108,11 +107,6 @@ export default async function OrgChampionshipPage({ params }: PageProps) {
               <span className="text-lg font-medium text-white">{championship.name}</span>
             </div>
             <div className="flex items-center gap-4">
-              {championship.company ? (
-                <span className="hidden text-sm text-zinc-500 md:block">
-                  {championship.company.name}
-                </span>
-              ) : null}
               <span
                 className={`rounded-full px-3 py-1 text-xs font-semibold ${
                   isActive
