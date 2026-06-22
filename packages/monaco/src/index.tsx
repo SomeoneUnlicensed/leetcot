@@ -318,32 +318,6 @@ export function CodePanel(props: CodePanelProps) {
 
   const debouncedHandleSubmit = useMemo(() => debounce(handleSubmit, 500), [handleSubmit]);
 
-  const handleCodeChange = useCallback(
-    (newCode?: string) => {
-      if (!monacoInstance) return;
-      const code = newCode ?? '';
-      if (isPlayground) {
-        props.updatePlaygroundCodeLocalStorage?.(code);
-      }
-      setCode(code);
-      setLocalStorageCode(code);
-    },
-    [monacoInstance, isPlayground, props],
-  );
-
-  const handleTestsChange = useCallback(
-    (newTests?: string) => {
-      if (isPlayground) {
-        const tests = newTests ?? '';
-        props.updatePlaygroundTestsLocalStorage?.(tests);
-        if (!monacoInstance) return;
-        setTests(tests);
-        setLocalStorageCode(tests);
-      }
-    },
-    [isPlayground, monacoInstance, props],
-  );
-
   useEffect(() => {
     const onSubmit = (e: KeyboardEvent) => {
       // If success screen is shown and user presses Enter, go to next challenge
@@ -606,7 +580,7 @@ export function CodePanel(props: CodePanelProps) {
 
           <div className="absolute bottom-6 left-0 right-0 flex select-none items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider text-zinc-500/80">
             <img
-              src="https://arlist.ru/icon.svg"
+              src="https://arlist.tech/icon.svg"
               alt="Arlist Logo"
               className="h-4 w-4 drop-shadow-[0_0_12px_rgba(168,85,247,0.8)]"
             />
@@ -637,8 +611,23 @@ export function CodePanel(props: CodePanelProps) {
           },
         }}
         onChange={{
-          tests: handleTestsChange,
-          user: handleCodeChange,
+          tests: (code = '') => {
+            if (isPlayground) {
+              props.updatePlaygroundTestsLocalStorage?.(code ?? '');
+
+              if (!monacoInstance) return;
+              setTests(code);
+              setLocalStorageCode(code);
+            }
+          },
+          user: (code = '') => {
+            if (!monacoInstance) return;
+            if (isPlayground) {
+              props.updatePlaygroundCodeLocalStorage?.(code ?? '');
+            }
+            setCode(code);
+            setLocalStorageCode(code);
+          },
         }}
       />
     </div>
