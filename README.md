@@ -1,54 +1,30 @@
-```text
- /\_/\\
-( o.o )
- > ^ <
-```
-
 # ЛитКот (LitKot)
 
-ЛитКот — это проект для практики и прокачки навыков программирования через задачи, курсы и интерактивные упражнения.
+A coding practice platform: programming challenges, courses, and interactive exercises.
 
-## Что внутри
+This is proprietary software. See [LICENSE](./LICENSE).
 
-- задачи по разным языкам программирования;
-- учебные курсы с постепенным усложнением;
-- веб-интерфейс и вспомогательные сервисы в монорепозитории.
+## Local development
 
-## Рекламные и информационные блоки
+### Option A: Docker Compose
 
-В проекте реализована система гибких рекламных и информационных блоков (Promo Blocks).
-
-### Управление видимостью
-
-Все блоки управляются глобально в файле `apps/web/src/components/promo-block.tsx`:
-
-- `ENABLE_PROMO_BLOCKS = true` — все плейсхолдеры (ИНФОРМАЦИЯ) отображаются.
-- `ENABLE_PROMO_BLOCKS = false` — все блоки скрыты (текущее состояние).
-
-### Использование для анонсов
-
-Если нужно показать важную информацию (например, "Скоро новая функция!") даже при выключенной рекламе, используйте проп `forceShow`:
-
-```tsx
-<PromoBlock variant="compact" forceShow>
-  🚀 Скоро новая функция!
-</PromoBlock>
+```sh
+docker compose up -d
 ```
 
-### Доступные варианты
+This starts Postgres, Redis, pgAdmin (`localhost:5050`), and the app (`localhost:3002`).
 
-- `banner` — сверху над навигацией.
-- `in-feed` — в ленте между разделами.
-- `compact` — маленькая панелька для точечных уведомлений.
+### Option B: Dev Container
 
-## Разработка
+Open the repo in VS Code (or any [Dev Containers](https://containers.dev/)-compatible editor) and reopen in container — see [`.devcontainer/devcontainer.json`](./.devcontainer/devcontainer.json).
 
-Инструкции по локальному запуску и разработке находятся в файле [`LOCAL.md`](/LOCAL.md).
+### Then
 
-## Контакты
+```sh
+pnpm install
+pnpm db:push
+pnpm db:seed
+pnpm dev
+```
 
-- Twitter/X: [@leetcot](https://twitter.com/leetcot)
-
-## Лицензия
-
-Проект распространяется по проприетарной лицензии. Подробности: [`LICENSE`](./LICENSE).
+For full setup details (env vars, OAuth, file uploads, testing), see [`LOCAL.md`](./LOCAL.md).

@@ -1,9 +1,5 @@
 # Local Setup
 
-[![Join the Trash Discord](https://discordapp.com/api/guilds/796594544980000808/widget.png?style=banner2)][trash-discord]
-
-[trash-discord]: https://discord.gg/WjZhvVbFHM
-
 To contribute you will first need to fork the repo and make some adjustments to
 get it up and running on your local machine. Below are the steps to follow for you to get ЛитКот to run on your local machine.
 
@@ -212,7 +208,7 @@ This tends to resolve the issue as it entirely destroys and rebuilds + reseeds t
   <summary>How do I use the `@vercel/toolbar` locally?</summary>
   If you have access to the vercel project then you can run `vercel link` (make sure you have the vercel CLI).
 
-Follow the interactive CLI to link it to the Trash Company/leetcot project.
+Follow the interactive CLI to link it to the leetcot project.
 
 From there on out you should be able to read and make comments while on local host for that branch.
 
