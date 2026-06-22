@@ -99,6 +99,7 @@ interface SessionData {
   }[];
 }
 
+// million-ignore
 export default function ExamSessionPage() {
   const params = useParams();
   const shareToken = params.shareToken as string;
