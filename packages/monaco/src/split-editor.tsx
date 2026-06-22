@@ -194,6 +194,11 @@ export default function SplitEditor({
 
   const _debouncedUserCodeAta = useRef(debounce((code: string) => ata(code), 1000)).current;
   const _debouncedTestCodeAta = useRef(debounce((code: string) => ata(code), 1000)).current;
+  const debouncedTypeCheck = useRef(
+    debounce((m: typeof monaco_editor) => {
+      typeCheck(m);
+    }, 300),
+  ).current;
 
   useEffect(() => {
     const resizerRef = resizer.current;
@@ -340,14 +345,18 @@ export default function SplitEditor({
       testModel.setValue(tests);
     }
     onMount?.tests?.(userEditorState, monaco);
-
-    return () => {
-      const model = monaco.editor.getModel(testUri);
-      if (model) {
-        model.dispose();
-      }
-    };
   }, [monaco, userEditorState, tests, onMount]);
+
+  // Dispose the tests model only when the editor itself goes away, not on every
+  // `tests`/`onMount` change above (that previously tore down + rebuilt the model
+  // on every keystroke whenever `onMount` was a fresh object each render).
+  useEffect(() => {
+    if (!monaco) return;
+    return () => {
+      const model = monaco.editor.getModel(monaco.Uri.parse(TESTS_PATH));
+      model?.dispose();
+    };
+  }, [monaco]);
 
   return (
     <div className={clsx('flex h-[calc(100%-40px)] flex-col', className)} ref={wrapper}>
@@ -471,7 +480,6 @@ export default function SplitEditor({
               }
             }
           }}
-          defaultValue={userCode}
           value={userCode}
           onValidate={onValidate?.user}
           onChange={(value, changeEvent) => {
@@ -506,7 +514,7 @@ export default function SplitEditor({
 
             debouncedRefreshInlayHints(monaco!);
             if (language === 'typescript' || language === 'javascript') {
-              typeCheck(monaco!);
+              debouncedTypeCheck(monaco!);
             }
           }}
         />

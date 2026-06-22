@@ -143,8 +143,14 @@ export default function ExamSessionPage() {
     setSelectedTestCaseIdx(0);
     setTestPanelTab('tests');
     setUserEditorState(null);
-    editorCodeRef.current = currentAnswer;
-  }, [currentQuestionIndex, currentAnswer]);
+    const question = session?.exam.questions[currentQuestionIndex];
+    if (question) {
+      editorCodeRef.current =
+        answers[question.id] ||
+        generateBoilerplate(question.language, question.functionName, question.functionParams);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentQuestionIndex, session]);
 
   const handleRunCode = async () => {
     if (!session?.exam.questions) return;
