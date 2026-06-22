@@ -530,7 +530,8 @@ export default function ExamSessionPage() {
               <div className="flex min-h-[300px] w-full flex-1 flex-col overflow-hidden">
                 <div className="relative w-full flex-1 overflow-hidden">
                   <CodeEditor
-                    value={currentAnswer}
+                    key={currentQuestion.id}
+                    defaultValue={currentAnswer}
                     onChange={(val) => saveAnswer(currentQuestion.id, val || '')}
                     language={currentQuestion.language?.toLowerCase()}
                     onMount={(editor) => {

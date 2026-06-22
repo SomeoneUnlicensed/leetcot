@@ -87,9 +87,10 @@ export function TestCasesEditor({ form, hasTsErrors, setTsErrors }: TestCasesEdi
                 </div>
                 <div className="w-full flex-1">
                   <CodeEditor
+                    key="wizard-tests"
+                    defaultValue={field.value}
                     onChange={field.onChange as OnChange}
                     onMount={onMount}
-                    value={field.value}
                   />
                 </div>
                 <div className="sticky bottom-0 flex items-center justify-end p-2 dark:bg-[#1e1e1e]">
