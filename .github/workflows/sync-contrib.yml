@@ -1,0 +1,19 @@
+name: Sync main to leetcot-contrib
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push mirror to leetcot-contrib
+        run: |
+          git remote add contrib "https://x-access-token:${{ secrets.CONTRIB_SYNC_TOKEN }}@github.com/SomeoneUnlicensed/leetcot-contrib.git"
+          git push contrib HEAD:main --force
