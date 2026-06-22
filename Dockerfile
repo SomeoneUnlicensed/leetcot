@@ -1,10 +1,8 @@
-# --- Stage 1: Base ---
 FROM node:24-alpine AS base
 RUN apk add --no-cache openssl docker-cli && \
     npm install -g pnpm@10.11.0 dotenv-cli
 WORKDIR /app
 
-# --- Stage 2: Dependencies ---
 FROM base AS deps
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json turbo.json ./
 COPY apps/admin/package.json ./apps/admin/package.json
@@ -26,31 +24,23 @@ COPY tooling/scripts/package.json ./tooling/scripts/package.json
 COPY patches ./patches
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm config set store-dir /pnpm/store && pnpm install
 
-# --- Stage 3: Build ---
 FROM deps AS builder
 COPY . .
 ENV DATABASE_URL="postgresql://postgres:dev@localhost:5432/leetcot?schema=public"
-# We need environment variables at build time for Next.js in some cases, 
-# but usually it's better to provide them via .env during build if needed.
-# Limit concurrency to 1 to prevent OOM kills in Docker
 ENV NODE_OPTIONS="--max-old-space-size=3072"
 RUN npx turbo run build --concurrency=1
 
-# Remove source maps, type defs, and Next.js webpack cache to shrink the image
 RUN find /app/node_modules -name "*.map" -delete && \
     find /app/node_modules -name "*.d.ts" -delete && \
     find /app/node_modules/.cache -mindepth 1 -delete 2>/dev/null || true && \
     find /app -path "*/.next/cache" -type d -exec rm -rf {} + 2>/dev/null || true
 
-# --- Stage 4: Production ---
 FROM base AS runner
 ENV NODE_ENV=production
 COPY --from=builder /app ./
 
-# Expose ports for web, admin, aot
 EXPOSE 3000 3001 3003
 
-# Production entrypoint
 RUN printf '#!/bin/sh\necho "Applying database migrations..."\npnpm --filter @repo/db exec prisma migrate deploy\necho "Starting LeetCot in production mode..."\npnpm start\n' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["/bin/sh", "/app/entrypoint.sh"]
