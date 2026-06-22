@@ -7,16 +7,7 @@ import {
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
 import { UserAvatar } from '@repo/ui/components/user-avatar';
-import {
-  Award,
-  ExternalLink,
-  Palette,
-  Play,
-  Settings,
-  Settings2,
-  Trophy,
-  User,
-} from '@repo/ui/icons';
+import { Award, ExternalLink, Play, Settings, Settings2, Trophy, User } from '@repo/ui/icons';
 import Link from 'next/link';
 import { RoleTypes } from '@repo/db/types';
 import { Suspense } from 'react';
@@ -32,7 +23,6 @@ import { getNotificationCount } from './navigation.actions';
 import { NotificationLink } from './notification-link';
 import { SignOutLink } from './signout-link';
 import { SkipToCodeEditor } from './skip-to-code-editor';
-import { ThemeButton } from './theme-button';
 
 export function getAdminUrl() {
   // reference for production mode
@@ -77,22 +67,12 @@ export async function Navigation() {
       <div className="hidden items-center gap-4 md:flex">{TopSectionLinks}</div>
       <div className="flex flex-col gap-5 pl-2 md:hidden">
         {TopSectionLinks}
-        {!session?.user && (
-          <div className="flex items-center gap-2">
-            <span>Тема</span>
-            <ThemeButton />
-          </div>
-        )}
 
         {session?.user ? (
           <>
             <hr />
             <NavLink title="Профиль" href={`/@${session.user.name}`} />
             <NavLink title="Настройки" href={`/@${session.user.name}/edit`} />
-            <div className="flex items-center gap-2">
-              <span>Тема</span>
-              <ThemeButton />
-            </div>
             {isAdminOrMod ? <NavLink title="Админ" href={getAdminUrl()} /> : null}
             {isAdminOrMod ? <NavLink title="Песочница задач" href="/challenge-playground" /> : null}
             {isAdminRole ? <NavLink title="Сокращатель ссылок" href="/share" /> : null}
@@ -200,13 +180,6 @@ function LoginButton({
           </DropdownMenuItem>
         </Link>
         <DropdownMenuSeparator />
-        <div className="flex items-center justify-between rounded-lg px-2 py-0.5 text-sm ">
-          <div className="flex items-center">
-            <Palette className="mr-2 h-4 w-4" />
-            <span>Тема</span>
-          </div>
-          <ThemeButton />
-        </div>
         {isTeacher ? (
           <Link className="block" href="/teacher/exams">
             <DropdownMenuItem className="focus:bg-accent rounded-lg p-2 duration-300 focus:outline-none dark:hover:bg-neutral-700/50">

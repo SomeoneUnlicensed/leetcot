@@ -7,10 +7,9 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
-import { Loader2, LogIn, Moon, Sun, User } from '@repo/ui/icons';
-import { useTheme } from 'next-themes';
+import { Loader2, LogIn, User } from '@repo/ui/icons';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export function Navigation() {
   return (
@@ -29,40 +28,12 @@ export function Navigation() {
           </div>
           <div className="flex">
             <div className="flex items-center justify-end gap-2">
-              <ThemeButton />
               <LoginButton />
             </div>
           </div>
         </div>
       </nav>
     </header>
-  );
-}
-
-function ThemeButton() {
-  const [mounted, setMounted] = useState(false);
-  const { setTheme, resolvedTheme } = useTheme();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  return (
-    <>
-      {mounted ? (
-        <button
-          aria-label="theme button"
-          className="focus:bg-accent rounded-lg p-2 duration-300 focus:outline-none"
-          onClick={() => {
-            setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
-          }}
-          type="button"
-        >
-          {resolvedTheme === 'dark' && <Moon aria-hidden="true" className="h-5 w-5" />}
-          {resolvedTheme === 'light' && <Sun aria-hidden="true" className="h-5 w-5" />}
-        </button>
-      ) : null}
-    </>
   );
 }
 
