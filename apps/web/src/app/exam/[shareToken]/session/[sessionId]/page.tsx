@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@repo/ui/components/button';
 import { Card } from '@repo/ui/components/card';
@@ -134,6 +134,7 @@ export default function ExamSessionPage() {
   const [selectedTestCaseIdx, setSelectedTestCaseIdx] = useState(0);
   const [userEditorState, setUserEditorState] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const { settings } = useEditorSettingsStore();
+  const editorCodeRef = useRef<string>('');
 
   useEffect(() => {
     setCheckingState('editor');
@@ -142,14 +143,15 @@ export default function ExamSessionPage() {
     setSelectedTestCaseIdx(0);
     setTestPanelTab('tests');
     setUserEditorState(null);
-  }, [currentQuestionIndex]);
+    editorCodeRef.current = currentAnswer;
+  }, [currentQuestionIndex, currentAnswer]);
 
   const handleRunCode = async () => {
     if (!session?.exam.questions) return;
     const currentQuestion = session.exam.questions[currentQuestionIndex];
     if (!currentQuestion) return;
 
-    const code = answers[currentQuestion.id] || '';
+    const code = editorCodeRef.current || '';
     if (!code.trim()) {
       setRunError('Пожалуйста, напишите какой-нибудь код перед проверкой.');
       setRunResults(null);
@@ -243,7 +245,7 @@ export default function ExamSessionPage() {
     void fetchSession();
   }, [sessionId, fetchSession]);
 
-  const saveAnswer = async (questionId: string, answer: string) => {
+  const saveAnswer = useCallback(async (questionId: string, answer: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
 
     try {
@@ -261,7 +263,15 @@ export default function ExamSessionPage() {
     } catch (err) {
       console.error('Error saving answer:', err);
     }
-  };
+  }, [sessionId]);
+
+  const handleCodeChange = useCallback((val: string | undefined) => {
+    const code = val || '';
+    editorCodeRef.current = code;
+    if (session?.exam.questions[currentQuestionIndex]) {
+      saveAnswer(session.exam.questions[currentQuestionIndex].id, code);
+    }
+  }, [currentQuestionIndex, saveAnswer, session]);
 
   const handleSubmit = async () => {
     try {
@@ -532,7 +542,7 @@ export default function ExamSessionPage() {
                   <CodeEditor
                     key={currentQuestion.id}
                     defaultValue={currentAnswer}
-                    onChange={(val) => saveAnswer(currentQuestion.id, val || '')}
+                    onChange={handleCodeChange}
                     language={currentQuestion.language?.toLowerCase()}
                     onMount={(editor) => {
                       setUserEditorState(editor);
