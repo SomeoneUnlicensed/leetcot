@@ -158,9 +158,6 @@ model User {
   createdExams ExamSession[] @relation("exam_student")
   teacherExams Exam[] @relation("exam_teacher")
 
-  companyId            String?
-  company              Company?   @relation(fields: [companyId], references: [id])
-  companyRole          String?    // "ADMIN" | "EMPLOYEE"
   championships        ChampionshipParticipant[]
 }
 
@@ -204,6 +201,9 @@ enum QuestionType {
   MULTIPLE_CHOICE
   CODE_TASK
   SHORT_ANSWER
+  MATCHING
+  FILL_IN_BLANK
+  ORDERING
 }
 
 enum ExamStatus {
@@ -591,10 +591,23 @@ model ExamQuestion {
   points          Int              @default(1)
   /// Programming language (for code tasks)
   language        Language?
+  /// For code tasks checked by calling a function (e.g. "max_depth"). When set, test cases
+  /// are evaluated by calling this function with args from TestCase.input instead of stdin.
+  functionName    String?
+  /// For function-based code tasks: JSON array of parameter names (e.g. ["root"])
+  functionParams  Json?
   /// For multiple choice questions: JSON array of options
   options         Json?
   /// For multiple choice questions: index of correct answer(s)
   correctAnswers  Json?
+  /// For short-answer questions: reference answer, compared case/whitespace-insensitively
+  correctAnswerText String?
+  /// For matching questions: JSON array of {left, right} pairs
+  matchingPairs   Json?
+  /// For fill-in-the-blank questions: JSON array of correct answers, one per blank in order
+  blankAnswers    Json?
+  /// For ordering questions: JSON array of items in correct order
+  orderingItems   Json?
   /// Test cases for code tasks
   testCases       TestCase[]
   /// The exam this question belongs to
@@ -733,17 +746,6 @@ model ShortURL {
   @@index([shortUrlSlug])
 }
 
-model Company {
-  id        String   @id @default(uuid())
-  name      String
-  domain    String   @unique
-  status    String   @default("ACTIVE")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  employees User[]
-  championships Championship[]
-}
-
 model Championship {
   id          String   @id @default(uuid())
   name        String
@@ -752,12 +754,8 @@ model Championship {
   status      String   @default("DRAFT") // DRAFT, ACTIVE, PAST
   startDate   DateTime
   endDate     DateTime
-  companyId   String?
-  company     Company? @relation(fields: [companyId], references: [id])
   challenges  ChampionshipChallenge[]
   participants ChampionshipParticipant[]
-
-  @@index([companyId])
 }
 
 model ChampionshipParticipant {
