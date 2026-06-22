@@ -20,8 +20,22 @@ export async function POST(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: 'Котик не найден.' }, { status: 404 });
     }
 
-    const { examId, type, content, order, points, language, options, correctAnswers } =
-      await req.json();
+    const {
+      examId,
+      type,
+      content,
+      order,
+      points,
+      language,
+      options,
+      correctAnswers,
+      functionName,
+      functionParams,
+      correctAnswerText,
+      matchingPairs,
+      blankAnswers,
+      orderingItems,
+    } = await req.json();
 
     if (!examId || !type || !content) {
       return NextResponse.json(
@@ -50,6 +64,12 @@ export async function POST(req: Request): Promise<NextResponse> {
         language: language || undefined,
         options: options || null,
         correctAnswers: correctAnswers || null,
+        functionName: functionName || null,
+        functionParams: functionParams || null,
+        correctAnswerText: correctAnswerText || null,
+        matchingPairs: matchingPairs || null,
+        blankAnswers: blankAnswers || null,
+        orderingItems: orderingItems || null,
       },
     });
 

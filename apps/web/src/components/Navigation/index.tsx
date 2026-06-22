@@ -35,8 +35,8 @@ import { SkipToCodeEditor } from './skip-to-code-editor';
 import { ThemeButton } from './theme-button';
 
 export function getAdminUrl() {
-  // reference for vercel.com
-  if (process.env.VERCEL_URL) {
+  // reference for production mode
+  if (process.env.NODE_ENV === 'production') {
     return `https://admin.leetcot.ru`;
   }
 
@@ -61,7 +61,6 @@ export async function Navigation() {
     session?.user?.role?.includes(RoleTypes.CHAMPIONSHIP_MANAGER) ||
       session?.user?.role?.includes(RoleTypes.ADMIN),
   );
-
   const TopSectionLinks = (
     <>
       <NavLink title="Задачки" href="/explore" />

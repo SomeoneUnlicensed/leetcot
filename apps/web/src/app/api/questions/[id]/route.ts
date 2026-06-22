@@ -40,7 +40,21 @@ export async function PUT(
       );
     }
 
-    const { type, content, order, points, language, options, correctAnswers } = await req.json();
+    const {
+      type,
+      content,
+      order,
+      points,
+      language,
+      options,
+      correctAnswers,
+      functionName,
+      functionParams,
+      correctAnswerText,
+      matchingPairs,
+      blankAnswers,
+      orderingItems,
+    } = await req.json();
 
     const updatedQuestion = await prisma.examQuestion.update({
       where: { id: params.id },
@@ -52,6 +66,12 @@ export async function PUT(
         ...(language !== undefined && { language }),
         ...(options !== undefined && { options }),
         ...(correctAnswers !== undefined && { correctAnswers }),
+        ...(functionName !== undefined && { functionName }),
+        ...(functionParams !== undefined && { functionParams }),
+        ...(correctAnswerText !== undefined && { correctAnswerText }),
+        ...(matchingPairs !== undefined && { matchingPairs }),
+        ...(blankAnswers !== undefined && { blankAnswers }),
+        ...(orderingItems !== undefined && { orderingItems }),
       },
     });
 

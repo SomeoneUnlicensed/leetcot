@@ -18,10 +18,6 @@ const sidebarNavItems = [
     href: '/dashboard/tracks',
   },
   {
-    title: 'Бизнес',
-    href: '/dashboard/business',
-  },
-  {
     title: 'Чемпионаты',
     href: '/dashboard/championships',
   },

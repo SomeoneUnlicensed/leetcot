@@ -44,8 +44,8 @@ services:
       - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-dev}@db:5432/leetcot?schema=public
       - REDIS_URL=redis://redis:6379
       - NODE_ENV=${NODE_ENV:-production}
-      - AUTH_URL=https://leetcot.ru
-      - NEXTAUTH_URL=https://leetcot.ru
+      - AUTH_URL=${AUTH_URL:-http://localhost:3002}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3002}
     depends_on:
       db:
         condition: service_healthy

@@ -1,5 +1,6 @@
 'use client';
 import { useSession } from '@repo/auth/react';
+import { CheckCircle } from '@repo/ui/icons';
 import { CodePanel } from '@repo/monaco';
 import { useState } from 'react';
 import { Confetti } from '~/components/confetti';
@@ -83,7 +84,14 @@ export function RightWrapper({
           }}
           className="flex items-center gap-2 rounded-xl bg-emerald-600 px-8 py-3 text-sm font-extrabold text-white shadow-lg transition-all hover:bg-emerald-700 hover:shadow-emerald-950/20 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <span>{!session?.user ? 'Войдите, чтобы отметить' : 'Отметить как выполненное 🐾'}</span>
+          {!session?.user ? (
+            <span>Войдите, чтобы отметить</span>
+          ) : (
+            <>
+              <CheckCircle className="h-4 w-4" />
+              <span>Отметить как выполненное</span>
+            </>
+          )}
         </button>
       </div>
     );

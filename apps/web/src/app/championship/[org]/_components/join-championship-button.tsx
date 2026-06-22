@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@repo/ui/components/button';
+import { Trophy } from '@repo/ui/icons';
 
 interface JoinChampionshipButtonProps {
   championshipId: string;
@@ -41,9 +42,15 @@ export function JoinChampionshipButton({ championshipId }: JoinChampionshipButto
         id="join-championship-btn"
         onClick={handleJoin}
         disabled={loading}
-        className="bg-amber-500 px-8 py-3 text-lg font-bold text-black hover:bg-amber-400"
+        className="flex items-center gap-2 bg-amber-500 px-8 py-3 text-lg font-bold text-black hover:bg-amber-400"
       >
-        {loading ? 'Присоединяемся...' : '🏆 Принять участие'}
+        {loading ? (
+          'Присоединяемся...'
+        ) : (
+          <>
+            <Trophy className="h-5 w-5" /> Принять участие
+          </>
+        )}
       </Button>
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
     </div>

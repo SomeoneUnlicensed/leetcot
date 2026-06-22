@@ -48,6 +48,12 @@ async function main() {
       create: { role: 'USER' },
     });
 
+    const teacherRole = await prisma.role.upsert({
+      where: { role: 'TEACHER' },
+      update: {},
+      create: { role: 'TEACHER' },
+    });
+
     // 2. Создание админа
     const adminUser = await prisma.user.upsert({
       where: { id: TYPEHERO_ID },
@@ -70,6 +76,33 @@ async function main() {
     });
 
     console.log(`Админ создан: ${adminEmail}`);
+
+    // Создание учителя
+    const teacherEmail = 'teacher@leetcot.ru';
+    const teacherPassword = 'teacherpass123';
+    const TEACHER_USER_ID = uuidByString(teacherEmail);
+
+    await prisma.user.upsert({
+      where: { id: TEACHER_USER_ID },
+      update: {
+        email: teacherEmail,
+        password: bcrypt.hashSync(teacherPassword, 10),
+        roles: {
+          connect: [{ id: teacherRole.id }, { id: userRole.id }],
+        },
+      },
+      create: {
+        id: TEACHER_USER_ID,
+        email: teacherEmail,
+        name: 'Учитель ЛитКот',
+        password: bcrypt.hashSync(teacherPassword, 10),
+        roles: {
+          connect: [{ id: teacherRole.id }, { id: userRole.id }],
+        },
+      },
+    });
+
+    console.log(`Учитель создан: ${teacherEmail} с паролем: ${teacherPassword}`);
 
     // 3. Импорт задач
     const localChallenges = await ingestChallenges(challengePath);

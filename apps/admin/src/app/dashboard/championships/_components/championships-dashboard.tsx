@@ -6,7 +6,17 @@ import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
 import { Textarea } from '@repo/ui/components/textarea';
 import { Badge } from '@repo/ui/components/badge';
-import { Trophy, Plus, Calendar, SearchIcon, Trash2 } from '@repo/ui/icons';
+import {
+  Trophy,
+  Plus,
+  Calendar,
+  SearchIcon,
+  Trash2,
+  Target,
+  Users,
+  Medal,
+  ExternalLink,
+} from '@repo/ui/icons';
 import { useToast } from '@repo/ui/components/use-toast';
 
 import {
@@ -22,17 +32,10 @@ import {
   removeParticipantFromChampionship,
   updateParticipantScore,
 } from '../championships.actions';
-import { getCompanies } from '../../business/business.actions';
 
 function errMsg(err: unknown, fallback: string): string {
   if (err instanceof Error) return err.message;
   return fallback;
-}
-
-interface Company {
-  id: string;
-  name: string;
-  domain: string;
 }
 
 interface Championship {
@@ -43,8 +46,6 @@ interface Championship {
   status: string;
   startDate: Date;
   endDate: Date;
-  companyId: string | null;
-  company?: Company | null;
   _count?: {
     participants: number;
     challenges: number;
@@ -70,7 +71,6 @@ interface Participant {
 export function ChampionshipDashboard() {
   const { toast } = useToast();
   const [championships, setChampionships] = useState<Championship[]>([]);
-  const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Search and status filters
@@ -97,7 +97,6 @@ export function ChampionshipDashboard() {
   const [formStatus, setFormStatus] = useState('DRAFT');
   const [formStartDate, setFormStartDate] = useState('');
   const [formEndDate, setFormEndDate] = useState('');
-  const [formCompanyId, setFormCompanyId] = useState('');
 
   // Challenge addition state
   const [selectedChallengeId, setSelectedChallengeId] = useState('');
@@ -123,8 +122,6 @@ export function ChampionshipDashboard() {
       setLoading(true);
       const chData = await getChampionships();
       setChampionships(chData as Championship[]);
-      const compData = await getCompanies();
-      setCompanies(compData);
     } catch (err) {
       toast({
         variant: 'destructive',
@@ -178,7 +175,6 @@ export function ChampionshipDashboard() {
       setFormStatus(selectedChampionship.status);
       setFormStartDate(new Date(selectedChampionship.startDate).toISOString().slice(0, 16));
       setFormEndDate(new Date(selectedChampionship.endDate).toISOString().slice(0, 16));
-      setFormCompanyId(selectedChampionship.companyId || '');
       setEditingParticipantId(null);
     }
   }, [selectedChampionshipId, championships, loadWorkspaceDetails, selectedChampionship]);
@@ -191,7 +187,6 @@ export function ChampionshipDashboard() {
     setFormStatus('DRAFT');
     setFormStartDate(new Date().toISOString().slice(0, 16));
     setFormEndDate(new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 16)); // default 3 days
-    setFormCompanyId('');
   };
 
   const handleSaveChampionship = async (e: React.FormEvent) => {
@@ -227,7 +222,6 @@ export function ChampionshipDashboard() {
       status: formStatus,
       startDate: start,
       endDate: end,
-      companyId: formCompanyId || null,
     };
 
     try {
@@ -286,7 +280,6 @@ export function ChampionshipDashboard() {
       status,
       startDate: start,
       endDate: end,
-      companyId: selectedChampionship.companyId,
     };
 
     try {
@@ -572,20 +565,15 @@ export function ChampionshipDashboard() {
                       </Badge>
                     </div>
 
-                    <div className="mt-3 flex items-center justify-between text-xs text-zinc-400">
-                      <div>
-                        {ch.company ? (
-                          <span className="font-semibold text-zinc-300">{ch.company.name}</span>
-                        ) : (
-                          <span className="italic text-zinc-500">Глобальный</span>
-                        )}
-                      </div>
+                    <div className="mt-3 flex items-center justify-end text-xs text-zinc-400">
                       <div className="flex gap-3 text-[11px]">
-                        <span>
-                          🎯 <strong>{ch._count?.challenges || 0}</strong> зад.
+                        <span className="flex items-center gap-1">
+                          <Target className="h-3 w-3" />{' '}
+                          <strong>{ch._count?.challenges || 0}</strong> зад.
                         </span>
-                        <span>
-                          👥 <strong>{ch._count?.participants || 0}</strong> уч.
+                        <span className="flex items-center gap-1">
+                          <Users className="h-3 w-3" />{' '}
+                          <strong>{ch._count?.participants || 0}</strong> уч.
                         </span>
                       </div>
                     </div>
@@ -746,28 +734,6 @@ export function ChampionshipDashboard() {
                       <option value="PAST">Завершен (Архив)</option>
                     </select>
                   </div>
-
-                  <div className="space-y-1.5">
-                    <label
-                      htmlFor="new-ch-company"
-                      className="text-xs font-bold uppercase text-zinc-400"
-                    >
-                      Организатор
-                    </label>
-                    <select
-                      id="new-ch-company"
-                      value={formCompanyId}
-                      onChange={(e) => setFormCompanyId(e.target.value)}
-                      className="h-10 w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 text-sm text-white focus-visible:outline-none"
-                    >
-                      <option value="">-- Глобальное соревнование --</option>
-                      {companies.map((co) => (
-                        <option key={co.id} value={co.id}>
-                          {co.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
                 </div>
 
                 <div className="flex justify-end gap-2 pt-4">
@@ -816,19 +782,20 @@ export function ChampionshipDashboard() {
                           /{selectedChampionship.slug}
                         </strong>
                       </span>
-                      <span>•</span>
-                      <span>
-                        Компания:{' '}
-                        <strong>
-                          {selectedChampionship.company
-                            ? selectedChampionship.company.name
-                            : 'Глобальный'}
-                        </strong>
-                      </span>
                     </div>
                   </div>
 
                   <div className="flex gap-2">
+                    <Button size="sm" variant="outline" asChild>
+                      <a
+                        href={`http://localhost:3002/championship/${selectedChampionship.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ExternalLink className="mr-1.5 h-4 w-4" />
+                        Открыть на сайте
+                      </a>
+                    </Button>
                     <Button
                       size="sm"
                       variant="outline"
@@ -1249,13 +1216,19 @@ export function ChampionshipDashboard() {
                                       className="transition-colors hover:bg-zinc-900/10"
                                     >
                                       <td className="px-4 py-3 font-bold text-zinc-400">
-                                        {index === 0
-                                          ? '🥇'
-                                          : index === 1
-                                            ? '🥈'
-                                            : index === 2
-                                              ? '🥉'
-                                              : `#${index + 1}`}
+                                        {index < 3 ? (
+                                          <Medal
+                                            className={`h-4 w-4 ${
+                                              index === 0
+                                                ? 'text-yellow-400'
+                                                : index === 1
+                                                  ? 'text-zinc-300'
+                                                  : 'text-orange-600'
+                                            }`}
+                                          />
+                                        ) : (
+                                          `#${index + 1}`
+                                        )}
                                       </td>
                                       <td className="px-4 py-3 font-bold text-white">
                                         {part.user.name || 'Аноним'}
@@ -1436,28 +1409,6 @@ export function ChampionshipDashboard() {
                               <option value="DRAFT">Черновик</option>
                               <option value="ACTIVE">Идет (Активен)</option>
                               <option value="PAST">Завершен</option>
-                            </select>
-                          </div>
-
-                          <div className="space-y-1.5">
-                            <label
-                              htmlFor="ch-company"
-                              className="text-xs font-bold uppercase text-zinc-400"
-                            >
-                              Организатор
-                            </label>
-                            <select
-                              id="ch-company"
-                              value={formCompanyId}
-                              onChange={(e) => setFormCompanyId(e.target.value)}
-                              className="h-10 w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 text-sm text-white focus-visible:outline-none"
-                            >
-                              <option value="">-- Глобальный чемпионат --</option>
-                              {companies.map((co) => (
-                                <option key={co.id} value={co.id}>
-                                  {co.name}
-                                </option>
-                              ))}
                             </select>
                           </div>
                         </div>
