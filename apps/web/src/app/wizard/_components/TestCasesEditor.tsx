@@ -21,6 +21,7 @@ interface TestCasesEditorProps {
   setTsErrors: (errors: TsErrors) => void;
 }
 
+// million-ignore
 export function TestCasesEditor({ form, hasTsErrors, setTsErrors }: TestCasesEditorProps) {
   const [editorState, setEditorState] = useState<monaco.editor.IStandaloneCodeEditor>();
 

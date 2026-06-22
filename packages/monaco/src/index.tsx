@@ -103,6 +103,7 @@ function formatTraceback(errorStr: string) {
   return <span className="whitespace-pre-wrap">{errorStr}</span>;
 }
 
+// million-ignore
 export function CodePanel(props: CodePanelProps) {
   const router = useRouter();
   const params = useSearchParams();
