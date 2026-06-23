@@ -9,6 +9,9 @@ import { NextResponse } from 'next/server';
 const execAsync = promisify(exec);
 
 export async function POST(req: Request) {
+  let tmpDir = '';
+  let timedOut = false;
+
   try {
     const { code, tests, language } = await req.json();
 
@@ -31,7 +34,7 @@ export async function POST(req: Request) {
 
     // Создаем уникальную временную папку для этой попытки
     const runId = uuidv4();
-    const tmpDir = path.join(os.tmpdir(), `litkot-run-${runId}`);
+    tmpDir = path.join(os.tmpdir(), `litkot-run-${runId}`);
 
     await mkdir(tmpDir, { recursive: true });
 
@@ -65,33 +68,59 @@ export async function POST(req: Request) {
       : `docker run --rm --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code node:20-alpine node main.js`;
 
     try {
-      // Таймаут 7 секунд на выполнение кода
-      const { stdout, stderr } = await execAsync(cmd, { timeout: 7000 });
-      return NextResponse.json({ success: true, output: stdout, error: stderr });
+      // Гарантированный таймаут 10 секунд - убивает процесс если выполнение дольше
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => {
+          timedOut = true;
+          reject(new Error('TIMEOUT_10_SECONDS'));
+        }, 10000);
+      });
+
+      const result = await Promise.race([
+        execAsync(cmd, { timeout: 10000 }),
+        timeoutPromise,
+      ]) as { stdout: string; stderr: string };
+
+      return NextResponse.json({ success: true, output: result.stdout, error: result.stderr });
     } catch (execError: unknown) {
-      const err = execError as { killed?: boolean; stderr?: string; stdout?: string };
-      if (err.killed) {
+      const err = execError as { killed?: boolean; code?: number; stderr?: string; stdout?: string; message?: string };
+
+      // Проверяем таймаут по разным признакам
+      if (timedOut || err.killed || err.code === 'ETIMEDOUT' || (err.message && err.message.includes('TIMEOUT'))) {
         return NextResponse.json({
           success: false,
-          error: 'Time Limit Exceeded (Код выполнялся дольше 7 секунд)',
+          error: 'ТАЙМАУТ: Код выполнялся дольше 10 секунд. Возможно бесконечный цикл или очень медленное выполнение.',
         });
       }
 
-      // Если код упал с синтаксической ошибкой или не прошел тесты (exit code != 0)
+      // Обычная ошибка выполнения (синтаксис, провал тестов)
       return NextResponse.json({
         success: false,
-        error: err.stderr || 'Ошибка выполнения тестов',
+        error: err.stderr || err.message || 'Ошибка выполнения тестов',
         output: err.stdout,
       });
     } finally {
       // Обязательная очистка файловой системы
-      await rm(tmpDir, { recursive: true, force: true });
+      try {
+        await rm(tmpDir, { recursive: true, force: true });
+      } catch (cleanupError) {
+        console.error('Cleanup error:', cleanupError);
+      }
     }
   } catch (error: unknown) {
     const err = error as Error;
     console.error('Execution API Error:', err);
+
+    if (tmpDir) {
+      try {
+        await rm(tmpDir, { recursive: true, force: true }).catch(() => {});
+      } catch (e) {
+        // Игнорируем ошибки очистки
+      }
+    }
+
     return NextResponse.json(
-      { success: false, error: `Внутренняя ошибка песочницы: ${err.message}` },
+      { success: false, error: `Ошибка песочницы: ${err.message}` },
       { status: 500 },
     );
   }
