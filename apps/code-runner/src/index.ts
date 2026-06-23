@@ -1,4 +1,4 @@
-import { exec } from 'node:child_process';
+import { exec, spawn } from 'node:child_process';
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -25,6 +25,13 @@ function getPositiveInteger(value: string | undefined, fallback: number) {
 const CONCURRENCY = getPositiveInteger(process.env.CODE_RUNNER_CONCURRENCY, 2);
 const TIMEOUT_MS = getPositiveInteger(process.env.CODE_RUNNER_TIMEOUT_MS, 10_000);
 const MAX_OUTPUT_BYTES = getPositiveInteger(process.env.CODE_RUNNER_MAX_OUTPUT_BYTES, 16_000);
+
+interface DockerRunResult {
+  exitCode: number | null;
+  stderr: string;
+  stdout: string;
+  timedOut: boolean;
+}
 
 interface LanguageRuntime {
   command: string;
@@ -57,6 +64,66 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : 'Unknown runner error';
 }
 
+async function forceRemoveContainer(containerName: string) {
+  await execAsync(`docker rm -f "${containerName}"`).catch(() => undefined);
+}
+
+async function runSandboxContainer(
+  args: string[],
+  containerName: string,
+): Promise<DockerRunResult> {
+  return new Promise((resolve, reject) => {
+    const child = spawn('docker', args, { windowsHide: true });
+    let stdout = '';
+    let stderr = '';
+    let settled = false;
+
+    const finish = (result: DockerRunResult) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      clearTimeout(timeout);
+      resolve(result);
+    };
+
+    const timeout = setTimeout(() => {
+      void forceRemoveContainer(containerName).finally(() => {
+        child.kill('SIGKILL');
+        finish({
+          exitCode: null,
+          stderr,
+          stdout,
+          timedOut: true,
+        });
+      });
+    }, TIMEOUT_MS);
+
+    child.stdout.on('data', (chunk: Buffer) => {
+      stdout += chunk.toString('utf8');
+    });
+    child.stderr.on('data', (chunk: Buffer) => {
+      stderr += chunk.toString('utf8');
+    });
+    child.on('error', (error) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      clearTimeout(timeout);
+      reject(error);
+    });
+    child.on('close', (exitCode) => {
+      finish({
+        exitCode,
+        stderr,
+        stdout,
+        timedOut: false,
+      });
+    });
+  });
+}
+
 async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
   const runtime = runtimes[job.payload.language];
   const containerName = `litkot-run-${job.id}`;
@@ -70,21 +137,44 @@ async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
     await writeFile(filePath, fullCode);
 
     const normalizedTmpDir = tmpDir.replace(/\\/g, '/');
-    const dockerCommand = [
-      'docker run --rm',
-      `--name "${containerName}"`,
+    const dockerArgs = [
+      'run',
+      '--rm',
+      '--name',
+      containerName,
       '--network none',
-      `-m ${MEMORY_LIMIT}`,
-      `--cpus ${CPU_LIMIT}`,
-      '--pids-limit 128',
-      `-v "${normalizedTmpDir}:/code"`,
-      '-w /code',
+      '-m',
+      MEMORY_LIMIT,
+      '--cpus',
+      CPU_LIMIT,
+      '--pids-limit',
+      '128',
+      '-v',
+      `${normalizedTmpDir}:/code`,
+      '-w',
+      '/code',
       runtime.image,
-      runtime.command,
-    ].join(' ');
+      ...runtime.command.split(' '),
+    ];
 
     try {
-      const result = await execAsync(dockerCommand, { timeout: TIMEOUT_MS });
+      const result = await runSandboxContainer(dockerArgs, containerName);
+
+      if (result.timedOut) {
+        return {
+          error: `ТАЙМАУТ: Код выполнялся дольше ${Math.ceil(TIMEOUT_MS / 1000)} секунд. Возможно бесконечный цикл или очень медленное выполнение.`,
+          output: trimOutput(result.stdout),
+          success: false,
+        };
+      }
+
+      if (result.exitCode !== 0) {
+        return {
+          error: trimOutput(result.stderr || `Процесс завершился с кодом ${result.exitCode}`),
+          output: trimOutput(result.stdout),
+          success: false,
+        };
+      }
 
       return {
         error: trimOutput(result.stderr),
@@ -114,7 +204,7 @@ async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
       };
     }
   } finally {
-    await execAsync(`docker rm -f "${containerName}"`).catch(() => undefined);
+    await forceRemoveContainer(containerName);
     await rm(tmpDir, { force: true, recursive: true });
   }
 }
