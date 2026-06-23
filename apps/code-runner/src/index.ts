@@ -77,6 +77,7 @@ async function runSandboxContainer(
     let stdout = '';
     let stderr = '';
     let settled = false;
+    let timedOut = false;
 
     const finish = (result: DockerRunResult) => {
       if (settled) {
@@ -88,6 +89,7 @@ async function runSandboxContainer(
     };
 
     const timeout = setTimeout(() => {
+      timedOut = true;
       void forceRemoveContainer(containerName).finally(() => {
         child.kill('SIGKILL');
         finish({
@@ -118,7 +120,7 @@ async function runSandboxContainer(
         exitCode,
         stderr,
         stdout,
-        timedOut: false,
+        timedOut,
       });
     });
   });
