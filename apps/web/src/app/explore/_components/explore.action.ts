@@ -2,8 +2,8 @@
 
 import { prisma } from '@repo/db';
 import type { Prisma } from '@repo/db';
-import { Tags } from '@repo/db/types';
-import type { Language, Difficulty } from '@repo/db/types';
+import { Difficulty, Tags } from '@repo/db/types';
+import type { Language } from '@repo/db/types';
 
 import { cache } from 'react';
 import { auth } from '~/server/auth';
@@ -40,6 +40,7 @@ export type SearchedChallenge = Prisma.ChallengeGetPayload<{
 
 export type ExploreChallengeData = ReturnType<typeof getChallengesByTagOrDifficulty>;
 const allTags: Tags[] = Object.values(Tags);
+const allDifficulties: Difficulty[] = Object.values(Difficulty);
 
 export interface FilterOptions {
   difficulty?: Difficulty;
@@ -120,6 +121,12 @@ export async function getChallengesByTagOrDifficulty(
 ): Promise<FilteredChallenge[]> {
   const session = await auth();
   const formattedStr = str.trim().toUpperCase();
+  const isTag = allTags.includes(formattedStr as keyof typeof Tags);
+  const isDifficulty = allDifficulties.includes(formattedStr as Difficulty);
+
+  if (!isTag && !isDifficulty) {
+    return [];
+  }
 
   return prisma.challenge.findMany({
     where: {
@@ -130,7 +137,7 @@ export async function getChallengesByTagOrDifficulty(
         },
       },
       // OR didn't work. so this workaround is fine because IT WORKS :3
-      ...(allTags.includes(formattedStr as keyof typeof Tags)
+      ...(isTag
         ? {
             tags: { every: { tag: formattedStr as Tags } },
           }
