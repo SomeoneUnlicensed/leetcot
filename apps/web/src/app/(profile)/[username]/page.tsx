@@ -247,11 +247,12 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
                     : `Похоже, @${username} еще не поделился решениями.`}
                 </h1>
                 {isOwnProfile ? (
-                  <Button asChild variant="link" className="text-center">
-                    <Link href={`/@${encodeURIComponent(username)}/completed`}>
-                      Исследуйте свои завершенные задачи и поделитесь решением!
-                    </Link>
-                  </Button>
+                  <Link
+                    href={`/@${encodeURIComponent(username)}/completed`}
+                    className="text-primary text-center text-sm font-medium underline-offset-4 hover:underline"
+                  >
+                    Исследуйте свои завершенные задачи и поделитесь решением!
+                  </Link>
                 ) : null}
               </CardContent>
             ) : (
