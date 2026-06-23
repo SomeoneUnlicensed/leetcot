@@ -10,6 +10,7 @@ const execAsync = promisify(exec);
 
 export async function POST(req: Request) {
   let tmpDir = '';
+  let containerName = '';
   let timedOut = false;
 
   try {
@@ -34,6 +35,7 @@ export async function POST(req: Request) {
 
     // Создаем уникальную временную папку для этой попытки
     const runId = uuidv4();
+    containerName = `litkot-run-${runId}`;
     tmpDir = path.join(os.tmpdir(), `litkot-run-${runId}`);
 
     await mkdir(tmpDir, { recursive: true });
@@ -64,8 +66,8 @@ export async function POST(req: Request) {
       -v ...: монтируем только папку с текущим кодом.
     */
     const cmd = isPython
-      ? `docker run --rm --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code python:3.11-alpine python main.py`
-      : `docker run --rm --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code node:20-alpine node main.js`;
+      ? `docker run --rm --name "${containerName}" --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code python:3.11-alpine python main.py`
+      : `docker run --rm --name "${containerName}" --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code node:20-alpine node main.js`;
 
     try {
       // Гарантированный таймаут 10 секунд - убивает процесс если выполнение дольше
@@ -100,6 +102,10 @@ export async function POST(req: Request) {
         output: err.stdout,
       });
     } finally {
+      if (containerName) {
+        await execAsync(`docker rm -f "${containerName}"`).catch(() => undefined);
+      }
+
       // Обязательная очистка файловой системы
       try {
         await rm(tmpDir, { recursive: true, force: true });
@@ -113,6 +119,10 @@ export async function POST(req: Request) {
 
     if (tmpDir) {
       try {
+        if (containerName) {
+          await execAsync(`docker rm -f "${containerName}"`).catch(() => undefined);
+        }
+
         await rm(tmpDir, { recursive: true, force: true }).catch(
           () => undefined,
         );
