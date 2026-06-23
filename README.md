@@ -1,8 +1,7 @@
-# ЛитКот (LitKot)
+# ЛитКот (leetcot.ru)
 
 A coding practice platform: programming challenges, courses, and interactive exercises.
 
-This is proprietary software. See [LICENSE](./LICENSE).
 
 ## Local development
 
