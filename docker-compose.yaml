@@ -70,6 +70,8 @@ services:
 
 volumes:
   leetcot-data:
+    name: leetcot_leetcot-data
     driver: local
   pgadmin-data:
+    name: leetcot_pgadmin-data
     driver: local
