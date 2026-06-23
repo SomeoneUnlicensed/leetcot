@@ -36,7 +36,7 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-dev}@db:5432/leetcot?schema=public
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:${POSTGRES_PASSWORD:-dev}@db:5432/leetcot?schema=public}
       - REDIS_URL=redis://redis:6379
       - NODE_ENV=${NODE_ENV:-production}
       - CODE_RUNNER_MAX_QUEUE_DEPTH=${CODE_RUNNER_MAX_QUEUE_DEPTH:-20}

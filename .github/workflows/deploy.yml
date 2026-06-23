@@ -102,18 +102,20 @@ jobs:
           fi
 
           export LEETCOT_IMAGE='${{ env.LEETCOT_IMAGE }}'
+          printf 'LEETCOT_IMAGE=%s\n' "$LEETCOT_IMAGE" > .deploy.env
+          COMPOSE="docker compose --env-file .env --env-file .deploy.env"
 
           echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u '${{ github.actor }}' --password-stdin
 
-          docker compose --env-file .env pull db redis pgadmin || true
+          $COMPOSE pull db redis pgadmin || true
           docker pull node:20-alpine
           docker pull python:3.11-alpine
           docker pull "$LEETCOT_IMAGE"
 
-          docker compose --env-file .env up -d --no-recreate db redis pgadmin
+          $COMPOSE up -d --no-recreate db redis pgadmin
 
           for i in {1..30}; do
-            if docker compose --env-file .env exec -T db pg_isready -U postgres -d leetcot; then
+            if $COMPOSE exec -T db pg_isready -U postgres -d leetcot </dev/null; then
               break
             fi
             if [ "$i" -eq 30 ]; then
@@ -123,11 +125,11 @@ jobs:
             sleep 2
           done
 
-          docker compose --env-file .env run --rm --no-deps --entrypoint sh app -lc 'pnpm --filter @repo/db exec prisma migrate deploy'
+          $COMPOSE run --rm -T --no-deps --entrypoint sh app -lc 'pnpm --filter @repo/db exec prisma migrate deploy' </dev/null
           echo "Deploying $LEETCOT_IMAGE"
-          docker compose --env-file .env up -d --force-recreate --no-build app code-runner
+          $COMPOSE up -d --force-recreate --no-build app code-runner
 
-          docker compose --env-file .env ps
+          $COMPOSE ps
           test "$(docker inspect leetcot-app-1 --format '{{.Config.Image}}')" = "$LEETCOT_IMAGE"
           test "$(docker inspect leetcot-code-runner-1 --format '{{.Config.Image}}')" = "$LEETCOT_IMAGE"
           curl -fsS http://127.0.0.1:3002 >/dev/null
