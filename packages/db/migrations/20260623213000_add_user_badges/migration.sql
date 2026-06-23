@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "UserBadge" (
+CREATE TABLE IF NOT EXISTS "UserBadge" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "badgeSlug" TEXT NOT NULL,
@@ -9,13 +9,22 @@ CREATE TABLE "UserBadge" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "UserBadge_userId_badgeSlug_key" ON "UserBadge"("userId", "badgeSlug");
+CREATE UNIQUE INDEX IF NOT EXISTS "UserBadge_userId_badgeSlug_key" ON "UserBadge"("userId", "badgeSlug");
 
 -- CreateIndex
-CREATE INDEX "UserBadge_userId_idx" ON "UserBadge"("userId");
+CREATE INDEX IF NOT EXISTS "UserBadge_userId_idx" ON "UserBadge"("userId");
 
 -- CreateIndex
-CREATE INDEX "UserBadge_badgeSlug_idx" ON "UserBadge"("badgeSlug");
+CREATE INDEX IF NOT EXISTS "UserBadge_badgeSlug_idx" ON "UserBadge"("badgeSlug");
 
 -- AddForeignKey
-ALTER TABLE "UserBadge" ADD CONSTRAINT "UserBadge_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'UserBadge_userId_fkey'
+    ) THEN
+        ALTER TABLE "UserBadge" ADD CONSTRAINT "UserBadge_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+    END IF;
+END $$;
