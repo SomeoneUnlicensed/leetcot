@@ -270,10 +270,57 @@ export function CodePanel(props: CodePanelProps) {
             }),
           });
           const data = await res.json();
+
           if (!data.success) {
             formattedErrors.push(data.error || 'Ошибка выполнения');
             if (data.output) {
               formattedErrors.push(`[ВЫВОД КОНСОЛИ]\n${data.output}`);
+            }
+          } else if (data.jobId) {
+            toast({
+              title: 'Проверка в очереди',
+              description:
+                data.position > 1
+                  ? `Минутку, перед вами проверок: ${data.position - 1}.`
+                  : 'Минутку, сервер проверки уже взял ваше решение.',
+            });
+
+            let result:
+              | {
+                  error?: string;
+                  output?: string;
+                  success: boolean;
+                }
+              | undefined;
+
+            for (let attempt = 0; attempt < 90; attempt += 1) {
+              await new Promise((resolve) => {
+                setTimeout(resolve, 1000);
+              });
+
+              const statusRes = await fetch(`/api/execute?jobId=${data.jobId as string}`);
+              const statusData = await statusRes.json();
+
+              if (!statusData.success) {
+                formattedErrors.push(statusData.error || 'Ошибка получения результата проверки');
+                break;
+              }
+
+              if (statusData.status === 'success' || statusData.status === 'failure') {
+                result = statusData.result;
+                break;
+              }
+            }
+
+            if (!result) {
+              formattedErrors.push(
+                'Проверка заняла слишком много времени. Попробуйте ещё раз через минуту.',
+              );
+            } else if (!result.success) {
+              formattedErrors.push(result.error || 'Ошибка выполнения');
+              if (result.output) {
+                formattedErrors.push(`[ВЫВОД КОНСОЛИ]\n${result.output}`);
+              }
             }
           }
         } catch (fetchErr: any) {

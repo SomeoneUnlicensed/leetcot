@@ -8,9 +8,11 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json turbo.json ./
 COPY apps/admin/package.json ./apps/admin/package.json
 
 COPY apps/auth-proxy/package.json ./apps/auth-proxy/package.json
+COPY apps/code-runner/package.json ./apps/code-runner/package.json
 COPY apps/og-image/package.json ./apps/og-image/package.json
 COPY apps/web/package.json ./apps/web/package.json
 COPY packages/auth/package.json ./packages/auth/package.json
+COPY packages/code-runner/package.json ./packages/code-runner/package.json
 COPY packages/db/package.json ./packages/db/package.json
 COPY packages/monaco/package.json ./packages/monaco/package.json
 COPY packages/og-utils/package.json ./packages/og-utils/package.json

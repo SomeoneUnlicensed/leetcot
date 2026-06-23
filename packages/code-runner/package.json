@@ -1,5 +1,5 @@
 {
-  "name": "@repo/redis",
+  "name": "@repo/code-runner",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -22,12 +22,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@redis/client": "^1.6.0"
+    "@repo/redis": "workspace:*",
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@repo/lint": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@types/node": "^20.4.2",
+    "@types/uuid": "^11.0.0",
     "eslint": "^8.57.0",
     "typescript": "^5.3.3"
   }

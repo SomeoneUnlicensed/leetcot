@@ -35,6 +35,11 @@ jobs:
       - name: Pull Docker images
         run: docker compose pull
 
+      - name: Pull code runner images
+        run: |
+          docker pull node:20-alpine
+          docker pull python:3.11-alpine
+
       - name: Build app image
         run: docker compose build app
 
@@ -56,7 +61,7 @@ jobs:
         run: docker compose run --rm --no-deps --entrypoint sh app -lc 'pnpm --filter @repo/db exec prisma migrate deploy'
 
       - name: Deploy new app image
-        run: docker compose up -d --force-recreate --no-build app
+        run: docker compose up -d --force-recreate --no-build app code-runner
 
       - name: Clean up build artifacts
         if: always()

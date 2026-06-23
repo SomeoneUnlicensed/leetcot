@@ -35,20 +35,42 @@ services:
       - 3002:3000
       - 3001:3001
       - 3003:3003
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /tmp:/tmp
     env_file:
       - .env
     environment:
       - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-dev}@db:5432/leetcot?schema=public
       - REDIS_URL=redis://redis:6379
       - NODE_ENV=${NODE_ENV:-production}
+      - CODE_RUNNER_MAX_QUEUE_DEPTH=${CODE_RUNNER_MAX_QUEUE_DEPTH:-20}
       - AUTH_URL=${AUTH_URL:-http://localhost:3002}
       - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3002}
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
+
+  code-runner:
+    image: leetcot-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    entrypoint: ['pnpm', '--filter', 'code-runner', 'start']
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp
+    env_file:
+      - .env
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=${NODE_ENV:-production}
+      - CODE_RUNNER_CONCURRENCY=${CODE_RUNNER_CONCURRENCY:-2}
+      - CODE_RUNNER_TIMEOUT_MS=${CODE_RUNNER_TIMEOUT_MS:-10000}
+      - CODE_RUNNER_MEMORY_LIMIT=${CODE_RUNNER_MEMORY_LIMIT:-128m}
+      - CODE_RUNNER_CPU_LIMIT=${CODE_RUNNER_CPU_LIMIT:-0.5}
+      - CODE_RUNNER_MAX_OUTPUT_BYTES=${CODE_RUNNER_MAX_OUTPUT_BYTES:-16000}
+    depends_on:
       redis:
         condition: service_started
 

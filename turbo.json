@@ -21,7 +21,13 @@
     "ARLIST_CLIENT_SECRET",
     "GITHUB_ID",
     "GITHUB_SECRET",
-    "PORT"
+    "PORT",
+    "CODE_RUNNER_CONCURRENCY",
+    "CODE_RUNNER_TIMEOUT_MS",
+    "CODE_RUNNER_MEMORY_LIMIT",
+    "CODE_RUNNER_CPU_LIMIT",
+    "CODE_RUNNER_MAX_OUTPUT_BYTES",
+    "CODE_RUNNER_MAX_QUEUE_DEPTH"
   ],
   "globalDependencies": [".env", ".env.*"],
   "tasks": {
