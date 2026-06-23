@@ -4,13 +4,15 @@ import Link from 'next/link';
 import { getBadgeDefinition, BADGE_DEFINITIONS } from '~/lib/badge-definitions';
 import { SlugToBadgeIcon } from '~/app/(profile)/[username]/_components/badges';
 
-type Props = { params: Promise<{ slug: string }> };
+interface BadgePageParams {
+  params: Promise<{ slug: string }>;
+}
 
-export async function generateStaticParams() {
+export function generateStaticParams() {
   return BADGE_DEFINITIONS.map((b) => ({ slug: b.slug }));
 }
 
-export default async function BadgeDetailPage({ params }: Props) {
+export default async function BadgeDetailPage({ params }: BadgePageParams) {
   const { slug } = await params;
   const def = getBadgeDefinition(slug);
   if (!def) notFound();
@@ -22,6 +24,7 @@ export default async function BadgeDetailPage({ params }: Props) {
     count = await prisma.userBadge.count({ where: { badgeSlug: slug } });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const Icon = SlugToBadgeIcon[slug as keyof typeof SlugToBadgeIcon];
 
   return (
