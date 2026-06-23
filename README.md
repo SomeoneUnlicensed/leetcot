@@ -27,4 +27,3 @@ pnpm db:seed
 pnpm dev
 ```
 
-For full setup details (env vars, OAuth, file uploads, testing), see [`LOCAL.md`](./LOCAL.md).
