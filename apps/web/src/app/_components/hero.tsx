@@ -57,7 +57,7 @@ function BeamOfLight() {
 export async function Hero() {
   const session = await auth();
   return (
-    <section className="pointer-events-none min-h-screen lg:min-h-0 lg:pt-[3.5rem]">
+    <section className="pointer-events-none min-h-screen lg:min-h-0 lg:pt-[3.5rem] overflow-hidden">
       <div className="absolute inset-10 -z-30 overflow-hidden rounded-full opacity-70 lg:hidden">
         <BackgroundGrid />
       </div>
