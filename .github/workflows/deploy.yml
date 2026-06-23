@@ -1,72 +1,124 @@
 name: Deploy Production on Release
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
 
+env:
+  IMAGE_NAME: ghcr.io/someoneunlicensed/leetcot
+  DEPLOY_PATH: /mnt/data/actions-runner-work/leetcot/leetcot
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
 jobs:
-  deploy:
-    runs-on: self-hosted
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-      - name: Free disk space before build
-        run: |
-          echo "=== Disk before cleanup ==="
-          df -h /mnt/data /
-          docker image prune -a -f || true
-          docker builder prune -a -f || true
-          sudo journalctl --vacuum-size=30M || true
-          sudo apt-get clean || true
-          echo "=== Disk after cleanup ==="
-          df -h /mnt/data /
-
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Copy .env file
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push app image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.IMAGE_NAME }}:${{ github.event.release.tag_name }}
+            ${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            SENTRY_ORG=${{ vars.SENTRY_ORG || 'd97854546524' }}
+            SENTRY_PROJECT=${{ vars.SENTRY_PROJECT || 'leetcot' }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+      packages: read
+
+    env:
+      LEETCOT_IMAGE: ghcr.io/someoneunlicensed/leetcot:${{ github.sha }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Trust production host
+        run: ssh-keyscan -H '${{ secrets.SERVER_HOST }}' >> ~/.ssh/known_hosts
+
+      - name: Upload production compose file
+        run: scp docker-compose.yaml '${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ env.DEPLOY_PATH }}/docker-compose.yaml'
+
+      - name: Deploy image on production
         run: |
+          ssh '${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}' 'bash -s' <<'REMOTE'
+          set -euo pipefail
+          cd '${{ env.DEPLOY_PATH }}'
+
           if [ -f /home/user1/actions-runner/secrets.env ]; then
             cp /home/user1/actions-runner/secrets.env ./.env
           else
-            echo "❌ Error: Host secrets.env file not found!"
+            echo "Host secrets.env file not found."
             exit 1
           fi
 
-      - name: Pull Docker images (exclude app)
-        run: docker compose pull --ignore-pull-failures db redis pgadmin || true
+          export LEETCOT_IMAGE='${{ env.LEETCOT_IMAGE }}'
 
-      - name: Pull code runner images
-        run: |
+          echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u '${{ github.actor }}' --password-stdin
+
+          docker compose --env-file .env pull db redis pgadmin || true
           docker pull node:20-alpine
           docker pull python:3.11-alpine
+          docker pull "$LEETCOT_IMAGE"
 
-      - name: Build app and code-runner images
-        run: docker compose build app code-runner
+          docker compose --env-file .env up -d --no-recreate db redis pgadmin
 
-      - name: Ensure persistent containers are running
-        run: docker compose up -d --no-recreate db redis pgadmin
-
-      - name: Wait for database readiness
-        run: |
           for i in {1..30}; do
-            if docker compose exec -T db pg_isready -U postgres -d leetcot; then
-              exit 0
+            if docker compose --env-file .env exec -T db pg_isready -U postgres -d leetcot; then
+              break
+            fi
+            if [ "$i" -eq 30 ]; then
+              echo "Database did not become ready in time"
+              exit 1
             fi
             sleep 2
           done
-          echo "Database did not become ready in time"
-          exit 1
 
-      - name: Apply database migrations
-        run: docker compose --env-file .env run --rm --no-deps --entrypoint sh app -lc 'pnpm --filter @repo/db exec prisma migrate deploy'
+          docker compose --env-file .env run --rm --no-deps --entrypoint sh app -lc 'pnpm --filter @repo/db exec prisma migrate deploy'
+          docker compose --env-file .env up -d --force-recreate --no-build app code-runner
 
-      - name: Deploy new app image
-        run: docker compose up -d --force-recreate --no-build app code-runner
+          docker compose --env-file .env ps
+          curl -fsS http://127.0.0.1:3002 >/dev/null
 
-      - name: Clean up build artifacts
-        if: always()
-        run: |
-          docker image prune -a -f || true
-          docker builder prune -a -f || true
-          echo "=== Disk after deploy ==="
+          docker image prune -f || true
+          docker builder prune -f || true
           df -h /mnt/data /
+          REMOTE

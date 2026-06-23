@@ -28,10 +28,7 @@ services:
       - 6380:6379
 
   app:
-    image: leetcot-app
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${LEETCOT_IMAGE:-ghcr.io/someoneunlicensed/leetcot:latest}
     ports:
       - 3002:3000
       - 3001:3001
@@ -52,10 +49,7 @@ services:
         condition: service_started
 
   code-runner:
-    image: leetcot-app
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${LEETCOT_IMAGE:-ghcr.io/someoneunlicensed/leetcot:latest}
     restart: always
     entrypoint: ['pnpm', '--filter', 'code-runner', 'start']
     volumes:
