@@ -12,6 +12,7 @@
     "ADMIN_EMAIL",
     "ADMIN_PASSWORD",
     "NODE_ENV",
+    "NEXT_RUNTIME",
     "REDIS_URL",
     "AUTH_SECRET",
     "NEXTAUTH_SECRET",

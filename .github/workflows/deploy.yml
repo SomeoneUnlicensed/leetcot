@@ -58,7 +58,7 @@ jobs:
           exit 1
 
       - name: Apply database migrations
-        run: docker compose run --rm --no-deps --entrypoint sh app -lc 'pnpm --filter @repo/db exec prisma migrate deploy'
+        run: docker compose --env-file .env run --rm --no-deps --entrypoint sh app -lc 'pnpm --filter @repo/db exec prisma migrate deploy'
 
       - name: Deploy new app image
         run: docker compose up -d --force-recreate --no-build app code-runner

@@ -28,6 +28,7 @@ services:
       - 6380:6379
 
   app:
+    image: leetcot-app
     build:
       context: .
       dockerfile: Dockerfile
