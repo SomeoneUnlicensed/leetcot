@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Background -->
+  <rect width="120" height="120" fill="#18181b"/>
+  
+  <!-- ASCII Cat Art -->
+  <g font-family="'Courier New', monospace" font-size="11" font-weight="bold" fill="#FFA500" letter-spacing="1">
+    <!-- Line 1: /\_/\ -->
+    <text x="10" y="25">/\_/\</text>
+    
+    <!-- Line 2: ( o.o ) -->
+    <text x="10" y="40">( o.o )</text>
+    
+    <!-- Line 3: > ^ < -->
+    <text x="12" y="55">> ^ &lt;</text>
+    
+    <!-- Line 4: /|   |\ -->
+    <text x="10" y="70">/|   |\</text>
+    
+    <!-- Line 5: (_|   |_) -->
+    <text x="8" y="85">(_|   |_)</text>
+  </g>
+  
+  <!-- Eyes highlight for better visibility -->
+  <circle cx="34" cy="34" r="1.5" fill="#fff" opacity="0.6"/>
+  <circle cx="46" cy="34" r="1.5" fill="#fff" opacity="0.6"/>
+</svg>

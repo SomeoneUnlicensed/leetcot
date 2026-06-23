@@ -1,0 +1,122 @@
+{
+  "$schema": "https://turborepo.com/schema.v2.json",
+  "globalEnv": ["DATABASE_URL"],
+  "globalDependencies": [".env", ".env.*"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build", "@repo/db#db:generate"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+      "env": [
+        "VERCEL",
+        "VERCEL_URL",
+        "VERCEL_PROJECT_PRODUCTION_URL",
+        "VERCEL_ENV",
+        "STAGING",
+        "NODE_ENV",
+        "REDIS_URL",
+        "GH_TOKEN",
+        "GITHUB_ID",
+        "GITHUB_SECRET",
+        "GITHUB_AOT_ID",
+        "GITHUB_AOT_SECRET",
+        "UPLOADTHING_SECRET",
+        "UPLOADTHING_APP_ID",
+        "EDGE_CONFIG",
+        "NEXTAUTH_SECRET",
+        "AUTH_SECRET",
+        "NEXTAUTH_URL",
+        "AUTH_REDIRECT_PROXY_URL",
+        "RESEND_API_KEY",
+        "PORT",
+        "USERNAME",
+        "PASSWORD",
+        "CI",
+        "CRON_SECRET",
+        "MAILCHIMP_API_KEY",
+        "MAILCHIMP_AUDIENCE_ID",
+        "MAILCHIMP_API_SERVER",
+        "NEXT_PUBLIC_ALGOLIA_API_KEY",
+        "NEXT_PUBLIC_ALGOLIA_APP_ID",
+        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+        "STRIPE_SECRET_KEY"
+      ]
+    },
+    "topo": {
+      "dependsOn": ["^topo"]
+    },
+    "//#format": {
+      "outputs": ["node_modules/.cache/prettiercache"],
+      "outputLogs": "errors-only"
+    },
+    "format": {
+      "dependsOn": ["@repo/db#db:generate", "^topo"],
+      "outputs": ["node_modules/.cache/prettiercache"],
+      "outputLogs": "errors-only"
+    },
+    "//#format:fix": {
+      "outputs": ["node_modules/.cache/prettiercache"],
+      "outputLogs": "errors-only"
+    },
+    "format:fix": {
+      "dependsOn": ["@repo/db#db:generate", "^topo"],
+      "outputs": ["node_modules/.cache/prettiercache"],
+      "outputLogs": "errors-only"
+    },
+    "//#lint": {
+      "outputs": ["node_modules/.cache/.eslintcache"],
+      "outputLogs": "errors-only"
+    },
+    "lint": {
+      "dependsOn": ["@repo/db#db:generate", "^topo"],
+      "outputs": ["node_modules/.cache/.eslintcache"],
+      "outputLogs": "errors-only"
+    },
+    "//#lint:fix": {
+      "dependsOn": ["@repo/db#db:generate", "^topo"],
+      "outputs": ["node_modules/.cache/.eslintcache"],
+      "outputLogs": "errors-only"
+    },
+    "lint:fix": {
+      "dependsOn": ["@repo/db#db:generate", "^topo"],
+      "outputs": ["node_modules/.cache/.eslintcache"],
+      "outputLogs": "errors-only"
+    },
+    "typecheck": {
+      "dependsOn": ["@repo/db#db:generate", "^topo"],
+      "outputLogs": "errors-only"
+    },
+    "clean": {
+      "cache": false
+    },
+    "dev": {
+      "dependsOn": ["@repo/db#db:generate"],
+      "persistent": true,
+      "cache": false
+    },
+    "test:e2e": {
+      "outputs": ["playwright-report/**"],
+      "env": [
+        "AUTH_SECRET",
+        "DATABASE_URL",
+        "GITHUB_ID",
+        "GITHUB_SECRET",
+        "NEXTAUTH_SECRET",
+        "NEXTAUTH_URL"
+      ]
+    },
+    "test:e2e:ui": {
+      "outputs": ["playwright-report/**"],
+      "env": [
+        "AUTH_SECRET",
+        "DATABASE_URL",
+        "GITHUB_ID",
+        "GITHUB_SECRET",
+        "NEXTAUTH_SECRET",
+        "NEXTAUTH_URL"
+      ]
+    },
+    "test:e2e:inspector": {
+      "outputs": ["playwright-report/**"]
+    }
+  }
+}
