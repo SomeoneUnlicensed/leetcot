@@ -15,7 +15,7 @@ export default async function Home() {
     return notFound();
   }
   return (
-    <main className="relative flex w-screen items-center justify-center">
+    <main className="relative flex w-full items-center justify-center">
       <div className="w-full max-w-xl rounded-xl border p-6 shadow">
         <h1 className="text-primary rounded-2xl p-1 text-center text-lg font-bold md:text-xl">
           ЛитКот URL Shortener
