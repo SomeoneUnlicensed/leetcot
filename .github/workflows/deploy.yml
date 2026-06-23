@@ -58,9 +58,10 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
-            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SENTRY_ORG=${{ vars.SENTRY_ORG || 'd97854546524' }}
             SENTRY_PROJECT=${{ vars.SENTRY_PROJECT || 'leetcot' }}
+          secrets: |
+            sentry_auth_token=${{ secrets.SENTRY_AUTH_TOKEN }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -123,9 +124,12 @@ jobs:
           done
 
           docker compose --env-file .env run --rm --no-deps --entrypoint sh app -lc 'pnpm --filter @repo/db exec prisma migrate deploy'
+          echo "Deploying $LEETCOT_IMAGE"
           docker compose --env-file .env up -d --force-recreate --no-build app code-runner
 
           docker compose --env-file .env ps
+          test "$(docker inspect leetcot-app-1 --format '{{.Config.Image}}')" = "$LEETCOT_IMAGE"
+          test "$(docker inspect leetcot-code-runner-1 --format '{{.Config.Image}}')" = "$LEETCOT_IMAGE"
           curl -fsS http://127.0.0.1:3002 >/dev/null
 
           docker image prune -f || true

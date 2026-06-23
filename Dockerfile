@@ -29,16 +29,16 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm config set store-dir /pnp
 FROM deps AS builder
 COPY . .
 ARG NEXT_PUBLIC_SENTRY_DSN
-ARG SENTRY_AUTH_TOKEN
 ARG SENTRY_ORG
 ARG SENTRY_PROJECT
 ENV DATABASE_URL="postgresql://postgres:dev@localhost:5432/leetcot?schema=public"
 ENV NODE_OPTIONS="--max-old-space-size=3072"
 ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
-ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
 ENV SENTRY_ORG=$SENTRY_ORG
 ENV SENTRY_PROJECT=$SENTRY_PROJECT
-RUN npx turbo run build --concurrency=1
+RUN --mount=type=secret,id=sentry_auth_token \
+    SENTRY_AUTH_TOKEN="$(cat /run/secrets/sentry_auth_token 2>/dev/null || true)" \
+    npx turbo run build --concurrency=1
 
 RUN find /app/node_modules -name "*.map" -delete && \
     find /app/node_modules -name "*.d.ts" -delete && \
