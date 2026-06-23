@@ -75,7 +75,7 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
   if (user === null) {
     notFound();
   }
-  const badges = getBadges(user.id);
+  const badges = await getBadges(user.id);
   const titles = getTitles(user.roles);
   const gradient = getGradient(user.roles);
   const progressData = await getProgressData(user.id);

@@ -153,12 +153,13 @@ model User {
   shortUrls            ShortURL[]
   toUserNotification   Notification[] @relation("notificationToUser")
   fromUserNotification Notification[] @relation("notificationFromUser")
-  
+
   /// Exams created by teachers
   createdExams ExamSession[] @relation("exam_student")
   teacherExams Exam[] @relation("exam_teacher")
 
   championships        ChampionshipParticipant[]
+  userBadges           UserBadge[]
 }
 
 model VerificationToken {
@@ -780,4 +781,16 @@ model ChampionshipChallenge {
   @@id([championshipId, challengeId])
   @@index([championshipId])
   @@index([challengeId])
+}
+
+model UserBadge {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeSlug String
+  awardedAt DateTime @default(now())
+
+  @@unique([userId, badgeSlug])
+  @@index([userId])
+  @@index([badgeSlug])
 }

@@ -11,6 +11,7 @@ import {
   startOfWeek,
   subDays,
 } from 'date-fns';
+import { getBadgeDefinition } from '~/lib/badge-definitions';
 
 type Difficulty = Exclude<DifficultyWithEvent, 'EVENT'>;
 
@@ -187,11 +188,22 @@ export interface BadgeInfo {
   name: string;
 }
 
-export function getBadges(_userId: string): BadgeInfo[] {
-  return [
-    {
-      slug: 'registered',
-      name: 'Участник ЛитКот (За регистрацию)',
-    },
-  ];
+export async function getBadges(userId: string): Promise<BadgeInfo[]> {
+  const dbBadges = await prisma.userBadge.findMany({
+    where: { userId },
+    orderBy: { awardedAt: 'asc' },
+    select: { badgeSlug: true },
+  });
+
+  const registered: BadgeInfo = {
+    slug: 'registered',
+    name: 'Участник ЛитКот (За регистрацию)',
+  };
+
+  const awarded: BadgeInfo[] = dbBadges.map((b) => ({
+    slug: b.badgeSlug,
+    name: getBadgeDefinition(b.badgeSlug)?.name ?? b.badgeSlug,
+  }));
+
+  return [registered, ...awarded];
 }

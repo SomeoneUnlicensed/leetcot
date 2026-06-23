@@ -7,7 +7,8 @@ import {
 import type { BadgeInfo } from '../user-info';
 import type { FC } from 'react';
 import { cn } from '@repo/ui/cn';
-import { Sparkles } from '@repo/ui/icons';
+import { Sparkles, Github } from '@repo/ui/icons';
+import Link from 'next/link';
 
 export const SlugToBadgeIcon: Record<BadgeInfo['slug'], FC<{ className?: string }>> = {
   registered: ({ className }) => (
@@ -18,6 +19,16 @@ export const SlugToBadgeIcon: Record<BadgeInfo['slug'], FC<{ className?: string 
       )}
     >
       <Sparkles className="h-8 w-8 animate-pulse text-white" />
+    </div>
+  ),
+  contributor: ({ className }) => (
+    <div
+      className={cn(
+        'relative flex h-16 w-16 items-center justify-center rounded-full border-2 border-purple-500/40 bg-gradient-to-br from-zinc-900 to-zinc-800 shadow-md shadow-purple-900/30 duration-300 hover:scale-105 hover:shadow-purple-700/40',
+        className,
+      )}
+    >
+      <Github className="h-8 w-8 text-white" />
     </div>
   ),
 };
@@ -40,13 +51,13 @@ function BadgesStuff(props: { data: BadgeInfo[] }) {
         return (
           <Tooltip key={b.slug}>
             <TooltipTrigger asChild>
-              <div className="group relative">
+              <Link href={`/badges/${b.slug}`} className="group relative block">
                 {Icon ? (
                   <Icon className="h-16 w-16" />
                 ) : (
                   <div className="bg-muted h-16 w-16 rounded-full" />
                 )}
-              </div>
+              </Link>
             </TooltipTrigger>
             <TooltipContent>{b.name}</TooltipContent>
           </Tooltip>
