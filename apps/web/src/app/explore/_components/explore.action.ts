@@ -42,11 +42,88 @@ export type ExploreChallengeData = ReturnType<typeof getChallengesByTagOrDifficu
 const allTags: Tags[] = Object.values(Tags);
 const allDifficulties: Difficulty[] = Object.values(Difficulty);
 
+const activeChallengeWhere = {
+  status: 'ACTIVE',
+  user: {
+    NOT: {
+      status: 'BANNED',
+    },
+  },
+} satisfies Prisma.ChallengeWhereInput;
+
 export interface FilterOptions {
   difficulty?: Difficulty;
   language?: Language;
   tag?: Tags;
   query?: string;
+}
+
+type ChallengeGroup =
+  | {
+      type: 'difficulty';
+      value: Difficulty;
+    }
+  | {
+      type: 'tag';
+      value: Tags;
+    };
+
+function isTag(value: string): value is Tags {
+  return allTags.includes(value as Tags);
+}
+
+function isDifficulty(value: string): value is Difficulty {
+  return allDifficulties.includes(value as Difficulty);
+}
+
+function parseChallengeGroup(str: string): ChallengeGroup | null {
+  const value = str.trim().toUpperCase();
+
+  if (isTag(value)) {
+    return { type: 'tag', value };
+  }
+
+  if (isDifficulty(value)) {
+    return { type: 'difficulty', value };
+  }
+
+  return null;
+}
+
+function getFilteredChallengeInclude(userId?: string) {
+  return {
+    _count: {
+      select: { vote: true, comment: true },
+    },
+    user: {
+      select: {
+        name: true,
+      },
+    },
+    submission: {
+      where: {
+        userId: userId || '',
+        isSuccessful: true,
+      },
+      take: 1,
+    },
+  } satisfies Prisma.ChallengeInclude;
+}
+
+function getGroupWhere(group: ChallengeGroup): Prisma.ChallengeWhereInput {
+  if (group.type === 'tag') {
+    return {
+      tags: {
+        some: {
+          tag: group.value,
+        },
+      },
+    };
+  }
+
+  return {
+    difficulty: group.value,
+  };
 }
 
 /**
@@ -58,14 +135,7 @@ export async function getFilteredChallenges(
 ): Promise<FilteredChallenge[]> {
   const session = await auth();
 
-  const where: Record<string, unknown> = {
-    status: 'ACTIVE',
-    user: {
-      NOT: {
-        status: 'BANNED',
-      },
-    },
-  };
+  const where: Prisma.ChallengeWhereInput = { ...activeChallengeWhere };
 
   if (filters.difficulty) {
     where.difficulty = filters.difficulty;
@@ -88,23 +158,7 @@ export async function getFilteredChallenges(
 
   return prisma.challenge.findMany({
     where,
-    include: {
-      _count: {
-        select: { vote: true, comment: true },
-      },
-      user: {
-        select: {
-          name: true,
-        },
-      },
-      submission: {
-        where: {
-          userId: session?.user?.id || '',
-          isSuccessful: true,
-        },
-        take: 1,
-      },
-    },
+    include: getFilteredChallengeInclude(session?.user?.id),
     orderBy: { createdAt: 'desc' },
     ...(take && {
       take,
@@ -120,48 +174,18 @@ export async function getChallengesByTagOrDifficulty(
   take?: number,
 ): Promise<FilteredChallenge[]> {
   const session = await auth();
-  const formattedStr = str.trim().toUpperCase();
-  const isTag = allTags.includes(formattedStr as keyof typeof Tags);
-  const isDifficulty = allDifficulties.includes(formattedStr as Difficulty);
+  const group = parseChallengeGroup(str);
 
-  if (!isTag && !isDifficulty) {
+  if (!group) {
     return [];
   }
 
   return prisma.challenge.findMany({
     where: {
-      status: 'ACTIVE',
-      user: {
-        NOT: {
-          status: 'BANNED',
-        },
-      },
-      // OR didn't work. so this workaround is fine because IT WORKS :3
-      ...(isTag
-        ? {
-            tags: { every: { tag: formattedStr as Tags } },
-          }
-        : {
-            difficulty: { in: [formattedStr as Difficulty] },
-          }),
+      ...activeChallengeWhere,
+      ...getGroupWhere(group),
     },
-    include: {
-      _count: {
-        select: { vote: true, comment: true },
-      },
-      user: {
-        select: {
-          name: true,
-        },
-      },
-      submission: {
-        where: {
-          userId: session?.user?.id || '',
-          isSuccessful: true,
-        },
-        take: 1,
-      },
-    },
+    include: getFilteredChallengeInclude(session?.user?.id),
     ...(take && {
       take,
     }),
@@ -176,13 +200,11 @@ export async function searchChallenges(query: string): Promise<SearchedChallenge
 
   return prisma.challenge.findMany({
     where: {
-      status: 'ACTIVE',
-      user: {
-        NOT: {
-          status: 'BANNED',
-        },
-      },
-      OR: [{ name: { contains: query } }, { slug: { contains: query } }],
+      ...activeChallengeWhere,
+      OR: [
+        { name: { contains: query, mode: 'insensitive' } },
+        { slug: { contains: query, mode: 'insensitive' } },
+      ],
     },
     include: {
       user: {
@@ -205,28 +227,36 @@ export type ChallengesByTagOrDifficulty = Awaited<
  * @param str difficutly or tag string
  */
 export const getExploreChallengesLengthByTagOrDifficulty = cache(async (str: string) => {
-  const formattedStr = str.trim().toUpperCase();
+  const group = parseChallengeGroup(str);
+
+  if (!group) {
+    return 0;
+  }
 
   return prisma.challenge.count({
     where: {
-      status: 'ACTIVE',
-      user: {
-        NOT: {
-          status: 'BANNED',
-        },
-      },
-      difficulty: { in: [formattedStr as Difficulty] },
+      ...activeChallengeWhere,
+      ...getGroupWhere(group),
     },
   });
 });
 
 export const getAllChallenges = cache(async () => {
-  const popularChallenges = await getChallengesByTagOrDifficulty('popular', 12);
-  const beginnerChallenges = await getChallengesByTagOrDifficulty('beginner');
-  const easyChallenges = await getChallengesByTagOrDifficulty('easy');
-  const mediumChallenges = await getChallengesByTagOrDifficulty('medium');
-  const hardChallenges = await getChallengesByTagOrDifficulty('hard');
-  const extremeChallenges = await getChallengesByTagOrDifficulty('extreme');
+  const [
+    popularChallenges,
+    beginnerChallenges,
+    easyChallenges,
+    mediumChallenges,
+    hardChallenges,
+    extremeChallenges,
+  ] = await Promise.all([
+    getChallengesByTagOrDifficulty('popular', 12),
+    getChallengesByTagOrDifficulty('beginner'),
+    getChallengesByTagOrDifficulty('easy'),
+    getChallengesByTagOrDifficulty('medium'),
+    getChallengesByTagOrDifficulty('hard'),
+    getChallengesByTagOrDifficulty('extreme'),
+  ]);
 
   const allChallenges: AllChallenges = {
     popularChallenges,
