@@ -1,0 +1,48 @@
+name: Promote merged PR to leetcot
+
+# Этот файл копируется в leetcot-contrib через sync-contrib.yml.
+# В самом leetcot не выполняется — см. условие repository ниже.
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  promote:
+    if: github.repository == 'SomeoneUnlicensed/leetcot-contrib' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout merged branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Push branch to leetcot
+        env:
+          TOKEN: ${{ secrets.LEETCOT_PUSH_TOKEN }}
+          BRANCH: promote/pr-${{ github.event.pull_request.number }}
+        run: |
+          git remote add leetcot "https://x-access-token:${TOKEN}@github.com/SomeoneUnlicensed/leetcot.git"
+          git push leetcot "HEAD:refs/heads/${BRANCH}" --force
+
+      - name: Open PR in leetcot
+        env:
+          GH_TOKEN: ${{ secrets.LEETCOT_PUSH_TOKEN }}
+          BRANCH: promote/pr-${{ github.event.pull_request.number }}
+          TITLE: ${{ github.event.pull_request.title }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          SRC_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          existing=$(gh pr list --repo SomeoneUnlicensed/leetcot --head "$BRANCH" --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            echo "PR already exists: #$existing"
+            exit 0
+          fi
+          gh pr create \
+            --repo SomeoneUnlicensed/leetcot \
+            --base main \
+            --head "$BRANCH" \
+            --title "$TITLE" \
+            --body "Promoted from leetcot-contrib PR #${SRC_NUMBER} (merged by @${AUTHOR})."
