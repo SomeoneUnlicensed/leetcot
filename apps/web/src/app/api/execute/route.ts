@@ -86,7 +86,7 @@ export async function POST(req: Request) {
       const err = execError as { killed?: boolean; code?: number; stderr?: string; stdout?: string; message?: string };
 
       // Проверяем таймаут по разным признакам
-      if (timedOut || err.killed || err.code === 'ETIMEDOUT' || (err.message && err.message.includes('TIMEOUT'))) {
+      if (timedOut || err.killed || (err.message && err.message.includes('TIMEOUT'))) {
         return NextResponse.json({
           success: false,
           error: 'ТАЙМАУТ: Код выполнялся дольше 10 секунд. Возможно бесконечный цикл или очень медленное выполнение.',
