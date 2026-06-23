@@ -6,6 +6,7 @@ on:
 
 jobs:
   sync:
+    if: github.repository == 'SomeoneUnlicensed/leetcot'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
