@@ -132,7 +132,17 @@ jobs:
           $COMPOSE ps
           test "$(docker inspect leetcot-app-1 --format '{{.Config.Image}}')" = "$LEETCOT_IMAGE"
           test "$(docker inspect leetcot-code-runner-1 --format '{{.Config.Image}}')" = "$LEETCOT_IMAGE"
-          curl -fsS http://127.0.0.1:3002 >/dev/null
+
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:3002 >/dev/null; then
+              break
+            fi
+            if [ "$i" -eq 30 ]; then
+              echo "Application did not become ready in time"
+              exit 1
+            fi
+            sleep 2
+          done
 
           docker image prune -f || true
           docker builder prune -f || true

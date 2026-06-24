@@ -34,19 +34,19 @@ interface DockerRunResult {
 }
 
 interface LanguageRuntime {
-  command: string;
+  command: string[];
   fileName: string;
   image: string;
 }
 
 const runtimes = {
   javascript: {
-    command: 'node main.js',
+    command: ['node', 'main.js'],
     fileName: 'main.js',
     image: 'node:20-alpine',
   },
   python: {
-    command: 'python main.py',
+    command: ['python', 'main.py'],
     fileName: 'main.py',
     image: 'python:3.11-alpine',
   },
@@ -66,6 +66,31 @@ function getErrorMessage(error: unknown) {
 
 async function forceRemoveContainer(containerName: string) {
   await execAsync(`docker rm -f "${containerName}"`).catch(() => undefined);
+}
+
+async function cleanupStaleSandboxContainers() {
+  const { stdout } = await execAsync(
+    'docker ps -aq --filter "name=^/litkot-run-" --filter "label=litkot.runner=code-runner"',
+  ).catch(() => ({ stdout: '' }));
+  const containerIds = stdout.split(/\s+/).filter(Boolean);
+
+  if (containerIds.length === 0) {
+    return;
+  }
+
+  await execAsync(`docker rm -f ${containerIds.join(' ')}`).catch(() => undefined);
+  console.log(`Removed ${containerIds.length} stale sandbox container(s)`);
+}
+
+async function warmRuntimeImages() {
+  const images = [...new Set(Object.values(runtimes).map((runtime) => runtime.image))];
+
+  await Promise.all(
+    images.map(async (image) => {
+      await execAsync(`docker pull "${image}"`);
+      console.log(`Runtime image ready: ${image}`);
+    }),
+  );
 }
 
 async function runSandboxContainer(
@@ -144,8 +169,18 @@ async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
       '--rm',
       '--name',
       containerName,
+      '--label',
+      'litkot.runner=code-runner',
+      '--label',
+      `litkot.job=${job.id}`,
+      '--pull',
+      'never',
       '--network',
       'none',
+      '--cap-drop',
+      'ALL',
+      '--security-opt',
+      'no-new-privileges',
       '-m',
       MEMORY_LIMIT,
       '--cpus',
@@ -157,7 +192,7 @@ async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
       '-w',
       '/code',
       runtime.image,
-      ...runtime.command.split(' '),
+      ...runtime.command,
     ];
 
     try {
@@ -238,6 +273,16 @@ async function worker(workerId: number) {
   }
 }
 
-for (let i = 0; i < CONCURRENCY; i += 1) {
-  void worker(i + 1);
+async function main() {
+  await cleanupStaleSandboxContainers();
+  await warmRuntimeImages();
+
+  for (let i = 0; i < CONCURRENCY; i += 1) {
+    void worker(i + 1);
+  }
 }
+
+void main().catch((error: unknown) => {
+  console.error('Code runner failed to start', error);
+  process.exit(1);
+});
