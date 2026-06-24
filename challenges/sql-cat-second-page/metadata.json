@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-second-page",
+  "label": "Вторая страница рейтинга (OFFSET)",
+  "description": "Покажите вторую страницу рейтинга по два участника.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

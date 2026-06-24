@@ -1,0 +1,15 @@
+{
+  "schema": "CREATE TABLE applications (id INTEGER PRIMARY KEY, cat TEXT, email TEXT);",
+  "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Барсик', 'barsik@mail'), (2, 'Мурка', 'murka@mail'), (3, 'Барсик', 'barsik@mail'), (4, 'Патч', 'patch@mail'), (5, 'Мурка', 'murka@mail');",
+  "expectedType": "select",
+  "expected": [
+    {
+      "cat": "Барсик",
+      "duplicates": 2
+    },
+    {
+      "cat": "Мурка",
+      "duplicates": 2
+    }
+  ]
+}

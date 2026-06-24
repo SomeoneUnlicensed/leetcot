@@ -156,10 +156,10 @@ model User {
 
   /// Exams created by teachers
   createdExams ExamSession[] @relation("exam_student")
-  teacherExams Exam[] @relation("exam_teacher")
+  teacherExams Exam[]        @relation("exam_teacher")
 
-  championships        ChampionshipParticipant[]
-  userBadges           UserBadge[]
+  championships ChampionshipParticipant[]
+  userBadges    UserBadge[]
 }
 
 model VerificationToken {
@@ -196,6 +196,7 @@ enum Language {
   HASKELL
   PERL
   LUA
+  SQL
 }
 
 enum QuestionType {
@@ -227,7 +228,6 @@ enum QuestionAnswerStatus {
   GRADED
 }
 
-
 model Challenge {
   id               Int             @id @default(autoincrement())
   createdAt        DateTime        @default(now())
@@ -257,7 +257,7 @@ model Challenge {
   comment        Comment[]
   bookmark       Bookmark[]
   sharedSolution SharedSolution[]
-  Report         Report[]         @relation("report_challenge")
+  Report         Report[]                @relation("report_challenge")
   TrackChallenge TrackChallenge[]
   Notification   Notification[]
   championships  ChampionshipChallenge[]
@@ -501,17 +501,15 @@ model Track {
 }
 
 model Course {
-  id            Int       @id @default(autoincrement())
-  name          String    @unique
-  slug          String    @unique
-  description   String    @db.Text
-  visible       Boolean   @default(true)
-  isComingSoon  Boolean   @default(false)
+  id            Int     @id @default(autoincrement())
+  name          String  @unique
+  slug          String  @unique
+  description   String  @db.Text
+  visible       Boolean @default(true)
+  isComingSoon  Boolean @default(false)
   tracks        Track[]
   enrolledUsers User[]
 }
-
-
 
 model Notification {
   id               Int              @id @default(autoincrement())
@@ -544,186 +542,186 @@ model Notification {
 }
 
 model Exam {
-  id              String           @id @default(uuid())
+  id                     String         @id @default(uuid())
   /// Exam title
-  title           String
+  title                  String
   /// Exam description
-  description     String           @db.Text
+  description            String         @db.Text
   /// Class/grade level
-  classLevel      String
+  classLevel             String
   /// Unique token for sharing the exam link
-  shareToken      String           @unique
+  shareToken             String         @unique
   /// Exam status
-  status          ExamStatus       @default(DRAFT)
+  status                 ExamStatus     @default(DRAFT)
   /// Teacher who created the exam
-  teacher         User             @relation("exam_teacher", fields: [teacherId], references: [id])
-  teacherId       String
+  teacher                User           @relation("exam_teacher", fields: [teacherId], references: [id])
+  teacherId              String
   /// Questions in this exam
-  questions       ExamQuestion[]
+  questions              ExamQuestion[]
   /// Student sessions for this exam
-  sessions        ExamSession[]
+  sessions               ExamSession[]
   /// Results/summary data
-  results         ExamResult[]
+  results                ExamResult[]
   /// When the exam starts
-  startDate       DateTime?
+  startDate              DateTime?
   /// When the exam ends
-  endDate         DateTime?
+  endDate                DateTime?
   /// Whether to show results immediately
-  showResultsImmediately Boolean @default(true)
+  showResultsImmediately Boolean        @default(true)
   /// Maximum attempts per student
-  maxAttempts     Int              @default(1)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  maxAttempts            Int            @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([teacherId])
   @@index([shareToken])
 }
 
 model ExamQuestion {
-  id              String           @id @default(uuid())
+  id                String       @id @default(uuid())
   /// Question order in the exam
-  order           Int
+  order             Int
   /// Question type (multiple choice, code task, etc)
-  type            QuestionType
+  type              QuestionType
   /// Question content/prompt
-  content         String           @db.Text
+  content           String       @db.Text
   /// Points for this question
-  points          Int              @default(1)
+  points            Int          @default(1)
   /// Programming language (for code tasks)
-  language        Language?
+  language          Language?
   /// For code tasks checked by calling a function (e.g. "max_depth"). When set, test cases
   /// are evaluated by calling this function with args from TestCase.input instead of stdin.
-  functionName    String?
+  functionName      String?
   /// For function-based code tasks: JSON array of parameter names (e.g. ["root"])
-  functionParams  Json?
+  functionParams    Json?
   /// For multiple choice questions: JSON array of options
-  options         Json?
+  options           Json?
   /// For multiple choice questions: index of correct answer(s)
-  correctAnswers  Json?
+  correctAnswers    Json?
   /// For short-answer questions: reference answer, compared case/whitespace-insensitively
   correctAnswerText String?
   /// For matching questions: JSON array of {left, right} pairs
-  matchingPairs   Json?
+  matchingPairs     Json?
   /// For fill-in-the-blank questions: JSON array of correct answers, one per blank in order
-  blankAnswers    Json?
+  blankAnswers      Json?
   /// For ordering questions: JSON array of items in correct order
-  orderingItems   Json?
+  orderingItems     Json?
   /// Test cases for code tasks
-  testCases       TestCase[]
+  testCases         TestCase[]
   /// The exam this question belongs to
-  exam            Exam             @relation(fields: [examId], references: [id], onDelete: Cascade)
-  examId          String
+  exam              Exam         @relation(fields: [examId], references: [id], onDelete: Cascade)
+  examId            String
   /// Student answers to this question
-  answers         ExamAnswer[]
+  answers           ExamAnswer[]
 
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([examId])
 }
 
 model TestCase {
-  id              String           @id @default(uuid())
+  id             String       @id @default(uuid())
   /// Input for the test case
-  input           String           @db.Text
+  input          String       @db.Text
   /// Expected output
-  expectedOutput  String           @db.Text
+  expectedOutput String       @db.Text
   /// Points for this test case
-  points          Int              @default(1)
+  points         Int          @default(1)
   /// Timeout in milliseconds
-  timeout         Int              @default(5000)
+  timeout        Int          @default(5000)
   /// Whether this is a hidden test case
-  isHidden        Boolean          @default(false)
+  isHidden       Boolean      @default(false)
   /// Question this test case belongs to
-  question        ExamQuestion     @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  questionId      String
+  question       ExamQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId     String
 
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([questionId])
 }
 
 model ExamSession {
-  id              String           @id @default(uuid())
+  id             String            @id @default(uuid())
   /// Student who is taking the exam (can be unauthenticated)
-  student         User?            @relation("exam_student", fields: [studentId], references: [id])
-  studentId       String?
+  student        User?             @relation("exam_student", fields: [studentId], references: [id])
+  studentId      String?
   /// Student info for unauthenticated access
-  studentName     String?
-  studentSurname  String?
-  studentClass    String?
+  studentName    String?
+  studentSurname String?
+  studentClass   String?
   /// The exam being taken
-  exam            Exam             @relation(fields: [examId], references: [id], onDelete: Cascade)
-  examId          String
+  exam           Exam              @relation(fields: [examId], references: [id], onDelete: Cascade)
+  examId         String
   /// Session status
-  status          ExamSessionStatus @default(NOT_STARTED)
+  status         ExamSessionStatus @default(NOT_STARTED)
   /// Student answers for this session
-  answers         ExamAnswer[]
+  answers        ExamAnswer[]
   /// Final result
-  result          ExamResult?
+  result         ExamResult?
   /// When the session started
-  startedAt       DateTime?
+  startedAt      DateTime?
   /// When the session was submitted
-  submittedAt     DateTime?
+  submittedAt    DateTime?
   /// Session duration in milliseconds
-  duration        Int?
+  duration       Int?
 
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([examId])
   @@index([studentId])
 }
 
 model ExamAnswer {
-  id              String           @id @default(uuid())
+  id          String               @id @default(uuid())
   /// The question being answered
-  question        ExamQuestion     @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  questionId      String
+  question    ExamQuestion         @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId  String
   /// The session this answer belongs to
-  session         ExamSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  sessionId       String
+  session     ExamSession          @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId   String
   /// Student's answer (for multiple choice, short answer, or code)
-  answer          String           @db.Text
+  answer      String               @db.Text
   /// Status of the answer (not answered, answered, graded)
-  status          QuestionAnswerStatus @default(ANSWERED)
+  status      QuestionAnswerStatus @default(ANSWERED)
   /// Score for this answer
-  score           Int?
+  score       Int?
   /// Feedback/explanation for the student
-  feedback        String?          @db.Text
+  feedback    String?              @db.Text
   /// For code tasks: test case results as JSON
-  testResults     Json?
+  testResults Json?
 
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([questionId])
   @@index([sessionId])
 }
 
 model ExamResult {
-  id              String           @id @default(uuid())
+  id         String      @id @default(uuid())
   /// The exam
-  exam            Exam             @relation(fields: [examId], references: [id], onDelete: Cascade)
-  examId          String
+  exam       Exam        @relation(fields: [examId], references: [id], onDelete: Cascade)
+  examId     String
   /// The session that generated this result
-  session         ExamSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  sessionId       String           @unique
+  session    ExamSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId  String      @unique
   /// Total score
-  totalScore      Int
+  totalScore Int
   /// Maximum possible score
-  maxScore        Int
+  maxScore   Int
   /// Score percentage
-  percentage      Float
+  percentage Float
   /// Grading status
-  isGraded        Boolean          @default(false)
+  isGraded   Boolean     @default(false)
   /// Teacher comments
-  comments        String?          @db.Text
+  comments   String?     @db.Text
 
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([examId])
   @@index([sessionId])
@@ -748,14 +746,14 @@ model ShortURL {
 }
 
 model Championship {
-  id          String   @id @default(uuid())
-  name        String
-  slug        String   @unique
-  description String   @db.Text
-  status      String   @default("DRAFT") // DRAFT, ACTIVE, PAST
-  startDate   DateTime
-  endDate     DateTime
-  challenges  ChampionshipChallenge[]
+  id           String                    @id @default(uuid())
+  name         String
+  slug         String                    @unique
+  description  String                    @db.Text
+  status       String                    @default("DRAFT") // DRAFT, ACTIVE, PAST
+  startDate    DateTime
+  endDate      DateTime
+  challenges   ChampionshipChallenge[]
   participants ChampionshipParticipant[]
 }
 

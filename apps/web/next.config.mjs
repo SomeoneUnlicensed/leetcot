@@ -1,5 +1,5 @@
-// NOTE: million/compiler is webpack-only and incompatible with turbopack.
-// In dev (turbopack) we skip it; in production builds webpack is used so million is applied.
+// NOTE: million/compiler is webpack-only and expensive for local development.
+// Keep it production-only; development should favor fast, predictable reloads.
 import bundleAnalyzer from '@next/bundle-analyzer';
 import { withSentryConfig } from '@sentry/nextjs';
 // eslint-disable-next-line import/no-unresolved
@@ -11,7 +11,6 @@ const millionConfig = {
   auto: { rsc: true },
 };
 const isProd = process.env.NODE_ENV === 'production';
-// Detect turbopack mode via CLI args (--turbopack flag)
 const isTurbopack = process.argv.includes('--turbopack');
 
 const nextConfig = {
@@ -30,16 +29,18 @@ const nextConfig = {
     return [];
   },
   async rewrites() {
-    return [
-      {
-        source: '/panel',
-        destination: 'http://localhost:3001/panel',
-      },
-      {
-        source: '/panel/:path*',
-        destination: 'http://localhost:3001/panel/:path*',
-      },
-    ];
+    return isProd
+      ? []
+      : [
+          {
+            source: '/panel',
+            destination: 'http://localhost:3001/panel',
+          },
+          {
+            source: '/panel/:path*',
+            destination: 'http://localhost:3001/panel/:path*',
+          },
+        ];
   },
   transpilePackages: ['@repo/db', '@repo/ui', '@repo/auth', '@repo/monaco'],
   images: {
@@ -61,12 +62,11 @@ const withBundleAnalyzer = bundleAnalyzer({
 });
 const withVercelToolbar = vercelToolbar();
 
-// In turbopack (dev) mode: skip million compiler (webpack-only)
 /** @param {any} config */
 const withPlugins = (config) =>
-  isTurbopack
-    ? withBundleAnalyzer(withVercelToolbar(config))
-    : million.next(withBundleAnalyzer(withVercelToolbar(config)), millionConfig);
+  isProd && !isTurbopack
+    ? million.next(withBundleAnalyzer(withVercelToolbar(config)), millionConfig)
+    : withBundleAnalyzer(withVercelToolbar(config));
 
 const baseConfig = withPlugins(nextConfig);
 

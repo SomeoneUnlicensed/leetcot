@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-feeder-leftovers",
+  "label": "Кормушки с остатками (LEFT JOIN)",
+  "description": "Покажите все кормушки и сколько еды в них осталось, даже если записи об остатках нет.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

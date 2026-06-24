@@ -1,0 +1,20 @@
+{
+  "schema": "CREATE TABLE awards (cat TEXT PRIMARY KEY, points INTEGER, tier TEXT);",
+  "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Барсик', 50, NULL), ('Мурка', 120, NULL), ('Патч', 10, NULL);",
+  "expectedType": "state",
+  "expected": [
+    {
+      "cat": "Мурка",
+      "tier": "gold"
+    },
+    {
+      "cat": "Барсик",
+      "tier": "silver"
+    },
+    {
+      "cat": "Патч",
+      "tier": "bronze"
+    }
+  ],
+  "expectedQuery": "SELECT cat, tier FROM awards ORDER BY points DESC;"
+}

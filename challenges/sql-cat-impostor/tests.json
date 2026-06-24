@@ -1,0 +1,9 @@
+{
+  "schema": "CREATE TABLE cats (id INTEGER PRIMARY KEY, name TEXT NOT NULL, registered_at TEXT NOT NULL);",
+  "seed": "INSERT INTO cats VALUES (1,'Мурзик','2024-01-01'),(2,'Васька','2024-01-02'),(3,'Мурзик','2024-01-03'),(4,'Барсик','2024-01-04'),(5,'Рыжик','2024-01-05'),(6,'Васька','2024-01-06'),(7,'Мурзик','2024-01-07'),(8,'Снежок','2024-01-08');",
+  "expectedType": "select",
+  "expected": [
+    { "name": "Мурзик", "count": 3 },
+    { "name": "Васька", "count": 2 }
+  ]
+}

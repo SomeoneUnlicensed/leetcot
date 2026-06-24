@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-fishing-rank",
+  "label": "Рейтинг котов-рыбаков (AVG + HAVING)",
+  "description": "Составь рейтинг котов по среднему улову, только тех кто ловил 3+ раза.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

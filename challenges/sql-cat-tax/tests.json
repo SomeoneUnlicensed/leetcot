@@ -1,0 +1,13 @@
+{
+  "schema": "CREATE TABLE prices (id INTEGER PRIMARY KEY, fish_type TEXT NOT NULL, price REAL NOT NULL, tier TEXT NOT NULL);",
+  "seed": "INSERT INTO prices VALUES (1,'Сёмга',100.0,'premium'),(2,'Треска',40.0,'standard'),(3,'Тунец',150.0,'premium'),(4,'Карп',30.0,'standard'),(5,'Лосось',120.0,'premium');",
+  "expectedType": "state",
+  "expectedQuery": "SELECT id, ROUND(price, 2) as price FROM prices ORDER BY id",
+  "expected": [
+    { "id": 1, "price": 120.0 },
+    { "id": 2, "price": 40.0 },
+    { "id": 3, "price": 180.0 },
+    { "id": 4, "price": 30.0 },
+    { "id": 5, "price": 144.0 }
+  ]
+}

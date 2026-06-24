@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-pair-count",
+  "label": "Сколько раз кто ел (JOIN COUNT)",
+  "description": "Посчитайте количество кормлений по каждому коту.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

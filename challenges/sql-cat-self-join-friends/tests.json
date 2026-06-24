@@ -1,0 +1,19 @@
+{
+  "schema": "CREATE TABLE cats (id INTEGER PRIMARY KEY, name TEXT, mentor_id INTEGER);",
+  "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Барсик', NULL), (2, 'Мурка', NULL), (3, 'Пиксель', 1), (4, 'Байт', 2), (5, 'Скрипт', 1);",
+  "expectedType": "select",
+  "expected": [
+    {
+      "kitten": "Пиксель",
+      "mentor": "Барсик"
+    },
+    {
+      "kitten": "Байт",
+      "mentor": "Мурка"
+    },
+    {
+      "kitten": "Скрипт",
+      "mentor": "Барсик"
+    }
+  ]
+}

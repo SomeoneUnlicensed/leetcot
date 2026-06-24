@@ -1,0 +1,13 @@
+{
+  "schema": "CREATE TABLE cats (id INTEGER PRIMARY KEY, name TEXT); CREATE TABLE medals (id INTEGER PRIMARY KEY, cat_id INTEGER, title TEXT);",
+  "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Мурка'), (3, 'Патч'); INSERT INTO medals (id, cat_id, title) VALUES (1, 1, 'SQL-ус'), (2, 1, 'JOIN-лапа'), (3, 3, 'SELECT-хвост');",
+  "expectedType": "select",
+  "expected": [
+    {
+      "name": "Барсик"
+    },
+    {
+      "name": "Патч"
+    }
+  ]
+}

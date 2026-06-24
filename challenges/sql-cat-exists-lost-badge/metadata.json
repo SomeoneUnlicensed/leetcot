@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-exists-lost-badge",
+  "label": "Коты с медалями (EXISTS)",
+  "description": "Покажите котов, у которых есть хотя бы одна медаль.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

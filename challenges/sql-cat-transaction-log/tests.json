@@ -1,0 +1,16 @@
+{
+  "schema": "CREATE TABLE purchases (id INTEGER PRIMARY KEY, cat TEXT, amount INTEGER); CREATE TABLE audit_log (cat TEXT, amount INTEGER);",
+  "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Барсик', 40), (2, 'Мурка', 120), (3, 'Патч', 95), (4, 'Снежок', 130);",
+  "expectedType": "state",
+  "expected": [
+    {
+      "cat": "Снежок",
+      "amount": 130
+    },
+    {
+      "cat": "Мурка",
+      "amount": 120
+    }
+  ],
+  "expectedQuery": "SELECT cat, amount FROM audit_log ORDER BY amount DESC;"
+}

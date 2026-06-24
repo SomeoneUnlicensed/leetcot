@@ -1,0 +1,19 @@
+{
+  "schema": "CREATE TABLE funnels (channel TEXT, visits INTEGER, signups INTEGER);",
+  "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('поиск', 100, 25), ('соцсети', 0, 0), ('письма', 40, 8);",
+  "expectedType": "select",
+  "expected": [
+    {
+      "channel": "поиск",
+      "conversion": 0.25
+    },
+    {
+      "channel": "письма",
+      "conversion": 0.2
+    },
+    {
+      "channel": "соцсети",
+      "conversion": null
+    }
+  ]
+}

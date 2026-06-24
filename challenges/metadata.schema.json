@@ -45,10 +45,12 @@
         "HASKELL",
         "PERL",
         "LUA",
+        "SQL",
         "typescript",
         "javascript",
         "python",
-        "go"
+        "go",
+        "sql"
       ]
     },
     "prerequisites": {

@@ -1,0 +1,13 @@
+{
+  "schema": "CREATE TABLE pantry (id INTEGER PRIMARY KEY, item TEXT, expires_at TEXT);",
+  "seed": "INSERT INTO pantry (id, item, expires_at) VALUES (1, 'тунец', '2026-06-20'), (2, 'лосось', '2026-06-30'), (3, 'сметана', '2026-06-23'), (4, 'сухой корм', '2026-07-10');",
+  "expectedType": "select",
+  "expected": [
+    {
+      "item": "тунец"
+    },
+    {
+      "item": "сметана"
+    }
+  ]
+}

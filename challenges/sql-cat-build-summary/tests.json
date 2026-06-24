@@ -1,0 +1,20 @@
+{
+  "schema": "CREATE TABLE catches (cat TEXT, fish_count INTEGER);",
+  "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Барсик', 4), ('Барсик', 6), ('Мурка', 3), ('Патч', 9);",
+  "expectedType": "state",
+  "expected": [
+    {
+      "cat": "Барсик",
+      "total_fish": 10
+    },
+    {
+      "cat": "Патч",
+      "total_fish": 9
+    },
+    {
+      "cat": "Мурка",
+      "total_fish": 3
+    }
+  ],
+  "expectedQuery": "SELECT cat, total_fish FROM catch_summary ORDER BY total_fish DESC;"
+}

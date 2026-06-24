@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-tax",
+  "label": "Налог на рыбу (UPDATE + математика)",
+  "description": "Обнови цены на премиальную рыбу, увеличив их на 20%.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

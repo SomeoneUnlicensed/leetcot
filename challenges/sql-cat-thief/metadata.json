@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-thief",
+  "label": "Похититель сосисок (JOIN & LIMIT)",
+  "description": "Найдите имя кота, совершившего последнее зафиксированное похищение сосиски.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

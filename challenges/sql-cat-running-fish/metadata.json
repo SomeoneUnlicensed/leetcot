@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-running-fish",
+  "label": "Накопительный улов (SUM OVER)",
+  "description": "Посчитайте накопительный улов по дням.",
+  "difficulty": "hard",
+  "language": "sql",
+  "author": "ЛитКот"
+}

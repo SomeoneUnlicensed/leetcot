@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-hungry",
+  "label": "Самые голодные коты (GROUP BY + JOIN)",
+  "description": "Найди котов с наибольшим суммарным количеством съеденных рыбок.",
+  "difficulty": "easy",
+  "language": "sql",
+  "author": "ЛитКот"
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "CREATE TABLE snacks (id INTEGER PRIMARY KEY, name TEXT, votes INTEGER);",
+  "seed": "INSERT INTO snacks (id, name, votes) VALUES (1, 'тунец', 18), (2, 'сметана', 11), (3, 'лосось', 25), (4, 'креветка', 21), (5, 'сухарик', 4);",
+  "expectedType": "select",
+  "expected": [
+    {
+      "name": "лосось",
+      "votes": 25
+    },
+    {
+      "name": "креветка",
+      "votes": 21
+    },
+    {
+      "name": "тунец",
+      "votes": 18
+    }
+  ]
+}

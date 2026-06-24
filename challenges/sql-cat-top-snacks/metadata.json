@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-top-snacks",
+  "label": "Топ перекусов (LIMIT)",
+  "description": "Выберите три самых популярных перекуса.",
+  "difficulty": "easy",
+  "language": "sql",
+  "author": "ЛитКот"
+}

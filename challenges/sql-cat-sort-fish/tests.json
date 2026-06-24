@@ -1,0 +1,10 @@
+{
+  "schema": "CREATE TABLE fishes (id INTEGER PRIMARY KEY, name TEXT, weight INTEGER);",
+  "seed": "INSERT INTO fishes (id, name, weight) VALUES (1, 'Карась мелкий', 80), (2, 'Окунь жирный', 150), (3, 'Золотая рыбка', 120), (4, 'Плотва', 95), (5, 'Сом гигант', 500);",
+  "expectedType": "select",
+  "expected": [
+    { "name": "Сом гигант", "weight": 500 },
+    { "name": "Окунь жирный", "weight": 150 },
+    { "name": "Золотая рыбка", "weight": 120 }
+  ]
+}

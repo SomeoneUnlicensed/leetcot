@@ -1,0 +1,20 @@
+{
+  "schema": "CREATE TABLE rations (cat TEXT PRIMARY KEY, grams INTEGER, active INTEGER);",
+  "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Барсик', 80, 1), ('Мурка', 70, 0), ('Патч', 60, 1);",
+  "expectedType": "state",
+  "expected": [
+    {
+      "cat": "Барсик",
+      "grams": 90
+    },
+    {
+      "cat": "Мурка",
+      "grams": 70
+    },
+    {
+      "cat": "Патч",
+      "grams": 70
+    }
+  ],
+  "expectedQuery": "SELECT cat, grams FROM rations ORDER BY cat;"
+}

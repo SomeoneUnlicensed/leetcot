@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-transaction-log",
+  "label": "Записать крупные покупки (INSERT SELECT)",
+  "description": "Скопируйте крупные покупки в журнал аудита.",
+  "difficulty": "hard",
+  "language": "sql",
+  "author": "ЛитКот"
+}

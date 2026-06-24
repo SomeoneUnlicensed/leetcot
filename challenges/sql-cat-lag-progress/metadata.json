@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-lag-progress",
+  "label": "Прогресс после тренировки (LAG)",
+  "description": "Покажите разницу очков с предыдущей тренировкой.",
+  "difficulty": "hard",
+  "language": "sql",
+  "author": "ЛитКот"
+}

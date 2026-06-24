@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-normalize-awards",
+  "label": "Нормализовать награды (UPDATE CASE)",
+  "description": "Проставьте уровень награды по количеству очков.",
+  "difficulty": "hard",
+  "language": "sql",
+  "author": "ЛитКот"
+}

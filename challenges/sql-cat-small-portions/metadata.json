@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-small-portions",
+  "label": "Маленькие порции для котят (WHERE AND)",
+  "description": "Найдите рыбные порции для котят: только блюда из рыбы весом от 20 до 60 грамм включительно.",
+  "difficulty": "easy",
+  "language": "sql",
+  "author": "ЛитКот"
+}

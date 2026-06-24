@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-sort-fish",
+  "label": "Сортировка улова (ORDER BY & WHERE)",
+  "description": "Выберите самую крупную рыбу для кота Рыжика весом строго больше 100 грамм.",
+  "difficulty": "easy",
+  "language": "sql",
+  "author": "ЛитКот"
+}

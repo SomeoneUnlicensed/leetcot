@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-safe-division",
+  "label": "Аккуратная конверсия (NULLIF)",
+  "description": "Посчитайте конверсию без деления на ноль.",
+  "difficulty": "hard",
+  "language": "sql",
+  "author": "ЛитКот"
+}

@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-insert-kitten",
+  "label": "Новый ученик в группе (INSERT)",
+  "description": "Добавьте нового котёнка в таблицу учеников.",
+  "difficulty": "easy",
+  "language": "sql",
+  "author": "ЛитКот"
+}

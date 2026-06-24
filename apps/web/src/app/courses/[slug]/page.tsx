@@ -36,6 +36,7 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
           },
           trackChallenges: session?.user
             ? {
+                orderBy: { orderId: 'asc' },
                 include: {
                   challenge: {
                     include: {
@@ -51,6 +52,7 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
                 },
               }
             : {
+                orderBy: { orderId: 'asc' },
                 include: {
                   challenge: true,
                 },

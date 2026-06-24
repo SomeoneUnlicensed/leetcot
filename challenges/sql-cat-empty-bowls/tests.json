@@ -1,0 +1,15 @@
+{
+  "schema": "CREATE TABLE bowls (id INTEGER PRIMARY KEY, place TEXT, dish TEXT);",
+  "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'окно', 'тунец'), (2, 'диван', NULL), (3, 'кухня', 'лосось'), (4, 'балкон', NULL);",
+  "expectedType": "select",
+  "expected": [
+    {
+      "place": "диван",
+      "dish_name": "пусто"
+    },
+    {
+      "place": "балкон",
+      "dish_name": "пусто"
+    }
+  ]
+}

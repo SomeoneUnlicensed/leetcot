@@ -1,0 +1,19 @@
+{
+  "schema": "CREATE TABLE feeders (id INTEGER PRIMARY KEY, name TEXT); CREATE TABLE leftovers (feeder_id INTEGER, grams INTEGER);",
+  "seed": "INSERT INTO feeders (id, name) VALUES (1, 'окно'), (2, 'кухня'), (3, 'балкон'); INSERT INTO leftovers (feeder_id, grams) VALUES (1, 30), (3, 5);",
+  "expectedType": "select",
+  "expected": [
+    {
+      "name": "окно",
+      "grams_left": 30
+    },
+    {
+      "name": "кухня",
+      "grams_left": 0
+    },
+    {
+      "name": "балкон",
+      "grams_left": 5
+    }
+  ]
+}

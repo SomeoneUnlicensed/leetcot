@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-update-ration",
+  "label": "Увеличить рацион (UPDATE)",
+  "description": "Поднимите рацион активным котам.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

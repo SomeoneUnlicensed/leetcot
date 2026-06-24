@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-price-tags",
+  "label": "Ценники рыбного рынка (CASE)",
+  "description": "Разделите рыбу на дешёвую, обычную и дорогую по цене.",
+  "difficulty": "easy",
+  "language": "sql",
+  "author": "ЛитКот"
+}

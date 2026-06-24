@@ -15,6 +15,7 @@ import { SubmissionOverview } from './submissions/[[...catchAll]]/_components/ov
 import { saveSubmission } from './submissions/[[...catchAll]]/save-submission.action';
 import SwapPanelButton from '../_components/swap-panel-button';
 import { useQueryClient } from '@tanstack/react-query';
+import { SqlTerminal } from '../_components/sql-terminal';
 
 interface RightWrapperProps {
   challenge: ChallengeRouteData['challenge'];
@@ -54,7 +55,7 @@ export function RightWrapper({
       <div className="m-4 flex h-full min-h-[400px] select-none flex-col items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
         <pre className="mb-6 whitespace-pre text-center font-mono text-lg font-bold leading-relaxed text-zinc-700 md:text-xl dark:text-zinc-300">
           {`   /\\_/\\
-  ( =.o=)  *мурр... это теория*
+  ( o.o )  *мурр...*
    > ^ <`}
         </pre>
         <h3 className="mb-2 text-center font-sans text-xl font-extrabold text-zinc-800 dark:text-zinc-100">
@@ -94,6 +95,16 @@ export function RightWrapper({
           )}
         </button>
       </div>
+    );
+  }
+
+  if (challenge.language === 'SQL') {
+    return (
+      <SqlTerminal
+        challenge={challenge}
+        nextChallengeSlug={nextChallenge?.slug}
+        trackSlug={track?.slug}
+      />
     );
   }
 

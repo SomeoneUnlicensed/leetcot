@@ -1,0 +1,19 @@
+{
+  "schema": "CREATE TABLE catches (id INTEGER PRIMARY KEY, team TEXT, fish_count INTEGER);",
+  "seed": "INSERT INTO catches (id, team, fish_count) VALUES (1, 'лапки', 8), (2, 'лапки', 12), (3, 'усы', 5), (4, 'усы', 7), (5, 'хвосты', 20);",
+  "expectedType": "select",
+  "expected": [
+    {
+      "team": "хвосты",
+      "avg_fish": 20
+    },
+    {
+      "team": "лапки",
+      "avg_fish": 10
+    },
+    {
+      "team": "усы",
+      "avg_fish": 6
+    }
+  ]
+}

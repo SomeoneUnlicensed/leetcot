@@ -1,0 +1,22 @@
+{
+  "schema": "CREATE TABLE shifts (cat TEXT, shift TEXT, fish_count INTEGER);",
+  "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Барсик', 'day', 4), ('Барсик', 'night', 7), ('Мурка', 'day', 5), ('Мурка', 'night', 1), ('Патч', 'day', 3);",
+  "expectedType": "select",
+  "expected": [
+    {
+      "cat": "Барсик",
+      "day_fish": 4,
+      "night_fish": 7
+    },
+    {
+      "cat": "Мурка",
+      "day_fish": 5,
+      "night_fish": 1
+    },
+    {
+      "cat": "Патч",
+      "day_fish": 3,
+      "night_fish": 0
+    }
+  ]
+}

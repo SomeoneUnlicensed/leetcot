@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-average-catch",
+  "label": "Средний улов команды (AVG)",
+  "description": "Посчитайте средний улов по каждой команде.",
+  "difficulty": "easy",
+  "language": "sql",
+  "author": "ЛитКот"
+}

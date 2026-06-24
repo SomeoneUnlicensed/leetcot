@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-subquery-heavy",
+  "label": "Тяжелее среднего (подзапрос)",
+  "description": "Выберите рыбу тяжелее среднего веса по всей таблице.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

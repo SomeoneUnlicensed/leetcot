@@ -55,15 +55,12 @@ async function buildChallenge(
 
   try {
     const files = await fs.promises.readdir(pathToDirectory);
-    console.log(files);
 
     for (const file of files) {
       const itemPath = path.join(pathToDirectory, file);
-      console.log('buildChallenge Processing:', itemPath);
 
       // Skip excluded files.
       if (excludes.some((x) => itemPath.includes(x))) {
-        console.log('Skipping:', itemPath);
         continue;
       }
 

@@ -1,0 +1,23 @@
+{
+  "schema": "CREATE TABLE market (id INTEGER PRIMARY KEY, fish TEXT, price INTEGER);",
+  "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'килька', 40), (2, 'окунь', 95), (3, 'лосось', 240), (4, 'сом', 130);",
+  "expectedType": "select",
+  "expected": [
+    {
+      "fish": "килька",
+      "price_level": "дешево"
+    },
+    {
+      "fish": "окунь",
+      "price_level": "обычно"
+    },
+    {
+      "fish": "сом",
+      "price_level": "обычно"
+    },
+    {
+      "fish": "лосось",
+      "price_level": "дорого"
+    }
+  ]
+}

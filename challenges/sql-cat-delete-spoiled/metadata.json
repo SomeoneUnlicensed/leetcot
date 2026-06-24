@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-delete-spoiled",
+  "label": "Выкинуть испорченное (DELETE)",
+  "description": "Удалите просроченные товары из кладовки.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

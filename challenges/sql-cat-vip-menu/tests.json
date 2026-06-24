@@ -1,0 +1,19 @@
+{
+  "schema": "CREATE TABLE orders (id INTEGER PRIMARY KEY, cat TEXT, dish TEXT);",
+  "seed": "INSERT INTO orders (id, cat, dish) VALUES (1, 'Барсик', 'тунец'), (2, 'Мурка', 'лосось'), (3, 'Снежок', 'сардина'), (4, 'Рыжик', 'форель'), (5, 'Пушок', 'креветки');",
+  "expectedType": "select",
+  "expected": [
+    {
+      "cat": "Барсик",
+      "dish": "тунец"
+    },
+    {
+      "cat": "Рыжик",
+      "dish": "форель"
+    },
+    {
+      "cat": "Пушок",
+      "dish": "креветки"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "CREATE TABLE hunts (id INTEGER PRIMARY KEY, hunter TEXT, fish_count INTEGER);",
+  "seed": "INSERT INTO hunts (id, hunter, fish_count) VALUES (1, 'Барсик', 4), (2, 'Барсик', 7), (3, 'Мурка', 3), (4, 'Снежок', 10), (5, 'Мурка', 2);",
+  "expectedType": "select",
+  "expected": [
+    {
+      "hunter": "Барсик",
+      "total_fish": 11
+    },
+    {
+      "hunter": "Снежок",
+      "total_fish": 10
+    }
+  ]
+}

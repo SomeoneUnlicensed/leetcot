@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-empty-bowls",
+  "label": "Пустые миски (NULL и COALESCE)",
+  "description": "Покажите миски без назначенного блюда и замените NULL на понятный текст.",
+  "difficulty": "easy",
+  "language": "sql",
+  "author": "ЛитКот"
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "CREATE TABLE cats (id INTEGER PRIMARY KEY, name TEXT); CREATE TABLE meals (id INTEGER PRIMARY KEY, cat_id INTEGER, food TEXT);",
+  "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Мурка'), (3, 'Снежок'); INSERT INTO meals (id, cat_id, food) VALUES (1, 1, 'тунец'), (2, 1, 'лосось'), (3, 2, 'сметана'), (4, 1, 'сардина');",
+  "expectedType": "select",
+  "expected": [
+    {
+      "name": "Барсик",
+      "meal_count": 3
+    },
+    {
+      "name": "Мурка",
+      "meal_count": 1
+    },
+    {
+      "name": "Снежок",
+      "meal_count": 0
+    }
+  ]
+}

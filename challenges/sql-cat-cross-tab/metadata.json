@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-cross-tab",
+  "label": "Сводка по сменам (SUM CASE)",
+  "description": "Соберите дневные и ночные уловы в две колонки.",
+  "difficulty": "hard",
+  "language": "sql",
+  "author": "ЛитКот"
+}

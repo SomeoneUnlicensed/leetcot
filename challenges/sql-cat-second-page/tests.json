@@ -1,0 +1,15 @@
+{
+  "schema": "CREATE TABLE leaderboard (cat TEXT, points INTEGER);",
+  "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Мурка', 100), ('Барсик', 90), ('Патч', 80), ('Снежок', 70), ('Линт', 60);",
+  "expectedType": "select",
+  "expected": [
+    {
+      "cat": "Патч",
+      "points": 80
+    },
+    {
+      "cat": "Снежок",
+      "points": 70
+    }
+  ]
+}

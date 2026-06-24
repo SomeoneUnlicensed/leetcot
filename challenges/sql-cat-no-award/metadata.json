@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-no-award",
+  "label": "Коты без наград (LEFT JOIN / NOT IN)",
+  "description": "Найди котов, которые ни разу не получали награду.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

@@ -126,6 +126,7 @@ jobs:
           done
 
           $COMPOSE run --rm -T --no-deps --entrypoint sh app -lc 'pnpm --filter @repo/db exec prisma migrate deploy' </dev/null
+          $COMPOSE run --rm -T --no-deps --entrypoint sh app -lc 'pnpm --filter @repo/db db:seed:sql-course' </dev/null
           echo "Deploying $LEETCOT_IMAGE"
           $COMPOSE up -d --force-recreate --no-deps --no-build app code-runner
 

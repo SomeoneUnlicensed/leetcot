@@ -1,0 +1,19 @@
+{
+  "schema": "CREATE TABLE portions (id INTEGER PRIMARY KEY, kitten TEXT, food TEXT, grams INTEGER);",
+  "seed": "INSERT INTO portions (id, kitten, food, grams) VALUES (1, 'Пиксель', 'рыба', 35), (2, 'Байт', 'курица', 45), (3, 'Скрипт', 'рыба', 75), (4, 'Патч', 'рыба', 20), (5, 'Линт', 'рыба', 60), (6, 'Коммит', 'творог', 30);",
+  "expectedType": "select",
+  "expected": [
+    {
+      "kitten": "Патч",
+      "grams": 20
+    },
+    {
+      "kitten": "Пиксель",
+      "grams": 35
+    },
+    {
+      "kitten": "Линт",
+      "grams": 60
+    }
+  ]
+}

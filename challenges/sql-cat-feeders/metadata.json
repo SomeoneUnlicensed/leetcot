@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-feeders",
+  "label": "Починить миски котов (UPDATE)",
+  "description": "Свяжите таблицы и обновите статус сломанных автокормушек Мурзика и Барсика.",
+  "difficulty": "easy",
+  "language": "sql",
+  "author": "ЛитКот"
+}

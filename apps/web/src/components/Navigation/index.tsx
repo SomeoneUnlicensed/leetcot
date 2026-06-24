@@ -25,13 +25,7 @@ import { SignOutLink } from './signout-link';
 import { SkipToCodeEditor } from './skip-to-code-editor';
 
 export function getAdminUrl() {
-  // reference for production mode
-  if (process.env.NODE_ENV === 'production') {
-    return `https://admin.leetcot.ru`;
-  }
-
-  // assume localhost
-  return `http://localhost:3001`;
+  return process.env.NEXT_PUBLIC_ADMIN_URL || 'https://admin.leetcot.ru';
 }
 
 export async function Navigation() {
@@ -55,6 +49,7 @@ export async function Navigation() {
     <>
       <NavLink title="Задачки" href="/explore" />
       <NavLink title="Алгоритмы" href="/algorithms" />
+      <NavLink title="SQL-рыбалка" href="/courses/sql-cat-tables" />
       {isTeacher ? <NavLink title="Панель учителя" href="/teacher/exams" /> : null}
       {isChampionshipManager ? (
         <NavLink title="Панель чемпионатов" href={`${getAdminUrl()}/dashboard/championships`} />

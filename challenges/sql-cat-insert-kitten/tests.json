@@ -1,0 +1,23 @@
+{
+  "schema": "CREATE TABLE kittens (id INTEGER PRIMARY KEY, name TEXT, level INTEGER);",
+  "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Пиксель', 1), (2, 'Байт', 2);",
+  "expectedType": "state",
+  "expected": [
+    {
+      "id": 1,
+      "name": "Пиксель",
+      "level": 1
+    },
+    {
+      "id": 2,
+      "name": "Байт",
+      "level": 2
+    },
+    {
+      "id": 3,
+      "name": "Скрипт",
+      "level": 1
+    }
+  ],
+  "expectedQuery": "SELECT id, name, level FROM kittens ORDER BY id;"
+}

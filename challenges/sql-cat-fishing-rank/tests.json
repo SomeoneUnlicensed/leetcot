@@ -1,0 +1,9 @@
+{
+  "schema": "CREATE TABLE cats (id INTEGER PRIMARY KEY, name TEXT NOT NULL); CREATE TABLE catches (id INTEGER PRIMARY KEY, cat_id INTEGER NOT NULL, fish_count INTEGER NOT NULL, caught_at TEXT NOT NULL);",
+  "seed": "INSERT INTO cats VALUES (1,'Мурзик'),(2,'Васька'),(3,'Барсик'),(4,'Рыжик'); INSERT INTO catches VALUES (1,1,5,'2024-01-01'),(2,1,7,'2024-01-02'),(3,1,3,'2024-01-03'),(4,2,10,'2024-01-01'),(5,2,8,'2024-01-02'),(6,2,12,'2024-01-03'),(7,2,6,'2024-01-04'),(8,3,2,'2024-01-01'),(9,3,4,'2024-01-02'),(10,4,15,'2024-01-01'),(11,4,9,'2024-01-02');",
+  "expectedType": "select",
+  "expected": [
+    { "name": "Васька", "times_fished": 4, "avg_catch": 9.0 },
+    { "name": "Мурзик", "times_fished": 3, "avg_catch": 5.0 }
+  ]
+}

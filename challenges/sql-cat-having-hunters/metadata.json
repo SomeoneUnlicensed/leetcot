@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-having-hunters",
+  "label": "Охотники с нормой (HAVING)",
+  "description": "Найдите охотников, которые поймали минимум 10 рыб суммарно.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

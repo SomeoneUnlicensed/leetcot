@@ -1,0 +1,7 @@
+{
+  "schema": "CREATE TABLE guards (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, shift TEXT NOT NULL, fish_salary INTEGER NOT NULL);",
+  "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Мурзик','дневная',20),('Васька','ночная',22),('Барсик','дневная',18),('Рыжик','ночная',21);",
+  "expectedType": "state",
+  "expectedQuery": "SELECT name, shift, fish_salary FROM guards WHERE name='Граф'",
+  "expected": [{ "name": "Граф", "shift": "ночная", "fish_salary": 25 }]
+}

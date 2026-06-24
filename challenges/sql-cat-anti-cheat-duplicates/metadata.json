@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-anti-cheat-duplicates",
+  "label": "Дубликаты заявок (GROUP BY HAVING)",
+  "description": "Найдите котов, которые отправили заявку больше одного раза.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

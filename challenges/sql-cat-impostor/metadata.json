@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-impostor",
+  "label": "Кот-самозванец (HAVING + GROUP BY)",
+  "description": "Найди имена котов, которые встречаются в базе данных более одного раза.",
+  "difficulty": "easy",
+  "language": "sql",
+  "author": "ЛитКот"
+}

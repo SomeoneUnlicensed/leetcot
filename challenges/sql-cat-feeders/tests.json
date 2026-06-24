@@ -1,0 +1,12 @@
+{
+  "schema": "CREATE TABLE cats (id INTEGER PRIMARY KEY, name TEXT); CREATE TABLE feeders (id INTEGER PRIMARY KEY, cat_id INTEGER, name TEXT, status TEXT);",
+  "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Васька'), (3, 'Барсик'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 1, 'Мурзик-Миска-2', 'broken'), (3, 2, 'Васька-Миска-1', 'active'), (4, 3, 'Барсик-Миска-1', 'broken'), (5, 3, 'Барсик-Миска-2', 'active');",
+  "expectedType": "state",
+  "expectedQuery": "SELECT id, status FROM feeders WHERE cat_id IN (1, 3) ORDER BY id",
+  "expected": [
+    { "id": 1, "status": "active" },
+    { "id": 2, "status": "active" },
+    { "id": 4, "status": "active" },
+    { "id": 5, "status": "active" }
+  ]
+}

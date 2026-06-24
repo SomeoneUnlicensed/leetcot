@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-never-fed",
+  "label": "Кого забыли покормить (LEFT JOIN IS NULL)",
+  "description": "Найдите котов, у которых нет ни одной записи о кормлении.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

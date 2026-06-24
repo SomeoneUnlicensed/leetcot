@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-guard",
+  "label": "Назначить нового сторожа (INSERT)",
+  "description": "Добавь нового кота-сторожа в таблицу с нужными данными.",
+  "difficulty": "easy",
+  "language": "sql",
+  "author": "ЛитКот"
+}

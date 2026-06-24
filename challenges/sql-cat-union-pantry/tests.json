@@ -1,0 +1,22 @@
+{
+  "schema": "CREATE TABLE dry_pantry (name TEXT); CREATE TABLE cold_pantry (name TEXT);",
+  "seed": "INSERT INTO dry_pantry (name) VALUES ('сухой корм'), ('тунец'), ('печенье'); INSERT INTO cold_pantry (name) VALUES ('лосось'), ('тунец'), ('сметана');",
+  "expectedType": "select",
+  "expected": [
+    {
+      "name": "лосось"
+    },
+    {
+      "name": "печенье"
+    },
+    {
+      "name": "сметана"
+    },
+    {
+      "name": "сухой корм"
+    },
+    {
+      "name": "тунец"
+    }
+  ]
+}

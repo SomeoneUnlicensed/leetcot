@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-union-pantry",
+  "label": "Общий список запасов (UNION)",
+  "description": "Соберите единый список названий еды из двух кладовок без дублей.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

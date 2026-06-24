@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-vip-menu",
+  "label": "VIP-меню усатых гостей (IN)",
+  "description": "Выберите заказы только для гостей из VIP-списка.",
+  "difficulty": "easy",
+  "language": "sql",
+  "author": "ЛитКот"
+}

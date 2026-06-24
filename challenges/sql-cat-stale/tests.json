@@ -1,0 +1,7 @@
+{
+  "schema": "CREATE TABLE inventory (id INTEGER PRIMARY KEY, fish_type TEXT NOT NULL, quantity INTEGER NOT NULL, meal_date TEXT NOT NULL);",
+  "seed": "INSERT INTO inventory VALUES (1,'Сёмга',10,'2024-01-10'),(2,'Треска',5,'2024-01-25'),(3,'Тунец',8,'2024-02-01'),(4,'Карп',3,'2024-01-31'),(5,'Лосось',15,'2024-02-15'),(6,'Скумбрия',2,'2024-01-05'),(7,'Форель',12,'2024-03-01');",
+  "expectedType": "state",
+  "expectedQuery": "SELECT id FROM inventory ORDER BY id",
+  "expected": [{ "id": 3 }, { "id": 5 }, { "id": 7 }]
+}

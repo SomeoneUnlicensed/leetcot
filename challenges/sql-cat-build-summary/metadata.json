@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-build-summary",
+  "label": "Собрать витрину улова (CREATE TABLE AS)",
+  "description": "Создайте итоговую таблицу с суммарным уловом по котам.",
+  "difficulty": "hard",
+  "language": "sql",
+  "author": "ЛитКот"
+}

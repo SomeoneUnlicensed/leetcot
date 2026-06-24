@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-date-expiry",
+  "label": "Просроченная кладовка (date)",
+  "description": "Найдите продукты, срок которых истёк к контрольной дате.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

@@ -1,0 +1,9 @@
+{
+  "id": "sql-cat-intro",
+  "label": "Добро пожаловать в Рыбную Базу Данных",
+  "description": "Знакомство с курсом SQL для котов. Узнай, что тебя ждёт и как пользоваться терминалом.",
+  "difficulty": "easy",
+  "language": "sql",
+  "isInfoOnly": true,
+  "author": "ЛитКот"
+}

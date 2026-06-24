@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-self-join-friends",
+  "label": "Пары наставников (SELF JOIN)",
+  "description": "Покажите котят и имена их наставников.",
+  "difficulty": "hard",
+  "language": "sql",
+  "author": "ЛитКот"
+}

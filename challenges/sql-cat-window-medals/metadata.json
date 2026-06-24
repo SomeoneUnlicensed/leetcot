@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-window-medals",
+  "label": "Рейтинг медалистов (RANK)",
+  "description": "Постройте рейтинг котов по количеству медалей.",
+  "difficulty": "hard",
+  "language": "sql",
+  "author": "ЛитКот"
+}
