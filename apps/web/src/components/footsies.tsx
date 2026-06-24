@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
-const appVersion = process.env.NEXT_PUBLIC_APP_VERSION || '0.1.0';
+const appVersion = process.env.NEXT_PUBLIC_APP_VERSION || 'v0.1.0';
 
 export function Footsies() {
   return (
@@ -43,7 +43,7 @@ export function Footsies() {
         </span>
         <span>
           <div className="inline-block rotate-180">©</div>
-          {new Date().getFullYear()} ЛитКот · v{appVersion}
+          {new Date().getFullYear()} ЛитКот · {appVersion}
         </span>
       </div>
     </footer>

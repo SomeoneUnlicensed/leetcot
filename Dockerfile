@@ -29,11 +29,13 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm config set store-dir /pnp
 FROM deps AS builder
 COPY . .
 ARG NEXT_PUBLIC_SENTRY_DSN
+ARG NEXT_PUBLIC_APP_VERSION
 ARG SENTRY_ORG
 ARG SENTRY_PROJECT
 ENV DATABASE_URL="postgresql://postgres:dev@localhost:5432/leetcot?schema=public"
 ENV NODE_OPTIONS="--max-old-space-size=3072"
 ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
+ENV NEXT_PUBLIC_APP_VERSION=$NEXT_PUBLIC_APP_VERSION
 ENV SENTRY_ORG=$SENTRY_ORG
 ENV SENTRY_PROJECT=$SENTRY_PROJECT
 RUN --mount=type=secret,id=sentry_auth_token \
