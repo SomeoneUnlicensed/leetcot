@@ -127,7 +127,7 @@ jobs:
 
           $COMPOSE run --rm -T --no-deps --entrypoint sh app -lc 'pnpm --filter @repo/db exec prisma migrate deploy' </dev/null
           echo "Deploying $LEETCOT_IMAGE"
-          $COMPOSE up -d --force-recreate --no-build app code-runner
+          $COMPOSE up -d --force-recreate --no-deps --no-build app code-runner
 
           $COMPOSE ps
           test "$(docker inspect leetcot-app-1 --format '{{.Config.Image}}')" = "$LEETCOT_IMAGE"
