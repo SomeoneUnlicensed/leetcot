@@ -33,7 +33,7 @@ async function main() {
   console.log('--- Начало сидирования ---');
 
   try {
-    const TYPEHERO_ID = uuidByString(adminEmail);
+    const ADMIN_USER_ID = uuidByString(adminEmail);
 
     // 1. Создание ролей
     const adminRole = await prisma.role.upsert({
@@ -56,7 +56,7 @@ async function main() {
 
     // 2. Создание админа
     const adminUser = await prisma.user.upsert({
-      where: { id: TYPEHERO_ID },
+      where: { id: ADMIN_USER_ID },
       update: {
         email: adminEmail,
         password: bcrypt.hashSync(adminPassword, 10),
@@ -65,7 +65,7 @@ async function main() {
         },
       },
       create: {
-        id: TYPEHERO_ID,
+        id: ADMIN_USER_ID,
         email: adminEmail,
         name: 'Админ ЛитКот',
         password: bcrypt.hashSync(adminPassword, 10),

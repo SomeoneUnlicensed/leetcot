@@ -11,7 +11,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('home page', async ({ page }) => {
-  await expect(page.getByRole('heading', { name: 'type hero' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'ЛитКот' })).toBeVisible();
 });
 
 test.describe('homepage a11y', () => {

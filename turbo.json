@@ -20,6 +20,8 @@
     "NEXTAUTH_URL",
     "ARLIST_CLIENT_ID",
     "ARLIST_CLIENT_SECRET",
+    "GH_REPO_OWNER",
+    "GH_REPO_NAME",
     "GITHUB_ID",
     "GITHUB_SECRET",
     "PORT",

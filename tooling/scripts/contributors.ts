@@ -17,14 +17,15 @@ async function getOcto() {
 
   // get paginated contributors
   const res = await octokit.paginate(octokit.rest.repos.listContributors, {
-    owner: "typehero",
-    repo: "typehero",
+    owner: process.env.GH_REPO_OWNER || 'SomeoneUnlicensed',
+    repo: process.env.GH_REPO_NAME || 'leetcot',
     per_page: 100,
   });
 
-  const contributors = res.map((contributor) => contributor).filter(contributor => contributor.type !== 'Bot');
-  return contributors
-
+  const contributors = res
+    .map((contributor) => contributor)
+    .filter((contributor) => contributor.type !== 'Bot');
+  return contributors;
 }
 
 async function start() {
