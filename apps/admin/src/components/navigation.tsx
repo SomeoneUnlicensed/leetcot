@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
 import { Loader2, LogIn, User } from '@repo/ui/icons';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -18,6 +19,14 @@ export function Navigation() {
         <div className="flex w-full items-center justify-between">
           <div className="relative flex gap-3">
             <Link className="flex items-center space-x-2 duration-300" href="/">
+              <Image
+                src="/panel/icon.svg"
+                alt=""
+                aria-hidden="true"
+                width={32}
+                height={32}
+                className="h-8 w-8 rounded-md border border-zinc-200 bg-zinc-950 dark:border-zinc-800"
+              />
               <span
                 className="text-xl font-bold leading-3"
                 style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
