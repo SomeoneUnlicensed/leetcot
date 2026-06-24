@@ -38,6 +38,8 @@ interface SqlTestConfig {
   seed?: string;
 }
 
+const TIMER_START_DELAY_SECONDS = 10;
+
 export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerminalProps) {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -49,6 +51,7 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [timeLeft, setTimeLeft] = useState(120);
+  const [warmupLeft, setWarmupLeft] = useState(TIMER_START_DELAY_SECONDS);
   const [isExpired, setIsExpired] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -74,9 +77,10 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
 
   const timeLimit = testConfig.expectedType === 'state' ? 120 : 90;
 
-  // Timer — runs independently from DB loading state
+  // Timer — gives a short reading/setup grace period, then starts the task countdown.
   useEffect(() => {
     setTimeLeft(timeLimit);
+    setWarmupLeft(TIMER_START_DELAY_SECONDS);
     setIsExpired(false);
     setIsSuccess(false);
     setCatState('idle');
@@ -86,6 +90,20 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
         clearInterval(timer);
         return;
       }
+
+      let isWarmupTick = false;
+      setWarmupLeft((prev) => {
+        if (prev > 0) {
+          isWarmupTick = true;
+          return prev - 1;
+        }
+        return prev;
+      });
+
+      if (isWarmupTick) {
+        return;
+      }
+
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
@@ -165,6 +183,7 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
       setHistory([]);
       setInputVal('');
       setTimeLeft(timeLimit);
+      setWarmupLeft(TIMER_START_DELAY_SECONDS);
       setIsExpired(false);
       setIsSuccess(false);
       setCatState('idle');
@@ -374,6 +393,7 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
+  const isWarmup = warmupLeft > 0 && !isExpired && !isSuccess;
 
   // Cat ASCII Art — styled to match platform tone
   const renderCat = () => {
@@ -429,31 +449,37 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
     );
   }
 
-  const timerUrgent = !isExpired && timeLeft < 20;
+  const timerUrgent = !isWarmup && !isExpired && timeLeft < 20;
   const timerColor = isExpired
     ? 'bg-rose-950/40 border-rose-800/60 text-rose-400'
-    : timerUrgent
-      ? 'bg-amber-950/40 border-amber-700/60 text-amber-300 animate-pulse'
-      : 'bg-zinc-900 border-zinc-700/60 text-zinc-400';
+    : isWarmup
+      ? 'bg-sky-950/40 border-sky-700/60 text-sky-300'
+      : timerUrgent
+        ? 'bg-amber-950/40 border-amber-700/60 text-amber-300 animate-pulse'
+        : 'bg-zinc-900 border-zinc-700/60 text-zinc-400';
 
   return (
-    <div className="relative flex h-full flex-col overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950 font-sans text-zinc-300 shadow-2xl">
+    <div className="relative flex h-full flex-col overflow-hidden rounded-xl border border-zinc-800 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.10),transparent_34%),#09090b] font-sans text-zinc-300 shadow-2xl shadow-black/30">
       {showConfetti ? <Confetti /> : null}
 
       {/* Terminal Header */}
-      <div className="flex shrink-0 select-none items-center justify-between border-b border-zinc-800 bg-zinc-900 px-4 py-2.5">
-        <div className="flex items-center gap-2">
-          <div className="h-3 w-3 rounded-full bg-rose-500/70" />
-          <div className="h-3 w-3 rounded-full bg-amber-500/70" />
-          <div className="h-3 w-3 rounded-full bg-emerald-500/70" />
-          <span className="ml-2 font-sans text-xs font-medium tracking-wide text-zinc-500">
-            SQLite · браузерная песочница
-          </span>
+      <div className="flex shrink-0 select-none items-center justify-between gap-3 border-b border-zinc-800 bg-zinc-950/95 px-4 py-3">
+        <div className="min-w-0">
+          <div className="mb-1 flex items-center gap-2">
+            <div className="h-2.5 w-2.5 rounded-full bg-rose-500/80" />
+            <div className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
+            <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
+            <span className="ml-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+              sqlite
+            </span>
+          </div>
+          <div className="truncate text-sm font-semibold text-zinc-100">{challenge.name}</div>
+          <div className="mt-0.5 text-xs text-zinc-500">Локальная база в браузере</div>
         </div>
 
         {/* Timer */}
         <div
-          className={`flex items-center gap-1.5 rounded-md border px-3 py-1 font-sans text-xs font-bold tabular-nums transition-all ${timerColor}`}
+          className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-1.5 font-mono text-xs font-bold tabular-nums transition-all ${timerColor}`}
         >
           <svg
             className="h-3 w-3"
@@ -467,17 +493,31 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
           </svg>
           {isExpired
             ? 'ВРЕМЯ ВЫШЛО'
-            : `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`}
+            : isWarmup
+              ? `СТАРТ ${warmupLeft}С`
+              : `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`}
         </div>
       </div>
 
       {/* Warning Notice */}
-      <div className="shrink-0 border-b border-amber-900/20 bg-amber-950/10 px-4 py-1.5 font-sans text-xs leading-relaxed text-amber-500/80">
-        Данные живут только в этой вкладке. Команды .schema, .check и .reset помогут не потеряться.
+      <div className="shrink-0 border-b border-zinc-800/80 bg-zinc-900/45 px-4 py-2 font-sans text-xs leading-relaxed text-zinc-400">
+        {isWarmup ? (
+          <span className="text-sky-300">
+            Таймер стартует через {warmupLeft} секунд. Можно спокойно прочитать схему и подготовить
+            запрос.
+          </span>
+        ) : (
+          <>
+            Данные живут только в этой вкладке. Команды{' '}
+            <span className="font-mono text-emerald-300">.schema</span>,{' '}
+            <span className="font-mono text-emerald-300">.check</span> и{' '}
+            <span className="font-mono text-emerald-300">.reset</span> помогут не потеряться.
+          </>
+        )}
       </div>
 
       {/* Terminal Body */}
-      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4 text-sm">
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 text-sm">
         {/* Welcome */}
         {!isLoaded ? (
           <div className="flex items-center gap-2 text-xs text-zinc-500">
@@ -485,12 +525,13 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
             <span className="font-sans">Инициализация SQLite WASM движка...</span>
           </div>
         ) : (
-          <div className="font-sans text-xs leading-relaxed text-zinc-600">
-            Подключено к sqlite3. Команды: <span className="font-mono text-zinc-400">.schema</span>
+          <div className="rounded-lg border border-zinc-800/70 bg-zinc-900/35 px-3 py-2 font-sans text-xs leading-relaxed text-zinc-500">
+            <span className="text-emerald-300">sqlite3 подключён.</span> Команды:{' '}
+            <span className="font-mono text-zinc-300">.schema</span>
             {', '}
-            <span className="font-mono text-zinc-400">.check</span>
+            <span className="font-mono text-zinc-300">.check</span>
             {', '}
-            <span className="font-mono text-zinc-400">.reset</span>
+            <span className="font-mono text-zinc-300">.reset</span>
           </div>
         )}
 
@@ -498,8 +539,12 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
         {history.map((item, idx) => (
           <div key={idx} className="space-y-1.5">
             <div className="flex items-start gap-2">
-              <span className="shrink-0 select-none pt-0.5 text-xs text-emerald-600">sql&gt;</span>
-              <span className="break-all text-sm text-zinc-200">{item.query}</span>
+              <span className="shrink-0 select-none pt-0.5 font-mono text-xs text-emerald-500">
+                sql&gt;
+              </span>
+              <span className="break-all font-mono text-[13px] leading-6 text-zinc-100">
+                {item.query}
+              </span>
             </div>
 
             {item.success ? (
@@ -510,13 +555,13 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
                   </div>
                 ) : (
                   <div className="max-w-full overflow-x-auto pl-6">
-                    <table className="border-collapse text-left text-xs">
+                    <table className="border-separate border-spacing-0 overflow-hidden rounded-lg text-left text-xs">
                       <thead>
                         <tr>
                           {item.columns.map((col, cIdx) => (
                             <th
                               key={cIdx}
-                              className="border border-zinc-800 bg-zinc-900/80 px-3 py-1.5 font-sans font-semibold text-zinc-400"
+                              className="border-b border-r border-zinc-800 bg-zinc-900 px-3 py-2 font-mono font-semibold text-zinc-400 first:rounded-tl-lg first:border-l last:rounded-tr-lg"
                             >
                               {col}
                             </th>
@@ -529,7 +574,7 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
                             {row.map((val, vIdx) => (
                               <td
                                 key={vIdx}
-                                className="border border-zinc-800/60 px-3 py-1 text-zinc-300"
+                                className="border-b border-r border-zinc-800/70 px-3 py-1.5 font-mono text-zinc-300 first:border-l"
                               >
                                 {val === null ? (
                                   <span className="font-sans italic text-zinc-600">NULL</span>
@@ -564,10 +609,12 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
       </div>
 
       {/* Input Area */}
-      <div className="shrink-0 border-t border-zinc-800 bg-zinc-900/40">
+      <div className="shrink-0 border-t border-zinc-800 bg-zinc-950/90">
         {/* Prompt line */}
-        <div className="flex items-center gap-2 border-b border-zinc-800/50 px-4 py-3">
-          <span className="shrink-0 select-none text-sm font-bold text-emerald-500">sql&gt;</span>
+        <div className="flex items-center gap-2 border-b border-zinc-800/70 bg-black/20 px-4 py-3">
+          <span className="shrink-0 select-none font-mono text-sm font-bold text-emerald-400">
+            sql&gt;
+          </span>
           {!isLoaded ? (
             <span className="font-sans text-sm italic text-zinc-600">Загрузка движка...</span>
           ) : isExpired ? (
@@ -584,7 +631,7 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="flex-1 border-none bg-transparent p-0 font-mono text-[13px] leading-6 text-emerald-50 caret-emerald-400 outline-none placeholder:font-sans placeholder:text-zinc-700 focus:ring-0"
+              className="min-w-0 flex-1 border-none bg-transparent p-0 font-mono text-[13px] leading-6 text-emerald-50 caret-emerald-300 outline-none placeholder:font-mono placeholder:text-zinc-700 focus:ring-0"
               placeholder="SELECT name FROM cats WHERE fish_count > 3;"
               autoFocus
               spellCheck={false}
