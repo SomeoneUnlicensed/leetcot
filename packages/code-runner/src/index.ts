@@ -138,10 +138,13 @@ export async function markCodeRunJob(
 
 export async function dequeueCodeRunJob(timeoutSeconds: number): Promise<CodeRunJob | null> {
   const redisClient = await getRedisClient();
-  const item = await redisClient.blPop(QUEUE_KEY, timeoutSeconds);
-  const jobId = item?.element;
+  const jobId = await redisClient.lPop(QUEUE_KEY);
 
   if (!jobId) {
+    await new Promise((resolve) => {
+      setTimeout(resolve, Math.min(timeoutSeconds * 1000, 500));
+    });
+
     return null;
   }
 
