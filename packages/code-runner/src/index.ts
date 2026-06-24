@@ -10,6 +10,7 @@ export interface CodeRunPayload {
 
 export interface CodeRunResult {
   error?: string;
+  executionTimeMs?: number;
   output?: string;
   success: boolean;
 }

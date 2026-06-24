@@ -121,6 +121,7 @@ export function CodePanel(props: CodePanelProps) {
   >('editor');
   const [checkingErrors, setCheckingErrors] = useState<string[]>([]);
   const [latestSubmissionId, setLatestSubmissionId] = useState<number | null>(null);
+  const [executionTimeMs, setExecutionTimeMs] = useState<number | null>(null);
 
   const disabled = props.submissionDisabled;
 
@@ -181,6 +182,7 @@ export function CodePanel(props: CodePanelProps) {
     isCheckingRef.current = true;
     setCheckingState('verifying');
     setCheckingErrors([]);
+    setExecutionTimeMs(null);
 
     // Cute thinking animation delay
     await new Promise((resolve) => {
@@ -308,6 +310,9 @@ export function CodePanel(props: CodePanelProps) {
 
               if (statusData.status === 'success' || statusData.status === 'failure') {
                 result = statusData.result;
+                if (statusData.result?.executionTimeMs != null) {
+                  setExecutionTimeMs(statusData.result.executionTimeMs as number);
+                }
                 break;
               }
             }
@@ -530,6 +535,30 @@ export function CodePanel(props: CodePanelProps) {
                 <span className="mt-4 text-center font-sans text-sm font-bold text-emerald-600 dark:text-emerald-400">
                   УРА! Все тесты пройдены!
                 </span>
+                {executionTimeMs != null && (
+                  <span className="mt-2 flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 font-mono text-xs font-semibold text-emerald-500 dark:text-emerald-400">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="11"
+                      height="11"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    Код отработал за{' '}
+                    <span className="font-bold">
+                      {executionTimeMs >= 1000
+                        ? `${(executionTimeMs / 1000).toFixed(2)} с`
+                        : `${executionTimeMs} мс`}
+                    </span>
+                  </span>
+                )}
               </div>
               <span className="mb-2 text-center font-sans text-xl font-extrabold text-zinc-800 dark:text-zinc-100">
                 Мур-мяу! Задание выполнено! 🎉
