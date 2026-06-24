@@ -24,6 +24,8 @@ function getPositiveInteger(value: string | undefined, fallback: number) {
 
 const CONCURRENCY = getPositiveInteger(process.env.CODE_RUNNER_CONCURRENCY, 2);
 const TIMEOUT_MS = getPositiveInteger(process.env.CODE_RUNNER_TIMEOUT_MS, 10_000);
+const DOCKER_TIMEOUT_GRACE_MS = 3_000;
+const RUNTIME_TIMEOUT_SECONDS = Math.ceil(TIMEOUT_MS / 1000);
 const MAX_OUTPUT_BYTES = getPositiveInteger(process.env.CODE_RUNNER_MAX_OUTPUT_BYTES, 16_000);
 
 interface DockerRunResult {
@@ -124,7 +126,7 @@ async function runSandboxContainer(
           timedOut: true,
         });
       });
-    }, TIMEOUT_MS);
+    }, TIMEOUT_MS + DOCKER_TIMEOUT_GRACE_MS);
 
     child.stdout.on('data', (chunk: Buffer) => {
       stdout += chunk.toString('utf8');
@@ -192,13 +194,17 @@ async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
       '-w',
       '/code',
       runtime.image,
+      'timeout',
+      '-s',
+      'KILL',
+      String(RUNTIME_TIMEOUT_SECONDS),
       ...runtime.command,
     ];
 
     try {
       const result = await runSandboxContainer(dockerArgs, containerName);
 
-      if (result.timedOut) {
+      if (result.timedOut || result.exitCode === 124 || result.exitCode === 137) {
         return {
           error: `ТАЙМАУТ: Код выполнялся дольше ${Math.ceil(TIMEOUT_MS / 1000)} секунд. Возможно бесконечный цикл или очень медленное выполнение.`,
           output: trimOutput(result.stdout),
