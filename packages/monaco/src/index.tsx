@@ -26,7 +26,7 @@ export interface CodePanelProps {
     tsconfig?: monaco.languages.typescript.CompilerOptions;
   };
   validator?: (args: unknown[]) => boolean;
-  saveSubmission: (code: string, isSuccessful: boolean) => Promise<any>;
+  saveSubmission: (code: string, isSuccessful: boolean, executionTimeMs?: number | null) => Promise<any>;
   submissionDisabled: boolean;
   settingsElement: React.ReactNode;
   updatePlaygroundTestsLocalStorage?: (code: string) => void;
@@ -266,8 +266,8 @@ export function CodePanel(props: CodePanelProps) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+              challengeId: props.challenge.id,
               code: currentCode,
-              tests: props.challenge.tests,
               language: 'python',
             }),
           });
@@ -344,7 +344,7 @@ export function CodePanel(props: CodePanelProps) {
           description: 'Код не прошел компиляцию или тесты.',
         });
       } else {
-        const submission = await props.saveSubmission(currentCode ?? '', true);
+        const submission = await props.saveSubmission(currentCode ?? '', true, executionTimeMs);
         if (submission && typeof submission === 'object' && 'id' in submission) {
           setLatestSubmissionId(submission.id);
         }

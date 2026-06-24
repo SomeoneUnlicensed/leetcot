@@ -4,19 +4,20 @@ import {
   getQueueDepth,
   normalizeLanguage,
 } from '@repo/code-runner';
+import { prisma } from '@repo/db';
 import { NextResponse } from 'next/server';
 
 const MAX_QUEUE_DEPTH = Number(process.env.CODE_RUNNER_MAX_QUEUE_DEPTH ?? 20);
 
 export async function POST(req: Request) {
   try {
-    const { code, tests, language } = (await req.json()) as {
+    const { code, challengeId, language } = (await req.json()) as {
+      challengeId?: number;
       code?: string;
       language?: string;
-      tests?: string;
     };
 
-    if (!language || !code) {
+    if (!language || !code || !challengeId) {
       return NextResponse.json(
         { success: false, error: 'Мяу! Переданы не все параметры.' },
         { status: 400 },
@@ -30,6 +31,19 @@ export async function POST(req: Request) {
         success: false,
         error: `Исполнение для языка ${language} пока не реализовано`,
       });
+    }
+
+    // Тесты берём из БД — клиент не может их подменить
+    const challenge = await prisma.challenge.findUnique({
+      where: { id: challengeId },
+      select: { tests: true },
+    });
+
+    if (!challenge) {
+      return NextResponse.json(
+        { success: false, error: 'Задача не найдена.' },
+        { status: 404 },
+      );
     }
 
     const queueDepth = await getQueueDepth();
@@ -48,7 +62,7 @@ export async function POST(req: Request) {
     const job = await enqueueCodeRun({
       code,
       language: normalizedLanguage,
-      tests: tests ?? '',
+      tests: challenge.tests,
     });
 
     return NextResponse.json({

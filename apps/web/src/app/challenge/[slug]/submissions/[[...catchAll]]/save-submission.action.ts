@@ -14,8 +14,9 @@ interface Args {
   challenge: ChallengeRouteData['challenge'];
   code: string;
   isSuccessful: boolean;
+  executionTimeMs?: number | null;
 }
-export async function saveSubmission({ challenge, code, isSuccessful }: Args) {
+export async function saveSubmission({ challenge, code, isSuccessful, executionTimeMs }: Args) {
   const session = await auth();
   if (!session?.user) {
     throw new Error('Not Authorized');
@@ -28,6 +29,7 @@ export async function saveSubmission({ challenge, code, isSuccessful }: Args) {
       userId,
       code,
       isSuccessful,
+      ...(executionTimeMs != null ? { executionTimeMs } : {}),
     },
   });
 

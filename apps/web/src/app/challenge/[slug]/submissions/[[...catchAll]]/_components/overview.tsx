@@ -86,8 +86,31 @@ export function SubmissionOverview({ submissionId, userId }: SubmissionOverviewP
               )}
               {submission.isSuccessful ? 'Принято' : 'Отклонено'}
             </div>
-            <div className="px-3 text-sm text-neutral-500">
-              Отправлено {getRelativeTimeStrict(submission.createdAt)}
+            <div className="flex flex-wrap items-center gap-3 px-3">
+              <span className="text-sm text-neutral-500">
+                Отправлено {getRelativeTimeStrict(submission.createdAt)}
+              </span>
+              {submission.isSuccessful && submission.executionTimeMs != null && (
+                <span className="flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  {submission.executionTimeMs >= 1000
+                    ? `${(submission.executionTimeMs / 1000).toFixed(2)} с`
+                    : `${submission.executionTimeMs} мс`}
+                </span>
+              )}
             </div>
           </div>
           <div>
