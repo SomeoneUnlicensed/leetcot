@@ -2,9 +2,22 @@
 
 import { cn } from '@repo/ui/cn';
 import { buttonVariants } from '@repo/ui/components/button';
+import { Award, Bell, Flag, Medal, Shapes, Trophy, Users, type LucideIcon } from '@repo/ui/icons';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { SidebarNavItem } from '../layout';
+
+export type SidebarNavIconKey = 'award' | 'bell' | 'flag' | 'medal' | 'shapes' | 'trophy' | 'users';
+
+const sidebarIcons: Record<SidebarNavIconKey, LucideIcon> = {
+  award: Award,
+  bell: Bell,
+  flag: Flag,
+  medal: Medal,
+  shapes: Shapes,
+  trophy: Trophy,
+  users: Users,
+};
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items: SidebarNavItem[];
@@ -21,7 +34,7 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
     >
       {items.map((item) => {
         const isActive = pathname.includes(item.href);
-        const Icon = item.icon;
+        const Icon = sidebarIcons[item.icon];
 
         return (
           <Link

@@ -1,46 +1,46 @@
 import { SidebarNav } from './_components/side-nav';
-import { Award, Bell, Flag, Medal, Shapes, Trophy, Users, type LucideIcon } from '@repo/ui/icons';
+import type { SidebarNavIconKey } from './_components/side-nav';
 
 export interface SidebarNavItem {
   href: string;
-  icon: LucideIcon;
+  icon: SidebarNavIconKey;
   title: string;
 }
 
 const sidebarNavItems: SidebarNavItem[] = [
   {
     href: '/dashboard/reports',
-    icon: Flag,
+    icon: 'flag',
     title: 'Репорты',
   },
   {
     href: '/dashboard/users',
-    icon: Users,
+    icon: 'users',
     title: 'Пользователи',
   },
   {
     href: '/dashboard/images',
-    icon: Shapes,
+    icon: 'shapes',
     title: 'Изображения',
   },
   {
     href: '/dashboard/tracks',
-    icon: Trophy,
+    icon: 'trophy',
     title: 'Треки',
   },
   {
     href: '/dashboard/championships',
-    icon: Medal,
+    icon: 'medal',
     title: 'Чемпионаты',
   },
   {
     href: '/dashboard/notifications',
-    icon: Bell,
+    icon: 'bell',
     title: 'Уведомления',
   },
   {
     href: '/dashboard/awards',
-    icon: Award,
+    icon: 'award',
     title: 'Награждение',
   },
 ];
