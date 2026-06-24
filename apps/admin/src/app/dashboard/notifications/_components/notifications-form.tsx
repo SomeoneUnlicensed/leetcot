@@ -1,15 +1,10 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { type FormEvent, useState, useTransition } from 'react';
+import { UserPicker, type PickerUser } from '../../_components/user-picker';
 import { sendNotificationAction } from '../_actions';
 
-interface User {
-  id: string;
-  name: string | null;
-  email: string | null;
-}
-
-export function NotificationsForm({ users }: { users: User[] }) {
+export function NotificationsForm({ users }: { users: PickerUser[] }) {
   const [targetType, setTargetType] = useState<'all' | 'user'>('all');
   const [toUserId, setToUserId] = useState<string>('');
   const [blurb, setBlurb] = useState('');
@@ -17,8 +12,9 @@ export function NotificationsForm({ users }: { users: User[] }) {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const canSubmit = Boolean(blurb.trim()) && (targetType === 'all' || Boolean(toUserId)) && !isPending;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setSuccess(false);
     setError(null);
@@ -57,17 +53,16 @@ export function NotificationsForm({ users }: { users: User[] }) {
     <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
       <form onSubmit={handleSubmit} className="space-y-6">
         {Boolean(success) && (
-          <div className="rounded-lg bg-green-50 p-4 text-sm font-medium text-green-800 dark:bg-green-950/20 dark:text-green-400">
+          <div role="status" className="rounded-lg bg-green-50 p-4 text-sm font-medium text-green-800 dark:bg-green-950/20 dark:text-green-400">
             Уведомление успешно отправлено! 🎉
           </div>
         )}
         {Boolean(error) && (
-          <div className="rounded-lg bg-red-50 p-4 text-sm font-medium text-red-800 dark:bg-red-950/20 dark:text-red-400">
+          <div role="alert" className="rounded-lg bg-red-50 p-4 text-sm font-medium text-red-800 dark:bg-red-950/20 dark:text-red-400">
             {error}
           </div>
         )}
 
-        {/* Target Type */}
         <div className="space-y-2">
           <p className="text-sm font-medium leading-none">Кому отправить</p>
           <div className="flex gap-4">
@@ -76,7 +71,10 @@ export function NotificationsForm({ users }: { users: User[] }) {
                 type="radio"
                 name="targetType"
                 checked={targetType === 'all'}
-                onChange={() => setTargetType('all')}
+                onChange={() => {
+                  setTargetType('all');
+                  setToUserId('');
+                }}
                 className="h-4 w-4 border-zinc-300 text-purple-600 focus:ring-purple-600"
               />
               Всем активным пользователям
@@ -94,31 +92,15 @@ export function NotificationsForm({ users }: { users: User[] }) {
           </div>
         </div>
 
-        {/* User Selector */}
         {targetType === 'user' && (
-          <div className="space-y-2">
-            <label htmlFor="userSelect" className="text-sm font-medium leading-none">
-              Выберите пользователя
-            </label>
-            <select
-              id="userSelect"
-              value={toUserId}
-              onChange={(e) => setToUserId(e.target.value)}
-              className="flex h-10 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 dark:border-zinc-800 dark:bg-zinc-950"
-            >
-              <option value="" className="dark:bg-zinc-900">
-                -- Выберите из списка --
-              </option>
-              {users.map((u) => (
-                <option key={u.id} value={u.id} className="dark:bg-zinc-900">
-                  {u.name || 'Без имени'} ({u.email || 'Нет почты'})
-                </option>
-              ))}
-            </select>
-          </div>
+          <UserPicker
+            label="Выберите пользователя"
+            onChange={setToUserId}
+            users={users}
+            value={toUserId}
+          />
         )}
 
-        {/* Message Input */}
         <div className="space-y-2">
           <label htmlFor="blurb" className="text-sm font-medium leading-none">
             Текст уведомления
@@ -133,7 +115,6 @@ export function NotificationsForm({ users }: { users: User[] }) {
           />
         </div>
 
-        {/* URL Input */}
         <div className="space-y-2">
           <label htmlFor="url" className="text-sm font-medium leading-none">
             Ссылка (URL) при клике (необязательно)
@@ -148,10 +129,9 @@ export function NotificationsForm({ users }: { users: User[] }) {
           />
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
-          disabled={isPending}
+          disabled={!canSubmit}
           className="inline-flex items-center justify-center rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
         >
           {isPending ? 'Отправка...' : 'Отправить уведомление'}

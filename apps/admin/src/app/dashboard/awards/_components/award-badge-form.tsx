@@ -1,13 +1,8 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { type FormEvent, useState, useTransition } from 'react';
+import { UserPicker, type PickerUser } from '../../_components/user-picker';
 import { awardBadgeAction } from '../_actions';
-
-interface User {
-  id: string;
-  name: string | null;
-  email: string | null;
-}
 
 interface Badge {
   name: string;
@@ -16,38 +11,22 @@ interface Badge {
 
 const BADGES = [{ slug: 'contributor', name: 'Контрибьютер' }] as const;
 
-function getUserLabel(user: User) {
-  const name = user.name?.trim();
-  const email = user.email?.trim();
-
-  if (name && email) {
-    return `${name} (${email})`;
-  }
-
-  return name || email || `Пользователь ${user.id.slice(0, 8)}`;
-}
-
 export function AwardBadgeForm({
   badges = BADGES,
   users,
 }: {
   badges?: readonly Badge[];
-  users: User[];
+  users: PickerUser[];
 }) {
   const [toUserId, setToUserId] = useState('');
   const [badgeSlug, setBadgeSlug] = useState<string>('contributor');
-  const [userQuery, setUserQuery] = useState('');
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-  const normalizedQuery = userQuery.trim().toLowerCase();
-  const visibleUsers = users.filter((user) =>
-    getUserLabel(user).toLowerCase().includes(normalizedQuery),
-  );
   const selectedBadge = badges.find((badge) => badge.slug === badgeSlug);
-  const selectedUser = users.find((user) => user.id === toUserId);
+  const canSubmit = Boolean(toUserId) && !isPending;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setSuccess(false);
     setError(null);
@@ -74,12 +53,12 @@ export function AwardBadgeForm({
     <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
       <form onSubmit={handleSubmit} className="space-y-6">
         {Boolean(success) && (
-          <div className="rounded-lg bg-green-50 p-4 text-sm font-medium text-green-800 dark:bg-green-950/20 dark:text-green-400">
+          <div role="status" className="rounded-lg bg-green-50 p-4 text-sm font-medium text-green-800 dark:bg-green-950/20 dark:text-green-400">
             Значок успешно выдан! 🎉
           </div>
         )}
         {Boolean(error) && (
-          <div className="rounded-lg bg-red-50 p-4 text-sm font-medium text-red-800 dark:bg-red-950/20 dark:text-red-400">
+          <div role="alert" className="rounded-lg bg-red-50 p-4 text-sm font-medium text-red-800 dark:bg-red-950/20 dark:text-red-400">
             {error}
           </div>
         )}
@@ -96,6 +75,7 @@ export function AwardBadgeForm({
                 <button
                   key={badge.slug}
                   type="button"
+                  aria-pressed={isSelected}
                   onClick={() => setBadgeSlug(badge.slug)}
                   className={`rounded-lg border px-4 py-3 text-left text-sm font-medium transition ${
                     isSelected
@@ -113,54 +93,16 @@ export function AwardBadgeForm({
           </p>
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="userSearch" className="text-sm font-medium leading-none">
-            Выберите пользователя ({users.length})
-          </label>
-          <input
-            id="userSearch"
-            value={userQuery}
-            onChange={(e) => setUserQuery(e.target.value)}
-            placeholder="Поиск по имени или почте"
-            className="flex h-10 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-2 text-sm ring-offset-white placeholder:text-zinc-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 dark:border-zinc-800 dark:bg-zinc-950"
-          />
-          <div className="max-h-80 overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-950 p-2">
-            {visibleUsers.map((user) => {
-              const isSelected = user.id === toUserId;
+        <UserPicker
+          label="Выберите пользователя"
+          onChange={setToUserId}
+          users={users}
+          value={toUserId}
+        />
 
-              return (
-                <button
-                  key={user.id}
-                  type="button"
-                  onClick={() => setToUserId(user.id)}
-                  className={`mb-2 flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition last:mb-0 ${
-                    isSelected
-                      ? 'bg-purple-500/20 text-purple-100 ring-1 ring-purple-500'
-                      : 'bg-zinc-900 text-zinc-200 hover:bg-zinc-800'
-                  }`}
-                >
-                  <span>{getUserLabel(user)}</span>
-                  {isSelected ? (
-                    <span className="text-xs font-semibold text-purple-200">Выбран</span>
-                  ) : null}
-                </button>
-              );
-            })}
-            {visibleUsers.length === 0 && (
-              <p className="px-3 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
-                Пользователей по этому запросу нет.
-              </p>
-            )}
-          </div>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            {selectedUser ? `Выбран пользователь: ${getUserLabel(selectedUser)}` : 'Пользователь не выбран'}
-          </p>
-        </div>
-
-        {/* Submit Button */}
         <button
           type="submit"
-          disabled={isPending}
+          disabled={!canSubmit}
           className="inline-flex items-center justify-center rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
         >
           {isPending ? 'Выдание...' : 'Выдать значок'}
