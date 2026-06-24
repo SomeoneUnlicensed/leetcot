@@ -56,23 +56,32 @@ const challengePath = path.join(__dirname, '../../../challenges');
 const LEETCOT_ID = uuidByString('leetcot');
 
 try {
-  const author = await prisma.user.upsert({
-    where: { id: LEETCOT_ID },
-    update: {
-      email: 'admin@leetcot.ru',
-      name: 'ЛитКот',
-    },
-    create: {
-      id: LEETCOT_ID,
-      email: 'admin@leetcot.ru',
-      name: 'ЛитКот',
-      userLinks: {
-        create: {
-          url: 'https://leetcot.ru',
-        },
-      },
+  const existingAuthor = await prisma.user.findFirst({
+    where: {
+      OR: [{ id: LEETCOT_ID }, { email: 'admin@leetcot.ru' }],
     },
   });
+
+  const author = existingAuthor
+    ? await prisma.user.update({
+        where: { id: existingAuthor.id },
+        data: {
+          email: 'admin@leetcot.ru',
+          name: 'ЛитКот',
+        },
+      })
+    : await prisma.user.create({
+        data: {
+          id: LEETCOT_ID,
+          email: 'admin@leetcot.ru',
+          name: 'ЛитКот',
+          userLinks: {
+            create: {
+              url: 'https://leetcot.ru',
+            },
+          },
+        },
+      });
 
   const sqlChallenges = (await ingestChallenges(challengePath)).filter((challenge) =>
     SQL_CHALLENGE_SLUGS.includes(challenge.slug ?? ''),

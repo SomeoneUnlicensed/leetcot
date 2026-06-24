@@ -451,30 +451,22 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
 
   const timerUrgent = !isWarmup && !isExpired && timeLeft < 20;
   const timerColor = isExpired
-    ? 'bg-rose-950/40 border-rose-800/60 text-rose-400'
+    ? 'bg-rose-950/40 border-rose-800/60 text-rose-300'
     : isWarmup
-      ? 'bg-sky-950/40 border-sky-700/60 text-sky-300'
+      ? 'bg-zinc-800 border-zinc-700 text-zinc-200'
       : timerUrgent
         ? 'bg-amber-950/40 border-amber-700/60 text-amber-300 animate-pulse'
-        : 'bg-zinc-900 border-zinc-700/60 text-zinc-400';
+        : 'bg-zinc-900 border-zinc-700/60 text-zinc-300';
 
   return (
-    <div className="relative flex h-full flex-col overflow-hidden rounded-xl border border-zinc-800 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.10),transparent_34%),#09090b] font-sans text-zinc-300 shadow-2xl shadow-black/30">
+    <div className="relative flex h-full flex-col overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950 font-sans text-zinc-300 shadow-2xl shadow-black/30">
       {showConfetti ? <Confetti /> : null}
 
       {/* Terminal Header */}
       <div className="flex shrink-0 select-none items-center justify-between gap-3 border-b border-zinc-800 bg-zinc-950/95 px-4 py-3">
         <div className="min-w-0">
-          <div className="mb-1 flex items-center gap-2">
-            <div className="h-2.5 w-2.5 rounded-full bg-rose-500/80" />
-            <div className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
-            <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
-            <span className="ml-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-              sqlite
-            </span>
-          </div>
           <div className="truncate text-sm font-semibold text-zinc-100">{challenge.name}</div>
-          <div className="mt-0.5 text-xs text-zinc-500">Локальная база в браузере</div>
+          <div className="mt-0.5 text-xs text-zinc-500">SQL-песочница в браузере</div>
         </div>
 
         {/* Timer */}
@@ -502,7 +494,7 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
       {/* Warning Notice */}
       <div className="shrink-0 border-b border-zinc-800/80 bg-zinc-900/45 px-4 py-2 font-sans text-xs leading-relaxed text-zinc-400">
         {isWarmup ? (
-          <span className="text-sky-300">
+          <span className="text-zinc-300">
             Таймер стартует через {warmupLeft} секунд. Можно спокойно прочитать схему и подготовить
             запрос.
           </span>
@@ -525,8 +517,8 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
             <span className="font-sans">Инициализация SQLite WASM движка...</span>
           </div>
         ) : (
-          <div className="rounded-lg border border-zinc-800/70 bg-zinc-900/35 px-3 py-2 font-sans text-xs leading-relaxed text-zinc-500">
-            <span className="text-emerald-300">sqlite3 подключён.</span> Команды:{' '}
+          <div className="rounded-lg border border-zinc-800/70 bg-zinc-900/55 px-3 py-2 font-sans text-xs leading-relaxed text-zinc-500">
+            <span className="text-zinc-300">База готова.</span> Команды:{' '}
             <span className="font-mono text-zinc-300">.schema</span>
             {', '}
             <span className="font-mono text-zinc-300">.check</span>

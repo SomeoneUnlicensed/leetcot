@@ -9,6 +9,5 @@
 - `fishes` (id, name, weight)
 
 ```sql
--- Пример выходных колонок:
 -- name | weight
 ```

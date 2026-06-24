@@ -43,12 +43,12 @@ export function ExploreFilterBar() {
   };
 
   return (
-    <div className="container flex flex-col gap-4 py-6 md:flex-row md:items-center md:justify-between">
-      <div className="relative flex max-w-md flex-1 items-center gap-2">
+    <div className="flex flex-col gap-3">
+      <div className="relative flex flex-1 items-center gap-2">
         <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
         <Input
-          placeholder="Поиск задачек..."
-          className="border-zinc-800 bg-zinc-900/50 pl-10 focus:border-pink-500/50"
+          placeholder="Номер или название"
+          className="h-12 rounded-xl border-zinc-800 bg-zinc-900/80 pl-10 text-base text-zinc-100 placeholder:text-zinc-500 focus:border-pink-500/50"
           defaultValue={searchParams.get('query') ?? ''}
           onChange={(e) => {
             const query = e.target.value;
@@ -60,16 +60,17 @@ export function ExploreFilterBar() {
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Select
           defaultValue={searchParams.get('language') ?? 'ALL'}
           onValueChange={(v) => onFilterChange('language', v)}
         >
-          <SelectTrigger className="w-[140px] border-zinc-800 bg-zinc-900/50">
+          <SelectTrigger className="h-12 rounded-xl border-zinc-800 bg-zinc-900/80 text-zinc-100">
             <SelectValue placeholder="Язык" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="ALL">Все языки</SelectItem>
+            <SelectItem value="SQL">SQL</SelectItem>
             <SelectItem value="PYTHON">Python</SelectItem>
             <SelectItem value="TYPESCRIPT">TypeScript</SelectItem>
             <SelectItem value="JAVASCRIPT">JavaScript</SelectItem>
@@ -81,7 +82,7 @@ export function ExploreFilterBar() {
           defaultValue={searchParams.get('difficulty') ?? 'ALL'}
           onValueChange={(v) => onFilterChange('difficulty', v)}
         >
-          <SelectTrigger className="w-[140px] border-zinc-800 bg-zinc-900/50">
+          <SelectTrigger className="h-12 rounded-xl border-zinc-800 bg-zinc-900/80 text-zinc-100">
             <SelectValue placeholder="Сложность" />
           </SelectTrigger>
           <SelectContent>
@@ -91,6 +92,19 @@ export function ExploreFilterBar() {
             <SelectItem value="MEDIUM">Средне</SelectItem>
             <SelectItem value="HARD">Сложно</SelectItem>
             <SelectItem value="EXTREME">Экстрим</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select
+          defaultValue={searchParams.get('tag') ?? 'ALL'}
+          onValueChange={(v) => onFilterChange('tag', v)}
+        >
+          <SelectTrigger className="h-12 rounded-xl border-zinc-800 bg-zinc-900/80 text-zinc-100">
+            <SelectValue placeholder="Теги" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">Все теги</SelectItem>
+            <SelectItem value="POPULAR">Популярные</SelectItem>
+            <SelectItem value="NEWEST">Новые</SelectItem>
           </SelectContent>
         </Select>
       </div>
