@@ -9,16 +9,41 @@ interface User {
   email: string | null;
 }
 
-const BADGES = [
-  { slug: 'contributor', name: 'Контрибьютер' },
-] as const;
+interface Badge {
+  name: string;
+  slug: string;
+}
 
-export function AwardBadgeForm({ users }: { users: User[] }) {
+const BADGES = [{ slug: 'contributor', name: 'Контрибьютер' }] as const;
+
+function getUserLabel(user: User) {
+  const name = user.name?.trim();
+  const email = user.email?.trim();
+
+  if (name && email) {
+    return `${name} (${email})`;
+  }
+
+  return name || email || `Пользователь ${user.id.slice(0, 8)}`;
+}
+
+export function AwardBadgeForm({
+  badges = BADGES,
+  users,
+}: {
+  badges?: readonly Badge[];
+  users: User[];
+}) {
   const [toUserId, setToUserId] = useState('');
   const [badgeSlug, setBadgeSlug] = useState<string>('contributor');
+  const [userQuery, setUserQuery] = useState('');
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const normalizedQuery = userQuery.trim().toLowerCase();
+  const visibleUsers = users.filter((user) =>
+    getUserLabel(user).toLowerCase().includes(normalizedQuery),
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,7 +93,7 @@ export function AwardBadgeForm({ users }: { users: User[] }) {
             onChange={(e) => setBadgeSlug(e.target.value)}
             className="flex h-10 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 dark:border-zinc-800 dark:bg-zinc-950"
           >
-            {BADGES.map((b) => (
+            {badges.map((b) => (
               <option key={b.slug} value={b.slug} className="dark:bg-zinc-900">
                 {b.name}
               </option>
@@ -79,23 +104,35 @@ export function AwardBadgeForm({ users }: { users: User[] }) {
         {/* User selector */}
         <div className="space-y-2">
           <label htmlFor="userSelect" className="text-sm font-medium leading-none">
-            Выберите пользователя
+            Выберите пользователя ({users.length})
           </label>
+          <input
+            value={userQuery}
+            onChange={(e) => setUserQuery(e.target.value)}
+            placeholder="Поиск по имени или почте"
+            className="flex h-10 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-2 text-sm ring-offset-white placeholder:text-zinc-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 dark:border-zinc-800 dark:bg-zinc-950"
+          />
           <select
             id="userSelect"
             value={toUserId}
             onChange={(e) => setToUserId(e.target.value)}
-            className="flex h-10 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 dark:border-zinc-800 dark:bg-zinc-950"
+            size={Math.min(Math.max(visibleUsers.length + 1, 4), 10)}
+            className="flex min-h-40 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 dark:border-zinc-800 dark:bg-zinc-950"
           >
             <option value="" className="dark:bg-zinc-900">
               -- Выберите из списка --
             </option>
-            {users.map((u) => (
+            {visibleUsers.map((u) => (
               <option key={u.id} value={u.id} className="dark:bg-zinc-900">
-                {u.name || 'Без имени'} ({u.email || 'Нет почты'})
+                {getUserLabel(u)}
               </option>
             ))}
           </select>
+          {visibleUsers.length === 0 && (
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              Пользователей по этому запросу нет.
+            </p>
+          )}
         </div>
 
         {/* Submit Button */}

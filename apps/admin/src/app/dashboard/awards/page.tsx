@@ -3,6 +3,10 @@ import { assertAdmin } from '~/utils/auth-guards';
 import { prisma } from '@repo/db';
 import { AwardBadgeForm } from './_components/award-badge-form';
 
+const BADGES = [{ slug: 'contributor', name: 'Контрибьютер' }] as const;
+
+const BADGE_NAMES = Object.fromEntries(BADGES.map((badge) => [badge.slug, badge.name]));
+
 export default async function AwardsPage() {
   const session = await auth();
   assertAdmin(session);
@@ -33,7 +37,7 @@ export default async function AwardsPage() {
           Выдавайте значки пользователям. Пользователь получит системное уведомление.
         </p>
       </div>
-      <AwardBadgeForm users={users} />
+      <AwardBadgeForm badges={BADGES} users={users} />
       <div>
         <h2 className="mb-3 text-xl font-semibold">Последние награждения</h2>
         <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
@@ -49,7 +53,7 @@ export default async function AwardsPage() {
               {recentAwards.map((award) => (
                 <tr key={award.id} className="border-t border-zinc-200 dark:border-zinc-800">
                   <td className="px-4 py-3">{award.user.name ?? award.user.email}</td>
-                  <td className="px-4 py-3">{award.badgeSlug}</td>
+                  <td className="px-4 py-3">{BADGE_NAMES[award.badgeSlug] ?? award.badgeSlug}</td>
                   <td className="px-4 py-3 text-zinc-500">
                     {new Date(award.awardedAt).toLocaleDateString('ru-RU')}
                   </td>
