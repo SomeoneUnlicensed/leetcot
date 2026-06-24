@@ -44,6 +44,8 @@ export function AwardBadgeForm({
   const visibleUsers = users.filter((user) =>
     getUserLabel(user).toLowerCase().includes(normalizedQuery),
   );
+  const selectedBadge = badges.find((badge) => badge.slug === badgeSlug);
+  const selectedUser = users.find((user) => user.id === toUserId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,57 +84,77 @@ export function AwardBadgeForm({
           </div>
         )}
 
-        {/* Badge selector */}
         <div className="space-y-2">
-          <label htmlFor="badgeSelect" className="text-sm font-medium leading-none">
+          <div className="text-sm font-medium leading-none">
             Значок
-          </label>
-          <select
-            id="badgeSelect"
-            value={badgeSlug}
-            onChange={(e) => setBadgeSlug(e.target.value)}
-            className="flex h-10 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 dark:border-zinc-800 dark:bg-zinc-950"
-          >
-            {badges.map((b) => (
-              <option key={b.slug} value={b.slug} className="dark:bg-zinc-900">
-                {b.name}
-              </option>
-            ))}
-          </select>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {badges.map((badge) => {
+              const isSelected = badge.slug === badgeSlug;
+
+              return (
+                <button
+                  key={badge.slug}
+                  type="button"
+                  onClick={() => setBadgeSlug(badge.slug)}
+                  className={`rounded-lg border px-4 py-3 text-left text-sm font-medium transition ${
+                    isSelected
+                      ? 'border-purple-500 bg-purple-500/15 text-purple-100 ring-2 ring-purple-500/40'
+                      : 'border-zinc-700 bg-zinc-950 text-zinc-200 hover:border-zinc-500 hover:bg-zinc-900'
+                  }`}
+                >
+                  {badge.name}
+                </button>
+              );
+            })}
+          </div>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            Выбран значок: {selectedBadge?.name ?? badgeSlug}
+          </p>
         </div>
 
-        {/* User selector */}
         <div className="space-y-2">
-          <label htmlFor="userSelect" className="text-sm font-medium leading-none">
+          <label htmlFor="userSearch" className="text-sm font-medium leading-none">
             Выберите пользователя ({users.length})
           </label>
           <input
+            id="userSearch"
             value={userQuery}
             onChange={(e) => setUserQuery(e.target.value)}
             placeholder="Поиск по имени или почте"
             className="flex h-10 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-2 text-sm ring-offset-white placeholder:text-zinc-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 dark:border-zinc-800 dark:bg-zinc-950"
           />
-          <select
-            id="userSelect"
-            value={toUserId}
-            onChange={(e) => setToUserId(e.target.value)}
-            size={Math.min(Math.max(visibleUsers.length + 1, 4), 10)}
-            className="flex min-h-40 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 dark:border-zinc-800 dark:bg-zinc-950"
-          >
-            <option value="" className="dark:bg-zinc-900">
-              -- Выберите из списка --
-            </option>
-            {visibleUsers.map((u) => (
-              <option key={u.id} value={u.id} className="dark:bg-zinc-900">
-                {getUserLabel(u)}
-              </option>
-            ))}
-          </select>
-          {visibleUsers.length === 0 && (
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Пользователей по этому запросу нет.
-            </p>
-          )}
+          <div className="max-h-80 overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-950 p-2">
+            {visibleUsers.map((user) => {
+              const isSelected = user.id === toUserId;
+
+              return (
+                <button
+                  key={user.id}
+                  type="button"
+                  onClick={() => setToUserId(user.id)}
+                  className={`mb-2 flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition last:mb-0 ${
+                    isSelected
+                      ? 'bg-purple-500/20 text-purple-100 ring-1 ring-purple-500'
+                      : 'bg-zinc-900 text-zinc-200 hover:bg-zinc-800'
+                  }`}
+                >
+                  <span>{getUserLabel(user)}</span>
+                  {isSelected ? (
+                    <span className="text-xs font-semibold text-purple-200">Выбран</span>
+                  ) : null}
+                </button>
+              );
+            })}
+            {visibleUsers.length === 0 && (
+              <p className="px-3 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
+                Пользователей по этому запросу нет.
+              </p>
+            )}
+          </div>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            {selectedUser ? `Выбран пользователь: ${getUserLabel(selectedUser)}` : 'Пользователь не выбран'}
+          </p>
         </div>
 
         {/* Submit Button */}
