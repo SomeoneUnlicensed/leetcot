@@ -1,6 +1,7 @@
 import { auth } from '~/server/auth';
-import { assertAdmin } from '~/utils/auth-guards';
 import { prisma } from '@repo/db';
+import { RoleTypes } from '@repo/db/types';
+import { redirect } from 'next/navigation';
 import { AwardBadgeForm } from './_components/award-badge-form';
 
 const BADGES = [{ slug: 'contributor', name: 'Контрибьютер' }] as const;
@@ -9,7 +10,10 @@ const BADGE_NAMES = Object.fromEntries(BADGES.map((badge) => [badge.slug, badge.
 
 export default async function AwardsPage() {
   const session = await auth();
-  assertAdmin(session);
+
+  if (!session?.user?.role.includes(RoleTypes.ADMIN)) {
+    redirect('/');
+  }
 
   const [users, recentAwards] = await Promise.all([
     prisma.user.findMany({
