@@ -72,8 +72,8 @@ const baseConfig = withPlugins(nextConfig);
 
 export default process.env.SENTRY_AUTH_TOKEN
   ? withSentryConfig(baseConfig, {
-      org: process.env.SENTRY_ORG || 'typehero',
-      project: process.env.SENTRY_PROJECT || 'typehero-web-production',
+      org: process.env.SENTRY_ORG || 'd97854546524',
+      project: process.env.SENTRY_PROJECT || 'leetcot',
       authToken: process.env.SENTRY_AUTH_TOKEN,
       silent: true,
       widenClientFileUpload: true,

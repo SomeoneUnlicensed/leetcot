@@ -1,15 +1,14 @@
 import * as Sentry from '@sentry/nextjs';
 
+const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+
 Sentry.init({
   debug: false,
-  dsn:
-    process.env.NEXT_PUBLIC_SENTRY_DSN ||
-    'https://1a8c02b6dccf19dcf66e19e8abe9a931@o4511575171530752.ingest.de.sentry.io/4511575183261776',
-  enabled: process.env.NODE_ENV === 'production',
-  environment:
-    window.origin.includes('staging') || window.origin.includes('vercel.app')
-      ? 'Staging'
-      : 'Production',
-  tracePropagationTargets: ['localhost:3000', /^\//],
-  tracesSampleRate: 1,
+  dsn,
+  enabled: Boolean(dsn) && process.env.NODE_ENV === 'production',
+  environment: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+  replaysOnErrorSampleRate: 1.0,
+  replaysSessionSampleRate: 0,
+  tracePropagationTargets: ['localhost:3000', 'leetcot.ru', /^\//],
+  tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
 });

@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-unresolved
 import million from 'million/compiler';
+import { withSentryConfig } from '@sentry/nextjs';
 
 const millionConfig = {
   auto: { rsc: true },
@@ -36,4 +37,16 @@ const config = {
     ],
   },
 };
-export default million.next(config, millionConfig);
+
+const baseConfig = million.next(config, millionConfig);
+
+export default process.env.SENTRY_AUTH_TOKEN
+  ? withSentryConfig(baseConfig, {
+      org: process.env.SENTRY_ORG || 'd97854546524',
+      project: process.env.SENTRY_PROJECT || 'leetcot',
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      silent: true,
+      widenClientFileUpload: true,
+      disableLogger: true,
+    })
+  : baseConfig;
