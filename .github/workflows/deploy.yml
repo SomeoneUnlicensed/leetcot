@@ -91,7 +91,7 @@ jobs:
 
       - name: Deploy image on production
         run: |
-          ssh '${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}' 'bash -s' <<'REMOTE'
+          ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=20 '${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}' 'bash -s' <<'REMOTE'
           set -euo pipefail
           cd '${{ env.DEPLOY_PATH }}'
 
@@ -108,10 +108,24 @@ jobs:
 
           echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u '${{ github.actor }}' --password-stdin
 
+          pull_image() {
+            local image="$1"
+            for i in 1 2 3; do
+              if docker pull "$image"; then
+                return 0
+              fi
+              if [ "$i" -eq 3 ]; then
+                return 1
+              fi
+              echo "Retrying docker pull for $image ($i/3)"
+              sleep 10
+            done
+          }
+
           $COMPOSE pull db redis pgadmin || true
-          docker pull node:20-alpine
-          docker pull python:3.11-alpine
-          docker pull "$LEETCOT_IMAGE"
+          pull_image node:20-alpine
+          pull_image python:3.11-alpine
+          pull_image "$LEETCOT_IMAGE"
 
           $COMPOSE up -d --no-recreate db redis pgadmin
 
