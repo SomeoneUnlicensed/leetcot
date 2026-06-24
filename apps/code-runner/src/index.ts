@@ -24,8 +24,6 @@ function getPositiveInteger(value: string | undefined, fallback: number) {
 
 const CONCURRENCY = getPositiveInteger(process.env.CODE_RUNNER_CONCURRENCY, 2);
 const TIMEOUT_MS = getPositiveInteger(process.env.CODE_RUNNER_TIMEOUT_MS, 10_000);
-const DOCKER_TIMEOUT_GRACE_MS = 3_000;
-const RUNTIME_TIMEOUT_SECONDS = Math.ceil(TIMEOUT_MS / 1000);
 const MAX_OUTPUT_BYTES = getPositiveInteger(process.env.CODE_RUNNER_MAX_OUTPUT_BYTES, 16_000);
 
 interface DockerRunResult {
@@ -68,6 +66,11 @@ function getErrorMessage(error: unknown) {
 
 async function forceRemoveContainer(containerName: string) {
   await execAsync(`docker rm -f "${containerName}"`).catch(() => undefined);
+}
+
+async function cleanupSandbox(containerName: string, tmpDir: string) {
+  await forceRemoveContainer(containerName);
+  await rm(tmpDir, { force: true, recursive: true });
 }
 
 async function cleanupStaleSandboxContainers() {
@@ -117,16 +120,15 @@ async function runSandboxContainer(
 
     const timeout = setTimeout(() => {
       timedOut = true;
-      void forceRemoveContainer(containerName).finally(() => {
-        child.kill('SIGKILL');
-        finish({
-          exitCode: null,
-          stderr,
-          stdout,
-          timedOut: true,
-        });
+      void forceRemoveContainer(containerName);
+      child.kill('SIGKILL');
+      finish({
+        exitCode: null,
+        stderr,
+        stdout,
+        timedOut: true,
       });
-    }, TIMEOUT_MS + DOCKER_TIMEOUT_GRACE_MS);
+    }, TIMEOUT_MS);
 
     child.stdout.on('data', (chunk: Buffer) => {
       stdout += chunk.toString('utf8');
@@ -157,6 +159,7 @@ async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
   const runtime = runtimes[job.payload.language];
   const containerName = `litkot-run-${job.id}`;
   const tmpDir = path.join(os.tmpdir(), `litkot-run-${job.id}`);
+  let shouldCleanupInBackground = false;
 
   await mkdir(tmpDir, { recursive: true });
 
@@ -194,17 +197,15 @@ async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
       '-w',
       '/code',
       runtime.image,
-      'timeout',
-      '-s',
-      'KILL',
-      String(RUNTIME_TIMEOUT_SECONDS),
       ...runtime.command,
     ];
 
     try {
       const result = await runSandboxContainer(dockerArgs, containerName);
 
-      if (result.timedOut || result.exitCode === 124 || result.exitCode === 137) {
+      if (result.timedOut) {
+        shouldCleanupInBackground = true;
+
         return {
           error: `ТАЙМАУТ: Код выполнялся дольше ${Math.ceil(TIMEOUT_MS / 1000)} секунд. Возможно бесконечный цикл или очень медленное выполнение.`,
           output: trimOutput(result.stdout),
@@ -248,8 +249,13 @@ async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
       };
     }
   } finally {
-    await forceRemoveContainer(containerName);
-    await rm(tmpDir, { force: true, recursive: true });
+    const cleanup = cleanupSandbox(containerName, tmpDir);
+
+    if (shouldCleanupInBackground) {
+      void cleanup;
+    } else {
+      await cleanup;
+    }
   }
 }
 
