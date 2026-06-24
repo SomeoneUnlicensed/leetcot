@@ -8,7 +8,13 @@ import { Providers } from './providers';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  icons: {
+    apple: '/panel/icon.svg',
+    icon: '/panel/icon.svg',
+    shortcut: '/panel/icon.svg',
+  },
   robots: 'noindex',
+  title: 'ЛитКот Admin',
 };
 const inter = Inter({ subsets: ['latin'] });
 
