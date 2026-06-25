@@ -12,6 +12,7 @@ const millionConfig = {
 };
 const isProd = process.env.NODE_ENV === 'production';
 const isTurbopack = process.argv.includes('--turbopack');
+const enableMillionCompiler = process.env.ENABLE_MILLION_COMPILER === 'true';
 
 const nextConfig = {
   async headers() {
@@ -29,18 +30,16 @@ const nextConfig = {
     return [];
   },
   async rewrites() {
-    return isProd
-      ? []
-      : [
-          {
-            source: '/panel',
-            destination: 'http://localhost:3001/panel',
-          },
-          {
-            source: '/panel/:path*',
-            destination: 'http://localhost:3001/panel/:path*',
-          },
-        ];
+    return [
+      {
+        source: '/panel',
+        destination: 'http://localhost:3001/panel',
+      },
+      {
+        source: '/panel/:path*',
+        destination: 'http://localhost:3001/panel/:path*',
+      },
+    ];
   },
   transpilePackages: ['@repo/db', '@repo/ui', '@repo/auth', '@repo/monaco'],
   images: {
@@ -64,7 +63,7 @@ const withVercelToolbar = vercelToolbar();
 
 /** @param {any} config */
 const withPlugins = (config) =>
-  isProd && !isTurbopack
+  isProd && !isTurbopack && enableMillionCompiler
     ? million.next(withBundleAnalyzer(withVercelToolbar(config)), millionConfig)
     : withBundleAnalyzer(withVercelToolbar(config));
 
