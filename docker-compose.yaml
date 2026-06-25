@@ -36,11 +36,12 @@ services:
     env_file:
       - .env
     environment:
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-dev}@db:5432/leetcot?schema=public
       - REDIS_URL=redis://redis:6379
       - NODE_ENV=${NODE_ENV:-production}
       - CODE_RUNNER_MAX_QUEUE_DEPTH=${CODE_RUNNER_MAX_QUEUE_DEPTH:-20}
-      - AUTH_URL=${AUTH_URL:-http://localhost:3002}
-      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3002}
+      - AUTH_URL=${AUTH_URL:-https://leetcot.ru}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-https://leetcot.ru}
     depends_on:
       db:
         condition: service_healthy
@@ -57,6 +58,7 @@ services:
     env_file:
       - .env
     environment:
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-dev}@db:5432/leetcot?schema=public
       - REDIS_URL=redis://redis:6379
       - NODE_ENV=${NODE_ENV:-production}
       - CODE_RUNNER_CONCURRENCY=${CODE_RUNNER_CONCURRENCY:-2}

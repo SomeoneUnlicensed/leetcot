@@ -77,22 +77,47 @@ export function Submissions({ submissions }: SubmissionsProps) {
 
 function SubmissionRow({ submission }: { submission: Submission }) {
   const { slug } = useParams();
+  const execTime = (submission as Submission & { executionTimeMs?: number | null }).executionTimeMs;
   return (
     <li className="flex cursor-pointer items-center justify-between px-4 py-2 duration-300 hover:bg-neutral-100 dark:rounded-none dark:hover:bg-zinc-700/50">
       <Link className="w-full" href={`/challenge/${slug}/submissions/${submission.id}`}>
-        <div
-          className={clsx({
-            'text-emerald-600  dark:text-emerald-400': submission.isSuccessful,
-            'text-rose-600  dark:text-rose-400': !submission.isSuccessful,
-          })}
-        >
-          {submission.isSuccessful ? 'Принято' : 'Отклонено'}
-        </div>
-        <div className="text-muted-foreground flex items-center gap-2">
-          <Calendar className=" h-4 w-4" />
-          <span className="text-xs">{getRelativeTimeStrict(submission.createdAt)}</span>
+        <div className="flex items-center justify-between">
+          <div
+            className={clsx({
+              'text-emerald-600  dark:text-emerald-400': submission.isSuccessful,
+              'text-rose-600  dark:text-rose-400': !submission.isSuccessful,
+            })}
+          >
+            {submission.isSuccessful ? 'Принято' : 'Отклонено'}
+          </div>
+          <div className="text-muted-foreground flex items-center gap-3">
+            {submission.isSuccessful && execTime != null && (
+              <span className="flex items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="9"
+                  height="9"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                {execTime >= 1000 ? `${(execTime / 1000).toFixed(2)} с` : `${execTime} мс`}
+              </span>
+            )}
+            <div className="flex items-center gap-2">
+              <Calendar className=" h-4 w-4" />
+              <span className="text-xs">{getRelativeTimeStrict(submission.createdAt)}</span>
+            </div>
+          </div>
         </div>
       </Link>
     </li>
   );
 }
+

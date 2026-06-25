@@ -2,6 +2,7 @@ import { exec, spawn } from 'node:child_process';
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { performance } from 'node:perf_hooks';
 import { promisify } from 'node:util';
 import {
   dequeueCodeRunJob,
@@ -201,7 +202,9 @@ async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
     ];
 
     try {
+      const startTime = performance.now();
       const result = await runSandboxContainer(dockerArgs, containerName);
+      const executionTimeMs = Math.round(performance.now() - startTime);
 
       if (result.timedOut) {
         shouldCleanupInBackground = true;
@@ -223,6 +226,7 @@ async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
 
       return {
         error: trimOutput(result.stderr),
+        executionTimeMs,
         output: trimOutput(result.stdout),
         success: true,
       };

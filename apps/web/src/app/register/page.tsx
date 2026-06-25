@@ -26,7 +26,9 @@ function OtpInput({ value, onChange }: { value: string; onChange: (v: string) =>
     arr[i] = digit || ' ';
     const next = arr.join('').trimEnd();
     onChange(next);
-    if (digit && i < 5) inputs.current[i + 1]?.focus();
+    // Defer focus so React flushes the controlled value update first,
+    // otherwise the browser reverts focus back to the current input.
+    if (digit && i < 5) setTimeout(() => inputs.current[i + 1]?.focus(), 0);
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {

@@ -25,7 +25,7 @@ import { SignOutLink } from './signout-link';
 import { SkipToCodeEditor } from './skip-to-code-editor';
 
 export function getAdminUrl() {
-  return process.env.NEXT_PUBLIC_ADMIN_URL || 'https://admin.leetcot.ru';
+  return process.env.NEXT_PUBLIC_ADMIN_URL || '/panel';
 }
 
 export async function Navigation() {
@@ -49,10 +49,12 @@ export async function Navigation() {
     <>
       <NavLink title="Задачки" href="/explore" />
       <NavLink title="Алгоритмы" href="/algorithms" />
-      <NavLink title="SQL-рыбалка" href="/courses/sql-cat-tables" />
+      <NavLink title="SQL-рыбалка" href="/sql-fishing" />
       {isTeacher ? <NavLink title="Панель учителя" href="/teacher/exams" /> : null}
       {isChampionshipManager ? (
-        <NavLink title="Панель чемпионатов" href={`${getAdminUrl()}/dashboard/championships`} />
+        <a href={`${getAdminUrl()}/dashboard/championships`} className="text-sm font-medium transition-colors hover:text-foreground/80">
+          Панель чемпионатов
+        </a>
       ) : null}
     </>
   );
@@ -68,7 +70,7 @@ export async function Navigation() {
             <hr />
             <NavLink title="Профиль" href={`/@${session.user.name}`} />
             <NavLink title="Настройки" href={`/@${session.user.name}/edit`} />
-            {isAdminOrMod ? <NavLink title="Админ" href={getAdminUrl()} /> : null}
+            {isAdminOrMod ? <a href={getAdminUrl()} className="text-sm font-medium transition-colors hover:text-foreground/80">Админ</a> : null}
             {isAdminOrMod ? <NavLink title="Песочница задач" href="/challenge-playground" /> : null}
             {isAdminRole ? <NavLink title="Сокращатель ссылок" href="/share" /> : null}
             <SignOutLink className="px-0" />
@@ -184,20 +186,20 @@ function LoginButton({
           </Link>
         ) : null}
         {isChampionshipManager ? (
-          <Link className="block" href={`${getAdminUrl()}/dashboard/championships`}>
+          <a className="block" href={`${getAdminUrl()}/dashboard/championships`}>
             <DropdownMenuItem className="focus:bg-accent rounded-lg p-2 duration-300 focus:outline-none dark:hover:bg-neutral-700/50">
               <Trophy className="mr-2 h-4 w-4" />
               <span>Панель чемпионатов</span>
             </DropdownMenuItem>
-          </Link>
+          </a>
         ) : null}
         {isAdminOrMod ? (
-          <Link className="block" href={getAdminUrl()}>
+          <a className="block" href={getAdminUrl()}>
             <DropdownMenuItem className="focus:bg-accent rounded-lg p-2 duration-300 focus:outline-none dark:hover:bg-neutral-700/50">
               <Settings className="mr-2 h-4 w-4" />
               <span>Админ</span>
             </DropdownMenuItem>
-          </Link>
+          </a>
         ) : null}
         {isAdminOrMod ? (
           <Link className="block" href="/challenge-playground">
