@@ -49,7 +49,7 @@ export async function Navigation() {
     <>
       <NavLink title="Задачки" href="/explore" />
       <NavLink title="Алгоритмы" href="/algorithms" />
-      <NavLink title="SQL-рыбалка" href="/courses/sql-cat-tables" />
+      <NavLink title="SQL-рыбалка" href="/sql-fishing" />
       {isTeacher ? <NavLink title="Панель учителя" href="/teacher/exams" /> : null}
       {isChampionshipManager ? (
         <a href={`${getAdminUrl()}/dashboard/championships`} className="text-sm font-medium transition-colors hover:text-foreground/80">
