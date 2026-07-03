@@ -1,11 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export type CodeRunnerLanguage = 'javascript' | 'python';
+export type CodeRunnerLanguage = 'python' | 'sql';
 
 export interface CodeRunPayload {
   code: string;
   tests: string;
   language: CodeRunnerLanguage;
+  challengeId: number;
+  userId: string;
 }
 
 export interface CodeRunResult {
@@ -26,12 +28,14 @@ export interface CodeRunJob {
 }
 
 export interface CodeRunJobView {
+  challengeId: number;
   createdAt: number;
   id: string;
   position: number;
   result?: CodeRunResult;
   status: CodeRunStatus;
   updatedAt: number;
+  userId: string;
 }
 
 const QUEUE_KEY = 'code-runner:queue';
@@ -47,7 +51,7 @@ async function getRedisClient() {
 export function normalizeLanguage(language: string): CodeRunnerLanguage | null {
   const normalized = language.toLowerCase();
 
-  if (normalized === 'javascript' || normalized === 'python') {
+  if (normalized === 'python' || normalized === 'sql') {
     return normalized;
   }
 
@@ -76,11 +80,13 @@ export async function enqueueCodeRun(payload: CodeRunPayload): Promise<CodeRunJo
   await redisClient.rPush(QUEUE_KEY, job.id);
 
   return {
+    challengeId: job.payload.challengeId,
     createdAt: job.createdAt,
     id: job.id,
     position: await getQueuePosition(job.id),
     status: job.status,
     updatedAt: job.updatedAt,
+    userId: job.payload.userId,
   };
 }
 
@@ -103,12 +109,14 @@ export async function getCodeRunJobView(jobId: string): Promise<CodeRunJobView |
   }
 
   return {
+    challengeId: job.payload.challengeId,
     createdAt: job.createdAt,
     id: job.id,
     position: job.status === 'queued' ? await getQueuePosition(job.id) : 0,
     result: 'result' in job ? (job as CodeRunJob & { result?: CodeRunResult }).result : undefined,
     status: job.status,
     updatedAt: job.updatedAt,
+    userId: job.payload.userId,
   };
 }
 

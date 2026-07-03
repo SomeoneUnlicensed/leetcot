@@ -45,8 +45,6 @@ const difficultyStyles: Record<Difficulty, string> = {
 const languageLabels: Record<string, string> = {
   SQL: 'SQL',
   PYTHON: 'Python',
-  TYPESCRIPT: 'TypeScript',
-  JAVASCRIPT: 'JavaScript',
   GO: 'Go',
 };
 

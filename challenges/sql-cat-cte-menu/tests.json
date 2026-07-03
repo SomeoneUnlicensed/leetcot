@@ -1,0 +1,15 @@
+{
+  "schema": "CREATE TABLE orders (cat TEXT, fish TEXT, grams INTEGER);",
+  "seed": "INSERT INTO orders (cat, fish, grams) VALUES ('Барсик', 'лосось', 160), ('Барсик', 'тунец', 180), ('Васька', 'карась', 90), ('Мурзик', 'треска', 240), ('Мурзик', 'лосось', 80), ('Соня', 'окунь', 120);",
+  "expectedType": "select",
+  "expected": [
+    {
+      "cat": "Барсик",
+      "total_grams": 340
+    },
+    {
+      "cat": "Мурзик",
+      "total_grams": 320
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 'use server';
+import { getCodeRunJobView } from '@repo/code-runner';
 import { prisma } from '@repo/db';
 import { revalidateTag } from 'next/cache';
 import { auth } from '~/server/auth';
@@ -10,30 +11,71 @@ import {
   createInProgressSubmissionCacheKey,
 } from './cache-keys';
 
+// Languages whose grading runs on the server (via @repo/code-runner), so the
+// verdict is derived from the job the server itself computed instead of a
+// client-supplied boolean. Other languages are still graded client-side today
+// (TS/JS diagnostics checked in-browser) and remain on the trusted-boolean path
+// below until that grading also moves behind a server-verified job.
+const QUEUE_VERIFIED_LANGUAGES: ChallengeRouteData['challenge']['language'][] = ['SQL', 'PYTHON'];
+
 interface Args {
   challenge: ChallengeRouteData['challenge'];
   code: string;
-  isSuccessful: boolean;
   executionTimeMs?: number | null;
+  isSuccessful?: boolean;
+  jobId?: string;
 }
-export async function saveSubmission({ challenge, code, isSuccessful, executionTimeMs }: Args) {
+export async function saveSubmission({
+  challenge,
+  code,
+  isSuccessful,
+  executionTimeMs,
+  jobId,
+}: Args) {
   const session = await auth();
   if (!session?.user) {
     throw new Error('Not Authorized');
   }
   const userId = session.user.id;
 
+  let verifiedIsSuccessful: boolean;
+  let verifiedExecutionTimeMs = executionTimeMs;
+
+  const mustVerifyViaQueue =
+    !challenge.isInfoOnly && QUEUE_VERIFIED_LANGUAGES.includes(challenge.language);
+
+  if (mustVerifyViaQueue) {
+    if (!jobId) {
+      throw new Error('Отсутствует идентификатор серверной проверки решения');
+    }
+
+    const job = await getCodeRunJobView(jobId);
+
+    if (!job || (job.status !== 'success' && job.status !== 'failure')) {
+      throw new Error('Проверка решения ещё не завершена или устарела');
+    }
+
+    if (job.challengeId !== challenge.id || job.userId !== userId) {
+      throw new Error('Результат проверки не относится к этой задаче или пользователю');
+    }
+
+    verifiedIsSuccessful = job.result?.success ?? false;
+    verifiedExecutionTimeMs = job.result?.executionTimeMs ?? executionTimeMs;
+  } else {
+    verifiedIsSuccessful = Boolean(isSuccessful);
+  }
+
   const submission = await prisma.submission.create({
     data: {
       challengeId: challenge.id,
       userId,
       code,
-      isSuccessful,
-      ...(executionTimeMs != null ? { executionTimeMs } : {}),
+      isSuccessful: verifiedIsSuccessful,
+      ...(verifiedExecutionTimeMs != null ? { executionTimeMs: verifiedExecutionTimeMs } : {}),
     },
   });
 
-  if (isSuccessful) {
+  if (verifiedIsSuccessful) {
     const activeParticipants = await prisma.championshipParticipant.findMany({
       where: {
         userId,

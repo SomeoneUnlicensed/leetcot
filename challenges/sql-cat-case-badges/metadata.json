@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-case-badges",
+  "label": "Раздать рыбные лиги (CASE)",
+  "description": "Назначьте лигу по количеству очков.",
+  "difficulty": "medium",
+  "language": "sql",
+  "author": "ЛитКот"
+}

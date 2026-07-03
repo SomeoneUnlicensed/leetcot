@@ -1,0 +1,32 @@
+{
+  "schema": "CREATE TABLE catches (cat TEXT, fish_count INTEGER);",
+  "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Барсик', 12), ('Васька', 18), ('Мурзик', 12), ('Соня', 7), ('Тихон', 18);",
+  "expectedType": "select",
+  "expected": [
+    {
+      "cat": "Васька",
+      "fish_count": 18,
+      "place": 1
+    },
+    {
+      "cat": "Тихон",
+      "fish_count": 18,
+      "place": 1
+    },
+    {
+      "cat": "Барсик",
+      "fish_count": 12,
+      "place": 2
+    },
+    {
+      "cat": "Мурзик",
+      "fish_count": 12,
+      "place": 2
+    },
+    {
+      "cat": "Соня",
+      "fish_count": 7,
+      "place": 3
+    }
+  ]
+}

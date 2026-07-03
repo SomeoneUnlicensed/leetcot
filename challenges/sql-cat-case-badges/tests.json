@@ -1,0 +1,23 @@
+{
+  "schema": "CREATE TABLE scores (cat TEXT, points INTEGER);",
+  "seed": "INSERT INTO scores (cat, points) VALUES ('Барсик', 96), ('Васька', 72), ('Мурзик', 51), ('Соня', 88);",
+  "expectedType": "select",
+  "expected": [
+    {
+      "cat": "Барсик",
+      "league": "золото"
+    },
+    {
+      "cat": "Соня",
+      "league": "серебро"
+    },
+    {
+      "cat": "Васька",
+      "league": "серебро"
+    },
+    {
+      "cat": "Мурзик",
+      "league": "рыбка"
+    }
+  ]
+}

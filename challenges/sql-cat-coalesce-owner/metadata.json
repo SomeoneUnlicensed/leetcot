@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-coalesce-owner",
+  "label": "Кому доверили миску (COALESCE)",
+  "description": "Замените пустые значения ответственным по умолчанию.",
+  "difficulty": "easy",
+  "language": "sql",
+  "author": "ЛитКот"
+}

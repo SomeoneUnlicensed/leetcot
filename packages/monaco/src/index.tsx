@@ -1,7 +1,6 @@
 'use client';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/restrict-plus-operands */
 
 import { Button } from '@repo/ui/components/button';
 import { useToast } from '@repo/ui/components/use-toast';
@@ -26,7 +25,12 @@ export interface CodePanelProps {
     tsconfig?: monaco.languages.typescript.CompilerOptions;
   };
   validator?: (args: unknown[]) => boolean;
-  saveSubmission: (code: string, isSuccessful: boolean, executionTimeMs?: number | null) => Promise<any>;
+  saveSubmission: (
+    code: string,
+    isSuccessful: boolean,
+    executionTimeMs?: number | null,
+    jobId?: string,
+  ) => Promise<any>;
   submissionDisabled: boolean;
   settingsElement: React.ReactNode;
   updatePlaygroundTestsLocalStorage?: (code: string) => void;
@@ -189,16 +193,11 @@ export function CodePanel(props: CodePanelProps) {
       setTimeout(resolve, 800);
     });
 
+    let queueJobId: string | undefined;
+
     try {
       const currentCode = codeRef.current;
-      const extension =
-        props.challenge.language.toLowerCase() === 'python'
-          ? 'py'
-          : props.challenge.language.toLowerCase() === 'javascript'
-            ? 'js'
-            : 'ts';
-      const TESTS_PATH = `file:///tests.${extension}`;
-      const USER_CODE_PATH = `file:///user.${extension}`;
+      const isPython = props.challenge.language.toLowerCase() === 'python';
 
       const formattedErrors: string[] = [];
 
@@ -208,59 +207,7 @@ export function CodePanel(props: CodePanelProps) {
         formattedErrors.push((err as Error).message || 'Ошибка валидации кода');
       }
 
-      if (extension === 'ts' || extension === 'js') {
-        const getTsWorker = await monacoInstance.languages.typescript.getTypeScriptWorker();
-        const model = monacoInstance.editor.getModel(monacoInstance.Uri.parse(TESTS_PATH));
-
-        if (!model) {
-          console.error('TESTS_PATH model not found! Target:', TESTS_PATH);
-          throw new Error('Не удалось запустить компилятор тестов');
-        }
-
-        const tsWorker = await getTsWorker(model.uri);
-
-        const testErrors = await Promise.all([
-          tsWorker.getSemanticDiagnostics(TESTS_PATH),
-          tsWorker.getSyntacticDiagnostics(TESTS_PATH),
-          tsWorker.getCompilerOptionsDiagnostics(TESTS_PATH),
-        ] as const);
-
-        const userErrors = await Promise.all([
-          tsWorker.getSemanticDiagnostics(USER_CODE_PATH),
-          tsWorker.getSyntacticDiagnostics(USER_CODE_PATH),
-          tsWorker.getCompilerOptionsDiagnostics(USER_CODE_PATH),
-        ] as const);
-
-        const allDiagnostics: monaco.languages.typescript.Diagnostic[] = [
-          ...testErrors[0],
-          ...testErrors[1],
-          ...testErrors[2],
-          ...userErrors[0],
-          ...userErrors[1],
-          ...userErrors[2],
-        ];
-
-        allDiagnostics.forEach((d) => {
-          if (!d.messageText) return;
-          const messageText = d.messageText as any;
-          if (typeof messageText === 'string') {
-            formattedErrors.push(messageText);
-          } else {
-            let msg = messageText.messageText || '';
-            const next = messageText.next;
-            if (Array.isArray(next)) {
-              next.forEach((n: any) => {
-                if (n?.messageText) {
-                  msg += `\n${n.messageText}`;
-                }
-              });
-            } else if (next?.messageText) {
-              msg += `\n${next.messageText}`;
-            }
-            formattedErrors.push(msg);
-          }
-        });
-      } else if (extension === 'py') {
+      if (isPython) {
         try {
           const res = await fetch('/api/execute', {
             method: 'POST',
@@ -279,6 +226,7 @@ export function CodePanel(props: CodePanelProps) {
               formattedErrors.push(`[ВЫВОД КОНСОЛИ]\n${data.output}`);
             }
           } else if (data.jobId) {
+            queueJobId = data.jobId as string;
             toast({
               title: 'Проверка в очереди',
               description:
@@ -332,7 +280,9 @@ export function CodePanel(props: CodePanelProps) {
           formattedErrors.push(`Ошибка соединения с песочницей: ${fetchErr.message}`);
         }
       } else {
-        formattedErrors.push(`Песочница для расширения ${extension} пока не настроена.`);
+        formattedErrors.push(
+          `Проверка для языка ${props.challenge.language} больше не поддерживается.`,
+        );
       }
 
       if (formattedErrors.length > 0) {
@@ -344,7 +294,12 @@ export function CodePanel(props: CodePanelProps) {
           description: 'Код не прошел компиляцию или тесты.',
         });
       } else {
-        const submission = await props.saveSubmission(currentCode ?? '', true, executionTimeMs);
+        const submission = await props.saveSubmission(
+          currentCode ?? '',
+          true,
+          executionTimeMs,
+          queueJobId,
+        );
         if (submission && typeof submission === 'object' && 'id' in submission) {
           setLatestSubmissionId(submission.id);
         }

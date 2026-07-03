@@ -40,6 +40,36 @@ interface SqlTestConfig {
 
 const TIMER_START_DELAY_SECONDS = 10;
 
+// A naive `startsWith('SELECT')` misclassifies CTEs (`WITH ... SELECT`) and
+// queries with a leading `--`/`/* */` comment as non-SELECT statements, which
+// would run them via `.run()` and silently report "0 rows" instead of showing
+// the actual result set.
+function isSelectLikeSql(sql: string): boolean {
+  let remainder = sql;
+
+  for (;;) {
+    const trimmed = remainder.trimStart();
+
+    if (trimmed.startsWith('--')) {
+      const newlineIdx = trimmed.indexOf('\n');
+      remainder = newlineIdx === -1 ? '' : trimmed.slice(newlineIdx + 1);
+      continue;
+    }
+
+    if (trimmed.startsWith('/*')) {
+      const endIdx = trimmed.indexOf('*/');
+      remainder = endIdx === -1 ? '' : trimmed.slice(endIdx + 2);
+      continue;
+    }
+
+    remainder = trimmed;
+    break;
+  }
+
+  const upper = remainder.toUpperCase();
+  return upper.startsWith('SELECT') || upper.startsWith('WITH');
+}
+
 export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerminalProps) {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -203,7 +233,7 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
     setHistoryIndex(-1);
 
     try {
-      const isSelect = cleanSql.toUpperCase().startsWith('SELECT');
+      const isSelect = isSelectLikeSql(cleanSql);
 
       if (isSelect) {
         const res = dbRef.current.exec(cleanSql);
@@ -229,72 +259,77 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
     }
   };
 
-  // Compare database query outputs
-  const compareData = (
-    actual: Record<string, unknown>[],
-    expected: Record<string, unknown>[],
-  ): boolean => {
-    if (actual.length !== expected.length) return false;
-    for (let i = 0; i < actual.length; i++) {
-      const actKeys = Object.keys(actual[i] || {});
-      const expKeys = Object.keys(expected[i] || {});
-      if (actKeys.length !== expKeys.length) return false;
-      for (const key of expKeys) {
-        const actVal = actual[i]?.[key];
-        const expVal = expected[i]?.[key];
-        if (typeof actVal === 'string' && typeof expVal === 'string') {
-          if (actVal.toLowerCase() !== expVal.toLowerCase()) return false;
-        } else if (Number.isFinite(Number(actVal)) && Number.isFinite(Number(expVal))) {
-          if (Math.abs(Number(actVal) - Number(expVal)) > 0.001) return false;
-        } else if (String(actVal) !== String(expVal)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  };
-
-  // Check Solution
+  // Check Solution — the local WASM db only gives instant client-side feedback.
+  // The verdict that actually gets recorded always comes from the server, which
+  // independently re-runs the query against schema/seed pulled from the DB, so a
+  // user can't just POST a fabricated "correct" result.
   const handleCheck = async () => {
     if (!dbRef.current || isExpired || isSuccess || isChecking) return;
     setIsChecking(true);
     setCatState('typing');
 
     try {
-      let isCorrect = false;
       const lastRun = history[history.length - 1];
 
-      if (testConfig.expectedType === 'select') {
-        if (lastRun && lastRun.success && lastRun.columns && lastRun.values) {
-          const actualRows = lastRun.values.map((row) => {
-            const obj: Record<string, unknown> = {};
-            lastRun.columns!.forEach((col, idx) => {
-              obj[col] = row[idx];
-            });
-            return obj;
-          });
-          isCorrect = compareData(actualRows, testConfig.expected || []);
+      if (!lastRun?.success) {
+        setCatState('error');
+        setHistory((prev) => [
+          ...prev,
+          {
+            query: '.check',
+            success: false,
+            error: 'Сначала выполните запрос без ошибок, затем запустите .check.',
+          },
+        ]);
+        return;
+      }
+
+      const enqueueRes = await fetch('/api/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          challengeId: challenge.id,
+          code: lastRun.query,
+          language: 'sql',
+        }),
+      });
+      const enqueueData = await enqueueRes.json();
+
+      if (!enqueueData.success || !enqueueData.jobId) {
+        throw new Error(enqueueData.error || 'Не удалось поставить решение в очередь проверки');
+      }
+
+      const jobId = enqueueData.jobId as string;
+      let jobResult: { error?: string; success: boolean } | undefined;
+
+      for (let attempt = 0; attempt < 30; attempt += 1) {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 500);
+        });
+
+        const statusRes = await fetch(`/api/execute?jobId=${jobId}`);
+        const statusData = await statusRes.json();
+
+        if (!statusData.success) {
+          throw new Error(statusData.error || 'Ошибка получения результата проверки');
         }
-      } else if (testConfig.expectedType === 'state' && testConfig.expectedQuery && dbRef.current) {
-        const res = dbRef.current.exec(testConfig.expectedQuery);
-        const firstRes = res[0];
-        if (firstRes) {
-          const actualRows = firstRes.values.map((row: unknown[]) => {
-            const obj: Record<string, unknown> = {};
-            firstRes.columns.forEach((col: string, idx: number) => {
-              obj[col] = row[idx];
-            });
-            return obj;
-          });
-          isCorrect = compareData(actualRows, testConfig.expected || []);
+
+        if (statusData.status === 'success' || statusData.status === 'failure') {
+          jobResult = statusData.result;
+          break;
         }
       }
 
-      const lastCode = lastRun ? lastRun.query : '-- Проверка без выполненных команд';
+      if (!jobResult) {
+        throw new Error('Проверка заняла слишком много времени. Попробуйте ещё раз.');
+      }
+
+      const isCorrect = jobResult.success;
+
       await saveSubmission({
         challenge,
-        code: lastCode,
-        isSuccessful: isCorrect,
+        code: lastRun.query,
+        jobId,
       });
 
       if (isCorrect) {
@@ -312,7 +347,9 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
           {
             query: '.check',
             success: false,
-            error: 'Данные в таблицах не соответствуют ожидаемому результату. Попробуйте ещё раз!',
+            error:
+              jobResult.error ||
+              'Данные в таблицах не соответствуют ожидаемому результату. Попробуйте ещё раз!',
           },
         ]);
       }

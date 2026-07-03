@@ -40,18 +40,120 @@ interface LanguageRuntime {
   image: string;
 }
 
+const pythonRuntime: LanguageRuntime = {
+  command: ['python', 'main.py'],
+  fileName: 'main.py',
+  image: 'python:3.11-alpine',
+};
+
 const runtimes = {
-  javascript: {
-    command: ['node', 'main.js'],
-    fileName: 'main.js',
-    image: 'node:20-alpine',
-  },
-  python: {
-    command: ['python', 'main.py'],
-    fileName: 'main.py',
-    image: 'python:3.11-alpine',
-  },
+  python: pythonRuntime,
+  // SQL challenges are graded by generating a Python program (below) that runs the
+  // query through the stdlib sqlite3 module — no separate image/runtime needed.
+  sql: pythonRuntime,
 } satisfies Record<CodeRunPayload['language'], LanguageRuntime>;
+
+/**
+ * SQL challenges store their test fixture (schema/seed/expected rows) as JSON in
+ * `tests`, not as literal source code appended after the user's solution like the
+ * other languages. This synthesizes a self-contained Python script that recreates
+ * the fixture in an in-memory SQLite db, runs the user's raw SQL, and compares the
+ * result the same way the browser terminal does (case-insensitive strings, numeric
+ * tolerance) — mirroring apps/web's sql-terminal.tsx `compareData`.
+ */
+function buildSqlProgram(userSql: string, testsJson: string): string {
+  return `
+import json
+import sqlite3
+import sys
+
+TESTS = json.loads(${JSON.stringify(testsJson)})
+USER_SQL = ${JSON.stringify(userSql)}
+
+def _num(value):
+    if isinstance(value, bool):
+        raise TypeError('not numeric')
+    return float(value)
+
+def rows_match(actual, expected):
+    if len(actual) != len(expected):
+        return False
+    for actual_row, expected_row in zip(actual, expected):
+        for key, expected_value in expected_row.items():
+            actual_value = actual_row.get(key)
+            if isinstance(actual_value, str) and isinstance(expected_value, str):
+                if actual_value.lower() != expected_value.lower():
+                    return False
+                continue
+            try:
+                if abs(_num(actual_value) - _num(expected_value)) > 0.001:
+                    return False
+                continue
+            except (TypeError, ValueError):
+                pass
+            if str(actual_value) != str(expected_value):
+                return False
+    return True
+
+conn = sqlite3.connect(':memory:')
+conn.row_factory = sqlite3.Row
+cur = conn.cursor()
+
+if TESTS.get('schema'):
+    cur.executescript(TESTS['schema'])
+if TESTS.get('seed'):
+    cur.executescript(TESTS['seed'])
+conn.commit()
+
+def is_select_like(sql):
+    remainder = sql
+    while True:
+        trimmed = remainder.lstrip()
+        if trimmed.startswith('--'):
+            newline_idx = trimmed.find('\\n')
+            remainder = '' if newline_idx == -1 else trimmed[newline_idx + 1:]
+            continue
+        if trimmed.startswith('/*'):
+            end_idx = trimmed.find('*/')
+            remainder = '' if end_idx == -1 else trimmed[end_idx + 2:]
+            continue
+        remainder = trimmed
+        break
+    upper = remainder.upper()
+    return upper.startswith('SELECT') or upper.startswith('WITH')
+
+clean_sql = USER_SQL.strip()
+if clean_sql.endswith(';'):
+    clean_sql = clean_sql[:-1]
+
+try:
+    cur.execute(clean_sql)
+    if is_select_like(clean_sql):
+        result_rows = [dict(row) for row in cur.fetchall()]
+    else:
+        conn.commit()
+        result_rows = None
+except Exception as exc:
+    print(f'SQL_ERROR: {exc}', file=sys.stderr)
+    sys.exit(1)
+
+expected_type = TESTS.get('expectedType')
+expected = TESTS.get('expected') or []
+
+if expected_type == 'state' and TESTS.get('expectedQuery'):
+    cur.execute(TESTS['expectedQuery'])
+    actual_rows = [dict(row) for row in cur.fetchall()]
+else:
+    actual_rows = result_rows if result_rows is not None else []
+
+if rows_match(actual_rows, expected):
+    print('OK')
+    sys.exit(0)
+else:
+    print(f'MISMATCH expected={expected} actual={actual_rows}', file=sys.stderr)
+    sys.exit(1)
+`;
+}
 
 function trimOutput(output = '') {
   if (Buffer.byteLength(output, 'utf8') <= MAX_OUTPUT_BYTES) {
@@ -165,7 +267,10 @@ async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
   await mkdir(tmpDir, { recursive: true });
 
   try {
-    const fullCode = `${job.payload.code}\n\n${job.payload.tests}`;
+    const fullCode =
+      job.payload.language === 'sql'
+        ? buildSqlProgram(job.payload.code, job.payload.tests)
+        : `${job.payload.code}\n\n${job.payload.tests}`;
     const filePath = path.join(tmpDir, runtime.fileName);
     await writeFile(filePath, fullCode);
 

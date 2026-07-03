@@ -113,7 +113,7 @@ export function RightWrapper({
       {showConfetti ? <Confetti /> : null}
       <CodePanel
         challenge={challenge}
-        saveSubmission={async (code, isSuccessful, executionTimeMs) => {
+        saveSubmission={async (code, isSuccessful, executionTimeMs, jobId) => {
           vercelTrack?.('challenge-submitted', {
             success: !isSuccessful,
           });
@@ -123,6 +123,7 @@ export function RightWrapper({
             code,
             isSuccessful,
             executionTimeMs,
+            jobId,
           });
 
           if (submission.isSuccessful) {

@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-string-labels",
+  "label": "Бирки на переноски (строки)",
+  "description": "Соберите читаемую подпись из нескольких колонок.",
+  "difficulty": "easy",
+  "language": "sql",
+  "author": "ЛитКот"
+}

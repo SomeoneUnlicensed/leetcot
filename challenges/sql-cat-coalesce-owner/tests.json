@@ -1,0 +1,23 @@
+{
+  "schema": "CREATE TABLE bowls (bowl TEXT PRIMARY KEY, keeper TEXT);",
+  "seed": "INSERT INTO bowls (bowl, keeper) VALUES ('миска-1', 'Барсик'), ('миска-2', NULL), ('миска-3', 'Васька'), ('миска-4', NULL);",
+  "expectedType": "select",
+  "expected": [
+    {
+      "bowl": "миска-1",
+      "keeper": "Барсик"
+    },
+    {
+      "bowl": "миска-2",
+      "keeper": "дежурный кот"
+    },
+    {
+      "bowl": "миска-3",
+      "keeper": "Васька"
+    },
+    {
+      "bowl": "миска-4",
+      "keeper": "дежурный кот"
+    }
+  ]
+}

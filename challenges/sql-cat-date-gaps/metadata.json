@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-date-gaps",
+  "label": "Давно ли кормили (даты)",
+  "description": "Посчитайте количество дней с последнего кормления.",
+  "difficulty": "hard",
+  "language": "sql",
+  "author": "ЛитКот"
+}

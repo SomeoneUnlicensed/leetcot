@@ -1,0 +1,19 @@
+{
+  "schema": "CREATE TABLE cats (cat TEXT PRIMARY KEY, carrier_color TEXT);",
+  "seed": "INSERT INTO cats (cat, carrier_color) VALUES ('Барсик', 'зеленая'), ('Васька', 'синяя'), ('Мурзик', 'желтая');",
+  "expectedType": "select",
+  "expected": [
+    {
+      "cat": "Барсик",
+      "label": "Барсик — зеленая"
+    },
+    {
+      "cat": "Васька",
+      "label": "Васька — синяя"
+    },
+    {
+      "cat": "Мурзик",
+      "label": "Мурзик — желтая"
+    }
+  ]
+}

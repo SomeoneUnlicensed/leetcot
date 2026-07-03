@@ -72,8 +72,6 @@ export function ExploreFilterBar() {
             <SelectItem value="ALL">Все языки</SelectItem>
             <SelectItem value="SQL">SQL</SelectItem>
             <SelectItem value="PYTHON">Python</SelectItem>
-            <SelectItem value="TYPESCRIPT">TypeScript</SelectItem>
-            <SelectItem value="JAVASCRIPT">JavaScript</SelectItem>
             <SelectItem value="GO">Go</SelectItem>
           </SelectContent>
         </Select>

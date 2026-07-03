@@ -1,0 +1,8 @@
+{
+  "id": "sql-cat-dense-rank",
+  "label": "Пьедестал без дырок (DENSE_RANK)",
+  "description": "Присвойте место в рейтинге без пропусков при равных результатах.",
+  "difficulty": "hard",
+  "language": "sql",
+  "author": "ЛитКот"
+}

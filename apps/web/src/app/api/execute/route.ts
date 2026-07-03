@@ -6,11 +6,18 @@ import {
 } from '@repo/code-runner';
 import { prisma } from '@repo/db';
 import { NextResponse } from 'next/server';
+import { auth } from '~/server/auth';
 
 const MAX_QUEUE_DEPTH = Number(process.env.CODE_RUNNER_MAX_QUEUE_DEPTH ?? 20);
 
 export async function POST(req: Request) {
   try {
+    const session = await auth();
+
+    if (!session?.user) {
+      return NextResponse.json({ success: false, error: 'Не авторизован.' }, { status: 401 });
+    }
+
     const { code, challengeId, language } = (await req.json()) as {
       challengeId?: number;
       code?: string;
@@ -63,6 +70,8 @@ export async function POST(req: Request) {
       code,
       language: normalizedLanguage,
       tests: challenge.tests,
+      challengeId,
+      userId: session.user.id,
     });
 
     return NextResponse.json({
@@ -84,6 +93,12 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
+  const session = await auth();
+
+  if (!session?.user) {
+    return NextResponse.json({ success: false, error: 'Не авторизован.' }, { status: 401 });
+  }
+
   const url = new URL(req.url);
   const jobId = url.searchParams.get('jobId');
 
@@ -96,7 +111,7 @@ export async function GET(req: Request) {
 
   const job = await getCodeRunJobView(jobId);
 
-  if (!job) {
+  if (!job || job.userId !== session.user.id) {
     return NextResponse.json(
       { success: false, error: 'Проверка не найдена или уже устарела.' },
       { status: 404 },

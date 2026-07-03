@@ -848,8 +848,6 @@ export default function ExamEditorPage() {
                     className="w-full rounded-xl border-zinc-800 bg-zinc-950 px-3 py-2.5 text-white focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500/30"
                   >
                     <option value="PYTHON">Python</option>
-                    <option value="JAVASCRIPT">JavaScript</option>
-                    <option value="TYPESCRIPT">TypeScript</option>
                     <option value="JAVA">Java</option>
                     <option value="CPP">C++</option>
                   </select>
