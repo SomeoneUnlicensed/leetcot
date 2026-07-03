@@ -3,7 +3,6 @@
 import initSqlJs, { type SqlJsStatic } from 'sql.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Confetti } from '~/components/confetti';
-import { MemeCat } from '~/components/meme-cat';
 import { saveSubmission } from '../[slug]/submissions/[[...catchAll]]/save-submission.action';
 import type { ChallengeRouteData } from '../[slug]/getChallengeRouteData';
 import { useQueryClient } from '@tanstack/react-query';
@@ -437,26 +436,20 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
   const renderCat = () => {
     if (catState === 'success') {
       return (
-        <div className="flex items-center gap-3">
-          <pre className="select-none font-mono text-xs leading-tight text-emerald-400">
-            {`   /\\_/\\
+        <pre className="select-none font-mono text-xs leading-tight text-emerald-400">
+          {`   /\\_/\\
   ( ^.^ )  Верно! Задача решена!
    > ~ <`}
-          </pre>
-          <MemeCat mood="happy" size={48} />
-        </div>
+        </pre>
       );
     }
     if (catState === 'error') {
       return (
-        <div className="flex items-center gap-3">
-          <pre className="animate-pulse select-none font-mono text-xs leading-tight text-rose-400">
-            {`   /\\_/\\
+        <pre className="animate-pulse select-none font-mono text-xs leading-tight text-rose-400">
+          {`   /\\_/\\
   ( >.< )  Что-то пошло не так...
    > u <   Попробуй ещё раз!`}
-          </pre>
-          <MemeCat mood="sad" size={48} />
-        </div>
+        </pre>
       );
     }
     if (catState === 'typing') {

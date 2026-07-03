@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { ArrowUpRight, Code, Play, Sparkles } from '@repo/ui/icons';
 import { Button } from '@repo/ui/components/button';
 import { Footsies } from '~/components/footsies';
-import { MemeCat } from '~/components/meme-cat';
 
 export const metadata: Metadata = {
   title: 'SQL-рыбалка | ЛитКот',
@@ -97,9 +96,8 @@ export default function SqlFishingPage() {
       <main className="overflow-hidden bg-[#0b0b0c] text-white">
         <section className="border-b border-zinc-900">
           <div className="container relative grid min-h-[calc(100vh-56px)] gap-10 py-14 lg:grid-cols-[minmax(0,0.78fr)_minmax(360px,0.82fr)] lg:items-center">
-            <div className="absolute right-6 top-8 hidden flex-col items-end gap-2 md:flex">
+            <div className="absolute right-6 top-8 hidden md:block">
               <PixelCat />
-              <MemeCat mood="happy" size={64} className="opacity-80 transition-opacity hover:opacity-100" />
             </div>
 
             <div className="min-w-0">
