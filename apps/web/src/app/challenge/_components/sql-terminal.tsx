@@ -1,6 +1,7 @@
 'use client';
 
 import initSqlJs, { type SqlJsStatic } from 'sql.js';
+import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Confetti } from '~/components/confetti';
 import { saveSubmission } from '../[slug]/submissions/[[...catchAll]]/save-submission.action';
@@ -436,11 +437,21 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
   const renderCat = () => {
     if (catState === 'success') {
       return (
-        <pre className="select-none font-mono text-xs leading-tight text-emerald-400">
-          {`   /\\_/\\
+        <div className="flex items-center gap-3">
+          <pre className="select-none font-mono text-xs leading-tight text-emerald-400">
+            {`   /\\_/\\
   ( ^.^ )  Верно! Задача решена!
    > ~ <`}
-        </pre>
+          </pre>
+          <Image
+            className="rounded-lg"
+            alt="Довольный кот празднует победу"
+            src="/memes/cat-pufferfish.gif"
+            height="48"
+            width="48"
+            unoptimized
+          />
+        </div>
       );
     }
     if (catState === 'error') {

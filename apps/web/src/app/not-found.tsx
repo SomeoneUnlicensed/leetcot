@@ -12,11 +12,12 @@ export default async function NotFound() {
     <>
       <div className="relative -mt-[56px] flex h-screen flex-col items-center justify-center gap-8 overflow-hidden px-4">
         <Image
-          className="opacity-20 transition-opacity duration-500 hover:opacity-40"
-          alt="ЛитКот"
-          src="/favicon.svg"
+          className="rounded-2xl opacity-80 transition-opacity duration-500 hover:opacity-100"
+          alt="Кот-рыба-фугу растерянно плавает"
+          src="/memes/cat-pufferfish.gif"
           height="120"
           width="120"
+          unoptimized
         />
         <div className="stars absolute -left-full -z-50 mt-[56px] h-screen w-[200%]" />
         <div className="stars absolute -left-full -z-40 mt-[56px] h-1/2 w-[400%] scale-[2]" />
