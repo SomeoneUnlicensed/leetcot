@@ -108,7 +108,12 @@ const products = [
       'итоговую таблицу',
       'адаптацию трека под программу курса',
     ],
-    examples: ['SQL-трек', 'Python-трек', 'алгоритмы и структуры данных', 'домашние задания'],
+    examples: [
+      'практический трек по языку или теме',
+      'алгоритмы и структуры данных',
+      'подготовка к стажировкам',
+      'домашние задания',
+    ],
     featured: false,
   },
   {
@@ -167,7 +172,7 @@ function GradientButton({ children, href }: { children: React.ReactNode; href: s
 export default function PartnersPage() {
   return (
     <>
-      <main className="overflow-hidden bg-[#09090b] text-white">
+      <main className="bg-[#09090b] text-white">
         <section className="relative border-b border-zinc-900">
           <div className="pointer-events-none absolute left-[10%] top-[15%] -z-10 h-64 w-64 rounded-full bg-pink-500/20 blur-3xl" />
           <div className="pointer-events-none absolute right-[10%] top-[5%] -z-10 h-64 w-64 rounded-full bg-fuchsia-600/20 blur-3xl" />

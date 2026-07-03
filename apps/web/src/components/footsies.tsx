@@ -26,7 +26,7 @@ export function Footsies() {
         </div>
         <Link
           href="/partners"
-          className="rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-600 px-4 py-1.5 text-sm font-bold text-white transition-transform hover:scale-[1.03] hover:from-pink-400 hover:to-fuchsia-500 focus-visible:ring-0"
+          className="bg-gradient-to-r from-pink-500 to-fuchsia-600 bg-clip-text font-bold text-transparent outline-none ring-0 transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-0"
         >
           Партнёрам
         </Link>
