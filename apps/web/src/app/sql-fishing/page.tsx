@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight, Code, Play, Sparkles } from '@repo/ui/icons';
 import { Button } from '@repo/ui/components/button';
 import { Footsies } from '~/components/footsies';
+import { MemeCat } from '~/components/meme-cat';
 
 export const metadata: Metadata = {
   title: 'SQL-рыбалка | ЛитКот',
@@ -99,14 +99,7 @@ export default function SqlFishingPage() {
           <div className="container relative grid min-h-[calc(100vh-56px)] gap-10 py-14 lg:grid-cols-[minmax(0,0.78fr)_minmax(360px,0.82fr)] lg:items-center">
             <div className="absolute right-6 top-8 hidden flex-col items-end gap-2 md:flex">
               <PixelCat />
-              <Image
-                className="rounded-xl border border-zinc-800 opacity-80 transition-opacity hover:opacity-100"
-                alt="Кот и рыба плавают в SQL-аквариуме"
-                src="/memes/cat-pufferfish.gif"
-                height="80"
-                width="80"
-                unoptimized
-              />
+              <MemeCat mood="happy" size={64} className="opacity-80 transition-opacity hover:opacity-100" />
             </div>
 
             <div className="min-w-0">

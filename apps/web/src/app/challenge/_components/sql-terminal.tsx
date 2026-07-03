@@ -1,9 +1,9 @@
 'use client';
 
 import initSqlJs, { type SqlJsStatic } from 'sql.js';
-import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Confetti } from '~/components/confetti';
+import { MemeCat } from '~/components/meme-cat';
 import { saveSubmission } from '../[slug]/submissions/[[...catchAll]]/save-submission.action';
 import type { ChallengeRouteData } from '../[slug]/getChallengeRouteData';
 import { useQueryClient } from '@tanstack/react-query';
@@ -443,14 +443,7 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
   ( ^.^ )  Верно! Задача решена!
    > ~ <`}
           </pre>
-          <Image
-            className="rounded-lg"
-            alt="Довольный кот празднует победу"
-            src="/memes/cat-pufferfish.gif"
-            height="48"
-            width="48"
-            unoptimized
-          />
+          <MemeCat mood="happy" size={48} />
         </div>
       );
     }
@@ -462,14 +455,7 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
   ( >.< )  Что-то пошло не так...
    > u <   Попробуй ещё раз!`}
           </pre>
-          <Image
-            className="rounded-lg grayscale"
-            alt="Растерянный кот сочувствует неудаче"
-            src="/memes/cat-pufferfish.gif"
-            height="48"
-            width="48"
-            unoptimized
-          />
+          <MemeCat mood="sad" size={48} />
         </div>
       );
     }
