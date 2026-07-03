@@ -4,6 +4,18 @@ import path from 'node:path';
 
 const defaultExcludes = ['blank', 'solutions', 'aot'];
 
+// Python's `tests` field holds raw source that's also rendered verbatim in the
+// student's visible "Tests" editor pane (unlike SQL's JSON `tests`), so the oracle
+// config can't just replace the field's shape without breaking that pane. Instead
+// it's appended after this marker, which getChallengeRouteData strips before the
+// value ever reaches the client — code-runner is the only reader of the full string.
+export const PYTHON_ORACLE_MARKER = '# ---LEETCOT-ORACLE---';
+
+function extractEntryPoint(solutionSource: string): string | null {
+  const match = /^def\s+(\w+)\s*\(/m.exec(solutionSource);
+  return match ? match[1] : null;
+}
+
 export async function ingestChallenges(
   challengePath: string,
   excludes = defaultExcludes,
@@ -59,6 +71,7 @@ async function buildChallenge(
   // the client could see, only from the server-only `tests` field.
   let solutionContent: string | undefined;
   let generatorContent: string | undefined;
+  let oracleConfigContent: string | undefined;
 
   try {
     const files = await fs.promises.readdir(pathToDirectory);
@@ -96,6 +109,9 @@ async function buildChallenge(
           if (fileName === 'generator') {
             generatorContent = fileContents;
           }
+          if (fileName === 'oracle-config') {
+            oracleConfigContent = fileContents;
+          }
           if (fileName === 'tests') {
             challengeToCreate.tests = fileContents;
           }
@@ -125,12 +141,7 @@ async function buildChallenge(
       }
     }
 
-    if (
-      generatorContent &&
-      solutionContent &&
-      challengeToCreate.language === 'SQL' &&
-      challengeToCreate.tests
-    ) {
+    if (generatorContent && solutionContent && challengeToCreate.language === 'SQL' && challengeToCreate.tests) {
       try {
         const testsWithOracle = JSON.parse(challengeToCreate.tests);
         testsWithOracle.referenceSolution = solutionContent;
@@ -138,6 +149,23 @@ async function buildChallenge(
         challengeToCreate.tests = JSON.stringify(testsWithOracle);
       } catch (oracleError) {
         console.error(`Error folding generator.py into tests for ${pathToDirectory}:`, oracleError);
+      }
+    }
+
+    if (generatorContent && solutionContent && challengeToCreate.language === 'PYTHON') {
+      const entryPoint = extractEntryPoint(solutionContent);
+      if (entryPoint) {
+        const extraConfig = oracleConfigContent ? JSON.parse(oracleConfigContent) : {};
+        const oracleBlock = JSON.stringify({
+          entryPoint,
+          referenceSolution: solutionContent,
+          seedGenerator: generatorContent,
+          ...extraConfig,
+        });
+        const visibleTests = challengeToCreate.tests ?? '';
+        challengeToCreate.tests = `${visibleTests}\n\n${PYTHON_ORACLE_MARKER}\n# ${oracleBlock}\n`;
+      } else {
+        console.error(`generator.py present but no top-level "def" found in solution.py for ${pathToDirectory}`);
       }
     }
 

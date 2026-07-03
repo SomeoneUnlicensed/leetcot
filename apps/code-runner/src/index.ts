@@ -53,6 +53,114 @@ const runtimes = {
   sql: pythonRuntime,
 } satisfies Record<CodeRunPayload['language'], LanguageRuntime>;
 
+// Must match packages/db/seed/data/challenge-ingest.ts's PYTHON_ORACLE_MARKER and
+// apps/web's getChallengeRouteData sanitizePythonTestsForClient.
+const PYTHON_ORACLE_MARKER = '# ---LEETCOT-ORACLE---';
+
+interface PythonOracleConfig {
+  entryPoint: string;
+  referenceSolution: string;
+  seedGenerator: string;
+  // Some problems explicitly allow the result list in any order (e.g. two_fish may
+  // return either index first) — set via challenges/*/oracle-config.json.
+  resultOrderInsensitive?: boolean;
+}
+
+function parsePythonOracle(testsRaw: string): PythonOracleConfig | null {
+  const markerIndex = testsRaw.indexOf(PYTHON_ORACLE_MARKER);
+  if (markerIndex === -1) {
+    return null;
+  }
+  const afterMarker = testsRaw.slice(markerIndex + PYTHON_ORACLE_MARKER.length);
+  const jsonLine = afterMarker
+    .split('\n')
+    .map((line) => line.trim())
+    .find((line) => line.startsWith('#') && line.slice(1).trim().startsWith('{'));
+
+  if (!jsonLine) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(jsonLine.slice(jsonLine.indexOf('{'))) as PythonOracleConfig;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Runs the user's function against the author's reference solution on freshly
+ * generated random inputs (not the same data every run, unlike the visible
+ * tests.py's fixed-seed cases), so a submission has to be genuinely equivalent to
+ * the reference rather than overfit to specific fixed inputs. Arguments are
+ * deep-copied per call since some solutions (e.g. permutations) mutate their input.
+ */
+function buildPythonOracleProgram(userCode: string, oracle: PythonOracleConfig): string {
+  return `
+import copy
+import sys
+
+USER_NS = {}
+exec(${JSON.stringify(userCode)}, USER_NS)
+
+REF_NS = {}
+exec(${JSON.stringify(oracle.referenceSolution)}, REF_NS)
+
+GEN_NS = {}
+exec(${JSON.stringify(oracle.seedGenerator)}, GEN_NS)
+
+ENTRY_POINT = ${JSON.stringify(oracle.entryPoint)}
+RESULT_ORDER_INSENSITIVE = ${oracle.resultOrderInsensitive ? 'True' : 'False'}
+TRIALS = 5
+
+user_fn = USER_NS.get(ENTRY_POINT)
+ref_fn = REF_NS.get(ENTRY_POINT)
+generate_case = GEN_NS.get('generate_case')
+
+if user_fn is None:
+    print(f'Функция {ENTRY_POINT} не найдена в решении', file=sys.stderr)
+    sys.exit(1)
+if ref_fn is None or generate_case is None:
+    print('Ошибка конфигурации oracle-проверки', file=sys.stderr)
+    sys.exit(1)
+
+def normalize(value):
+    if isinstance(value, (list, tuple)):
+        items = [normalize(item) for item in value]
+        if RESULT_ORDER_INSENSITIVE:
+            try:
+                return sorted(items)
+            except TypeError:
+                return items
+        return items
+    return value
+
+for trial in range(TRIALS):
+    args = generate_case()
+    user_args = copy.deepcopy(args)
+    ref_args = copy.deepcopy(args)
+
+    try:
+        actual = user_fn(*user_args)
+    except Exception as exc:
+        print(f'Ошибка выполнения на наборе {trial + 1}/{TRIALS}: {exc}', file=sys.stderr)
+        sys.exit(1)
+
+    expected = ref_fn(*ref_args)
+
+    if normalize(actual) != normalize(expected):
+        print(
+            f'MISMATCH on trial {trial + 1}/{TRIALS}: args={args} '
+            f'expected={expected} actual={actual}',
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+print('OK')
+sys.exit(0)
+`;
+}
+
 /**
  * SQL challenges store their test fixture as JSON in `tests`, not as literal source
  * code appended after the user's solution like the other languages. This
@@ -305,10 +413,15 @@ async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
   await mkdir(tmpDir, { recursive: true });
 
   try {
+    const pythonOracle =
+      job.payload.language === 'python' ? parsePythonOracle(job.payload.tests) : null;
+
     const fullCode =
       job.payload.language === 'sql'
         ? buildSqlProgram(job.payload.code, job.payload.tests)
-        : `${job.payload.code}\n\n${job.payload.tests}`;
+        : pythonOracle
+          ? buildPythonOracleProgram(job.payload.code, pythonOracle)
+          : `${job.payload.code}\n\n${job.payload.tests}`;
     const filePath = path.join(tmpDir, runtime.fileName);
     await writeFile(filePath, fullCode);
 

@@ -25,6 +25,19 @@ function sanitizeSqlTestsForClient(rawTests: string): string {
   }
 }
 
+// Must match packages/db/seed/data/challenge-ingest.ts's PYTHON_ORACLE_MARKER —
+// for oracle-graded Python challenges, everything after this marker is the hidden
+// reference solution + random-case generator, appended to the same `tests` field
+// that's otherwise shown verbatim in the student's "Tests" editor pane. Strip it
+// before that pane's content reaches the client; code-runner reads the untruncated
+// value straight from the DB.
+const PYTHON_ORACLE_MARKER = '# ---LEETCOT-ORACLE---';
+
+function sanitizePythonTestsForClient(rawTests: string): string {
+  const markerIndex = rawTests.indexOf(PYTHON_ORACLE_MARKER);
+  return markerIndex === -1 ? rawTests : rawTests.slice(0, markerIndex).trimEnd();
+}
+
 // this is to data to populate the description tab (default tab on challenge page)
 export const getChallengeRouteData = cache(async (slug: string, session: Session | null) => {
   const featureFlags = await getAllFlags();
@@ -194,6 +207,9 @@ export const getChallengeRouteData = cache(async (slug: string, session: Session
             code: '',
             tests: sanitizeSqlTestsForClient(challenge.tests),
           }
+        : {}),
+      ...(challenge.language === 'PYTHON'
+        ? { tests: sanitizePythonTestsForClient(challenge.tests) }
         : {}),
     },
     track: trackForNavigation,
