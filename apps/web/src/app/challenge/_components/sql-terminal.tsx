@@ -456,11 +456,21 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
     }
     if (catState === 'error') {
       return (
-        <pre className="animate-pulse select-none font-mono text-xs leading-tight text-rose-400">
-          {`   /\\_/\\
+        <div className="flex items-center gap-3">
+          <pre className="animate-pulse select-none font-mono text-xs leading-tight text-rose-400">
+            {`   /\\_/\\
   ( >.< )  Что-то пошло не так...
    > u <   Попробуй ещё раз!`}
-        </pre>
+          </pre>
+          <Image
+            className="rounded-lg grayscale"
+            alt="Растерянный кот сочувствует неудаче"
+            src="/memes/cat-pufferfish.gif"
+            height="48"
+            width="48"
+            unoptimized
+          />
+        </div>
       );
     }
     if (catState === 'typing') {
