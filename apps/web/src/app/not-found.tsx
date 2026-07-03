@@ -10,25 +10,26 @@ export default async function NotFound() {
 
   return (
     <>
-      <div className="relative -mt-[56px] flex h-screen flex-col items-center justify-center gap-8 overflow-hidden px-4">
-        <Image
-          className="rounded-2xl opacity-80 transition-opacity duration-500 hover:opacity-100"
-          alt="Кот-рыба-фугу растерянно плавает"
-          src="/memes/cat-pufferfish.gif"
-          height="120"
-          width="120"
-          unoptimized
-        />
+      <div className="relative -mt-[56px] flex h-screen flex-col items-center justify-center gap-6 overflow-hidden px-4">
         <div className="stars absolute -left-full -z-50 mt-[56px] h-screen w-[200%]" />
         <div className="stars absolute -left-full -z-40 mt-[56px] h-1/2 w-[400%] scale-[2]" />
         <div className="stars absolute -left-full -z-30 mt-[56px] h-1/3 w-[600%] scale-[3]" />
+
+        <Image
+          className="rounded-3xl"
+          alt="Кот-рыба-фугу растерянно плавает"
+          src="/memes/cat-pufferfish.gif"
+          height="320"
+          width="320"
+          unoptimized
+        />
 
         <div className="flex flex-col items-center justify-center gap-2">
           <h1 className="bg-gradient-to-b from-white to-zinc-400 bg-clip-text font-sans text-8xl font-extrabold tracking-tighter text-transparent opacity-80 md:text-9xl">
             404
           </h1>
-          <p className="px-6 text-center font-sans text-base text-zinc-400 md:px-0 md:text-lg">
-            Упс! Страница, которую вы ищете, не существует.
+          <p className="px-6 text-center font-sans text-lg font-bold text-zinc-300 md:px-0 md:text-2xl">
+            Похоже, мы вместе с котом заблудились...
           </p>
         </div>
 
