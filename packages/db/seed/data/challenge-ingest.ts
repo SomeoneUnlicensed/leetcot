@@ -53,6 +53,13 @@ async function buildChallenge(
     status: 'ACTIVE',
   } as Prisma.ChallengeCreateManyInput & { author: string };
 
+  // For SQL challenges with a random-data oracle (`generator.py` alongside
+  // solution.sql), the reference solution and seed generator get folded into the
+  // `tests` JSON below — they must never be readable from `code`/a separate column
+  // the client could see, only from the server-only `tests` field.
+  let solutionContent: string | undefined;
+  let generatorContent: string | undefined;
+
   try {
     const files = await fs.promises.readdir(pathToDirectory);
 
@@ -84,6 +91,10 @@ async function buildChallenge(
           }
           if (fileName === 'solution') {
             challengeToCreate.code = fileContents;
+            solutionContent = fileContents;
+          }
+          if (fileName === 'generator') {
+            generatorContent = fileContents;
           }
           if (fileName === 'tests') {
             challengeToCreate.tests = fileContents;
@@ -111,6 +122,22 @@ async function buildChallenge(
         } catch (jsonError) {
           console.error(`Error reading or parsing ${fileName}:`, jsonError);
         }
+      }
+    }
+
+    if (
+      generatorContent &&
+      solutionContent &&
+      challengeToCreate.language === 'SQL' &&
+      challengeToCreate.tests
+    ) {
+      try {
+        const testsWithOracle = JSON.parse(challengeToCreate.tests);
+        testsWithOracle.referenceSolution = solutionContent;
+        testsWithOracle.seedGenerator = generatorContent;
+        challengeToCreate.tests = JSON.stringify(testsWithOracle);
+      } catch (oracleError) {
+        console.error(`Error folding generator.py into tests for ${pathToDirectory}:`, oracleError);
       }
     }
 

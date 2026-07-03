@@ -7,6 +7,24 @@ import { validateCompilerOptions } from '~/utils/validateCompilerOptions';
 
 export type ChallengeRouteData = NonNullable<Awaited<ReturnType<typeof getChallengeRouteData>>>;
 
+// SQL challenges are ingested without a `user.sql` starter file, so `code` ends up
+// holding the raw `solution.sql` contents, and `tests` holds the answer key
+// (`expected`/`expectedQuery`, and for oracle-graded challenges `referenceSolution`).
+// This object gets serialized straight into the client bundle (SqlTerminal only
+// needs `schema`/`seed` to run the local sandbox), so strip anything answer-revealing
+// before it ever leaves the server. Grading itself never uses this — /api/execute
+// re-fetches `tests` fresh from the DB independently.
+function sanitizeSqlTestsForClient(rawTests: string): string {
+  try {
+    const parsed = JSON.parse(rawTests) as Record<string, unknown>;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { expected, expectedQuery, referenceSolution, seedGenerator, ...clientSafe } = parsed;
+    return JSON.stringify(clientSafe);
+  } catch {
+    return rawTests;
+  }
+}
+
 // this is to data to populate the description tab (default tab on challenge page)
 export const getChallengeRouteData = cache(async (slug: string, session: Session | null) => {
   const featureFlags = await getAllFlags();
@@ -169,6 +187,14 @@ export const getChallengeRouteData = cache(async (slug: string, session: Session
       ...challenge,
       hasSolved: challenge.submission.length > 0,
       tsconfig,
+      ...(challenge.language === 'SQL'
+        ? {
+            // The starter `code` is actually solution.sql for SQL challenges today
+            // (no user.sql file exists in challenges/sql-cat-*) — never ship it.
+            code: '',
+            tests: sanitizeSqlTestsForClient(challenge.tests),
+          }
+        : {}),
     },
     track: trackForNavigation,
     nextChallenge,

@@ -54,12 +54,22 @@ const runtimes = {
 } satisfies Record<CodeRunPayload['language'], LanguageRuntime>;
 
 /**
- * SQL challenges store their test fixture (schema/seed/expected rows) as JSON in
- * `tests`, not as literal source code appended after the user's solution like the
- * other languages. This synthesizes a self-contained Python script that recreates
- * the fixture in an in-memory SQLite db, runs the user's raw SQL, and compares the
- * result the same way the browser terminal does (case-insensitive strings, numeric
- * tolerance) — mirroring apps/web's sql-terminal.tsx `compareData`.
+ * SQL challenges store their test fixture as JSON in `tests`, not as literal source
+ * code appended after the user's solution like the other languages. This
+ * synthesizes a self-contained Python script that runs the check in one of two
+ * modes:
+ *
+ * - Oracle mode (`seedGenerator` + `referenceSolution` present, folded in by
+ *   challenge-ingest.ts from a challenge's generator.py/solution.sql): generates a
+ *   FRESH random seed on every run, runs both the author's reference solution and
+ *   the user's query against the identical seed, and compares the two outputs.
+ *   Because the data is never the same twice and the expected rows are never
+ *   computed until the check actually happens, a user can't just hardcode a
+ *   literal result set that matches a fixed, publicly-visible fixture — the query
+ *   has to be genuinely equivalent to the reference solution. Repeated a few times
+ *   so a query that only coincidentally matches one random draw still fails.
+ * - Legacy mode (fallback for challenges without a generator): compares against
+ *   the static `expected`/`expectedQuery` in the fixture, same as before.
  */
 function buildSqlProgram(userSql: string, testsJson: string): string {
   return `
@@ -69,6 +79,13 @@ import sys
 
 TESTS = json.loads(${JSON.stringify(testsJson)})
 USER_SQL = ${JSON.stringify(userSql)}
+
+SCHEMA = TESTS.get('schema')
+EXPECTED_TYPE = TESTS.get('expectedType')
+EXPECTED_QUERY = TESTS.get('expectedQuery')
+SEED_GENERATOR = TESTS.get('seedGenerator')
+REFERENCE_SOLUTION = TESTS.get('referenceSolution')
+ORACLE_TRIALS = 3
 
 def _num(value):
     if isinstance(value, bool):
@@ -95,16 +112,6 @@ def rows_match(actual, expected):
                 return False
     return True
 
-conn = sqlite3.connect(':memory:')
-conn.row_factory = sqlite3.Row
-cur = conn.cursor()
-
-if TESTS.get('schema'):
-    cur.executescript(TESTS['schema'])
-if TESTS.get('seed'):
-    cur.executescript(TESTS['seed'])
-conn.commit()
-
 def is_select_like(sql):
     remainder = sql
     while True:
@@ -122,35 +129,66 @@ def is_select_like(sql):
     upper = remainder.upper()
     return upper.startswith('SELECT') or upper.startswith('WITH')
 
-clean_sql = USER_SQL.strip()
-if clean_sql.endswith(';'):
-    clean_sql = clean_sql[:-1]
+def run_query(seed_sql, query):
+    conn = sqlite3.connect(':memory:')
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+    if SCHEMA:
+        cur.executescript(SCHEMA)
+    if seed_sql:
+        cur.executescript(seed_sql)
+    conn.commit()
 
-try:
+    clean_sql = query.strip()
+    if clean_sql.endswith(';'):
+        clean_sql = clean_sql[:-1]
+
     cur.execute(clean_sql)
     if is_select_like(clean_sql):
-        result_rows = [dict(row) for row in cur.fetchall()]
+        rows = [dict(row) for row in cur.fetchall()]
     else:
         conn.commit()
-        result_rows = None
+        rows = None
+
+    if EXPECTED_TYPE == 'state' and EXPECTED_QUERY:
+        cur.execute(EXPECTED_QUERY)
+        return [dict(row) for row in cur.fetchall()]
+    return rows if rows is not None else []
+
+def generate_seed():
+    namespace = {}
+    exec(SEED_GENERATOR, namespace)
+    seed_sql = namespace.get('GENERATED_SEED')
+    if not isinstance(seed_sql, str):
+        raise RuntimeError('generator.py must set GENERATED_SEED to a SQL string')
+    return seed_sql
+
+try:
+    if SEED_GENERATOR and REFERENCE_SOLUTION:
+        for trial in range(ORACLE_TRIALS):
+            seed_sql = generate_seed()
+            oracle_rows = run_query(seed_sql, REFERENCE_SOLUTION)
+            user_rows = run_query(seed_sql, USER_SQL)
+            if not rows_match(user_rows, oracle_rows):
+                print(
+                    f'MISMATCH on trial {trial + 1}/{ORACLE_TRIALS}: '
+                    f'expected={oracle_rows} actual={user_rows}',
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+        print('OK')
+        sys.exit(0)
+    else:
+        actual_rows = run_query(TESTS.get('seed'), USER_SQL)
+        expected = TESTS.get('expected') or []
+        if rows_match(actual_rows, expected):
+            print('OK')
+            sys.exit(0)
+        else:
+            print(f'MISMATCH expected={expected} actual={actual_rows}', file=sys.stderr)
+            sys.exit(1)
 except Exception as exc:
     print(f'SQL_ERROR: {exc}', file=sys.stderr)
-    sys.exit(1)
-
-expected_type = TESTS.get('expectedType')
-expected = TESTS.get('expected') or []
-
-if expected_type == 'state' and TESTS.get('expectedQuery'):
-    cur.execute(TESTS['expectedQuery'])
-    actual_rows = [dict(row) for row in cur.fetchall()]
-else:
-    actual_rows = result_rows if result_rows is not None else []
-
-if rows_match(actual_rows, expected):
-    print('OK')
-    sys.exit(0)
-else:
-    print(f'MISMATCH expected={expected} actual={actual_rows}', file=sys.stderr)
     sys.exit(1)
 `;
 }
