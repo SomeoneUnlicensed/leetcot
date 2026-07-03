@@ -6,7 +6,7 @@ const appVersion = process.env.NEXT_PUBLIC_APP_VERSION;
 export function Footsies() {
   return (
     <footer className="flex flex-col items-center gap-2 px-8 pb-12 text-sm font-light sm:px-16 sm:pb-20 sm:pt-6 md:px-0 md:py-12">
-      <div className="container flex flex-col-reverse justify-between gap-2 md:flex-row md:items-end">
+      <div className="container flex flex-col-reverse justify-between gap-3 md:flex-row md:items-end">
         <div className="flex items-center gap-2">
           <span>Сделано с любовью</span>
           <a
@@ -24,6 +24,12 @@ export function Footsies() {
             </span>
           </a>
         </div>
+        <Link
+          href="/partners"
+          className="rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-600 px-4 py-1.5 text-sm font-bold text-white transition-transform hover:scale-[1.03] hover:from-pink-400 hover:to-fuchsia-500"
+        >
+          Партнёрам
+        </Link>
       </div>
       <div className="container flex flex-col justify-between gap-2 text-neutral-500 md:flex-row  md:items-end dark:text-neutral-400">
         <span>
