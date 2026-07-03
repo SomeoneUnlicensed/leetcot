@@ -4,6 +4,7 @@ import {
   ArrowUpRight,
   Award,
   Building2,
+  Check,
   ClipboardCheck,
   GraduationCap,
   Laptop,
@@ -51,7 +52,7 @@ const audiences = [
   {
     icon: GraduationCap,
     title: 'Университеты и школы',
-    text: 'Практические треки по SQL, Python и алгоритмам для студентов и школьников.',
+    text: 'Практические треки под любой стек и язык программирования для студентов и школьников.',
   },
   {
     icon: Laptop,
@@ -69,13 +70,13 @@ const products = [
       'Запускайте отдельные челленджи под бренд компании, университета или сообщества: задачи, рейтинг, страница события и итоговые результаты.',
     items: [
       'отдельная страница челленджа',
-      'задачи по SQL, Python или алгоритмам',
+      'задачи на любом языке и стеке из большого выбора',
       'разные уровни сложности',
       'рейтинг участников',
       'итоговая таблица результатов',
       'короткий отчёт по итогам',
     ],
-    examples: ['SQL Challenge', 'Algorithms Cup', 'Python Warmup', 'Backend Challenge'],
+    examples: ['SQL Challenge', 'Algorithms Cup', 'Python Warmup', 'Full-stack Challenge'],
     featured: false,
   },
   {
@@ -83,7 +84,7 @@ const products = [
     name: 'Leetcot Screening',
     tagline: 'Техническая оценка кандидатов',
     description:
-      'Leetcot можно использовать как инструмент для первичной проверки навыков кандидатов по SQL, Python, алгоритмам и базовым backend-навыкам.',
+      'Leetcot можно использовать как инструмент для первичной проверки навыков кандидатов на широком стеке — от SQL и Python до алгоритмов и backend-навыков на других языках.',
     items: [
       'приватную ссылку на тест',
       'набор задач под уровень кандидата',
@@ -137,7 +138,7 @@ const products = [
 
 const pilotSteps = [
   { num: '1', title: 'Выбираем формат', text: 'Challenge, учебный трек, скрининг или закрытый контест.' },
-  { num: '2', title: 'Готовим задачи', text: 'Подбираем или создаём 10–20 задач по SQL, Python или алгоритмам.' },
+  { num: '2', title: 'Готовим задачи', text: 'Подбираем или создаём 10–20 задач под нужный стек — от SQL и Python до любых других языков.' },
   { num: '3', title: 'Запускаем страницу', text: 'Участники получают ссылку на отдельный трек или челлендж.' },
   { num: '4', title: 'Собираем результаты', text: 'Организатор получает рейтинг, таблицу результатов и краткий отчёт.' },
 ];
@@ -145,7 +146,7 @@ const pilotSteps = [
 const reasons = [
   'не нужно разрабатывать платформу с нуля',
   'можно быстро проверить формат на небольшой аудитории',
-  'есть задачи по SQL, Python и алгоритмам',
+  'большой выбор языков и стеков для задач',
   'можно запускать публичные и приватные треки',
   'формат подходит для обучения, найма и developer engagement',
   'платформа гибко дорабатывается под партнёра',
@@ -183,14 +184,14 @@ export default function PartnersPage() {
               Для партнёров
             </div>
 
-            <h1 className="max-w-3xl font-dela-gothic text-3xl font-normal leading-tight tracking-tight md:text-5xl">
+            <h1 className="max-w-3xl font-dela-gothic text-4xl font-normal leading-[1.15] tracking-tight md:text-6xl">
               <span className="bg-gradient-to-br from-white from-20% via-pink-400 via-55% to-fuchsia-600 to-90% bg-clip-text text-transparent">
                 Запускайте coding challenges, учебные треки и технические отборы на базе Leetcot
               </span>
             </h1>
 
             <p className="max-w-2xl text-lg leading-8 text-white/50">
-              Leetcot — платформа для задач по программированию, SQL/Python-практики, алгоритмов и
+              Leetcot — платформа для задач по программированию: большой выбор языков и стеков, алгоритмов и
               контестов. На базе Leetcot можно быстро запустить branded challenge, образовательный
               трек, технический скрининг кандидатов или white-label формат под задачи партнёра.
             </p>
@@ -217,6 +218,19 @@ export default function PartnersPage() {
             >
               Telegram: @cosharra
             </a>
+
+            <div className="mt-6 grid w-full max-w-xl grid-cols-3 gap-3 border-t border-zinc-900 pt-8">
+              {[
+                ['4', 'формата продукта'],
+                ['15+', 'языков и стеков'],
+                ['1–2 нед.', 'на запуск пилота'],
+              ].map(([value, label]) => (
+                <div key={label} className="text-center">
+                  <div className="font-mono text-2xl font-black text-pink-300 md:text-3xl">{value}</div>
+                  <div className="mt-1 text-xs text-zinc-500">{label}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -235,6 +249,9 @@ export default function PartnersPage() {
 
         <section className="border-b border-zinc-900 py-16">
           <div className="container">
+            <p className="mb-3 text-center font-mono text-xs font-bold uppercase tracking-[0.2em] text-pink-400">
+              Для кого
+            </p>
             <h2 className="text-center text-2xl font-black md:text-3xl">
               Leetcot подходит для компаний, университетов, онлайн-школ и IT-сообществ
             </h2>
@@ -260,6 +277,9 @@ export default function PartnersPage() {
 
         <section className="border-b border-zinc-900 py-16">
           <div className="container">
+            <p className="mb-3 text-center font-mono text-xs font-bold uppercase tracking-[0.2em] text-pink-400">
+              Что предлагаем
+            </p>
             <h2 className="text-center text-2xl font-black md:text-3xl">Продукты</h2>
 
             <div className="mt-10 grid gap-4 lg:grid-cols-2">
@@ -287,8 +307,8 @@ export default function PartnersPage() {
                   </p>
                   <ul className="mb-4 space-y-1.5 text-sm text-zinc-400">
                     {product.items.map((item) => (
-                      <li key={item} className="flex gap-2">
-                        <span className="text-pink-400">•</span>
+                      <li key={item} className="flex items-start gap-2">
+                        <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-pink-400" />
                         {item}
                       </li>
                     ))}
@@ -312,6 +332,9 @@ export default function PartnersPage() {
 
         <section className="border-b border-zinc-900 bg-zinc-950/60 py-16">
           <div className="container">
+            <p className="mb-3 text-center font-mono text-xs font-bold uppercase tracking-[0.2em] text-pink-400">
+              Как это работает
+            </p>
             <h2 className="text-center text-2xl font-black md:text-3xl">
               Пилот можно запустить без сложной интеграции
             </h2>
@@ -336,6 +359,9 @@ export default function PartnersPage() {
 
         <section className="border-b border-zinc-900 py-16">
           <div className="container">
+            <p className="mb-3 text-center font-mono text-xs font-bold uppercase tracking-[0.2em] text-pink-400">
+              Аргументы
+            </p>
             <h2 className="text-center text-2xl font-black md:text-3xl">Почему Leetcot</h2>
             <div className="mx-auto mt-8 grid max-w-3xl gap-3 sm:grid-cols-2">
               {reasons.map((reason) => (
@@ -353,6 +379,9 @@ export default function PartnersPage() {
 
         <section className="border-b border-zinc-900 bg-zinc-950/60 py-16">
           <div className="container">
+            <p className="mb-3 text-center font-mono text-xs font-bold uppercase tracking-[0.2em] text-pink-400">
+              Примеры
+            </p>
             <h2 className="text-center text-2xl font-black md:text-3xl">
               Что можно запустить на Leetcot
             </h2>
@@ -374,7 +403,7 @@ export default function PartnersPage() {
           <div className="container max-w-2xl text-center">
             <h2 className="text-2xl font-black md:text-3xl">О Leetcot</h2>
             <p className="mt-6 leading-8 text-zinc-400">
-              Leetcot.ru — независимая платформа для практики программирования, SQL, алгоритмов и
+              Leetcot.ru — независимая платформа для практики программирования на большом выборе языков и стеков, алгоритмов и
               coding challenges. Проект развивает Летуновский Владимир, школьник и разработчик
               платформы.
             </p>

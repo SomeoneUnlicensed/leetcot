@@ -1,7 +1,7 @@
 'use client';
 
 import type { Submission } from '@repo/db/types';
-import { Calendar } from '@repo/ui/icons';
+import { Calendar, CheckCircle2, XCircle } from '@repo/ui/icons';
 import clsx from 'clsx';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
@@ -29,44 +29,34 @@ export function Submissions({ submissions }: SubmissionsProps) {
   return (
     <div className="relative h-full">
       {submissions.length !== 0 ? (
-        <div className="bg-background/70 dark:bg-muted/70 absolute right-0 top-0 flex w-full gap-2 border-b border-zinc-300 p-2 px-4 backdrop-blur-sm dark:border-zinc-700">
-          <div
-            className={`flex cursor-pointer gap-2 rounded-lg px-4 py-1 duration-300  ${
-              selectedStatus === 'all'
-                ? 'text-background bg-blue-600 dark:bg-blue-400'
-                : 'bg-blue-600/10 text-blue-600 hover:bg-blue-600/30 dark:bg-blue-400/10 dark:text-blue-400 dark:hover:bg-blue-400/30'
-            }
-            `}
-            onClick={() => setSelectStatus('all')}
-          >
-            Все
-          </div>
-          <div
-            className={`flex cursor-pointer gap-2 rounded-lg px-4 py-1 duration-300  ${
-              selectedStatus === 'accepted'
-                ? 'text-background bg-emerald-600 dark:bg-emerald-400'
-                : 'bg-emerald-600/10 text-emerald-600 hover:bg-emerald-600/30 dark:bg-emerald-400/10 dark:text-emerald-400 dark:hover:bg-emerald-400/30'
-            }`}
-            onClick={() => setSelectStatus('accepted')}
-          >
-            Принято
-          </div>
-          <div
-            className={`flex cursor-pointer gap-2 rounded-lg px-4 py-1 duration-300  ${
-              selectedStatus === 'rejected'
-                ? 'text-background bg-rose-600 dark:bg-rose-400'
-                : 'bg-rose-600/10 text-rose-600 hover:bg-rose-600/30 dark:bg-rose-400/10 dark:text-rose-400 dark:hover:bg-rose-400/30'
-            }`}
-            onClick={() => setSelectStatus('rejected')}
-          >
-            Отклонено
-          </div>
+        <div className="bg-background/90 dark:bg-muted/90 absolute right-0 top-0 flex w-full gap-1 border-b border-zinc-300 p-2 px-3 backdrop-blur-sm dark:border-zinc-700">
+          {(
+            [
+              ['all', 'Все'],
+              ['accepted', 'Принято'],
+              ['rejected', 'Отклонено'],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              className={clsx(
+                'rounded-md px-3 py-1 text-xs font-medium duration-150',
+                selectedStatus === value
+                  ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                  : 'text-muted-foreground hover:bg-zinc-200 dark:hover:bg-zinc-800',
+              )}
+              onClick={() => setSelectStatus(value)}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       ) : (
         <NoSubmissions />
       )}
 
-      <ul className="custom-scrollable-element flex h-full flex-col overflow-y-auto pt-12">
+      <ul className="custom-scrollable-element flex h-full flex-col divide-y divide-zinc-200 overflow-y-auto pt-12 dark:divide-zinc-800">
         {filteredSubmissions.map((submission) => {
           return <SubmissionRow key={submission.id} submission={submission} />;
         })}
@@ -79,41 +69,30 @@ function SubmissionRow({ submission }: { submission: Submission }) {
   const { slug } = useParams();
   const execTime = (submission as Submission & { executionTimeMs?: number | null }).executionTimeMs;
   return (
-    <li className="flex cursor-pointer items-center justify-between px-4 py-2 duration-300 hover:bg-neutral-100 dark:rounded-none dark:hover:bg-zinc-700/50">
-      <Link className="w-full" href={`/challenge/${slug}/submissions/${submission.id}`}>
-        <div className="flex items-center justify-between">
-          <div
-            className={clsx({
-              'text-emerald-600  dark:text-emerald-400': submission.isSuccessful,
-              'text-rose-600  dark:text-rose-400': !submission.isSuccessful,
-            })}
-          >
-            {submission.isSuccessful ? 'Принято' : 'Отклонено'}
-          </div>
-          <div className="text-muted-foreground flex items-center gap-3">
-            {submission.isSuccessful && execTime != null && (
-              <span className="flex items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="9"
-                  height="9"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-                {execTime >= 1000 ? `${(execTime / 1000).toFixed(2)} с` : `${execTime} мс`}
-              </span>
-            )}
-            <div className="flex items-center gap-2">
-              <Calendar className=" h-4 w-4" />
-              <span className="text-xs">{getRelativeTimeStrict(submission.createdAt)}</span>
-            </div>
+    <li className="cursor-pointer duration-150 hover:bg-neutral-100 dark:hover:bg-zinc-800/60">
+      <Link className="flex items-center justify-between gap-3 px-4 py-2.5" href={`/challenge/${slug}/submissions/${submission.id}`}>
+        <div
+          className={clsx('flex items-center gap-1.5 text-sm font-medium', {
+            'text-emerald-600 dark:text-emerald-400': submission.isSuccessful,
+            'text-rose-600 dark:text-rose-400': !submission.isSuccessful,
+          })}
+        >
+          {submission.isSuccessful ? (
+            <CheckCircle2 className="h-4 w-4" />
+          ) : (
+            <XCircle className="h-4 w-4" />
+          )}
+          {submission.isSuccessful ? 'Принято' : 'Отклонено'}
+        </div>
+        <div className="text-muted-foreground flex items-center gap-3">
+          {submission.isSuccessful && execTime != null ? (
+            <span className="font-mono text-xs">
+              {execTime >= 1000 ? `${(execTime / 1000).toFixed(2)} с` : `${execTime} мс`}
+            </span>
+          ) : null}
+          <div className="flex items-center gap-1.5">
+            <Calendar className="h-3.5 w-3.5" />
+            <span className="text-xs">{getRelativeTimeStrict(submission.createdAt)}</span>
           </div>
         </div>
       </Link>

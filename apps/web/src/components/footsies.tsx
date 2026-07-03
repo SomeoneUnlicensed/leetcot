@@ -10,7 +10,7 @@ export function Footsies() {
         <div className="flex items-center gap-2">
           <span>Сделано с любовью</span>
           <a
-            href="https://arlist.tech"
+            href="https://arlist.ru"
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-2 transition-opacity hover:opacity-80"
