@@ -15,20 +15,17 @@ const practiceSteps = [
   {
     title: 'Выберите задачу без охоты вслепую',
     text: 'Подборки и треки помогают не прыгать случайно между темами, как кот за лазерной точкой.',
-    className: 'border-pink-400/30 bg-zinc-950',
-    accent: 'text-pink-300',
+    className: 'bg-[#f3c4a8]',
   },
   {
     title: 'Решите и посмотрите чужой след',
     text: 'После решения можно открыть обсуждения и сравнить подходы других участников.',
-    className: 'border-fuchsia-400/30 bg-zinc-950',
-    accent: 'text-fuchsia-300',
+    className: 'bg-[#9fd8d2]',
   },
   {
     title: 'Соберите прогресс по лапкам',
     text: 'Профиль, бейджи и пройденные треки показывают, какие темы уже закреплены.',
-    className: 'border-cyan-400/25 bg-zinc-950',
-    accent: 'text-cyan-300',
+    className: 'bg-[#e9f6a8]',
   },
 ];
 
@@ -75,8 +72,8 @@ function AudienceCard({
   icon: LucideIcon;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6 transition hover:border-pink-400/40">
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500 to-fuchsia-600 text-white">
+    <div className="rounded-[1.75rem] border border-white/10 bg-[#251d2a] p-6">
+      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f3c4a8] text-[#171a22]">
         <Icon className="h-6 w-6" />
       </div>
       <h3 className="mt-6 text-2xl font-black text-white">{title}</h3>
@@ -87,7 +84,7 @@ function AudienceCard({
 
 export function Features() {
   return (
-    <section className="bg-[#09090b] text-white" id="features">
+    <section className="bg-[#18151f] text-white" id="features">
       <div className="container border-t border-white/10 py-24 sm:py-32">
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <div>
@@ -96,9 +93,7 @@ export function Features() {
             </p>
             <h2 className="mt-4 max-w-2xl text-4xl font-black leading-none tracking-normal sm:text-6xl">
               Меньше случайных прыжков, больше{' '}
-              <span className="bg-gradient-to-r from-pink-300 to-fuchsia-400 bg-clip-text text-transparent">
-                понятного движения
-              </span>
+              <span className="text-[#e9f6a8]">понятного движения</span>
             </h2>
           </div>
           <p className="max-w-2xl text-xl font-bold leading-8 text-zinc-300">
@@ -109,22 +104,27 @@ export function Features() {
 
         <div className="mt-12 grid gap-4 lg:grid-cols-3">
           {practiceSteps.map((step, index) => (
-            <div key={step.title} className={`rounded-2xl border p-6 ${step.className}`}>
-              <p className={`font-mono text-sm font-black ${step.accent}`}>0{index + 1}</p>
-              <h3 className="mt-8 text-2xl font-black leading-tight text-white">{step.title}</h3>
-              <p className="mt-3 text-base font-semibold leading-7 text-zinc-500">{step.text}</p>
+            <div
+              key={step.title}
+              className={`rounded-[1.75rem] p-6 text-[#171a22] ${step.className}`}
+            >
+              <p className="text-sm font-black opacity-70">0{index + 1}</p>
+              <h3 className="mt-8 text-2xl font-black leading-tight">{step.title}</h3>
+              <p className="mt-3 text-base font-semibold leading-7 text-[#34303a]/75">
+                {step.text}
+              </p>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="border-y border-zinc-900 bg-zinc-950/60 py-20 text-white sm:py-24">
+      <div className="bg-[#f5efe5] py-24 text-[#171a22] sm:py-32">
         <div className="container grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
           <div>
-            <p className="font-mono text-sm font-black uppercase tracking-widest text-pink-400">
+            <p className="text-sm font-black uppercase tracking-widest text-[#2f736d]">
               языки в миске
             </p>
-            <h2 className="mt-4 text-4xl font-black leading-none tracking-normal text-white sm:text-5xl">
+            <h2 className="mt-4 text-4xl font-black leading-none tracking-normal sm:text-6xl">
               Платформа растёт за пределы одного языка
             </h2>
           </div>
@@ -132,10 +132,10 @@ export function Features() {
             {languages.map((language, index) => (
               <div
                 key={language}
-                className="rounded-xl border border-zinc-800 bg-[#09090b] px-4 py-5 text-center text-lg font-black text-white"
+                className="rounded-2xl bg-[#18151f] px-4 py-5 text-center text-lg font-black text-white"
               >
                 {language}
-                <p className="mt-1 text-xs font-bold uppercase tracking-wider text-pink-300">
+                <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#9fd8d2]">
                   {index < 2 ? 'доступен' : 'в плане'}
                 </p>
               </div>
@@ -157,7 +157,7 @@ export function Features() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-pink-400/40 bg-zinc-950 p-6 text-white lg:self-start">
+          <div className="rounded-[2rem] bg-[#f3c4a8] p-6 text-[#171a22] lg:self-start">
             <p className="text-sm font-black uppercase tracking-widest">внутри ЛитКота</p>
             <h2 className="mt-4 text-4xl font-black leading-none tracking-normal">
               Всё, что нужно для практики
@@ -168,7 +168,7 @@ export function Features() {
                   key={label}
                   className="flex items-center gap-3 rounded-2xl bg-[#171a22] p-4 text-white"
                 >
-                  <Icon className="h-5 w-5 text-pink-400" />
+                  <Icon className="h-5 w-5 text-[#e9f6a8]" />
                   <span className="text-base font-black">{label}</span>
                 </div>
               ))}
@@ -181,7 +181,7 @@ export function Features() {
         </div>
       </div>
 
-      <div className="h-24 bg-gradient-to-b from-[#09090b] to-black/0" />
+      <div className="h-24 bg-gradient-to-b from-[#18151f] to-black/0" />
     </section>
   );
 }

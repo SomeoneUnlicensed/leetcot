@@ -5,7 +5,7 @@ const appVersion = process.env.NEXT_PUBLIC_APP_VERSION;
 
 export function Footsies() {
   return (
-    <footer className="flex flex-col items-center gap-2 px-8 pb-12 text-sm font-light sm:px-16 sm:pb-20 sm:pt-6 md:px-0 md:py-12">
+    <footer className="flex flex-col items-center gap-2 border-t border-zinc-900 bg-[#09090b] px-8 pb-12 pt-10 text-sm font-light text-zinc-300 sm:px-16 sm:pb-20 sm:pt-14 md:px-0 md:pb-16 md:pt-14">
       <div className="container flex flex-col-reverse justify-between gap-3 md:flex-row md:items-end">
         <div className="flex items-center gap-2">
           <span>Сделано с любовью</span>
@@ -31,25 +31,25 @@ export function Footsies() {
           Партнёрам
         </Link>
       </div>
-      <div className="container flex flex-col justify-between gap-2 text-neutral-500 md:flex-row  md:items-end dark:text-neutral-400">
+      <div className="container flex flex-col justify-between gap-2 text-zinc-500 md:flex-row md:items-end">
         <span>
           <Link
             href="/privacy"
-            className="dark:hover:text-primary-foreground transition-colors duration-300 hover:text-neutral-900 hover:underline"
+            className="transition-colors duration-300 hover:text-zinc-200 hover:underline"
           >
             Политика конфиденциальности
           </Link>{' '}
           |{' '}
           <Link
             href="/tos"
-            className="dark:hover:text-primary-foreground transition-colors duration-300 hover:text-neutral-900 hover:underline"
+            className="transition-colors duration-300 hover:text-zinc-200 hover:underline"
           >
             Условия использования
           </Link>
         </span>
         <span>
           <div className="inline-block rotate-180">©</div>
-          {new Date().getFullYear()} ЛитКот{appVersion ? ` · ${appVersion}` : ''}
+          {new Date().getFullYear()} ЛитКот · мяу{appVersion ? ` · ${appVersion}` : ''}
         </span>
       </div>
     </footer>

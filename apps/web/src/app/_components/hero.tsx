@@ -1,125 +1,96 @@
-import { Compass, Play } from '@repo/ui/icons';
-import Link from 'next/link';
-import { Balancer } from 'react-wrap-balancer';
 import { Button } from '@repo/ui/components/button';
-import { HeroIllustration, BackgroundGrid } from './hero-illustration';
+import { ArrowUpRight, BookOpen, Compass, Play } from '@repo/ui/icons';
+import Link from 'next/link';
 import { auth } from '~/server/auth';
 
-function LeetCotLogo3D() {
-  return (
-    <pre className="text-[13px] font-bold leading-4 text-pink-500 sm:mr-6 sm:text-[14px] dark:text-fuchsia-400">
-      {`
-   |\\__/,|   (\`\\
- _.|o o  |_   ) )
--(((---(((--------
-`}
-    </pre>
-  );
-}
-function BeamOfLight() {
-  return (
-    <svg
-      className="animate-beam pointer-events-none absolute left-0 top-0 z-[-1] h-[169%] w-[138%] lg:w-[84%]"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 3787 2842"
-      fill="none"
-    >
-      <g filter="url(#filter0_f_1065_8)">
-        <ellipse
-          cx="1924.71"
-          cy="273.501"
-          rx="1924.71"
-          ry="273.501"
-          transform="matrix(-0.822377 -0.568943 -0.568943 0.822377 3631.88 2291.09)"
-          fill="#d946ef"
-          fillOpacity="0.15"
-        />
-      </g>
-      <defs>
-        <filter
-          id="filter0_f_1065_8"
-          x="0.860352"
-          y="0.838989"
-          width="3785.16"
-          height="2840.26"
-          filterUnits="userSpaceOnUse"
-          colorInterpolationFilters="sRGB"
-        >
-          <feFlood floodOpacity="0" result="BackgroundImageFix" />
-          <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-          <feGaussianBlur stdDeviation="151" result="effect1_foregroundBlur_1065_8" />
-        </filter>
-      </defs>
-    </svg>
-  );
-}
+const quickLinks = [
+  { label: 'Алгоритмы', href: '/algorithms' },
+  { label: 'SQL-рыбалка', href: '/courses/sql-cat-tables' },
+  { label: 'Все задачи', href: '/explore' },
+];
 
 export async function Hero() {
   const session = await auth();
+
   return (
-    <section className="pointer-events-none min-h-screen overflow-hidden lg:min-h-0 lg:pt-[3.5rem]">
-      <div className="absolute inset-10 -z-30 overflow-hidden rounded-full opacity-70 lg:hidden">
-        <BackgroundGrid />
-      </div>
-      <div className="container relative -mt-[3rem] grid min-h-screen items-center justify-center py-24 lg:min-h-0 lg:grid-cols-2 lg:py-0 [&>*]:pointer-events-auto">
-        <BeamOfLight />
-        <div className="flex w-full flex-col items-center justify-center gap-10 lg:items-start">
-          <div className="relative flex w-full flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
-            <div className="absolute left-1/2 top-1/2 -z-10 hidden h-56 w-56 -translate-x-[15%] -translate-y-[50%] rounded-full bg-pink-500/20 blur-3xl dark:block" />
-            <div className="absolute right-1/2 top-1/2 -z-10 hidden h-56 w-56 -translate-y-[40%] rounded-full bg-fuchsia-600/20 blur-3xl dark:block" />
-            <LeetCotLogo3D />
-            <h1 className="animate-bg-gradient-to-center-title dark:to-69% select-none bg-gradient-to-br from-pink-500 from-[69%] to-black/0 bg-clip-text bg-right-bottom text-5xl font-extrabold text-transparent sm:text-8xl sm:leading-[5.5rem] dark:from-white dark:from-30% dark:via-pink-400 dark:to-fuchsia-600 dark:bg-[length:300%_300%]">
-              <span className="font-dela-gothic font-black">ЛитКот</span>
+    <section className="relative overflow-hidden border-b border-zinc-900 bg-[#0b0b10] px-4 text-white">
+      <div className="pointer-events-none absolute right-[8%] top-28 h-72 w-72 rounded-full bg-pink-500/15 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-28 left-[12%] h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl" />
+
+      <div className="container relative py-16 sm:py-24">
+        <div className="grid gap-14 lg:grid-cols-[0.82fr_0.18fr]">
+          <div className="max-w-5xl">
+            <div className="mb-8 inline-flex items-center gap-2 rounded-xl border border-pink-400/25 bg-zinc-950 px-3 py-2 font-mono text-sm font-bold text-pink-300">
+              <BookOpen className="h-4 w-4" />
+              ЛитКот · практика с характером
+            </div>
+
+            <h1 className="max-w-5xl font-sans text-5xl font-extrabold leading-[1.04] tracking-normal sm:text-6xl lg:text-7xl">
+              Учитесь кодить на задачах, которые не хочется бросить на середине
             </h1>
+
+            <p className="mt-8 max-w-2xl text-lg font-medium leading-8 text-zinc-400 sm:text-xl">
+              Алгоритмы, SQL, треки и обсуждения решений на русском языке. Коты остаются в тоне
+              продукта: помогают запомнить ЛитКот, но не мешают практике.
+            </p>
+
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <Button
+                asChild
+                className="h-12 rounded-xl bg-pink-500 px-6 text-base font-bold text-white hover:bg-pink-400"
+              >
+                <Link href={session ? '/explore' : '/register'}>
+                  <Compass className="mr-2 h-4 w-4" />
+                  {session ? 'Открыть задачи' : 'Начать практику'}
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="h-12 rounded-xl border-zinc-700 bg-zinc-950 px-6 text-base font-bold text-zinc-100 hover:bg-zinc-900"
+              >
+                <Link href="/algorithms">
+                  Посмотреть алгоритмы
+                  <ArrowUpRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
           </div>
 
-          <p className="max-w-[55ch] bg-transparent text-center font-medium leading-8 text-black/60 sm:px-8 lg:px-0 lg:text-left dark:text-white/50">
-            <Balancer>
-              Общайтесь, сотрудничайте и растите вместе с сообществом разработчиков. Повышайте свои
-              навыки через интерактивные задачи с котиками, обсуждения и обмен знаниями. Мяу!
-            </Balancer>
-          </p>
-          <div className="flex flex-col-reverse gap-3 md:flex-row">
-            <Button
-              asChild
-              className="hero-join-button-dark group relative mx-auto hidden w-fit overflow-hidden rounded-xl p-[1px] font-bold transition-all duration-300 md:mr-0 lg:mr-auto dark:block dark:hover:shadow-[0_0_2rem_-0.5rem_#d946ef88]"
-              variant="outline"
-            >
-              <Link href="/explore">
-                <span className="inline-flex h-full w-fit items-center gap-2 rounded-xl px-4 py-2 transition-all duration-300 dark:bg-neutral-900 dark:text-white group-hover:dark:bg-black">
-                  <Compass className="h-4 w-4" />
-                  {session ? 'Исследовать' : 'Начать обучение'}
-                </span>
-              </Link>
-            </Button>
-            <Button
-              asChild
-              className="group relative mx-auto flex w-fit overflow-hidden rounded-xl p-[1px] font-bold transition-all duration-300 md:ml-0 lg:ml-0"
-              variant="ghost"
-            >
-              <Link href="/algorithms">
-                <span className="inline-flex h-full w-fit items-center gap-2 rounded-xl px-4 py-2 transition-all duration-300 dark:text-pink-400 dark:hover:text-pink-300">
-                  <Play className="h-4 w-4" />
-                  Алгоритмы как рыбки
-                </span>
-              </Link>
-            </Button>
-            <Button
-              asChild
-              className="group relative mx-auto flex w-fit overflow-hidden rounded-xl p-[1px] font-bold transition-all duration-300 md:ml-0 lg:ml-0"
-              variant="ghost"
-            >
-              <Link href="/courses/sql-cat-tables">
-                <span className="inline-flex h-full w-fit items-center gap-2 rounded-xl px-4 py-2 transition-all duration-300 dark:text-emerald-400 dark:hover:text-emerald-300">
-                  <Play className="h-4 w-4" />
-                  SQL-рыбалка
-                </span>
-              </Link>
-            </Button>
+          <div className="hidden justify-end lg:flex">
+            <pre className="select-none font-mono text-xs font-black leading-4 text-pink-400/45">{` /\\_/\\\\
+( o.o )
+ > ^ <`}</pre>
           </div>
         </div>
 
-        <HeroIllustration />
+        <div className="mt-12 grid gap-4 border-t border-zinc-900 pt-8 lg:grid-cols-[1fr_1fr]">
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              ['250+', 'задач и тем'],
+              ['Python, SQL', 'уже доступны'],
+              ['мяу', 'фирменный тон'],
+            ].map(([value, label]) => (
+              <div key={label} className="rounded-2xl border border-zinc-900 bg-zinc-950 p-4">
+                <p className="font-mono text-2xl font-black text-pink-300">{value}</p>
+                <p className="mt-1 text-xs text-zinc-500">{label}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap items-start justify-start gap-3 lg:justify-end">
+            {quickLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3 font-mono text-sm text-zinc-300 transition hover:border-pink-400/40 hover:text-pink-200"
+              >
+                <Play className="h-4 w-4 text-pink-400" />
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
