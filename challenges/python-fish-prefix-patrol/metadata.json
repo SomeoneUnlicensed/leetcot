@@ -4,5 +4,6 @@
   "description": "Посчитай отрезки пути, где кот вернулся к старту.",
   "difficulty": "medium",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

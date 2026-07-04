@@ -4,5 +4,6 @@
   "description": "Посчитайте средний улов по каждой команде.",
   "difficulty": "easy",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql"
 }

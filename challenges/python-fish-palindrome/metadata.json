@@ -4,5 +4,6 @@
   "description": "Проверь, является ли строка зеркальной.",
   "difficulty": "easy",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

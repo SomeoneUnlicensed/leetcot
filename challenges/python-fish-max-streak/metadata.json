@@ -4,5 +4,6 @@
   "description": "Найди максимальную длину подряд идущих одинаковых элементов.",
   "difficulty": "easy",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

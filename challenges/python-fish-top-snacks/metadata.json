@@ -4,5 +4,6 @@
   "description": "Верни k самых частых строк.",
   "difficulty": "medium",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

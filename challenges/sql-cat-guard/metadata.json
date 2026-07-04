@@ -4,5 +4,6 @@
   "description": "Добавь нового кота-сторожа в таблицу с нужными данными.",
   "difficulty": "easy",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql"
 }

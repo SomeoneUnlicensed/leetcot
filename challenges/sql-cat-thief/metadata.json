@@ -4,5 +4,6 @@
   "description": "Найдите имя кота, совершившего последнее зафиксированное похищение сосиски.",
   "difficulty": "medium",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql"
 }

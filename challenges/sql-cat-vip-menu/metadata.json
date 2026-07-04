@@ -4,5 +4,6 @@
   "description": "Выберите заказы только для гостей из VIP-списка.",
   "difficulty": "easy",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql"
 }

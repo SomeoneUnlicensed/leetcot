@@ -4,5 +4,6 @@
   "description": "Помоги коту найти кратчайший путь к еде в лабиринте комнат.",
   "difficulty": "medium",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

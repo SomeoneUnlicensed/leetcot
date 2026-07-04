@@ -4,5 +4,6 @@
   "description": "Посчитайте конверсию без деления на ноль.",
   "difficulty": "hard",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql"
 }

@@ -4,5 +4,6 @@
   "description": "Разверни связный список, как если бы ты разматывал клубок ниток.",
   "difficulty": "medium",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

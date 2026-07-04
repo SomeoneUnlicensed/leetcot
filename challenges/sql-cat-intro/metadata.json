@@ -5,5 +5,6 @@
   "difficulty": "easy",
   "language": "sql",
   "isInfoOnly": true,
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql"
 }

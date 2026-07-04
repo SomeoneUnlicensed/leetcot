@@ -4,5 +4,6 @@
   "description": "Соберите промежуточную таблицу с суммарным уловом и отфильтруйте крупных охотников.",
   "difficulty": "medium",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql"
 }

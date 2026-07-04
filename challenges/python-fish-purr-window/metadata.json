@@ -4,5 +4,6 @@
   "description": "Найди длину самой длинной подстроки без повторов.",
   "difficulty": "medium",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

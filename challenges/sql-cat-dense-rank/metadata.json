@@ -4,5 +4,6 @@
   "description": "Присвойте место в рейтинге без пропусков при равных результатах.",
   "difficulty": "hard",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql"
 }

@@ -4,5 +4,6 @@
   "description": "Найди все возможные комбинации путей для кота.",
   "difficulty": "hard",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

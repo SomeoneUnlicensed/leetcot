@@ -4,5 +4,6 @@
   "description": "Помоги коту отсортировать рыбок по весу, чтобы начать с самой крупной!",
   "difficulty": "medium",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

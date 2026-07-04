@@ -4,5 +4,6 @@
   "description": "Для каждого котенка оставь только его лучший балл.",
   "difficulty": "easy",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

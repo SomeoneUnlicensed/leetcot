@@ -4,5 +4,6 @@
   "description": "Создайте итоговую таблицу с суммарным уловом по котам.",
   "difficulty": "hard",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql"
 }

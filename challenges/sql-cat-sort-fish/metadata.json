@@ -4,5 +4,6 @@
   "description": "Выберите самую крупную рыбу для кота Рыжика весом строго больше 100 грамм.",
   "difficulty": "easy",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql"
 }

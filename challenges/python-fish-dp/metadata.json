@@ -4,5 +4,6 @@
   "description": "Используй динамическое программирование, чтобы собрать как можно больше сосисок.",
   "difficulty": "hard",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

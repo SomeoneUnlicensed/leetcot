@@ -4,5 +4,6 @@
   "description": "Сверни отсортированные числа в строковые диапазоны.",
   "difficulty": "medium",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

@@ -4,5 +4,6 @@
   "description": "Определите, являются ли два слова анаграммами.",
   "difficulty": "easy",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

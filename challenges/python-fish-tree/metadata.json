@@ -4,5 +4,6 @@
   "description": "Посчитай, на какую максимальную высоту залез кот.",
   "difficulty": "medium",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

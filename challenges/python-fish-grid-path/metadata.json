@@ -4,5 +4,6 @@
   "description": "Найди длину кратчайшего пути по сетке.",
   "difficulty": "medium",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

@@ -4,5 +4,6 @@
   "description": "Покажите миски без назначенного блюда и замените NULL на понятный текст.",
   "difficulty": "easy",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql"
 }

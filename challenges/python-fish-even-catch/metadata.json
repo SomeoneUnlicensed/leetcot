@@ -4,5 +4,6 @@
   "description": "Посчитай, сколько чисел в списке четные.",
   "difficulty": "beginner",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

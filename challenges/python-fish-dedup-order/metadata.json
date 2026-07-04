@@ -4,5 +4,6 @@
   "description": "Убери повторы, сохранив первый порядок элементов.",
   "difficulty": "easy",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

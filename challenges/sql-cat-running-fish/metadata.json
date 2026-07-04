@@ -4,5 +4,6 @@
   "description": "Посчитайте накопительный улов по дням.",
   "difficulty": "hard",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql"
 }

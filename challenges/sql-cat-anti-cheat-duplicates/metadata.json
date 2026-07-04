@@ -4,5 +4,6 @@
   "description": "Найдите котов, которые отправили заявку больше одного раза.",
   "difficulty": "medium",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql"
 }

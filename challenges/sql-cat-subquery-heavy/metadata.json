@@ -4,5 +4,6 @@
   "description": "Выберите рыбу тяжелее среднего веса по всей таблице.",
   "difficulty": "medium",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql"
 }

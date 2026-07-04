@@ -4,5 +4,6 @@
   "description": "Проверь, правильно ли расставлены миски и крышки в шкафу.",
   "difficulty": "easy",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

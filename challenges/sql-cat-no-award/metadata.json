@@ -4,5 +4,6 @@
   "description": "Найди котов, которые ни разу не получали награду.",
   "difficulty": "medium",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql"
 }

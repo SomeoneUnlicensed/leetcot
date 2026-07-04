@@ -53,6 +53,11 @@
         "sql"
       ]
     },
+    "practiceType": {
+      "description": "The product-facing practice type. Code tasks use a programming language; SQL tasks use a separate query workflow.",
+      "type": "string",
+      "enum": ["code", "sql"]
+    },
     "prerequisites": {
       "description": "An array of ids of other challenges that this challenge is written as to expect the reader to already understand.",
       "type": "array",
@@ -65,5 +70,5 @@
       "type": "string"
     }
   },
-  "required": ["id", "label", "description", "difficulty", "author", "language"]
+  "required": ["id", "label", "description", "difficulty", "author", "language", "practiceType"]
 }

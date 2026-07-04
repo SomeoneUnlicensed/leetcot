@@ -4,5 +4,6 @@
   "description": "Найди спрятанную сосиску в отсортированном шкафу за минимальное время.",
   "difficulty": "easy",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code"
 }

@@ -4,5 +4,6 @@
   "description": "Удали из таблицы все записи с датой раньше 2024-02-01.",
   "difficulty": "medium",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql"
 }
