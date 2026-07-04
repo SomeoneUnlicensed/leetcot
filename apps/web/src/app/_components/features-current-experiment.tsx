@@ -2,7 +2,9 @@ import {
   Award,
   BookOpen,
   CheckCircle2,
+  Code,
   GraduationCap,
+  Layers,
   MessageCircle,
   Sparkles,
   Target,
@@ -60,7 +62,7 @@ const productParts = [
   { label: 'Чемпионаты', icon: Trophy },
 ];
 
-const languages = ['Python', 'SQL', 'TypeScript', 'C++', 'Rust', 'Java', 'Go', 'Ruby'];
+const codeLanguages = ['Python', 'TypeScript', 'C++', 'Java', 'Go', 'Rust', 'JavaScript', 'Ruby'];
 
 function AudienceCard({
   title,
@@ -122,24 +124,42 @@ export function Features() {
         <div className="container grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
           <div>
             <p className="text-sm font-black uppercase tracking-widest text-[#2f736d]">
-              языки в миске
+              типы практики
             </p>
             <h2 className="mt-4 text-4xl font-black leading-none tracking-normal sm:text-6xl">
-              Платформа растёт за пределы одного языка
+              Код и SQL не смешиваются в один режим
             </h2>
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {languages.map((language, index) => (
+          <div className="grid gap-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl bg-[#18151f] p-5 text-white">
+                <Code className="h-6 w-6 text-[#e9f6a8]" />
+                <h3 className="mt-4 text-2xl font-black">Код</h3>
+                <p className="mt-2 text-sm font-semibold text-zinc-300">
+                  Алгоритмические задачи: сейчас Python, дальше больше языков.
+                </p>
+              </div>
+              <div className="rounded-2xl bg-[#18151f] p-5 text-white">
+                <Layers className="h-6 w-6 text-[#9fd8d2]" />
+                <h3 className="mt-4 text-2xl font-black">SQL</h3>
+                <p className="mt-2 text-sm font-semibold text-zinc-300">
+                  Отдельные задачи с таблицами, запросами и проверкой результата.
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {codeLanguages.map((language, index) => (
               <div
                 key={language}
                 className="rounded-2xl bg-[#18151f] px-4 py-5 text-center text-lg font-black text-white"
               >
                 {language}
                 <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#9fd8d2]">
-                  {index < 2 ? 'доступен' : 'в плане'}
+                  {index === 0 ? 'доступен' : 'в плане'}
                 </p>
               </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>

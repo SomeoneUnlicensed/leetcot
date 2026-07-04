@@ -470,8 +470,8 @@ export function CuratedTracksCard(props: CardProps) {
   );
 }
 
-const availableStacks = ['Python', 'SQL'];
-const upcomingStacks = ['C++', 'Rust', 'Ruby', 'TypeScript', 'и другие'];
+const availableCodeLanguages = ['Python'];
+const upcomingCodeLanguages = ['TypeScript', 'C++', 'Java', 'Go', 'Rust'];
 
 export function LanguageStackCard(props: CardProps) {
   return (
@@ -479,10 +479,10 @@ export function LanguageStackCard(props: CardProps) {
       <div className="mt-6 flex flex-col gap-4">
         <div>
           <p className="mb-2 text-xs font-bold uppercase tracking-wide text-zinc-500">
-            Уже доступно
+            Задачи по коду
           </p>
           <div className="flex flex-wrap gap-2">
-            {availableStacks.map((stack) => (
+            {availableCodeLanguages.map((stack) => (
               <span
                 key={stack}
                 className="rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-600 px-3 py-1 text-xs font-bold text-white"
@@ -494,10 +494,18 @@ export function LanguageStackCard(props: CardProps) {
         </div>
         <div>
           <p className="mb-2 text-xs font-bold uppercase tracking-wide text-zinc-500">
-            Скоро
+            Отдельный тип
+          </p>
+          <span className="rounded-full border border-cyan-300/40 bg-cyan-300/10 px-3 py-1 text-xs font-bold text-cyan-700 dark:text-cyan-200">
+            SQL
+          </span>
+        </div>
+        <div>
+          <p className="mb-2 text-xs font-bold uppercase tracking-wide text-zinc-500">
+            Языки для задач по коду
           </p>
           <div className="flex flex-wrap gap-2">
-            {upcomingStacks.map((stack) => (
+            {upcomingCodeLanguages.map((stack) => (
               <span
                 key={stack}
                 className="rounded-full border border-zinc-300 px-3 py-1 text-xs font-semibold text-zinc-600 dark:border-zinc-700 dark:text-zinc-400"

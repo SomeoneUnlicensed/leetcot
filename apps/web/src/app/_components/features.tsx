@@ -2,7 +2,10 @@ import {
   Award,
   BookOpen,
   CheckCircle2,
+  ChevronDown,
+  Code,
   GraduationCap,
+  Layers,
   MessageCircle,
   Sparkles,
   Target,
@@ -14,7 +17,7 @@ import type { LucideIcon } from '@repo/ui/icons';
 const practiceSteps = [
   {
     title: 'Выберите задачу без охоты вслепую',
-    text: 'Треки ведут по следу: от простых задач к Python, SQL, алгоритмам и структурам данных.',
+    text: 'Треки ведут по следу: от простых задач по коду к алгоритмам, структурам данных и отдельной SQL-практике.',
     className: 'border-pink-400/30 bg-zinc-950',
     accent: 'text-pink-300',
   },
@@ -63,7 +66,61 @@ const productParts = [
   { label: 'Чемпионаты', icon: Trophy },
 ];
 
-const languages = ['Python', 'SQL', 'TypeScript', 'C++', 'Rust', 'Java', 'Go', 'Ruby'];
+const codeLanguages = [
+  { name: 'Python', version: '3.11', status: 'доступен' },
+  { name: 'TypeScript', version: 'скоро', status: 'готовим' },
+  { name: 'C++', version: 'скоро', status: 'готовим' },
+  { name: 'Java', version: 'скоро', status: 'готовим' },
+  { name: 'Go', version: 'скоро', status: 'готовим' },
+  { name: 'Rust', version: 'скоро', status: 'готовим' },
+  { name: 'JavaScript', version: 'скоро', status: 'готовим' },
+  { name: 'Ruby', version: 'скоро', status: 'готовим' },
+];
+
+function LanguageDropdown() {
+  return (
+    <details className="group relative mx-auto max-w-xl lg:mx-0">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-2xl border border-zinc-700 bg-[#171a22] px-5 py-4 shadow-2xl shadow-black/30 transition hover:border-pink-400/60 [&::-webkit-details-marker]:hidden">
+        <span className="flex items-center gap-3">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-500/15 text-pink-300">
+            <Code className="h-5 w-5" />
+          </span>
+          <span>
+            <span className="block text-left text-sm font-bold uppercase tracking-widest text-zinc-500">
+              Язык для задач по коду
+            </span>
+            <span className="block text-left text-2xl font-black text-white">Python 3.11</span>
+          </span>
+        </span>
+        <ChevronDown className="h-5 w-5 text-zinc-400 transition group-open:rotate-180" />
+      </summary>
+
+      <div className="mt-3 rounded-3xl border border-zinc-800 bg-[#2b2b2b] p-3 shadow-2xl shadow-black/40">
+        <div className="grid gap-1 sm:grid-cols-2">
+          {codeLanguages.map((language) => {
+            const isAvailable = language.status === 'доступен';
+            return (
+              <div
+                key={language.name}
+                className={`flex items-center justify-between rounded-2xl px-4 py-3 transition ${
+                  isAvailable ? 'bg-white/10 text-white' : 'text-zinc-200 hover:bg-white/5'
+                }`}
+              >
+                <span>
+                  <span className="block text-lg font-bold">{language.name}</span>
+                  <span className="block text-sm font-semibold text-zinc-400">
+                    {language.version}
+                  </span>
+                </span>
+                {isAvailable ? <CheckCircle2 className="h-5 w-5 text-zinc-300" /> : null}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </details>
+  );
+}
 
 function AudienceCard({
   title,
@@ -122,24 +179,34 @@ export function Features() {
         <div className="container grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
           <div>
             <p className="font-mono text-sm font-black uppercase tracking-widest text-pink-400">
-              языки платформы
+              типы практики
             </p>
             <h2 className="mt-4 text-4xl font-black leading-none tracking-normal text-white sm:text-5xl">
-              Платформа растёт за пределы одного языка
+              Код и SQL живут отдельно, языки выбираются внутри задач по коду
             </h2>
+            <p className="mt-5 text-lg font-bold leading-8 text-zinc-400">
+              Сейчас задачи по коду решаются на Python. Следом аккуратно добавим другие языки, а
+              SQL останется отдельным режимом с таблицами, запросами и своей проверкой результата.
+            </p>
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {languages.map((language, index) => (
-              <div
-                key={language}
-                className="rounded-xl border border-zinc-800 bg-[#09090b] px-4 py-5 text-center text-lg font-black text-white"
-              >
-                {language}
-                <p className="mt-1 text-xs font-bold uppercase tracking-wider text-pink-300">
-                  {index < 2 ? 'доступен' : 'в плане'}
+          <div className="space-y-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-pink-400/35 bg-[#111118] p-5">
+                <Code className="h-6 w-6 text-pink-300" />
+                <h3 className="mt-4 text-2xl font-black">Код</h3>
+                <p className="mt-2 text-sm font-semibold leading-6 text-zinc-400">
+                  Алгоритмы и структуры данных. Сейчас Python, дальше больше языков.
                 </p>
               </div>
-            ))}
+              <div className="rounded-2xl border border-cyan-300/25 bg-[#111118] p-5">
+                <Layers className="h-6 w-6 text-cyan-200" />
+                <h3 className="mt-4 text-2xl font-black">SQL</h3>
+                <p className="mt-2 text-sm font-semibold leading-6 text-zinc-400">
+                  Отдельный тип задач: таблицы, запросы, JOIN и аналитика.
+                </p>
+              </div>
+            </div>
+            <LanguageDropdown />
           </div>
         </div>
       </div>
