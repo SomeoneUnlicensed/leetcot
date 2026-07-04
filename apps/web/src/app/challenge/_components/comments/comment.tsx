@@ -148,8 +148,8 @@ export function Comment({
               onClick={() => fetchNextPage()}
             >
               <MoreHorizontal size={24} />
-              Load More
-              <span className="sr-only">Load More</span>
+              Показать еще
+              <span className="sr-only">Показать еще</span>
             </Button>
           ) : null}
         </>
@@ -186,16 +186,16 @@ function SingleComment({
     try {
       await copyCommentUrlToClipboard(isReply, slug);
       toast({
-        title: 'Success!',
+        title: 'Готово!',
         variant: 'success',
-        description: <p>Copied comment URL to clipboard!</p>,
+        description: <p>Ссылка на комментарий скопирована.</p>,
       });
     } catch (error) {
       console.error(error);
       toast({
-        title: 'Failure!',
+        title: 'Ошибка',
         variant: 'destructive',
-        description: <p>Something went wrong!</p>,
+        description: <p>Что-то пошло не так.</p>,
       });
     }
   }
@@ -291,12 +291,12 @@ function SingleComment({
                           }}
                         >
                           <Share className="h-4 w-4" />
-                          Share
-                          <span className="sr-only">Share this comment</span>
+                          Поделиться
+                          <span className="sr-only">Поделиться комментарием</span>
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Share this comment</p>
+                        <p>Поделиться комментарием</p>
                       </TooltipContent>
                     </Tooltip>
                   </div>
@@ -311,12 +311,12 @@ function SingleComment({
                             className="flex items-center gap-2"
                           >
                             <Pencil className="h-4 w-4" />
-                            Edit
-                            <span className="sr-only">Edit this comment</span>
+                            Редактировать
+                            <span className="sr-only">Редактировать комментарий</span>
                           </div>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Edit this comment</p>
+                          <p>Редактировать комментарий</p>
                         </TooltipContent>
                       </Tooltip>
                     ) : null}
@@ -330,14 +330,14 @@ function SingleComment({
                           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                             <div className="flex items-center gap-2">
                               <Trash2 className="h-4 w-4" />
-                              Delete
-                              <span className="sr-only">Delete this comment</span>
+                              Удалить
+                              <span className="sr-only">Удалить комментарий</span>
                             </div>
                           </DropdownMenuItem>
                         </TooltipTrigger>
                       </CommentDeleteDialog>
                       <TooltipContent>
-                        <p>Delete this comment</p>
+                        <p>Удалить комментарий</p>
                       </TooltipContent>
                     </Tooltip>
                   ) : (
@@ -347,14 +347,14 @@ function SingleComment({
                           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                             <div className="flex items-center gap-2">
                               <Flag className="h-4 w-4" />
-                              Report
-                              <span className="sr-only">Report this comment</span>
+                              Пожаловаться
+                              <span className="sr-only">Пожаловаться на комментарий</span>
                             </div>
                           </DropdownMenuItem>
                         </TooltipTrigger>
                       </ReportDialog>
                       <TooltipContent>
-                        <p>Report this comment</p>
+                        <p>Пожаловаться на комментарий</p>
                       </TooltipContent>
                     </Tooltip>
                   )}
@@ -386,14 +386,14 @@ function SingleComment({
                 )}
 
                 <div className="text-xs">
-                  {comment._count.replies === 1 ? '1 reply' : `${comment._count.replies} replies`}
+                  {comment._count.replies === 1 ? '1 ответ' : `${comment._count.replies} ответов`}
                 </div>
-                <span className="sr-only">Toggle replies view</span>
+                <span className="sr-only">Показать или скрыть ответы</span>
               </Button>
             )}
             {hasBeenEdited ? (
               <div className="text-muted-foreground flex items-center gap-2 whitespace-nowrap text-xs">
-                Last edited at{' '}
+                Изменено:{' '}
                 {new Intl.DateTimeFormat(undefined, {
                   timeStyle: 'short',
                   dateStyle: 'short',
@@ -487,7 +487,7 @@ function ExpandableContent({ content }: { content: string }) {
           onClick={() => setExpanded(true)}
         >
           <div className="text-md text-label-1 dark:text-dark-label-1 flex w-full items-center justify-center hover:bg-transparent">
-            Read more
+            Читать дальше
           </div>
         </div>
       )}
@@ -502,7 +502,7 @@ function ExpandableContent({ content }: { content: string }) {
             }}
           >
             <ChevronUp className="h-4 w-4" />
-            collapse
+            Свернуть
           </Button>
         </div>
       ) : null}

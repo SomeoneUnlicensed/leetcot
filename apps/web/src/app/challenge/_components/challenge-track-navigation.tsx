@@ -102,7 +102,7 @@ export function ChallengeTrackNavigation({
                 <ChevronLeft className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Previous</TooltipContent>
+            <TooltipContent>Предыдущая</TooltipContent>
           </Tooltip>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
@@ -115,7 +115,7 @@ export function ChallengeTrackNavigation({
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Next</TooltipContent>
+            <TooltipContent>Следующая</TooltipContent>
           </Tooltip>
         </>
       )}

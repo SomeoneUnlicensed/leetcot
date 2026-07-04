@@ -27,7 +27,7 @@ import { ONE_YEAR, THREE_MONTHS } from '../_actions/increment-time';
 
 const FormSchema = z.object({
   url: z.string().url({
-    message: 'Please enter a valid URL e.g. https://leetcot.ru',
+    message: 'Введите корректный URL, например https://leetcot.ru',
   }),
   slug: z.string().optional(),
   expireAt: z.date().optional(),
@@ -54,8 +54,8 @@ export function URLShortenerForm() {
       await navigator.clipboard.writeText(url);
       toast({
         variant: 'success',
-        description: 'Link To Short URL Copied!',
-        title: 'Copied',
+        description: 'Ссылка скопирована.',
+        title: 'Готово',
       });
     }
   };
@@ -72,22 +72,22 @@ export function URLShortenerForm() {
         );
         if (shortURL) {
           toast({
-            title: 'Short URL created',
+            title: 'Короткая ссылка создана',
             description: shortURL,
             variant: 'success',
           });
           setShortURL(shortURL);
         } else {
           toast({
-            title: `Slug '/${data.slug}' already exists`,
-            description: 'Please try another slug',
+            title: `Адрес '/${data.slug}' уже занят`,
+            description: 'Попробуйте другой короткий адрес.',
             variant: 'destructive',
           });
         }
       } catch {
         toast({
-          title: 'Something went wrong',
-          description: 'Error creating short URL',
+          title: 'Что-то пошло не так',
+          description: 'Не удалось создать короткую ссылку.',
           variant: 'destructive',
         });
       }
@@ -99,15 +99,15 @@ export function URLShortenerForm() {
       });
       if (shortURL) {
         toast({
-          title: 'Short URL created',
+          title: 'Короткая ссылка создана',
           description: shortURL,
           variant: 'success',
         });
         setShortURL(shortURL);
       } else {
         toast({
-          title: 'Error creating short URL',
-          description: 'Please try again',
+          title: 'Не удалось создать короткую ссылку',
+          description: 'Попробуйте еще раз.',
           variant: 'destructive',
         });
       }
@@ -140,7 +140,7 @@ export function URLShortenerForm() {
           name="slug"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Custom Slug (Optional)</FormLabel>
+              <FormLabel>Короткий адрес (необязательно)</FormLabel>
               <FormControl>
                 <div className="flex items-center">
                   <p className="border-r-none text-from-foreground/50 rounded-l-lg border border-slate-400 bg-slate-100 p-[5.5px] px-3 font-light dark:border-slate-800 dark:bg-slate-800">
@@ -153,7 +153,7 @@ export function URLShortenerForm() {
                   />
                 </div>
               </FormControl>
-              <FormDescription>Leave empty to auto-generate a slug</FormDescription>
+              <FormDescription>Оставьте пустым, чтобы создать адрес автоматически</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -163,7 +163,7 @@ export function URLShortenerForm() {
           name="expireAt"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Expires At</FormLabel>
+              <FormLabel>Действует до</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -174,7 +174,7 @@ export function URLShortenerForm() {
                         !field.value && 'text-muted-foreground',
                       )}
                     >
-                      {field.value ? format(field.value, 'PPP') : <span>Expires At</span>}
+                      {field.value ? format(field.value, 'PPP') : <span>Действует до</span>}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                   </FormControl>
@@ -207,9 +207,9 @@ export function URLShortenerForm() {
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel>Overwrite existing url</FormLabel>
+                <FormLabel>Перезаписать существующую ссылку</FormLabel>
                 <FormDescription>
-                  It will overwrite the url, if the slug already exists.
+                  Если такой короткий адрес уже есть, он будет указывать на новый URL.
                 </FormDescription>
               </div>
             </FormItem>
@@ -223,22 +223,22 @@ export function URLShortenerForm() {
           variant="secondary"
           className="border border-slate-400 dark:border-slate-800"
         >
-          Shorten
+          Сократить
         </Button>
         {shortURL ? (
           <div className="flex w-full flex-col items-center gap-2 md:flex-row">
             <div className="border-primary flex-grow rounded-xl border px-4 py-1.5">
-              <span className="text-muted-foreground mr-1 text-sm">Short URL: </span>
+              <span className="text-muted-foreground mr-1 text-sm">Короткая ссылка: </span>
               <span className="text-sm">{shortURL}</span>
             </div>
             <div className="flex items-center gap-2">
               <Button onClick={handleShareClick} size="sm" type="button" variant="secondary">
                 <Clipboard className="mr-1 h-4 w-4" />
-                Copy
+                Скопировать
               </Button>
               <a href={shortURL} className="flex-shrink-0" target="_blank" rel="noopener">
                 <Button size="sm" type="button" variant="link">
-                  Test URL
+                  Проверить
                   <ExternalLink className="ml-1 h-4 w-4 flex-shrink-0" />
                 </Button>
               </a>

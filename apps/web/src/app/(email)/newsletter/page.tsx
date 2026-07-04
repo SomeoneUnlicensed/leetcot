@@ -3,8 +3,8 @@ import { buildMetaForDefault } from '~/app/metadata';
 
 export function generateMetadata(): Metadata {
   return buildMetaForDefault({
-    title: 'Newsletter | ЛитКот',
-    description: 'Subscribe to the ЛитКот newsletter and stay informed about our latest updates!',
+    title: 'Новости | ЛитКот',
+    description: 'Подпишитесь на новости ЛитКот и узнавайте об обновлениях первыми.',
   });
 }
 export { Newsletter as default } from './_components';

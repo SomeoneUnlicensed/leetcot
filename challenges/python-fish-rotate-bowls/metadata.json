@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-rotate-bowls",
+  "label": "Поворот мисок",
+  "description": "Поверни список мисок вправо на k шагов.",
+  "difficulty": "easy",
+  "language": "python",
+  "author": "ЛитКот"
+}

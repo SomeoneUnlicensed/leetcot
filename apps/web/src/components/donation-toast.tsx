@@ -26,15 +26,15 @@ export default function WalletConnectBanner() {
           </svg>
         </div>
         <div className="flex-grow">
-          <h2 className="text-lg font-bold text-gray-900">Connect your wallet</h2>
+          <h2 className="text-lg font-bold text-gray-900">Подключите кошелек</h2>
           <p className="text-sm text-gray-600">
-            Connect your wallet by clicking the button in the top right corner.
+            Нажмите кнопку в правом верхнем углу, чтобы подключить кошелек.
           </p>
         </div>
         <button
           onClick={() => setIsVisible(false)}
           className="flex-shrink-0 text-gray-400 transition-colors hover:text-gray-500"
-          aria-label="Close notification"
+          aria-label="Закрыть уведомление"
         >
           <X className="h-5 w-5" />
         </button>

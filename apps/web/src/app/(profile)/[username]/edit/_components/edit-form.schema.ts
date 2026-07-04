@@ -11,7 +11,7 @@ const validUrlWithHttpOrHttps = z.string().refine(
     }
   },
   {
-    message: "URL must have the 'http(s)' protocol",
+    message: 'URL должен начинаться с http:// или https://',
   },
 );
 

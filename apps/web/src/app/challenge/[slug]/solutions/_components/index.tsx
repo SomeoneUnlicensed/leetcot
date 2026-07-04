@@ -25,19 +25,19 @@ interface SolutionsProps {
 
 export const SORT_KEYS = [
   {
-    label: 'Newest Solutions',
+    label: 'Сначала новые',
     value: 'newest',
     key: 'createdAt',
     order: 'desc',
   },
   {
-    label: 'Most Votes',
+    label: 'Больше голосов',
     value: 'votes',
     key: 'vote',
     order: 'desc',
   },
   {
-    label: 'Most Replies',
+    label: 'Больше ответов',
     value: 'solutionComment',
     key: 'solutionComment',
     order: 'desc',
@@ -181,7 +181,7 @@ function SolutionRow({
         </div>
         {solution.isPinned ? (
           <Badge className="dark:bg-difficulty-beginner-dark bg-difficulty-beginner text-white duration-300 dark:text-black">
-            Pinned
+            Закреплено
           </Badge>
         ) : null}
         <Badge variant="secondary" size="xs" className="gap-1">

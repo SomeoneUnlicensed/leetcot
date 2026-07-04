@@ -17,6 +17,8 @@ interface SubmissionsProps {
 type Status = 'accepted' | 'all' | 'rejected';
 export function Submissions({ submissions }: SubmissionsProps) {
   const [selectedStatus, setSelectStatus] = useState<Status>('all');
+  const acceptedCount = submissions.filter((submission) => submission.isSuccessful).length;
+  const rejectedCount = submissions.length - acceptedCount;
 
   const filteredSubmissions = useMemo(() => {
     const predicate = (submission: Submission) => {
@@ -29,34 +31,42 @@ export function Submissions({ submissions }: SubmissionsProps) {
   return (
     <div className="relative h-full">
       {submissions.length !== 0 ? (
-        <div className="bg-background/90 dark:bg-muted/90 absolute right-0 top-0 flex w-full gap-1 border-b border-zinc-300 p-2 px-3 backdrop-blur-sm dark:border-zinc-700">
-          {(
-            [
-              ['all', 'Все'],
-              ['accepted', 'Принято'],
-              ['rejected', 'Отклонено'],
-            ] as const
-          ).map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              className={clsx(
-                'rounded-md px-3 py-1 text-xs font-medium duration-150',
-                selectedStatus === value
-                  ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
-                  : 'text-muted-foreground hover:bg-zinc-200 dark:hover:bg-zinc-800',
-              )}
-              onClick={() => setSelectStatus(value)}
-            >
-              {label}
-            </button>
-          ))}
+        <div className="bg-background/90 dark:bg-muted/90 absolute right-0 top-0 z-10 flex w-full items-center justify-between gap-3 border-b border-zinc-300 p-2 px-3 backdrop-blur-sm dark:border-zinc-700">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold">Попытки</p>
+            <p className="text-muted-foreground text-xs">
+              Всего: {submissions.length} · принято: {acceptedCount} · отклонено: {rejectedCount}
+            </p>
+          </div>
+          <div className="flex shrink-0 gap-1">
+            {(
+              [
+                ['all', 'Все'],
+                ['accepted', 'Принято'],
+                ['rejected', 'Отклонено'],
+              ] as const
+            ).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                className={clsx(
+                  'rounded-md px-3 py-1 text-xs font-medium duration-150',
+                  selectedStatus === value
+                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                    : 'text-muted-foreground hover:bg-zinc-200 dark:hover:bg-zinc-800',
+                )}
+                onClick={() => setSelectStatus(value)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
       ) : (
         <NoSubmissions />
       )}
 
-      <ul className="custom-scrollable-element flex h-full flex-col divide-y divide-zinc-200 overflow-y-auto pt-12 dark:divide-zinc-800">
+      <ul className="custom-scrollable-element flex h-full flex-col divide-y divide-zinc-200 overflow-y-auto pt-[64px] dark:divide-zinc-800">
         {filteredSubmissions.map((submission) => {
           return <SubmissionRow key={submission.id} submission={submission} />;
         })}
@@ -70,9 +80,12 @@ function SubmissionRow({ submission }: { submission: Submission }) {
   const execTime = (submission as Submission & { executionTimeMs?: number | null }).executionTimeMs;
   return (
     <li className="cursor-pointer duration-150 hover:bg-neutral-100 dark:hover:bg-zinc-800/60">
-      <Link className="flex items-center justify-between gap-3 px-4 py-2.5" href={`/challenge/${slug}/submissions/${submission.id}`}>
+      <Link
+        className="flex items-center justify-between gap-3 px-4 py-3"
+        href={`/challenge/${slug}/submissions/${submission.id}`}
+      >
         <div
-          className={clsx('flex items-center gap-1.5 text-sm font-medium', {
+          className={clsx('flex min-w-0 items-center gap-2 text-sm font-medium', {
             'text-emerald-600 dark:text-emerald-400': submission.isSuccessful,
             'text-rose-600 dark:text-rose-400': !submission.isSuccessful,
           })}
@@ -82,7 +95,7 @@ function SubmissionRow({ submission }: { submission: Submission }) {
           ) : (
             <XCircle className="h-4 w-4" />
           )}
-          {submission.isSuccessful ? 'Принято' : 'Отклонено'}
+          <span className="truncate">{submission.isSuccessful ? 'Принято' : 'Отклонено'}</span>
         </div>
         <div className="text-muted-foreground flex items-center gap-3">
           {submission.isSuccessful && execTime != null ? (
@@ -99,4 +112,3 @@ function SubmissionRow({ submission }: { submission: Submission }) {
     </li>
   );
 }
-

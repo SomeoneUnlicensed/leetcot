@@ -48,13 +48,13 @@ export function EditForm(props: {
     try {
       await updateProfile(data);
       toast({
-        title: 'Profile updated',
-        description: 'Your profile has been successfully updated !',
+        title: 'Профиль обновлен',
+        description: 'Изменения успешно сохранены.',
         variant: 'success',
       });
     } catch {
       toast({
-        title: 'Could not update profile',
+        title: 'Не удалось обновить профиль',
         variant: 'destructive',
       });
     }
@@ -71,12 +71,12 @@ export function EditForm(props: {
           name="bio"
           render={({ field }) => (
             <FormItem className="flex max-w-sm flex-col lg:max-w-full lg:flex-row lg:items-center lg:justify-between ">
-              <FormLabel className="w-32">Bio</FormLabel>
+              <FormLabel className="w-32">О себе</FormLabel>
               <div className="max-w-sm grow space-y-2 lg:mx-auto lg:max-w-md">
                 <FormControl>
-                  <Textarea {...field} placeholder="Tell others a bit about yourself..." rows={4} />
+                  <Textarea {...field} placeholder="Расскажите немного о себе" rows={4} />
                 </FormControl>
-                <FormDescription>{form.getValues().bio.length} / 256 characters</FormDescription>
+                <FormDescription>{form.getValues().bio.length} / 256 символов</FormDescription>
                 <FormMessage />
               </div>
             </FormItem>
@@ -85,7 +85,7 @@ export function EditForm(props: {
 
         <Separator />
         <FormItem className="flex max-w-sm flex-col lg:max-w-full lg:flex-row lg:items-center lg:justify-between ">
-          <FormLabel className="w-32">User Links</FormLabel>
+          <FormLabel className="w-32">Ссылки</FormLabel>
           <div className="max-w-sm grow space-y-2 lg:mx-auto lg:max-w-md">
             {userLinksField.fields.map((field, i) => (
               <div key={i}>
@@ -103,9 +103,9 @@ export function EditForm(props: {
         </FormItem>
         <div className="space-x-2 self-end">
           <Button variant="outline">
-            <Link href=".">Cancel</Link>
+            <Link href=".">Отмена</Link>
           </Button>
-          <Button type="submit">Update Profile</Button>
+          <Button type="submit">Сохранить профиль</Button>
         </div>
       </form>
     </Form>

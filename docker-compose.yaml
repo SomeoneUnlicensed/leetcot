@@ -48,6 +48,18 @@ services:
       redis:
         condition: service_started
 
+  runtime-images:
+    image: docker:27-cli
+    restart: 'no'
+    command:
+      - sh
+      - -c
+      - |
+        docker pull python:3.11-alpine
+        docker pull node:20-alpine
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   code-runner:
     image: ${LEETCOT_IMAGE:-ghcr.io/someoneunlicensed/leetcot:latest}
     restart: always
@@ -67,6 +79,8 @@ services:
       - CODE_RUNNER_CPU_LIMIT=${CODE_RUNNER_CPU_LIMIT:-0.5}
       - CODE_RUNNER_MAX_OUTPUT_BYTES=${CODE_RUNNER_MAX_OUTPUT_BYTES:-16000}
     depends_on:
+      runtime-images:
+        condition: service_completed_successfully
       redis:
         condition: service_started
 

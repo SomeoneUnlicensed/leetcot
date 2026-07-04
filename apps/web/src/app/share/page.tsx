@@ -5,7 +5,7 @@ import { auth } from '~/server/auth';
 import { notFound } from 'next/navigation';
 
 export const metadata = {
-  title: 'URL Shortener | ЛитКот - Admin',
+  title: 'Короткие ссылки | ЛитКот - Admin',
   description: '.',
 };
 
@@ -18,7 +18,7 @@ export default async function Home() {
     <main className="relative flex w-full items-center justify-center">
       <div className="w-full max-w-xl rounded-xl border p-6 shadow">
         <h1 className="text-primary rounded-2xl p-1 text-center text-lg font-bold md:text-xl">
-          ЛитКот URL Shortener
+          Короткие ссылки ЛитКот
         </h1>
         <GreetUser />
         <URLShortenerForm />

@@ -1,5 +1,12 @@
 export const courses = [
   {
+    name: 'Python Start: первые задачи',
+    slug: 'python-start',
+    description:
+      'Плавный вход в Python через небольшие задачи про списки, строки, словари и простые алгоритмические паттерны.',
+    trackSlugs: ['python-start-cats'],
+  },
+  {
     name: 'Щелкаем алгоритмы как рыбку',
     slug: 'python-algo-fish',
     description:

@@ -23,7 +23,7 @@ export default async function EditPage(props: { params: Promise<{ username: stri
   });
   return (
     <div className="container mx-auto pt-8 lg:pt-10">
-      <h1 className="text-muted-foreground text-lg">Update Profile</h1>
+      <h1 className="text-muted-foreground text-lg">Редактировать профиль</h1>
       <div className="mt-4">
         <EditForm className="space-y-6" user={user} />
       </div>

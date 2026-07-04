@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-islands",
+  "label": "Острова на карте",
+  "description": "Посчитай группы единиц в сетке.",
+  "difficulty": "medium",
+  "language": "python",
+  "author": "ЛитКот"
+}

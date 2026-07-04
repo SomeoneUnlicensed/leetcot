@@ -29,9 +29,9 @@ export function SolutionDeleteDialog({
     try {
       await deleteSolution(solution);
       toast({
-        title: 'Solution Deleted',
+        title: 'Решение удалено',
         variant: 'success',
-        description: 'The solution was successfully deleted.',
+        description: 'Решение успешно удалено.',
       });
       // invalidate cache on deleting a solution successfully
       queryClient.invalidateQueries({
@@ -43,9 +43,9 @@ export function SolutionDeleteDialog({
       router.back();
     } catch {
       toast({
-        title: 'Uh Oh!',
+        title: 'Что-то пошло не так',
         variant: 'destructive',
-        description: 'An error occurred while trying to delete the comment.',
+        description: 'Не удалось удалить решение.',
       });
     }
   }
@@ -54,11 +54,11 @@ export function SolutionDeleteDialog({
     <Dialog onOpenChange={() => setIsOpen(!isOpen)} open={isOpen}>
       <DialogTrigger {...props}>{children}</DialogTrigger>
       <DialogContent className="flex flex-col space-y-2">
-        <TypographyLarge>Delete solution</TypographyLarge>
-        <TypographyP>Are you sure you want to delete this solution?</TypographyP>
+        <TypographyLarge>Удалить решение</TypographyLarge>
+        <TypographyP>Вы уверены, что хотите удалить это решение?</TypographyP>
         <div className="flex flex-row gap-2">
           <Button onClick={() => setIsOpen(!isOpen)} variant="outline">
-            Cancel
+            Отмена
           </Button>
           <Button
             onClick={() => {
@@ -66,7 +66,7 @@ export function SolutionDeleteDialog({
             }}
             variant="destructive"
           >
-            Delete
+            Удалить
           </Button>
         </div>
       </DialogContent>

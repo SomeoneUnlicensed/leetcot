@@ -76,16 +76,16 @@ export function ReportDialog({
   let desc = '';
   switch (reportType) {
     case 'CHALLENGE':
-      desc = 'Report Challenge';
+      desc = 'Пожаловаться на задачу';
       break;
     case 'COMMENT':
-      desc = 'Report Comment';
+      desc = 'Пожаловаться на комментарий';
       break;
     case 'USER':
-      desc = 'Report User';
+      desc = 'Пожаловаться на пользователя';
       break;
     case 'SOLUTION':
-      desc = 'Report Solution';
+      desc = 'Пожаловаться на решение';
       break;
   }
 
@@ -151,22 +151,22 @@ export function ReportDialog({
             switch (value) {
               case 'already_exists':
                 toast({
-                  title: 'Already reported',
-                  description: <p>You have already made a report with this information.</p>,
+                  title: 'Жалоба уже отправлена',
+                  description: <p>Вы уже отправляли жалобу с такими данными.</p>,
                 });
                 break;
               case 'created':
                 toast({
-                  title: 'Created',
+                  title: 'Жалоба отправлена',
                   variant: 'success',
-                  description: <p>A report has been made.</p>,
+                  description: <p>Спасибо, мы проверим это.</p>,
                 });
                 break;
               case 'not_logged_in':
                 toast({
-                  title: 'Not Logged In',
+                  title: 'Нужен вход',
                   variant: 'destructive',
-                  description: <p>You must be logged in to make a report.</p>,
+                  description: <p>Войдите в аккаунт, чтобы отправить жалобу.</p>,
                 });
             }
             setShow(false);
@@ -174,10 +174,10 @@ export function ReportDialog({
         >
           <DialogHeader>
             <DialogTitle>{desc}</DialogTitle>
-            <DialogDescription>Please be as thorough in your report as you can.</DialogDescription>
+            <DialogDescription>Опишите проблему как можно подробнее.</DialogDescription>
           </DialogHeader>
           <div className="mt-4 flex flex-col gap-2">
-            <Text intent="leading">Please select all that apply:</Text>
+            <Text intent="leading">Выберите все подходящие причины:</Text>
             <FormField
               control={control}
               name="derogatory"
@@ -189,7 +189,7 @@ export function ReportDialog({
                       {...register('derogatory')}
                       onCheckedChange={(e) => setValue('derogatory', e as boolean)}
                     />
-                    <label htmlFor="derogatory">Derogatory</label>
+                    <label htmlFor="derogatory">Оскорбительный тон</label>
                   </div>
                 </FormItem>
               )}
@@ -205,7 +205,7 @@ export function ReportDialog({
                       {...register('bullying')}
                       onCheckedChange={(e) => setValue('bullying', e as boolean)}
                     />
-                    <label htmlFor="bullying">Bullying</label>
+                    <label htmlFor="bullying">Травля</label>
                   </div>
                 </FormItem>
               )}
@@ -221,7 +221,7 @@ export function ReportDialog({
                       {...register('hateSpeech')}
                       onCheckedChange={(e) => setValue('hateSpeech', e as boolean)}
                     />
-                    <label htmlFor="hateSpeech">Hate speech</label>
+                    <label htmlFor="hateSpeech">Ненавистнические высказывания</label>
                   </div>
                 </FormItem>
               )}
@@ -253,7 +253,7 @@ export function ReportDialog({
                       {...register('threat')}
                       onCheckedChange={(e) => setValue('threat', e as boolean)}
                     />
-                    <label htmlFor="threat">Threat of violence</label>
+                    <label htmlFor="threat">Угроза насилия</label>
                   </div>
                 </FormItem>
               )}
@@ -270,7 +270,7 @@ export function ReportDialog({
                         {...register('unclear')}
                         onCheckedChange={(e) => setValue('unclear', e as boolean)}
                       />
-                      <label htmlFor="unclear">Unclear</label>
+                      <label htmlFor="unclear">Непонятное условие</label>
                     </div>
                   </FormItem>
                 )}
@@ -283,10 +283,10 @@ export function ReportDialog({
               render={() => (
                 <FormItem className="my-3">
                   <div className="flex flex-col gap-3">
-                    <div>Other information</div>
+                    <div>Дополнительная информация</div>
                     <Textarea
                       {...register('comments')}
-                      placeholder="Any extra information to help our moderator team when reviewing this report."
+                      placeholder="Что еще стоит знать модераторам при проверке жалобы?"
                     />
                   </div>
                 </FormItem>
@@ -302,9 +302,9 @@ export function ReportDialog({
               }}
               variant="outline"
             >
-              Cancel
+              Отмена
             </Button>
-            <Button type="submit">Send report</Button>
+            <Button type="submit">Отправить жалобу</Button>
           </DialogFooter>
         </form>
       </DialogContent>

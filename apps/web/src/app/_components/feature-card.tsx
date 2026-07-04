@@ -470,6 +470,48 @@ export function CuratedTracksCard(props: CardProps) {
   );
 }
 
+const availableStacks = ['Python', 'SQL'];
+const upcomingStacks = ['C++', 'Rust', 'Ruby', 'TypeScript', 'и другие'];
+
+export function LanguageStackCard(props: CardProps) {
+  return (
+    <FeatureCard {...props}>
+      <div className="mt-6 flex flex-col gap-4">
+        <div>
+          <p className="mb-2 text-xs font-bold uppercase tracking-wide text-zinc-500">
+            Уже доступно
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {availableStacks.map((stack) => (
+              <span
+                key={stack}
+                className="rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-600 px-3 py-1 text-xs font-bold text-white"
+              >
+                {stack}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p className="mb-2 text-xs font-bold uppercase tracking-wide text-zinc-500">
+            Скоро
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {upcomingStacks.map((stack) => (
+              <span
+                key={stack}
+                className="rounded-full border border-zinc-300 px-3 py-1 text-xs font-semibold text-zinc-600 dark:border-zinc-700 dark:text-zinc-400"
+              >
+                {stack}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </FeatureCard>
+  );
+}
+
 // note: should always be a subset of Challenge Type
 interface MockTrackChallenge {
   difficulty: Difficulty;

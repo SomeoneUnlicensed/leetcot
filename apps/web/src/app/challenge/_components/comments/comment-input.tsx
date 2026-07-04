@@ -95,8 +95,8 @@ export const CommentInput = forwardRef<CommentInputRefProps, CommentInputProps>(
                       }}
                       placeholder={
                         (placeholder ?? !session?.user)
-                          ? 'You need to be logged in to comment.'
-                          : 'Enter your comment here.'
+                          ? 'Войдите в аккаунт, чтобы комментировать.'
+                          : 'Напишите комментарий'
                       }
                       forwardedref={textAreaRef}
                       value={value}
@@ -121,11 +121,11 @@ export const CommentInput = forwardRef<CommentInputRefProps, CommentInputProps>(
               onClick={() => setCommentMode(commentMode === 'editor' ? 'preview' : 'editor')}
               variant={mode === 'create' ? 'secondary' : 'ghost'}
             >
-              {commentMode === 'editor' ? 'Preview' : 'Edit'}
+              {commentMode === 'editor' ? 'Предпросмотр' : 'Редактировать'}
             </Button>
             {mode !== 'create' && (
               <Button className="h-8" onClick={() => onCancel?.()} variant="secondary">
-                Cancel
+                Отмена
               </Button>
             )}
             <Button
@@ -133,7 +133,7 @@ export const CommentInput = forwardRef<CommentInputRefProps, CommentInputProps>(
               disabled={value.length === 0 || isSubmitting || !formValid}
               onClick={form.handleSubmit(submitComment)}
             >
-              {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Comment'}
+              {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Отправить'}
             </Button>
           </div>
         </div>

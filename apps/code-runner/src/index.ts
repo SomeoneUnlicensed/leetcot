@@ -26,6 +26,9 @@ function getPositiveInteger(value: string | undefined, fallback: number) {
 const CONCURRENCY = getPositiveInteger(process.env.CODE_RUNNER_CONCURRENCY, 2);
 const TIMEOUT_MS = getPositiveInteger(process.env.CODE_RUNNER_TIMEOUT_MS, 10_000);
 const MAX_OUTPUT_BYTES = getPositiveInteger(process.env.CODE_RUNNER_MAX_OUTPUT_BYTES, 16_000);
+const RUNTIME_IMAGE_ERROR =
+  'Песочница не готова: на сервере не найден Docker-образ для запуска кода. ' +
+  'Администратору нужно заранее выполнить: docker pull python:3.11-alpine';
 
 interface DockerRunResult {
   exitCode: number | null;
@@ -313,6 +316,19 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : 'Unknown runner error';
 }
 
+function isMissingRuntimeImageError(output = '') {
+  return (
+    output.includes('No such image') ||
+    output.includes('Unable to find image') ||
+    output.includes('pull access denied') ||
+    output.includes('not found: manifest unknown')
+  );
+}
+
+async function ensureRuntimeImage(image: string) {
+  await execAsync(`docker image inspect "${image}"`);
+}
+
 async function forceRemoveContainer(containerName: string) {
   await execAsync(`docker rm -f "${containerName}"`).catch(() => undefined);
 }
@@ -341,7 +357,7 @@ async function warmRuntimeImages() {
 
   await Promise.all(
     images.map(async (image) => {
-      await execAsync(`docker pull "${image}"`);
+      await execAsync(`docker pull "${image}"`, { timeout: 120_000 });
       console.log(`Runtime image ready: ${image}`);
     }),
   );
@@ -413,6 +429,15 @@ async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
   await mkdir(tmpDir, { recursive: true });
 
   try {
+    try {
+      await ensureRuntimeImage(runtime.image);
+    } catch {
+      return {
+        error: RUNTIME_IMAGE_ERROR,
+        success: false,
+      };
+    }
+
     const pythonOracle =
       job.payload.language === 'python' ? parsePythonOracle(job.payload.tests) : null;
 
@@ -473,6 +498,14 @@ async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
       }
 
       if (result.exitCode !== 0) {
+        if (isMissingRuntimeImageError(result.stderr)) {
+          return {
+            error: RUNTIME_IMAGE_ERROR,
+            output: trimOutput(result.stdout),
+            success: false,
+          };
+        }
+
         return {
           error: trimOutput(result.stderr || `Процесс завершился с кодом ${result.exitCode}`),
           output: trimOutput(result.stdout),
@@ -497,6 +530,14 @@ async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
       if (err.killed || err.message?.includes('SIGTERM') || err.message?.includes('ETIMEDOUT')) {
         return {
           error: `ТАЙМАУТ: Код выполнялся дольше ${Math.ceil(TIMEOUT_MS / 1000)} секунд. Возможно бесконечный цикл или очень медленное выполнение.`,
+          output: trimOutput(err.stdout),
+          success: false,
+        };
+      }
+
+      if (isMissingRuntimeImageError(`${err.stderr || ''}\n${err.message || ''}`)) {
+        return {
+          error: RUNTIME_IMAGE_ERROR,
           output: trimOutput(err.stdout),
           success: false,
         };

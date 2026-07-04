@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-even-catch",
+  "label": "Четный улов",
+  "description": "Посчитай, сколько чисел в списке четные.",
+  "difficulty": "beginner",
+  "language": "python",
+  "author": "ЛитКот"
+}

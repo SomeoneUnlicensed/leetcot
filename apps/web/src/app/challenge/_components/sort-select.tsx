@@ -24,7 +24,7 @@ export function SortSelect({ currentSortKey, totalSortKeys, onValueChange }: Sor
     <div className="flex items-center gap-2 px-3 py-2">
       <Select value={currentSortKey.value} defaultValue="newest" onValueChange={onValueChange}>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Sort Key" />
+          <SelectValue placeholder="Сортировка" />
         </SelectTrigger>
         <SelectContent>
           {totalSortKeys.map((sortKey, index) => (

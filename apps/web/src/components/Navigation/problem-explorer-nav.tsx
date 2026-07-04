@@ -35,7 +35,7 @@ export function ProblemExplorerNav() {
   }, [currentIndex, track]);
 
   if (!currentChallenge) {
-    return <div>Loading...</div>;
+    return <div>Загрузка...</div>;
   }
 
   return (
@@ -44,9 +44,9 @@ export function ProblemExplorerNav() {
         <span className="hover:text-foreground text-foreground/80 mr-1 cursor-pointer items-center transition-colors">
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
-              <span>Explorer</span>
+              <span>Задачи</span>
             </TooltipTrigger>
-            <TooltipContent sideOffset={10}>Expand panel</TooltipContent>
+            <TooltipContent sideOffset={10}>Открыть панель</TooltipContent>
           </Tooltip>
         </span>
       </ExploreDrawer>
@@ -67,7 +67,7 @@ export function ProblemExplorerNav() {
                 </span>
               )}
             </TooltipTrigger>
-            <TooltipContent sideOffset={5}>Previous</TooltipContent>
+            <TooltipContent sideOffset={5}>Предыдущая</TooltipContent>
           </Tooltip>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
@@ -84,7 +84,7 @@ export function ProblemExplorerNav() {
                 </span>
               )}
             </TooltipTrigger>
-            <TooltipContent sideOffset={5}>Next</TooltipContent>
+            <TooltipContent sideOffset={5}>Следующая</TooltipContent>
           </Tooltip>
         </>
       ) : null}

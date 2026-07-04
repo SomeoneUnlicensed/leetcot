@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-purr-window",
+  "label": "Самое длинное мурчание",
+  "description": "Найди длину самой длинной подстроки без повторов.",
+  "difficulty": "medium",
+  "language": "python",
+  "author": "ЛитКот"
+}

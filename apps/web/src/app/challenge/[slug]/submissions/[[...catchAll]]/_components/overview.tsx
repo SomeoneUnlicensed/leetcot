@@ -1,6 +1,6 @@
 import { Button } from '@repo/ui/components/button';
 import { Markdown } from '@repo/ui/components/markdown';
-import { CheckCircle2, Plus, Share, Twitter, X, XCircle } from '@repo/ui/icons';
+import { CheckCircle2, Plus, Share, X, XCircle } from '@repo/ui/icons';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
@@ -50,14 +50,10 @@ export function SubmissionOverview({ submissionId, userId }: SubmissionOverviewP
 
   const track = searchParams.get('slug');
 
-  const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-    `I've completed ${submission?.challenge.name} on ЛитКот!`,
-  )}&url=https://leetcot.ru/challenge/${slug}`;
-
   if (!submission) {
     return (
       <div className="flex h-full items-center justify-center text-neutral-500 dark:text-zinc-400">
-        <p>Submission does not exist</p>
+        <p>Попытка не найдена</p>
       </div>
     );
   }
@@ -90,7 +86,7 @@ export function SubmissionOverview({ submissionId, userId }: SubmissionOverviewP
               <span className="text-sm text-neutral-500">
                 Отправлено {getRelativeTimeStrict(submission.createdAt)}
               </span>
-              {submission.isSuccessful && submission.executionTimeMs != null && (
+              {submission.isSuccessful && submission.executionTimeMs != null ? (
                 <span className="flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -110,7 +106,7 @@ export function SubmissionOverview({ submissionId, userId }: SubmissionOverviewP
                     ? `${(submission.executionTimeMs / 1000).toFixed(2)} с`
                     : `${submission.executionTimeMs} мс`}
                 </span>
-              )}
+              ) : null}
             </div>
           </div>
           <div>
@@ -161,16 +157,6 @@ export function SubmissionOverview({ submissionId, userId }: SubmissionOverviewP
               </div>
             </DialogContent>
           </Dialog>
-          <Button
-            asChild
-            className="flex items-center gap-2 rounded-xl border-2 px-4 py-2 dark:text-white"
-            variant="outline"
-          >
-            <a target="_blank" rel="noreferrer" className="gap-1 md:inline-flex" href={tweet}>
-              <Twitter className="h-4 w-4" />
-              Поделиться в Twitter
-            </a>
-          </Button>
         </div>
       </div>
     </>

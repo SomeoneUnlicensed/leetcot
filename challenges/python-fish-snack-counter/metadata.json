@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-snack-counter",
+  "label": "Счетчик лакомств",
+  "description": "Посчитай, сколько раз встречается каждое лакомство.",
+  "difficulty": "easy",
+  "language": "python",
+  "author": "ЛитКот"
+}

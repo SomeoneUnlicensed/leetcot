@@ -97,9 +97,9 @@ export function useComments(props: UseCommentsProps) {
         toast(commentErrors.unauthorized);
       } else {
         toast({
-          title: 'Comment Deleted',
+          title: 'Комментарий удален',
           variant: 'success',
-          description: 'The comment was successfully deleted.',
+          description: 'Комментарий успешно удален.',
         });
       }
       const newPage =
@@ -302,9 +302,9 @@ export function useCommentsReplies({
         toast(commentErrors.unauthorized);
       } else {
         toast({
-          title: 'Comment Deleted',
+          title: 'Комментарий удален',
           variant: 'success',
-          description: 'The comment was successfully deleted.',
+          description: 'Комментарий успешно удален.',
         });
       }
       //Invalidate the root query to refetch the comments

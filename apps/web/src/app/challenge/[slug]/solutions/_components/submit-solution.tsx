@@ -13,7 +13,7 @@ export function SubmitSolution({ disabled, setView }: SubmitSolutionProps) {
       disabled={disabled}
       onClick={() => setView('editor')}
     >
-      <Plus className="mr-2 h-4 w-4" /> Solution
+      <Plus className="mr-2 h-4 w-4" /> Решение
     </Button>
   );
 }
