@@ -14,19 +14,19 @@ import type { LucideIcon } from '@repo/ui/icons';
 const practiceSteps = [
   {
     title: 'Выберите задачу без охоты вслепую',
-    text: 'Подборки и треки помогают не прыгать случайно между темами, как кот за лазерной точкой.',
+    text: 'Треки ведут по следу: от простых задач к Python, SQL, алгоритмам и структурам данных.',
     className: 'border-pink-400/30 bg-zinc-950',
     accent: 'text-pink-300',
   },
   {
     title: 'Решите и посмотрите чужой след',
-    text: 'После решения можно открыть обсуждения и сравнить подходы других участников.',
+    text: 'После решения можно открыть обсуждения и увидеть, какими тропами прошли другие.',
     className: 'border-fuchsia-400/30 bg-zinc-950',
     accent: 'text-fuchsia-300',
   },
   {
-    title: 'Соберите прогресс по лапкам',
-    text: 'Профиль, бейджи и пройденные треки показывают, какие темы уже закреплены.',
+    title: 'Следите за прогрессом',
+    text: 'Профиль показывает решенные задачи, курсы и темы, к которым ЛитКот мягко вернет позже.',
     className: 'border-cyan-400/25 bg-zinc-950',
     accent: 'text-cyan-300',
   },
@@ -39,7 +39,7 @@ const audiences: {
 }[] = [
   {
     title: 'Самостоятельная практика',
-    text: 'Короткие задачи, курсы и треки для регулярного роста без перегруза и лишней суеты.',
+    text: 'Короткие задачи, курсы и треки для регулярного роста: по чуть-чуть, но каждый день.',
     icon: Target,
   },
   {
@@ -49,7 +49,7 @@ const audiences: {
   },
   {
     title: 'Сообщество',
-    text: 'Профили, решения и обсуждения помогают учиться не в одиночку: рядом всегда есть чей-то след.',
+    text: 'Профили, решения и обсуждения помогают учиться не в одиночку: рядом всегда есть чей-то умный след.',
     icon: Users,
   },
 ];
@@ -92,7 +92,7 @@ export function Features() {
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <div>
             <p className="text-sm font-black uppercase tracking-widest text-[#9fd8d2]">
-              кошачий маршрут
+              учебный маршрут
             </p>
             <h2 className="mt-4 max-w-2xl text-4xl font-black leading-none tracking-normal sm:text-6xl">
               Меньше случайных прыжков, больше{' '}
@@ -102,8 +102,8 @@ export function Features() {
             </h2>
           </div>
           <p className="max-w-2xl text-xl font-bold leading-8 text-zinc-300">
-            ЛитКот собирает практику в последовательность: выбрали тему, решили несколько задач,
-            увидели результат и спокойно пошли дальше.
+            ЛитКот собирает практику в спокойный маршрут: выбрали тему, решили несколько задач,
+            увидели результат и пошли дальше без суеты.
           </p>
         </div>
 
@@ -122,7 +122,7 @@ export function Features() {
         <div className="container grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
           <div>
             <p className="font-mono text-sm font-black uppercase tracking-widest text-pink-400">
-              языки в миске
+              языки платформы
             </p>
             <h2 className="mt-4 text-4xl font-black leading-none tracking-normal text-white sm:text-5xl">
               Платформа растёт за пределы одного языка
@@ -147,9 +147,7 @@ export function Features() {
       <div className="container py-24 sm:py-32">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
-            <p className="text-sm font-black uppercase tracking-widest text-[#f3c4a8]">
-              кому мурчит
-            </p>
+            <p className="text-sm font-black uppercase tracking-widest text-[#f3c4a8]">для кого</p>
             <div className="mt-6 grid gap-4">
               {audiences.map((audience) => (
                 <AudienceCard key={audience.title} {...audience} />
@@ -173,9 +171,9 @@ export function Features() {
                 </div>
               ))}
             </div>
-            <p className="mt-8 text-lg font-bold leading-7">
-              Коты здесь не декорация ради декорации: они задают тон, помогают запомнить платформу и
-              не мешают решать задачи.
+            <p className="mt-8 text-lg font-bold leading-7 text-zinc-300">
+              Редактор кода, автопроверка, треки, курсы и обсуждения работают как одна система:
+              задача открывается, решение проверяется, прогресс сохраняется, а кот отмечает путь.
             </p>
           </div>
         </div>

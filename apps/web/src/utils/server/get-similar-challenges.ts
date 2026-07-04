@@ -1,7 +1,7 @@
 'use server';
 import { auth } from '~/server/auth';
-import { prisma } from '@repo/db';
 import type { Challenge } from '@repo/db/types';
+import { getRecommendedChallenges } from './recommend-challenges';
 
 /**
  * Get similar **unsolved** challenges for the given challengeId
@@ -17,58 +17,11 @@ export async function getSimilarChallenges(
 ): Promise<Challenge[]> {
   try {
     const session = await auth();
-    const { difficulty } = await prisma.challenge.findFirstOrThrow({
-      where: {
-        id: challengeId,
-      },
+    return await getRecommendedChallenges({
+      currentChallengeId: challengeId,
+      userId: session?.user?.id,
+      maxChallenges,
     });
-
-    if (!session) {
-      const challengesByDifficulty = await prisma.challenge.findMany({
-        where: {
-          difficulty,
-          id: {
-            notIn: [challengeId],
-          },
-        },
-        take: maxChallenges,
-      });
-      return challengesByDifficulty;
-    }
-
-    const solvedSolutions = await prisma.submission.findMany({
-      where: {
-        userId: session?.user?.id,
-        isSuccessful: true,
-      },
-      select: {
-        challengeId: true,
-      },
-    });
-
-    const challengesByDifficulty = await prisma.challenge.findMany({
-      where: {
-        difficulty,
-        id: {
-          notIn: [...solvedSolutions.flatMap((solution) => solution.challengeId), challengeId],
-        },
-      },
-      take: maxChallenges,
-    });
-
-    if (!challengesByDifficulty.length) {
-      const firstUnsolved = await prisma.challenge.findMany({
-        where: {
-          id: {
-            notIn: [...solvedSolutions.flatMap((solution) => solution.challengeId), challengeId],
-          },
-        },
-        take: maxChallenges,
-      });
-      return firstUnsolved;
-    }
-
-    return challengesByDifficulty;
   } catch (e) {
     console.error(e);
     return [];

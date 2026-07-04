@@ -63,7 +63,7 @@ export function ProblemExplorerTrackNav({ isCollapsed, className }: ProblemExplo
           <Swords className="h-4 w-4 shrink-0" />
           {Boolean(!isCollapsed) && (
             <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-              {previous?.slug || next?.slug ? title : 'Problem Explorer'}
+              {previous?.slug || next?.slug ? title : 'Список задач'}
             </span>
           )}
         </Button>
@@ -85,7 +85,7 @@ export function ProblemExplorerTrackNav({ isCollapsed, className }: ProblemExplo
                 </span>
               )}
             </TooltipTrigger>
-            <TooltipContent sideOffset={5}>Previous</TooltipContent>
+            <TooltipContent sideOffset={5}>Предыдущая</TooltipContent>
           </Tooltip>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
@@ -102,7 +102,7 @@ export function ProblemExplorerTrackNav({ isCollapsed, className }: ProblemExplo
                 </span>
               )}
             </TooltipTrigger>
-            <TooltipContent sideOffset={5}>Next</TooltipContent>
+            <TooltipContent sideOffset={5}>Следующая</TooltipContent>
           </Tooltip>
         </>
       ) : null}

@@ -35,7 +35,7 @@ export async function updateSolution({ id, description, slug, title }: SolutionU
   });
 
   if (!isAuthor(session, solution.userId) && !isAdminOrModerator(session)) {
-    throw new Error('Not authorized to edit this solution.');
+    throw new Error('Нет прав на редактирование этого решения.');
   }
 
   await prisma.sharedSolution.update({
@@ -51,7 +51,7 @@ export async function updateSolution({ id, description, slug, title }: SolutionU
 
 export async function postSolution({ challengeId, description, slug, title, userId }: Args) {
   const session = await auth();
-  if (!session) throw new Error('You must be logged in to submit a solution');
+  if (!session) throw new Error('Войдите в аккаунт, чтобы отправить решение.');
 
   await prisma.sharedSolution.create({
     data: {
@@ -74,7 +74,7 @@ export async function deleteSolution(solutionToDelete: ChallengeSolution) {
   });
 
   if (!isAuthor(session, solution.userId) && !isAdminOrModerator(session)) {
-    throw new Error('Not authorized to delete this solution.');
+    throw new Error('Нет прав на удаление этого решения.');
   }
 
   await prisma.sharedSolution.delete({
@@ -87,8 +87,7 @@ export async function deleteSolution(solutionToDelete: ChallengeSolution) {
 export async function pinOrUnpinSolution(id: number, isPinned: boolean, slug: string) {
   const session = await auth();
 
-  if (!isAdminOrModerator(session))
-    throw new Error('You are not authorized to pin/unpin solutions');
+  if (!isAdminOrModerator(session)) throw new Error('Нет прав на закрепление решений.');
 
   await prisma.sharedSolution.update({
     where: { id },

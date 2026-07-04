@@ -49,7 +49,7 @@ export function SolutionDetails({ solution }: SolutionDetailsProps) {
       await navigator.clipboard.writeText(url);
       toast({
         variant: 'success',
-        description: 'Link To Solution Copied!',
+        description: 'Ссылка на решение скопирована.',
       });
     }
   };
@@ -74,7 +74,7 @@ export function SolutionDetails({ solution }: SolutionDetailsProps) {
                     items={[
                       {
                         key: 'report',
-                        label: 'Report',
+                        label: 'Пожаловаться',
                         icon: Flag,
                       },
                     ]}
@@ -127,7 +127,7 @@ export function SolutionDetails({ solution }: SolutionDetailsProps) {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Share</p>
+                  <p>Поделиться</p>
                 </TooltipContent>
               </Tooltip>
               {showPin ? (
@@ -159,7 +159,7 @@ export function SolutionDetails({ solution }: SolutionDetailsProps) {
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Edit</p>
+                      <p>Редактировать</p>
                     </TooltipContent>
                   </Tooltip>
                   <SolutionDeleteDialog solution={solution} slug={slug}>
@@ -170,7 +170,7 @@ export function SolutionDetails({ solution }: SolutionDetailsProps) {
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Delete</p>
+                        <p>Удалить</p>
                       </TooltipContent>
                     </Tooltip>
                   </SolutionDeleteDialog>

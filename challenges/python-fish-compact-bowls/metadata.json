@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-compact-bowls",
+  "label": "Пустые миски в конец",
+  "description": "Перенеси нули в конец, сохранив порядок остальных чисел.",
+  "difficulty": "easy",
+  "language": "python",
+  "author": "ЛитКот"
+}

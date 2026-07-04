@@ -1,24 +1,24 @@
 export const sortKeys = [
   {
-    label: 'Newest Comments',
+    label: 'Сначала новые',
     value: 'newest',
     key: 'createdAt',
     order: 'desc',
   },
   {
-    label: 'Oldest Comments',
+    label: 'Сначала старые',
     value: 'oldest',
     key: 'createdAt',
     order: 'asc',
   },
   {
-    label: 'Most Votes',
+    label: 'Больше голосов',
     value: 'votes',
     key: 'vote',
     order: 'desc',
   },
   {
-    label: 'Most Replies',
+    label: 'Больше ответов',
     value: 'replies',
     key: 'replies',
     order: 'desc',
@@ -26,11 +26,14 @@ export const sortKeys = [
 ] as const;
 
 export const commentErrors = {
-  empty: { title: 'Empty Comment', description: 'You cannot post an empty comment.' },
-  unauthorized: { title: 'Unauthorized', description: 'You must be logged in to post a comment.' },
-  unexpected: {
-    title: 'Uh Oh!',
-    description: 'An error occurred while trying to delete the comment.',
+  empty: { title: 'Пустой комментарий', description: 'Нельзя отправить пустой комментарий.' },
+  unauthorized: {
+    title: 'Нужен вход',
+    description: 'Войдите в аккаунт, чтобы оставить комментарий.',
   },
-  invalidId: { title: 'Invalid Comment', description: 'The comment id is invalid.' },
+  unexpected: {
+    title: 'Что-то пошло не так',
+    description: 'Не удалось удалить комментарий.',
+  },
+  invalidId: { title: 'Некорректный комментарий', description: 'ID комментария некорректен.' },
 };

@@ -15,7 +15,7 @@ export async function generateMetadata(props: SolutionPageProps) {
 
   const { challenge } = await getChallengeRouteData(slug, null);
   return buildMetaForDefault({
-    title: `Solutions to ${challenge.name} | ЛитКот`,
+    title: `Решения задачи ${challenge.name} | ЛитКот`,
     description: challenge.shortDescription,
   });
 }

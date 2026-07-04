@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-kitten-scores",
+  "label": "Лучшие оценки котят",
+  "description": "Для каждого котенка оставь только его лучший балл.",
+  "difficulty": "easy",
+  "language": "python",
+  "author": "ЛитКот"
+}

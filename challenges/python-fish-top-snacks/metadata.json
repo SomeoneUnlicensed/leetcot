@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-top-snacks",
+  "label": "Топ лакомств",
+  "description": "Верни k самых частых строк.",
+  "difficulty": "medium",
+  "language": "python",
+  "author": "ЛитКот"
+}

@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-range-summary",
+  "label": "Сжатые диапазоны",
+  "description": "Сверни отсортированные числа в строковые диапазоны.",
+  "difficulty": "medium",
+  "language": "python",
+  "author": "ЛитКот"
+}

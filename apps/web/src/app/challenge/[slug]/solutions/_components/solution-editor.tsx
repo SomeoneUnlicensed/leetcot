@@ -15,14 +15,14 @@ import { useUploadThing } from '~/utils/useUploadthing';
 import { RichMarkdownEditor } from '@repo/ui/components/rich-markdown-editor';
 
 const getDefaultMarkdown = (solution: string) => `
-## Thoughts
-<!-- Any thoughts you might like to share about the problem (within ToS, of course). -->
+## Идея
+<!-- Коротко опишите, что помогло понять задачу. -->
 
-## Approach
-<!-- Provide some details on how you approached this challenge. -->
+## Подход
+<!-- Расскажите, как вы пришли к решению. -->
 
 
-## Code
+## Код
 \`\`\`ts
 ${solution}
 \`\`\`
@@ -30,10 +30,10 @@ ${solution}
 
 const formSchema = z.object({
   title: createNoProfanitySchemaWithValidate((zodString) =>
-    zodString.min(5, 'The title must be longer than 5 characters'),
+    zodString.min(5, 'Название должно быть длиннее 5 символов'),
   ),
   content: createNoProfanitySchemaWithValidate((zodString) =>
-    zodString.min(30, 'Content must be longer than 30 characters'),
+    zodString.min(30, 'Описание должно быть длиннее 30 символов'),
   ),
 });
 
@@ -52,7 +52,7 @@ export function SolutionEditor({ dismiss, challengeId, code }: SolutionEditorPro
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: `${session.data?.user?.name}'s Solution`,
+      title: `Решение ${session.data?.user?.name}`,
       content: getDefaultMarkdown(code ?? ''),
     },
   });
@@ -64,7 +64,7 @@ export function SolutionEditor({ dismiss, challengeId, code }: SolutionEditorPro
         challengeId,
         description: data.content ?? '',
         slug: slug as string,
-        title: data.title ?? `${session.data?.user?.name}'s Solution`,
+        title: data.title ?? `Решение ${session.data?.user?.name}`,
         // TODO: Is this guaranteed to exist, or is userId actually optional?
         // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
         userId: session.data?.user?.id!,
@@ -72,7 +72,7 @@ export function SolutionEditor({ dismiss, challengeId, code }: SolutionEditorPro
 
       toast({
         variant: 'success',
-        title: 'Your solution has been posted!',
+        title: 'Решение опубликовано!',
       });
 
       // invalidate cache on adding a solution successfully
@@ -85,7 +85,7 @@ export function SolutionEditor({ dismiss, challengeId, code }: SolutionEditorPro
     } catch {
       toast({
         variant: 'destructive',
-        title: 'Uh oh! Something went wrong. Please try again.',
+        title: 'Что-то пошло не так. Попробуйте еще раз.',
       });
     } finally {
       dismiss();
@@ -109,7 +109,7 @@ export function SolutionEditor({ dismiss, challengeId, code }: SolutionEditorPro
                     <Input
                       className="rounded-xl border-zinc-300 bg-zinc-100 focus-visible:ring-0 dark:border-zinc-700 dark:bg-zinc-900"
                       {...field}
-                      placeholder="Enter a title for your solution."
+                      placeholder="Введите название решения"
                     />
                   </FormControl>
                   <FormMessage />
@@ -122,14 +122,14 @@ export function SolutionEditor({ dismiss, challengeId, code }: SolutionEditorPro
             onClick={dismiss}
             type="button"
           >
-            Cancel
+            Отмена
           </Button>
           <Button
             className="my-1 h-8 rounded-lg px-3 py-2"
             type="submit"
             disabled={form.formState.isSubmitting}
           >
-            Post
+            Опубликовать
           </Button>
         </div>
         <div className="flex flex-1 flex-col overflow-auto">

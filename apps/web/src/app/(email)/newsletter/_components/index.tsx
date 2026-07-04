@@ -14,18 +14,14 @@ export function Newsletter() {
         <div className="mx-auto flex max-w-[700px] flex-col items-center justify-center gap-8 text-center">
           <h1 className="text-3xl font-bold text-neutral-950 md:text-5xl dark:text-neutral-50">
             <Balancer>
-              Subscribe to be part of the{' '}
+              Подпишитесь на новости{' '}
               <span className="bg-gradient-to-r from-[#3178c6] to-black bg-clip-text font-black text-transparent dark:from-blue-400 dark:to-emerald-400">
                 ЛитКот
-              </span>{' '}
-              community
+              </span>
             </Balancer>
           </h1>
           <p className="leading-8 text-black/50 dark:text-white/50">
-            <Balancer>
-              Interested in the future of the platform? Be the first to get updates on content, new
-              features, and more!
-            </Balancer>
+            <Balancer>Расскажем о новых задачах, функциях платформы и важных обновлениях.</Balancer>
           </p>
           <NewsletterForm />
         </div>

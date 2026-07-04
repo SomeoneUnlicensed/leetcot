@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 type Params = Promise<{ slug: string }>;
 
 export const metadata: Metadata = {
-  title: 'Explore Challenges | ЛитКот',
+  title: 'Задачи | ЛитКот',
 };
 
 // accepts both difficulty & tags as slug.

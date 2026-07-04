@@ -6,6 +6,7 @@ import {
 } from '../../_components/shared-solution-card';
 import {
   DIFFICULTY_COLOR_MAP,
+  DIFFICULTY_LABEL_MAP,
   FilterBar,
   type FilterOptions,
 } from '../../completed/_components/filter-bar';
@@ -34,24 +35,25 @@ export function SharedSolutions(props: {
       {filteredChallenges.length === 0 ? (
         <Alert className="mx-auto w-fit md:px-8">
           <AlertTitle className="text-center leading-normal">
-            <span>{props.isOwnProfile ? "You haven't" : `@${props.username} hasn't`}</span>{' '}
-            completed any{' '}
+            <span>
+              {props.isOwnProfile
+                ? 'Вы еще не публиковали решения'
+                : `@${props.username} еще не публиковал(а) решения`}
+            </span>{' '}
             <span
               className="lowercase"
               style={{
                 color: `hsl(${DIFFICULTY_COLOR_MAP[filter]})`,
               }}
             >
-              {filter}
+              {DIFFICULTY_LABEL_MAP[filter]}
             </span>{' '}
-            challenges yet
+            задач
           </AlertTitle>
           {props.isOwnProfile ? (
             <AlertDescription className="flex justify-center">
               <Button variant="link" size="sm">
-                <Link href={`/explore/${filter.toLowerCase()}`}>
-                  Get started with your first <span className="lowercase">{filter}</span> challenge
-                </Link>
+                <Link href={`/explore/${filter.toLowerCase()}`}>Начать с первой задачи</Link>
               </Button>
             </AlertDescription>
           ) : null}

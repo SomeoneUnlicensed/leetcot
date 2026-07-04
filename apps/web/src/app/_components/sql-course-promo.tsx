@@ -1,86 +1,68 @@
 import { Button } from '@repo/ui/components/button';
-import { BookOpen, Play } from '@repo/ui/icons';
+import { ArrowUpRight, BookOpen, CheckCircle2, Sparkles } from '@repo/ui/icons';
 import Link from 'next/link';
 
-const terminalRows = [
-  ['name', 'total_fish'],
-  ['Барсик', '16'],
-  ['Васька', '10'],
-  ['Мурзик', '8'],
-];
+const sqlTopics = ['SELECT', 'JOIN', 'GROUP BY', 'INSERT', 'UPDATE', 'DELETE'];
 
 export function SqlCoursePromo() {
   return (
-    <section className="relative overflow-hidden border-y border-zinc-200 bg-zinc-950 py-16 text-white dark:border-zinc-800">
+    <section className="border-b border-zinc-100 bg-white py-16 dark:border-zinc-900 dark:bg-zinc-950">
       <div className="container grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="max-w-2xl">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-sm font-semibold text-emerald-200">
+        <div>
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200">
             <BookOpen className="h-4 w-4" />
             SQL-рыбалка
           </div>
-          <h2 className="text-3xl font-extrabold tracking-tight sm:text-5xl">
-            SQL-рыбалка: кот в таблицах
+          <h2 className="max-w-2xl text-3xl font-black tracking-normal text-zinc-950 sm:text-5xl dark:text-white">
+            SQL учится легче, когда таблицы не пугают
           </h2>
-          <p className="mt-5 max-w-[58ch] text-base leading-7 text-zinc-300 sm:text-lg">
-            Учите SQL на живых задачах: фильтры, сортировка, JOIN, группировки, INSERT, UPDATE и
-            DELETE. SQLite запускается прямо в браузере, поэтому можно экспериментировать без
-            установки и риска для сервера.
+          <p className="mt-5 max-w-[62ch] text-base leading-7 text-zinc-600 sm:text-lg dark:text-zinc-400">
+            Курс ведёт от простых запросов к уверенной работе с данными. Без отдельной установки и
+            без ощущения, что вы попали в чужую админку: только понятные задания, проверка и кошачьи
+            сюжеты.
           </p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <Button
-              asChild
-              className="rounded-xl bg-emerald-500 text-zinc-950 hover:bg-emerald-400"
-            >
+            <Button asChild className="rounded-xl bg-emerald-600 text-white hover:bg-emerald-500">
               <Link href="/courses/sql-cat-tables">
-                <Play className="mr-2 h-4 w-4" />
-                Закинуть первый SELECT
+                Начать SQL-рыбалку
+                <ArrowUpRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
             <Button
               asChild
               variant="outline"
-              className="rounded-xl border-zinc-700 bg-zinc-900/40 text-white hover:bg-zinc-800"
+              className="rounded-xl border-zinc-300 bg-white text-zinc-950 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white dark:hover:bg-zinc-900"
             >
               <Link href="/challenge/sql-cat-intro?slug=sql-cat-fishing">Посмотреть вводную</Link>
             </Button>
           </div>
         </div>
 
-        <div className="rounded-xl border border-zinc-800 bg-black shadow-2xl shadow-emerald-950/40">
-          <div className="flex items-center gap-2 border-b border-zinc-800 bg-zinc-900 px-4 py-3">
-            <span className="h-3 w-3 rounded-full bg-rose-500/80" />
-            <span className="h-3 w-3 rounded-full bg-amber-500/80" />
-            <span className="h-3 w-3 rounded-full bg-emerald-500/80" />
-            <span className="ml-2 text-xs font-medium text-zinc-500">SQLite · browser sandbox</span>
+        <div className="relative">
+          <div className="absolute -right-4 -top-4 hidden rounded-full bg-pink-100 px-4 py-2 text-sm font-black text-pink-700 lg:block dark:bg-pink-950/50 dark:text-pink-200">
+            кот одобряет
           </div>
-          <div className="space-y-4 p-5 font-mono text-sm">
-            <div>
-              <span className="text-emerald-400">sql&gt;</span>{' '}
-              <span className="text-zinc-100">
-                SELECT name, SUM(fish_count) AS total_fish FROM meals GROUP BY name;
-              </span>
+          <div className="rounded-[2rem] border border-zinc-200 bg-[#fbfaf8] p-5 dark:border-zinc-800 dark:bg-black">
+            <div className="grid gap-3 sm:grid-cols-2">
+              {sqlTopics.map((topic) => (
+                <div
+                  key={topic}
+                  className="flex items-center justify-between rounded-2xl bg-white px-4 py-4 shadow-sm ring-1 ring-zinc-100 dark:bg-zinc-950 dark:ring-zinc-800"
+                >
+                  <span className="font-black text-zinc-950 dark:text-white">{topic}</span>
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                </div>
+              ))}
             </div>
-            <div className="overflow-hidden rounded-lg border border-zinc-800">
-              <table className="w-full text-left text-xs">
-                <tbody>
-                  {terminalRows.map((row, rowIndex) => (
-                    <tr key={row.join('-')} className={rowIndex === 0 ? 'bg-zinc-900' : ''}>
-                      {row.map((cell) => (
-                        <td
-                          key={cell}
-                          className="border-r border-zinc-800 px-3 py-2 last:border-r-0"
-                        >
-                          <span className={rowIndex === 0 ? 'text-zinc-400' : 'text-zinc-200'}>
-                            {cell}
-                          </span>
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="mt-4 rounded-2xl bg-zinc-950 p-5 text-white dark:bg-white dark:text-zinc-950">
+              <div className="flex items-start gap-3">
+                <Sparkles className="mt-1 h-5 w-5 shrink-0 text-emerald-400 dark:text-emerald-600" />
+                <p className="text-sm leading-6 text-zinc-300 dark:text-zinc-600">
+                  Каждая тема превращается в небольшую практику: прочитал условие, решил задачу,
+                  получил результат и пошёл дальше по маршруту.
+                </p>
+              </div>
             </div>
-            <div className="text-emerald-300">.check - задача решена, можно идти дальше</div>
           </div>
         </div>
       </div>

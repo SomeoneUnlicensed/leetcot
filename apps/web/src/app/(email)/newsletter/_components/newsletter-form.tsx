@@ -20,8 +20,8 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const newsletterFormSchema = z.object({
-  name: z.string().min(1, 'Please enter your name'),
-  email: z.string().email(),
+  name: z.string().min(1, 'Введите имя'),
+  email: z.string().email('Введите корректный email'),
   intention: z.string(),
 });
 
@@ -67,7 +67,7 @@ export function NewsletterForm() {
                     {...field}
                     autoComplete="name"
                     id="name"
-                    placeholder="Your name"
+                    placeholder="Ваше имя"
                   />
                 </FormControl>
               </FormItem>
@@ -90,7 +90,7 @@ export function NewsletterForm() {
                     {...field}
                     autoComplete="email"
                     id="email"
-                    placeholder="Your email address"
+                    placeholder="Ваш email"
                   />
                 </FormControl>
               </FormItem>
@@ -117,16 +117,16 @@ export function NewsletterForm() {
                   </FormControl>
                   <SelectContent className="rounded-xl bg-white/50 backdrop-blur-md dark:bg-black/50">
                     <SelectItem className="cursor-pointer rounded-lg brightness-150" value="user">
-                      I want to solve type challenges
+                      Хочу решать задачи
                     </SelectItem>
                     <SelectItem
                       className="cursor-pointer rounded-lg brightness-150"
                       value="builder"
                     >
-                      I want to build type challenges
+                      Хочу создавать задачи
                     </SelectItem>
                     <SelectItem className="cursor-pointer rounded-lg brightness-150" value="both">
-                      Both
+                      И то, и другое
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -140,7 +140,7 @@ export function NewsletterForm() {
             type="submit"
           >
             <span className="h-full w-full rounded-[10px] bg-white px-4 py-2 text-center font-bold text-black transition-colors duration-300 group-hover:bg-blue-100 dark:bg-black dark:text-white group-hover:dark:bg-cyan-950">
-              {mutation.status === 'pending' ? 'Submitting...' : 'Subscribe'}
+              {mutation.status === 'pending' ? 'Отправляем...' : 'Подписаться'}
             </span>
           </Button>
         </form>
@@ -151,8 +151,8 @@ export function NewsletterForm() {
           <AlertDestructive
             text={
               mutation.error?.message === 'Member Exists'
-                ? 'You have already subscribed using this email!'
-                : 'Something went wrong, please try again.'
+                ? 'Вы уже подписаны с этим email.'
+                : 'Что-то пошло не так. Попробуйте еще раз.'
             }
           />
         )}
@@ -177,11 +177,7 @@ export function AlertSuccess() {
     <Alert variant="success">
       <MailCheck className="h-4 w-4" />
       <AlertDescription className="pl-7 text-left text-white">
-        Thanks for subscribing! Consider{' '}
-        <a className="underline" href="https://twitter.com/leetcot" rel="noopener" target="_blank">
-          following us on twitter
-        </a>{' '}
-        for general updates.
+        Спасибо за подписку! Будем присылать только важные обновления.
       </AlertDescription>
     </Alert>
   );

@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-dedup-order",
+  "label": "Без повторов",
+  "description": "Убери повторы, сохранив первый порядок элементов.",
+  "difficulty": "easy",
+  "language": "python",
+  "author": "ЛитКот"
+}

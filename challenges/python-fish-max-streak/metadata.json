@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-max-streak",
+  "label": "Самая длинная серия",
+  "description": "Найди максимальную длину подряд идущих одинаковых элементов.",
+  "difficulty": "easy",
+  "language": "python",
+  "author": "ЛитКот"
+}

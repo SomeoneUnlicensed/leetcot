@@ -7,6 +7,12 @@ import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 
+const PYTHON_RUNTIME_IMAGE = 'python:3.11-alpine';
+const NODE_RUNTIME_IMAGE = 'node:20-alpine';
+const RUNTIME_IMAGE_ERROR =
+  'Песочница не готова: на сервере не найден Docker-образ для запуска кода. ' +
+  'Администратору нужно заранее подготовить runtime images.';
+
 // Helper function to execute code with stdin
 function runCodeWithStdin(
   cmd: string,
@@ -24,6 +30,30 @@ function runCodeWithStdin(
       child.stdin.end();
     }
   });
+}
+
+function formatSandboxError(stderr: string, error?: unknown): string | null {
+  const message = error instanceof Error ? error.message : '';
+  const combined = `${stderr}\n${message}`;
+
+  if (
+    combined.includes('No such image') ||
+    combined.includes('Unable to find image') ||
+    combined.includes('pull access denied') ||
+    combined.includes('not found: manifest unknown')
+  ) {
+    return RUNTIME_IMAGE_ERROR;
+  }
+
+  if (
+    message.includes('timed out') ||
+    message.includes('ETIMEDOUT') ||
+    message.includes('SIGTERM')
+  ) {
+    return 'ТАЙМАУТ: Код выполнялся слишком долго. Возможно бесконечный цикл или очень медленное решение.';
+  }
+
+  return stderr || (error ? message : null);
 }
 
 // Wraps the student's code with a harness that calls `functionName` with the JSON-encoded
@@ -358,8 +388,8 @@ export async function PUT(
 
             const normalizedTmpDir = tmpDir.replace(/\\/g, '/');
             const cmd = isPython
-              ? `docker run -i --rm --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code python:3.11-alpine python main.py`
-              : `docker run -i --rm --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code node:20-alpine node main.js`;
+              ? `docker run -i --rm --pull never --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code ${PYTHON_RUNTIME_IMAGE} python main.py`
+              : `docker run -i --rm --pull never --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code ${NODE_RUNTIME_IMAGE} node main.js`;
 
             if (!isFunctionBased) {
               await writeFile(filePath, code);
@@ -386,6 +416,7 @@ export async function PUT(
 
               const actualOutput = stdout ? stdout.trim() : '';
               const expectedOutput = tc.expectedOutput ? tc.expectedOutput.trim() : '';
+              const sandboxError = formatSandboxError(stderr, error);
               const passed =
                 !error &&
                 !stderr &&
@@ -400,7 +431,7 @@ export async function PUT(
                 input: tc.input,
                 expected: expectedOutput,
                 actual: actualOutput,
-                error: stderr || (error ? (error as Error).message : null),
+                error: sandboxError,
                 duration,
                 passed,
               });
@@ -520,8 +551,8 @@ export async function PUT(
 
         const normalizedTmpDir = tmpDir.replace(/\\/g, '/');
         const cmd = isPython
-          ? `docker run -i --rm --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code python:3.11-alpine python main.py`
-          : `docker run -i --rm --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code node:20-alpine node main.js`;
+          ? `docker run -i --rm --pull never --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code ${PYTHON_RUNTIME_IMAGE} python main.py`
+          : `docker run -i --rm --pull never --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code ${NODE_RUNTIME_IMAGE} node main.js`;
 
         if (!isFunctionBased) {
           await writeFile(filePath, code);
@@ -546,6 +577,7 @@ export async function PUT(
 
           const actualOutput = stdout ? stdout.trim() : '';
           const expectedOutput = tc.expectedOutput ? tc.expectedOutput.trim() : '';
+          const sandboxError = formatSandboxError(stderr, error);
           const passed =
             !error &&
             !stderr &&
@@ -558,7 +590,7 @@ export async function PUT(
             input: tc.input,
             expected: expectedOutput,
             actual: actualOutput,
-            error: stderr || (error ? (error as Error).message : null),
+            error: sandboxError,
             duration,
             passed,
           });

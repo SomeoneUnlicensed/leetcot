@@ -8,12 +8,21 @@ import type { Difficulty } from '@repo/db/types';
 export type FilterOptions = Exclude<Difficulty, 'EVENT'> | 'ALL';
 
 export const DIFFICULTY_COLOR_MAP: Record<FilterOptions, string> = {
-  ALL: 'var(--foreground)', // Neutral grey for "ALL"
-  BEGINNER: 'var(--difficulty-beginner)', // Using CSS variable for BEGINNER
-  EASY: 'var(--difficulty-easy)', // Using CSS variable for EASY
-  MEDIUM: 'var(--difficulty-medium)', // Using CSS variable for MEDIUM
-  HARD: 'var(--difficulty-hard)', // Using CSS variable for HARD
+  ALL: 'var(--foreground)',
+  BEGINNER: 'var(--difficulty-beginner)',
+  EASY: 'var(--difficulty-easy)',
+  MEDIUM: 'var(--difficulty-medium)',
+  HARD: 'var(--difficulty-hard)',
   EXTREME: 'var(--difficulty-extreme)',
+};
+
+export const DIFFICULTY_LABEL_MAP: Record<FilterOptions, string> = {
+  ALL: 'все',
+  BEGINNER: 'начальные',
+  EASY: 'простые',
+  MEDIUM: 'средние',
+  HARD: 'сложные',
+  EXTREME: 'экстремальные',
 };
 
 export function FilterBar(props: {
@@ -46,7 +55,7 @@ export function FilterBar(props: {
           className="hover:text-foreground hover:bg-transparent data-[state=on]:bg-transparent"
         >
           <button className="relative " onMouseEnter={() => setHoveredDifficulty(difficulty)}>
-            <span className="z-20">{difficulty}</span>
+            <span className="z-20">{DIFFICULTY_LABEL_MAP[difficulty]}</span>
             {props.filter === difficulty ? (
               <motion.div
                 layoutId="underline"

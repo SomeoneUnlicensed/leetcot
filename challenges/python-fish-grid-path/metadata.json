@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-grid-path",
+  "label": "Короткий путь",
+  "description": "Найди длину кратчайшего пути по сетке.",
+  "difficulty": "medium",
+  "language": "python",
+  "author": "ЛитКот"
+}

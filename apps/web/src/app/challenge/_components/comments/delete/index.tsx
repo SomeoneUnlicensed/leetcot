@@ -33,7 +33,7 @@ export function CommentDeleteDialog({
     <Dialog onOpenChange={() => setIsOpen(!isOpen)} open={isOpen}>
       <DialogTrigger {...props}>{children}</DialogTrigger>
       <DialogContent className="flex flex-col space-y-2">
-        <TypographyLarge>Are you sure?</TypographyLarge>
+        <TypographyLarge>Удалить комментарий?</TypographyLarge>
 
         <div className="flex flex-col gap-1 p-3 pt-2">
           <div className="flex items-start justify-between pr-[0.4rem]">
@@ -59,10 +59,10 @@ export function CommentDeleteDialog({
             <Markdown>{comment.text}</Markdown>
           </div>
         </div>
-        <TypographyP>The following comment will be permanently deleted.</TypographyP>
+        <TypographyP>Этот комментарий будет удален без возможности восстановления.</TypographyP>
         <div className="flex flex-row gap-2">
           <Button onClick={() => setIsOpen(!isOpen)} variant="outline">
-            Cancel
+            Отмена
           </Button>
           <Button
             onClick={() => {
@@ -70,7 +70,7 @@ export function CommentDeleteDialog({
             }}
             variant="destructive"
           >
-            Delete
+            Удалить
           </Button>
         </div>
       </DialogContent>

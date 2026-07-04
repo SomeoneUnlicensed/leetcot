@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-brackets",
+  "label": "Скобочный замок",
+  "description": "Проверь корректность строки из скобок.",
+  "difficulty": "easy",
+  "language": "python",
+  "author": "ЛитКот"
+}

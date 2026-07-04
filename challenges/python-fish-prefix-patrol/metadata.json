@@ -1,0 +1,8 @@
+{
+  "id": "python-fish-prefix-patrol",
+  "label": "Патруль префиксов",
+  "description": "Посчитай отрезки пути, где кот вернулся к старту.",
+  "difficulty": "medium",
+  "language": "python",
+  "author": "ЛитКот"
+}

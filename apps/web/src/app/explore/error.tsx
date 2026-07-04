@@ -1,4 +1,4 @@
-'use client'; // Error components must be Client Components
+'use client'; // Компоненты ошибок должны быть клиентскими компонентами.
 
 import { Button } from '@repo/ui/components/button';
 import { Text } from '@repo/ui/components/typography/typography';
@@ -8,10 +8,10 @@ export default function Error() {
   return (
     <div className="container flex h-full flex-col items-center justify-center">
       <Text className="mb-6" intent="h2">
-        Uh oh! We couldn&apos;t find the challenges you were looking for.
+        Ой! Мы не смогли найти задачи, которые вы искали.
       </Text>
       <Link href="/explore">
-        <Button>Explore Challenges</Button>
+        <Button>К списку задач</Button>
       </Link>
     </div>
   );

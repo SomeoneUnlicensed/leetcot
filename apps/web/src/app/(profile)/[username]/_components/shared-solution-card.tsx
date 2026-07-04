@@ -31,7 +31,7 @@ export function SharedSolutionCard(props: SharedSolutionCardProps) {
           {props.solution.challenge.name}
         </CardTitle>
         <div className="flex items-center gap-5 text-center duration-300">
-          {props.solution.isPinned ? <Badge>Pinned</Badge> : null}
+          {props.solution.isPinned ? <Badge>Закреплено</Badge> : null}
           <div className="flex items-center gap-2 text-sm">
             <MessageCircle size={18} />
             {props.solution.commentCount}
