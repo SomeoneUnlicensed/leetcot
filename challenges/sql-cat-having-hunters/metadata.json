@@ -5,5 +5,8 @@
   "difficulty": "medium",
   "language": "sql",
   "author": "ЛитКот",
-  "practiceType": "sql"
+  "practiceType": "sql",
+  "supportedLanguages": [
+    "sql"
+  ]
 }

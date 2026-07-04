@@ -26,8 +26,8 @@ export default function AlgorithmsLanding() {
             </h1>
             <p className="mb-10 max-w-[60ch] text-xl text-zinc-400">
               <Balancer>
-                Погрузись в мир мощных алгоритмов на Python. От сортировки сосисок до поиска
-                кратчайшего пути к миске. Стань настоящим альфа-котом в мире кода!
+                Погрузись в мир мощных алгоритмов на удобном языке. От сортировки сосисок до
+                поиска кратчайшего пути к миске. Стань настоящим альфа-котом в мире кода!
               </Balancer>
             </p>
             <div className="flex flex-col gap-4 sm:flex-row">
@@ -46,7 +46,7 @@ export default function AlgorithmsLanding() {
                 variant="outline"
                 className="rounded-2xl border-zinc-700 px-8 py-6 text-xl text-white hover:bg-zinc-900"
               >
-                <Link href="/explore?language=PYTHON">
+                <Link href="/explore">
                   <Compass className="mr-2 h-6 w-6" /> Все задачи
                 </Link>
               </Button>

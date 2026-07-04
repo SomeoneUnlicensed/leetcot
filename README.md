@@ -1,6 +1,6 @@
 # ЛитКот (leetcot.ru)
 
-A coding practice platform: programming challenges, courses, and interactive exercises.
+A coding practice platform: multi-language code challenges, SQL practice, courses, and interactive exercises.
 
 ## Practice Kit
 

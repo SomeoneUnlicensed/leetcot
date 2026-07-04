@@ -224,7 +224,7 @@ export default function PartnersPage() {
             <div className="mt-6 grid w-full max-w-xl grid-cols-3 gap-3 border-t border-zinc-900 pt-8">
               {[
                 ['4', 'формата продукта'],
-                ['2', 'типа практики'],
+                ['7', 'языков кода'],
                 ['1–2 нед.', 'на запуск пилота'],
               ].map(([value, label]) => (
                 <div key={label} className="text-center">

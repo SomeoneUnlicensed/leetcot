@@ -5,5 +5,14 @@
   "difficulty": "easy",
   "language": "python",
   "author": "ЛитКот",
-  "practiceType": "code"
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
 }

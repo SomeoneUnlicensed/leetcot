@@ -127,7 +127,7 @@ export function Features() {
               типы практики
             </p>
             <h2 className="mt-4 text-4xl font-black leading-none tracking-normal sm:text-6xl">
-              Код и SQL не смешиваются в один режим
+              Код на основных языках, SQL отдельно
             </h2>
           </div>
           <div className="grid gap-4">
@@ -136,7 +136,7 @@ export function Features() {
                 <Code className="h-6 w-6 text-[#e9f6a8]" />
                 <h3 className="mt-4 text-2xl font-black">Код</h3>
                 <p className="mt-2 text-sm font-semibold text-zinc-300">
-                  Алгоритмические задачи: сейчас Python, дальше больше языков.
+                  Алгоритмические задачи на основных языках программирования.
                 </p>
               </div>
               <div className="rounded-2xl bg-[#18151f] p-5 text-white">
@@ -148,16 +148,16 @@ export function Features() {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {codeLanguages.map((language, index) => (
-              <div
-                key={language}
-                className="rounded-2xl bg-[#18151f] px-4 py-5 text-center text-lg font-black text-white"
-              >
-                {language}
-                <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#9fd8d2]">
-                  {index === 0 ? 'доступен' : 'в плане'}
-                </p>
-              </div>
+              {codeLanguages.map((language) => (
+                <div
+                  key={language}
+                  className="rounded-2xl bg-[#18151f] px-4 py-5 text-center text-lg font-black text-white"
+                >
+                  {language}
+                  <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#9fd8d2]">
+                    доступен
+                  </p>
+                </div>
               ))}
             </div>
           </div>

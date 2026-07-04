@@ -470,8 +470,7 @@ export function CuratedTracksCard(props: CardProps) {
   );
 }
 
-const availableCodeLanguages = ['Python'];
-const upcomingCodeLanguages = ['TypeScript', 'C++', 'Java', 'Go', 'Rust'];
+const availableCodeLanguages = ['Python', 'TypeScript', 'JavaScript', 'C++', 'Java', 'Go', 'Rust'];
 
 export function LanguageStackCard(props: CardProps) {
   return (
@@ -482,14 +481,9 @@ export function LanguageStackCard(props: CardProps) {
             Задачи по коду
           </p>
           <div className="flex flex-wrap gap-2">
-            {availableCodeLanguages.map((stack) => (
-              <span
-                key={stack}
-                className="rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-600 px-3 py-1 text-xs font-bold text-white"
-              >
-                {stack}
-              </span>
-            ))}
+            <span className="rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-600 px-3 py-1 text-xs font-bold text-white">
+              все основные языки
+            </span>
           </div>
         </div>
         <div>
@@ -502,10 +496,10 @@ export function LanguageStackCard(props: CardProps) {
         </div>
         <div>
           <p className="mb-2 text-xs font-bold uppercase tracking-wide text-zinc-500">
-            Языки для задач по коду
+            Код на разных языках
           </p>
           <div className="flex flex-wrap gap-2">
-            {upcomingCodeLanguages.map((stack) => (
+            {availableCodeLanguages.slice(1).map((stack) => (
               <span
                 key={stack}
                 className="rounded-full border border-zinc-300 px-3 py-1 text-xs font-semibold text-zinc-600 dark:border-zinc-700 dark:text-zinc-400"

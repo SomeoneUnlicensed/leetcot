@@ -64,7 +64,7 @@ export async function Hero() {
           <div className="mt-10 grid max-w-2xl gap-3 sm:grid-cols-3">
             {[
               ['250+', 'задач и тем'],
-              ['2', 'языка сейчас'],
+              ['7', 'языков для кода'],
               ['∞', 'кошачьего терпения'],
             ].map(([value, label]) => (
               <div key={label} className="border-t border-white/10 pt-4">

@@ -58,6 +58,16 @@
       "type": "string",
       "enum": ["code", "sql"]
     },
+    "supportedLanguages": {
+      "description": "Languages exposed by this task type. Code tasks can list multiple programming languages; SQL tasks should list sql.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["python", "typescript", "javascript", "cpp", "java", "go", "rust", "sql"]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
     "prerequisites": {
       "description": "An array of ids of other challenges that this challenge is written as to expect the reader to already understand.",
       "type": "array",
@@ -70,5 +80,14 @@
       "type": "string"
     }
   },
-  "required": ["id", "label", "description", "difficulty", "author", "language", "practiceType"]
+  "required": [
+    "id",
+    "label",
+    "description",
+    "difficulty",
+    "author",
+    "language",
+    "practiceType",
+    "supportedLanguages"
+  ]
 }

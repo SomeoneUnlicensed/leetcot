@@ -67,14 +67,13 @@ const productParts = [
 ];
 
 const codeLanguages = [
-  { name: 'Python', version: '3.11', status: 'доступен' },
-  { name: 'TypeScript', version: 'скоро', status: 'готовим' },
-  { name: 'C++', version: 'скоро', status: 'готовим' },
-  { name: 'Java', version: 'скоро', status: 'готовим' },
-  { name: 'Go', version: 'скоро', status: 'готовим' },
-  { name: 'Rust', version: 'скоро', status: 'готовим' },
-  { name: 'JavaScript', version: 'скоро', status: 'готовим' },
-  { name: 'Ruby', version: 'скоро', status: 'готовим' },
+  { name: 'Python', version: '3.11' },
+  { name: 'TypeScript', version: '5.x' },
+  { name: 'JavaScript', version: 'Node.js' },
+  { name: 'C++', version: '20' },
+  { name: 'Java', version: '21' },
+  { name: 'Go', version: '1.24' },
+  { name: 'Rust', version: '1.80' },
 ];
 
 function LanguageDropdown() {
@@ -89,7 +88,9 @@ function LanguageDropdown() {
             <span className="block text-left text-sm font-bold uppercase tracking-widest text-zinc-500">
               Язык для задач по коду
             </span>
-            <span className="block text-left text-2xl font-black text-white">Python 3.11</span>
+            <span className="block text-left text-2xl font-black text-white">
+              Все основные языки
+            </span>
           </span>
         </span>
         <ChevronDown className="h-5 w-5 text-zinc-400 transition group-open:rotate-180" />
@@ -97,13 +98,12 @@ function LanguageDropdown() {
 
       <div className="mt-3 rounded-3xl border border-zinc-800 bg-[#2b2b2b] p-3 shadow-2xl shadow-black/40">
         <div className="grid gap-1 sm:grid-cols-2">
-          {codeLanguages.map((language) => {
-            const isAvailable = language.status === 'доступен';
+          {codeLanguages.map((language, index) => {
             return (
               <div
                 key={language.name}
                 className={`flex items-center justify-between rounded-2xl px-4 py-3 transition ${
-                  isAvailable ? 'bg-white/10 text-white' : 'text-zinc-200 hover:bg-white/5'
+                  index === 0 ? 'bg-white/10 text-white' : 'text-zinc-200 hover:bg-white/5'
                 }`}
               >
                 <span>
@@ -112,7 +112,7 @@ function LanguageDropdown() {
                     {language.version}
                   </span>
                 </span>
-                {isAvailable ? <CheckCircle2 className="h-5 w-5 text-zinc-300" /> : null}
+                <CheckCircle2 className="h-5 w-5 text-zinc-300" />
               </div>
             );
           })}
@@ -182,11 +182,11 @@ export function Features() {
               типы практики
             </p>
             <h2 className="mt-4 text-4xl font-black leading-none tracking-normal text-white sm:text-5xl">
-              Код и SQL живут отдельно, языки выбираются внутри задач по коду
+              Код на основных языках, SQL отдельным режимом
             </h2>
             <p className="mt-5 text-lg font-bold leading-8 text-zinc-400">
-              Сейчас задачи по коду решаются на Python. Следом аккуратно добавим другие языки, а
-              SQL останется отдельным режимом с таблицами, запросами и своей проверкой результата.
+              Задачи типа «Код» раскатываются под разные языки решения. SQL не смешивается с ними:
+              это отдельная практика с таблицами, запросами и своей проверкой результата.
             </p>
           </div>
           <div className="space-y-4">
@@ -195,7 +195,7 @@ export function Features() {
                 <Code className="h-6 w-6 text-pink-300" />
                 <h3 className="mt-4 text-2xl font-black">Код</h3>
                 <p className="mt-2 text-sm font-semibold leading-6 text-zinc-400">
-                  Алгоритмы и структуры данных. Сейчас Python, дальше больше языков.
+                  Алгоритмы и структуры данных на основных языках программирования.
                 </p>
               </div>
               <div className="rounded-2xl border border-cyan-300/25 bg-[#111118] p-5">
