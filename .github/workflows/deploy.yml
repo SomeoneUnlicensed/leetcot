@@ -31,7 +31,9 @@ jobs:
             exit 1
           fi
 
-      - name: Build app image
+      - name: Build app image (with BuildKit)
+        env:
+          DOCKER_BUILDKIT: "1"
         run: docker build -t ghcr.io/someoneunlicensed/leetcot:latest .
 
       - name: Import image into k3s containerd
