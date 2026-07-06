@@ -1,0 +1,10 @@
+{
+  "id": "go-cat-ration-log",
+  "label": "Журнал пайков",
+  "description": "Разберите строки журнала и аккуратно верните ошибку на плохих данных.",
+  "difficulty": "hard",
+  "language": "go",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": ["go"]
+}

@@ -1,99 +1,109 @@
-import { Footsies } from '~/components/footsies';
-import { Balancer } from 'react-wrap-balancer';
-import Link from 'next/link';
 import { Button } from '@repo/ui/components/button';
-import { Compass, Play, Layers, Network, Zap } from '@repo/ui/icons';
+import { ArrowUpRight, Compass, Layers, Network, Play, Zap } from '@repo/ui/icons';
+import Link from 'next/link';
+import { Footsies } from '~/components/footsies';
+
+const topics = [
+  ['Списки и строки', 'Разбор частых приёмов: два указателя, окна, частоты и аккуратные обходы.'],
+  ['Графы', 'BFS, DFS, кратчайшие пути и задачи, где важно правильно описать состояние.'],
+  ['Динамика', 'Переходы, память, базовые случаи и решения без лишней магии.'],
+];
+
+const stats = [
+  ['30+', 'Python-задач'],
+  ['6', 'ключевых тем'],
+  ['oracle', 'быстрая проверка'],
+];
 
 export default function AlgorithmsLanding() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <main className="flex-grow">
-        {/* Hero Section */}
-        <section className="relative overflow-hidden bg-zinc-950 py-20">
-          <div className="container relative z-10 flex flex-col items-center text-center">
-            <pre className="mb-6 text-[18px] font-bold leading-5 text-pink-500">
-              {`
-   |\\__/,|   (\`\\
- _.o o  |_   ) )
--(((---(((--------
-`}
-            </pre>
-            <h1
-              className="mb-6 text-6xl font-extrabold tracking-tight text-white sm:text-8xl"
-              style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
-            >
-              Щелкаем алгоритмы <span className="text-pink-500">как рыбку</span>
-            </h1>
-            <p className="mb-10 max-w-[60ch] text-xl text-zinc-400">
-              <Balancer>
-                Погрузись в мир мощных алгоритмов на удобном языке. От сортировки сосисок до
-                поиска кратчайшего пути к миске. Стань настоящим альфа-котом в мире кода!
-              </Balancer>
-            </p>
-            <div className="flex flex-col gap-4 sm:flex-row">
-              <Button
-                asChild
-                size="lg"
-                className="rounded-2xl bg-pink-600 px-8 py-6 text-xl text-white shadow-[0_0_2rem_-0.5rem_#d946ef88] hover:bg-pink-700"
-              >
-                <Link href="/courses/python-algo-fish">
-                  <Play className="mr-2 h-6 w-6" /> Начать охоту
-                </Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="rounded-2xl border-zinc-700 px-8 py-6 text-xl text-white hover:bg-zinc-900"
-              >
-                <Link href="/explore">
-                  <Compass className="mr-2 h-6 w-6" /> Все задачи
-                </Link>
-              </Button>
-            </div>
-          </div>
+    <div className="flex min-h-screen flex-col bg-[#121018] text-white">
+      <main className="flex-grow overflow-hidden">
+        <section className="relative isolate border-b border-white/10 px-4">
+          <div className="from-[#ec4899]/16 pointer-events-none absolute inset-x-0 top-0 -z-10 h-48 bg-gradient-to-b to-transparent" />
+          <div className="bg-[#2dd4bf]/12 pointer-events-none absolute right-0 top-20 -z-10 h-[34rem] w-[46rem] rounded-l-full blur-3xl" />
+          <div className="pointer-events-none absolute bottom-0 left-0 -z-10 h-[30rem] w-[34rem] rounded-r-full bg-[#f59e0b]/10 blur-3xl" />
 
-          {/* Background decoration */}
-          <div className="pointer-events-none absolute left-0 top-0 h-full w-full opacity-10">
-            <div className="absolute left-[-10%] top-[-10%] h-[40%] w-[40%] rounded-full bg-pink-500 blur-[120px]" />
-            <div className="absolute bottom-[-10%] right-[-10%] h-[40%] w-[40%] rounded-full bg-fuchsia-600 blur-[120px]" />
+          <div className="container grid min-h-[calc(100svh-3.5rem)] gap-10 py-20 lg:grid-cols-[minmax(0,0.66fr)_minmax(280px,0.34fr)] lg:items-center">
+            <div>
+              <div className="mb-6 inline-flex items-center gap-2 rounded-2xl border border-[#ff8ecb]/30 bg-[#211827]/80 px-4 py-2 text-sm font-black text-[#ffaad8] shadow-2xl shadow-pink-950/10">
+                <Compass className="h-4 w-4" />
+                Python-алгоритмы
+              </div>
+
+              <h1
+                className="max-w-4xl text-balance text-4xl leading-[1.14] tracking-normal sm:text-5xl md:text-6xl lg:text-[4.05rem] xl:text-[4.45rem]"
+                style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+              >
+                Алгоритмы на задачах, которые удобно решать каждый день
+              </h1>
+
+              <p className="mt-6 max-w-2xl text-base font-semibold leading-7 text-[#d8d4df]/80 sm:text-lg">
+                Python-направление для регулярной практики: строки, массивы, словари, графы,
+                динамика и задачи с быстрой серверной проверкой.
+              </p>
+
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <Button
+                  asChild
+                  className="h-12 rounded-2xl bg-[#ff4fa3] px-6 text-base font-black text-white shadow-lg shadow-pink-950/30 hover:bg-[#ff75b9]"
+                >
+                  <Link href="/courses/python-algo-fish">
+                    <Play className="mr-2 h-4 w-4" />
+                    Открыть курс
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-12 rounded-2xl border-white/15 bg-white/[0.04] px-6 text-base font-black text-zinc-100 hover:bg-white/10"
+                >
+                  <Link href="/explore?language=PYTHON">
+                    Все Python-задачи
+                    <ArrowUpRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            <div className="rounded-[1.75rem] border border-[#8ef0de]/25 bg-[#1b1722]/85 p-5 shadow-2xl shadow-black/30">
+              <pre className="ml-auto w-fit select-none font-mono text-sm font-black leading-5 text-[#ff8ecb]/55">{` /\\_/\\\\
+( o.o )
+ > ^ <`}</pre>
+              <div className="mt-7 grid gap-3">
+                {stats.map(([value, label]) => (
+                  <div
+                    key={label}
+                    className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3"
+                  >
+                    <div className="font-mono text-2xl font-black text-[#8ef0de]">{value}</div>
+                    <div className="mt-1 text-sm font-semibold text-[#d8d4df]/70">{label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Feature Block */}
-        <section className="bg-zinc-900/50 py-20">
+        <section className="px-4 py-16">
           <div className="container">
-            <div className="grid gap-12 lg:grid-cols-3">
-              <div className="flex flex-col rounded-3xl border border-zinc-800 bg-zinc-900 p-8 transition-colors hover:border-pink-500/50">
-                <div className="mb-4 text-pink-500">
-                  <Layers className="h-10 w-10" />
-                </div>
-                <h3 className="mb-2 text-2xl font-bold text-white">Сортировка улова</h3>
-                <p className="text-zinc-400">
-                  Научись сортировать списки эффективно. От Bubble Sort до Quick Sort, чтобы ни одна
-                  рыбка не потерялась.
-                </p>
-              </div>
-              <div className="flex flex-col rounded-3xl border border-zinc-800 bg-zinc-900 p-8 transition-colors hover:border-pink-500/50">
-                <div className="mb-4 text-pink-500">
-                  <Network className="h-10 w-10" />
-                </div>
-                <h3 className="mb-2 text-2xl font-bold text-white">Графы и Клубки</h3>
-                <p className="text-zinc-400">
-                  Распутай самые сложные структуры данных. Поиск в ширину и глубину в мире кошачьих
-                  лабиринтов.
-                </p>
-              </div>
-              <div className="flex flex-col rounded-3xl border border-zinc-800 bg-zinc-900 p-8 transition-colors hover:border-pink-500/50">
-                <div className="mb-4 text-pink-500">
-                  <Zap className="h-10 w-10" />
-                </div>
-                <h3 className="mb-2 text-2xl font-bold text-white">Динамическое Мяу</h3>
-                <p className="text-zinc-400">
-                  Оптимизируй свои решения. Используй мемоизацию, чтобы решать задачи быстрее, чем
-                  кот прыгает за лазером.
-                </p>
-              </div>
+            <div className="grid gap-4 lg:grid-cols-3">
+              {topics.map(([title, text], index) => {
+                const Icon = [Layers, Network, Zap][index] ?? Layers;
+
+                return (
+                  <div
+                    key={title}
+                    className="rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-6 transition hover:border-[#ff8ecb]/35 hover:bg-white/[0.055]"
+                  >
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#8ef0de] text-[#121018]">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <h2 className="mt-5 text-2xl font-black text-white">{title}</h2>
+                    <p className="mt-3 text-sm font-semibold leading-6 text-[#d8d4df]/70">{text}</p>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>

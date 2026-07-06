@@ -1,5 +1,5 @@
 import { PrismaAdapter } from '@auth/prisma-adapter';
-import type { Role, RoleTypes, User } from '@repo/db/types';
+import type { RoleTypes, User } from '@repo/db/types';
 import GitHubProvider from 'next-auth/providers/github';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { CredentialsSignin } from 'next-auth';
@@ -26,19 +26,11 @@ declare module 'next-auth' {
   }
 }
 
-declare module '@auth/core/adapters' {
-  interface AdapterUser extends User {
-    roles: Role[];
-  }
-}
-
-declare module '@auth/core/jwt' {
-  interface JWT {
-    id?: string;
-    roles?: RoleTypes[];
-    arlistJustLinked?: boolean;
-  }
-}
+type LitkotJwtToken = {
+  arlistJustLinked?: boolean;
+  id?: string;
+  roles?: RoleTypes[];
+};
 
 export const baseNextAuthConfig: Omit<NextAuthConfig, 'providers'> = {
   trustHost: true,
@@ -107,9 +99,10 @@ export const baseNextAuthConfig: Omit<NextAuthConfig, 'providers'> = {
     },
     session: ({ session, token }) => {
       if (session.user && token) {
-        session.user.id = token.id!;
-        session.user.role = token.roles!;
-        session.user.arlistJustLinked = Boolean(token.arlistJustLinked);
+        const litkotToken = token as LitkotJwtToken;
+        session.user.id = litkotToken.id ?? session.user.id;
+        session.user.role = litkotToken.roles ?? [];
+        session.user.arlistJustLinked = Boolean(litkotToken.arlistJustLinked);
       }
       return session;
     },

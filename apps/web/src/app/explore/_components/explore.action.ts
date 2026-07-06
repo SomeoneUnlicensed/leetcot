@@ -9,7 +9,16 @@ import { cache } from 'react';
 import { auth } from '~/server/auth';
 
 export type FilteredChallenge = Prisma.ChallengeGetPayload<{
-  include: {
+  select: {
+    id: true;
+    createdAt: true;
+    updatedAt: true;
+    difficulty: true;
+    language: true;
+    name: true;
+    slug: true;
+    shortDescription: true;
+    status: true;
     _count: {
       select: { vote: true; comment: true };
     };
@@ -23,13 +32,23 @@ export type FilteredChallenge = Prisma.ChallengeGetPayload<{
         userId: string;
         isSuccessful: boolean;
       };
+      select: {
+        id: true;
+        isSuccessful: true;
+      };
       take: number;
     };
   };
 }>;
 
 export type SearchedChallenge = Prisma.ChallengeGetPayload<{
-  include: {
+  select: {
+    id: true;
+    difficulty: true;
+    language: true;
+    name: true;
+    slug: true;
+    status: true;
     user: {
       select: {
         name: true;
@@ -90,8 +109,17 @@ function parseChallengeGroup(str: string): ChallengeGroup | null {
   return null;
 }
 
-function getFilteredChallengeInclude(userId?: string) {
+function getFilteredChallengeSelect(userId?: string) {
   return {
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+    difficulty: true,
+    language: true,
+    name: true,
+    slug: true,
+    shortDescription: true,
+    status: true,
     _count: {
       select: { vote: true, comment: true },
     },
@@ -105,9 +133,13 @@ function getFilteredChallengeInclude(userId?: string) {
         userId: userId || '',
         isSuccessful: true,
       },
+      select: {
+        id: true,
+        isSuccessful: true,
+      },
       take: 1,
     },
-  } satisfies Prisma.ChallengeInclude;
+  } satisfies Prisma.ChallengeSelect;
 }
 
 function getGroupWhere(group: ChallengeGroup): Prisma.ChallengeWhereInput {
@@ -156,14 +188,16 @@ export async function getFilteredChallenges(
     ];
   }
 
-  return prisma.challenge.findMany({
+  const challenges = await prisma.challenge.findMany({
     where,
-    include: getFilteredChallengeInclude(session?.user?.id),
+    select: getFilteredChallengeSelect(session?.user?.id),
     orderBy: { createdAt: 'desc' },
     ...(take && {
       take,
     }),
   });
+
+  return challenges;
 }
 
 /**
@@ -180,33 +214,45 @@ export async function getChallengesByTagOrDifficulty(
     return [];
   }
 
-  return prisma.challenge.findMany({
+  const challenges = await prisma.challenge.findMany({
     where: {
       ...activeChallengeWhere,
       ...getGroupWhere(group),
     },
-    include: getFilteredChallengeInclude(session?.user?.id),
+    select: getFilteredChallengeSelect(session?.user?.id),
     ...(take && {
       take,
     }),
   });
+
+  return challenges;
 }
 
 /**
  * Searches for challenges by name or slug.
  */
-export async function searchChallenges(query: string): Promise<SearchedChallenge[]> {
+export async function searchChallenges(
+  query: string,
+  language?: Language,
+): Promise<SearchedChallenge[]> {
   if (!query) return [];
 
-  return prisma.challenge.findMany({
+  const challenges = await prisma.challenge.findMany({
     where: {
       ...activeChallengeWhere,
+      ...(language ? { language } : {}),
       OR: [
         { name: { contains: query, mode: 'insensitive' } },
         { slug: { contains: query, mode: 'insensitive' } },
       ],
     },
-    include: {
+    select: {
+      id: true,
+      difficulty: true,
+      language: true,
+      name: true,
+      slug: true,
+      status: true,
       user: {
         select: {
           name: true,
@@ -215,6 +261,8 @@ export async function searchChallenges(query: string): Promise<SearchedChallenge
     },
     take: 10,
   });
+
+  return challenges;
 }
 
 export type ChallengesByTagOrDifficulty = Awaited<
@@ -249,6 +297,7 @@ export const getAllChallenges = cache(async () => {
     mediumChallenges,
     hardChallenges,
     extremeChallenges,
+    ultraChallenges,
   ] = await Promise.all([
     getChallengesByTagOrDifficulty('popular', 12),
     getChallengesByTagOrDifficulty('beginner'),
@@ -256,6 +305,7 @@ export const getAllChallenges = cache(async () => {
     getChallengesByTagOrDifficulty('medium'),
     getChallengesByTagOrDifficulty('hard'),
     getChallengesByTagOrDifficulty('extreme'),
+    getChallengesByTagOrDifficulty('ultra'),
   ]);
 
   const allChallenges: AllChallenges = {
@@ -265,6 +315,7 @@ export const getAllChallenges = cache(async () => {
     mediumChallenges,
     hardChallenges,
     extremeChallenges,
+    ultraChallenges,
   };
   return allChallenges;
 });
@@ -276,4 +327,5 @@ export interface AllChallenges {
   mediumChallenges: ChallengesByTagOrDifficulty;
   hardChallenges: ChallengesByTagOrDifficulty;
   extremeChallenges: ChallengesByTagOrDifficulty;
+  ultraChallenges: ChallengesByTagOrDifficulty;
 }

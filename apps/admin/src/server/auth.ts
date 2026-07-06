@@ -22,4 +22,5 @@ export const authOptions: NextAuthConfig = {
   providers: [createCredentialsProvider()],
 };
 
-export const { handlers, auth } = NextAuth(authOptions);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const { handlers, auth } = NextAuth(authOptions) as any;

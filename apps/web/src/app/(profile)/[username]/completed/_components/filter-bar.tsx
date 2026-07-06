@@ -14,6 +14,7 @@ export const DIFFICULTY_COLOR_MAP: Record<FilterOptions, string> = {
   MEDIUM: 'var(--difficulty-medium)',
   HARD: 'var(--difficulty-hard)',
   EXTREME: 'var(--difficulty-extreme)',
+  ULTRA: '#e879f9',
 };
 
 export const DIFFICULTY_LABEL_MAP: Record<FilterOptions, string> = {
@@ -23,6 +24,7 @@ export const DIFFICULTY_LABEL_MAP: Record<FilterOptions, string> = {
   MEDIUM: 'средние',
   HARD: 'сложные',
   EXTREME: 'экстремальные',
+  ULTRA: 'ультра',
 };
 
 export function FilterBar(props: {
@@ -30,7 +32,15 @@ export function FilterBar(props: {
   setFilter: (val: FilterOptions) => void;
 }) {
   const [hoveredDifficulty, setHoveredDifficulty] = useState<FilterOptions | null>(null);
-  const difficulties: FilterOptions[] = ['ALL', 'BEGINNER', 'EASY', 'MEDIUM', 'HARD', 'EXTREME'];
+  const difficulties: FilterOptions[] = [
+    'ALL',
+    'BEGINNER',
+    'EASY',
+    'MEDIUM',
+    'HARD',
+    'EXTREME',
+    'ULTRA',
+  ];
   const [lastSelected, setLastSelected] = useState<FilterOptions>('ALL');
 
   return (

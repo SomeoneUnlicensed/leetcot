@@ -2,36 +2,32 @@ import {
   Award,
   BookOpen,
   CheckCircle2,
-  ChevronDown,
-  Code,
   GraduationCap,
-  Layers,
   MessageCircle,
   Sparkles,
   Target,
-  Trophy,
   Users,
 } from '@repo/ui/icons';
 import type { LucideIcon } from '@repo/ui/icons';
 
 const practiceSteps = [
   {
-    title: 'Выберите задачу без охоты вслепую',
-    text: 'Треки ведут по следу: от простых задач по коду к алгоритмам, структурам данных и отдельной SQL-практике.',
-    className: 'border-pink-400/30 bg-zinc-950',
-    accent: 'text-pink-300',
+    title: 'Откройте нужный раздел',
+    text: 'Алгоритмы, SQL и Go вынесены в отдельные направления, чтобы не смешивать разные форматы практики.',
+    className: 'border-[#ff8ecb]/30 bg-[#1b1722]',
+    accent: 'text-[#ff8ecb]',
   },
   {
-    title: 'Решите и посмотрите чужой след',
-    text: 'После решения можно открыть обсуждения и увидеть, какими тропами прошли другие.',
-    className: 'border-fuchsia-400/30 bg-zinc-950',
-    accent: 'text-fuchsia-300',
+    title: 'Решите задачу в редакторе',
+    text: 'Условие и код открываются рядом. После запуска система проверяет решение и показывает результат.',
+    className: 'border-[#8ef0de]/25 bg-[#161c22]',
+    accent: 'text-[#8ef0de]',
   },
   {
-    title: 'Следите за прогрессом',
-    text: 'Профиль показывает решенные задачи, курсы и темы, к которым ЛитКот мягко вернет позже.',
-    className: 'border-cyan-400/25 bg-zinc-950',
-    accent: 'text-cyan-300',
+    title: 'Смотрите историю решений',
+    text: 'Успешные решения, попытки и прогресс по трекам сохраняются в профиле.',
+    className: 'border-[#e9f6a8]/25 bg-[#1e1a16]',
+    accent: 'text-[#e9f6a8]',
   },
 ];
 
@@ -42,17 +38,17 @@ const audiences: {
 }[] = [
   {
     title: 'Самостоятельная практика',
-    text: 'Короткие задачи, курсы и треки для регулярного роста: по чуть-чуть, но каждый день.',
+    text: 'Короткие задачи для повторения базовых тем и подготовки к собеседованиям.',
     icon: Target,
   },
   {
     title: 'Учебные группы',
-    text: 'Экзамены, вопросы и результаты, чтобы преподавателю было проще вести занятие.',
+    text: 'Экзамены, импорт задач и результаты попыток для занятий и отбора.',
     icon: GraduationCap,
   },
   {
     title: 'Сообщество',
-    text: 'Профили, решения и обсуждения помогают учиться не в одиночку: рядом всегда есть чей-то умный след.',
+    text: 'Обсуждения и опубликованные решения помогают сравнивать подходы после успешной проверки.',
     icon: Users,
   },
 ];
@@ -63,64 +59,7 @@ const productParts = [
   { label: 'Курсы', icon: Award },
   { label: 'Обсуждения', icon: MessageCircle },
   { label: 'Бейджи', icon: Sparkles },
-  { label: 'Чемпионаты', icon: Trophy },
 ];
-
-const codeLanguages = [
-  { name: 'Python', version: '3.11' },
-  { name: 'TypeScript', version: '5.x' },
-  { name: 'JavaScript', version: 'Node.js' },
-  { name: 'C++', version: '20' },
-  { name: 'Java', version: '21' },
-  { name: 'Go', version: '1.24' },
-  { name: 'Rust', version: '1.80' },
-];
-
-function LanguageDropdown() {
-  return (
-    <details className="group relative mx-auto max-w-xl lg:mx-0">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-2xl border border-zinc-700 bg-[#171a22] px-5 py-4 shadow-2xl shadow-black/30 transition hover:border-pink-400/60 [&::-webkit-details-marker]:hidden">
-        <span className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-500/15 text-pink-300">
-            <Code className="h-5 w-5" />
-          </span>
-          <span>
-            <span className="block text-left text-sm font-bold uppercase tracking-widest text-zinc-500">
-              Язык для задач по коду
-            </span>
-            <span className="block text-left text-2xl font-black text-white">
-              Все основные языки
-            </span>
-          </span>
-        </span>
-        <ChevronDown className="h-5 w-5 text-zinc-400 transition group-open:rotate-180" />
-      </summary>
-
-      <div className="mt-3 rounded-3xl border border-zinc-800 bg-[#2b2b2b] p-3 shadow-2xl shadow-black/40">
-        <div className="grid gap-1 sm:grid-cols-2">
-          {codeLanguages.map((language, index) => {
-            return (
-              <div
-                key={language.name}
-                className={`flex items-center justify-between rounded-2xl px-4 py-3 transition ${
-                  index === 0 ? 'bg-white/10 text-white' : 'text-zinc-200 hover:bg-white/5'
-                }`}
-              >
-                <span>
-                  <span className="block text-lg font-bold">{language.name}</span>
-                  <span className="block text-sm font-semibold text-zinc-400">
-                    {language.version}
-                  </span>
-                </span>
-                <CheckCircle2 className="h-5 w-5 text-zinc-300" />
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </details>
-  );
-}
 
 function AudienceCard({
   title,
@@ -144,77 +83,46 @@ function AudienceCard({
 
 export function Features() {
   return (
-    <section className="bg-[#09090b] text-white" id="features">
+    <section className="bg-[#121018] text-white" id="features">
       <div className="container border-t border-white/10 py-24 sm:py-32">
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <div>
-            <p className="text-sm font-black uppercase tracking-widest text-[#9fd8d2]">
-              учебный маршрут
+            <p className="text-sm font-black uppercase tracking-widest text-[#8ef0de]">
+              как устроено
             </p>
-            <h2 className="mt-4 max-w-2xl text-4xl font-black leading-none tracking-normal sm:text-6xl">
-              Меньше случайных прыжков, больше{' '}
-              <span className="bg-gradient-to-r from-pink-300 to-fuchsia-400 bg-clip-text text-transparent">
-                понятного движения
+            <h2
+              className="mt-4 max-w-2xl text-4xl leading-none tracking-normal sm:text-6xl"
+              style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+            >
+              От задачи до результата{' '}
+              <span className="bg-gradient-to-r from-[#ff8ecb] via-[#e9f6a8] to-[#8ef0de] bg-clip-text text-transparent">
+                без лишних шагов
               </span>
             </h2>
           </div>
-          <p className="max-w-2xl text-xl font-bold leading-8 text-zinc-300">
-            ЛитКот собирает практику в спокойный маршрут: выбрали тему, решили несколько задач,
-            увидели результат и пошли дальше без суеты.
+          <p className="max-w-2xl text-xl font-bold leading-8 text-[#d8d4df]/80">
+            ЛитКот открывает условие, редактор и проверку в одном сценарии. Пользователь решает
+            задачу, получает статус запуска и возвращается к треку или курсу.
           </p>
         </div>
 
         <div className="mt-12 grid gap-4 lg:grid-cols-3">
           {practiceSteps.map((step, index) => (
-            <div key={step.title} className={`rounded-2xl border p-6 ${step.className}`}>
+            <div key={step.title} className={`rounded-[1.75rem] border p-6 ${step.className}`}>
               <p className={`font-mono text-sm font-black ${step.accent}`}>0{index + 1}</p>
               <h3 className="mt-8 text-2xl font-black leading-tight text-white">{step.title}</h3>
-              <p className="mt-3 text-base font-semibold leading-7 text-zinc-500">{step.text}</p>
+              <p className="mt-3 text-base font-semibold leading-7 text-[#d8d4df]/65">
+                {step.text}
+              </p>
             </div>
           ))}
-        </div>
-      </div>
-
-      <div className="border-y border-zinc-900 bg-zinc-950/60 py-20 text-white sm:py-24">
-        <div className="container grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-          <div>
-            <p className="font-mono text-sm font-black uppercase tracking-widest text-pink-400">
-              типы практики
-            </p>
-            <h2 className="mt-4 text-4xl font-black leading-none tracking-normal text-white sm:text-5xl">
-              Код на основных языках, SQL отдельным режимом
-            </h2>
-            <p className="mt-5 text-lg font-bold leading-8 text-zinc-400">
-              Задачи типа «Код» раскатываются под разные языки решения. SQL не смешивается с ними:
-              это отдельная практика с таблицами, запросами и своей проверкой результата.
-            </p>
-          </div>
-          <div className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-pink-400/35 bg-[#111118] p-5">
-                <Code className="h-6 w-6 text-pink-300" />
-                <h3 className="mt-4 text-2xl font-black">Код</h3>
-                <p className="mt-2 text-sm font-semibold leading-6 text-zinc-400">
-                  Алгоритмы и структуры данных на основных языках программирования.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-cyan-300/25 bg-[#111118] p-5">
-                <Layers className="h-6 w-6 text-cyan-200" />
-                <h3 className="mt-4 text-2xl font-black">SQL</h3>
-                <p className="mt-2 text-sm font-semibold leading-6 text-zinc-400">
-                  Отдельный тип задач: таблицы, запросы, JOIN и аналитика.
-                </p>
-              </div>
-            </div>
-            <LanguageDropdown />
-          </div>
         </div>
       </div>
 
       <div className="container py-24 sm:py-32">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
-            <p className="text-sm font-black uppercase tracking-widest text-[#f3c4a8]">для кого</p>
+            <p className="text-sm font-black uppercase tracking-widest text-[#e9f6a8]">сценарии</p>
             <div className="mt-6 grid gap-4">
               {audiences.map((audience) => (
                 <AudienceCard key={audience.title} {...audience} />
@@ -222,31 +130,34 @@ export function Features() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-pink-400/40 bg-zinc-950 p-6 text-white lg:self-start">
+          <div className="rounded-[2rem] border border-[#ff8ecb]/35 bg-[#1b1722] p-6 text-white lg:self-start">
             <p className="text-sm font-black uppercase tracking-widest">внутри ЛитКота</p>
-            <h2 className="mt-4 text-4xl font-black leading-none tracking-normal">
+            <h2
+              className="mt-4 text-4xl leading-none tracking-normal"
+              style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+            >
               Всё, что нужно для практики
             </h2>
             <div className="mt-8 grid grid-cols-2 gap-3">
               {productParts.map(({ label, icon: Icon }) => (
                 <div
                   key={label}
-                  className="flex items-center gap-3 rounded-2xl bg-[#171a22] p-4 text-white"
+                  className="flex items-center gap-3 rounded-2xl bg-[#121018] p-4 text-white"
                 >
-                  <Icon className="h-5 w-5 text-pink-400" />
+                  <Icon className="h-5 w-5 text-[#ff8ecb]" />
                   <span className="text-base font-black">{label}</span>
                 </div>
               ))}
             </div>
-            <p className="mt-8 text-lg font-bold leading-7 text-zinc-300">
-              Редактор кода, автопроверка, треки, курсы и обсуждения работают как одна система:
-              задача открывается, решение проверяется, прогресс сохраняется, а кот отмечает путь.
+            <p className="mt-8 text-lg font-bold leading-7 text-[#d8d4df]/75">
+              Эти разделы уже связаны между собой: задачи входят в треки и курсы, попытки
+              сохраняются, а обсуждения доступны после решения.
             </p>
           </div>
         </div>
       </div>
 
-      <div className="h-24 bg-gradient-to-b from-[#09090b] to-black/0" />
+      <div className="h-24 bg-gradient-to-b from-[#121018] to-black/0" />
     </section>
   );
 }

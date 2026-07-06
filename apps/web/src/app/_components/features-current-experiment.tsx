@@ -8,7 +8,6 @@ import {
   MessageCircle,
   Sparkles,
   Target,
-  Trophy,
   Users,
 } from '@repo/ui/icons';
 import type { LucideIcon } from '@repo/ui/icons';
@@ -59,10 +58,13 @@ const productParts = [
   { label: 'Курсы', icon: Award },
   { label: 'Обсуждения', icon: MessageCircle },
   { label: 'Бейджи', icon: Sparkles },
-  { label: 'Чемпионаты', icon: Trophy },
 ];
 
-const codeLanguages = ['Python', 'TypeScript', 'C++', 'Java', 'Go', 'Rust', 'JavaScript', 'Ruby'];
+const practiceDirections = [
+  { name: 'Python', caption: 'алгоритмы' },
+  { name: 'SQL', caption: 'отдельно' },
+  { name: 'Golang', caption: 'курс' },
+];
 
 function AudienceCard({
   title,
@@ -124,10 +126,10 @@ export function Features() {
         <div className="container grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
           <div>
             <p className="text-sm font-black uppercase tracking-widest text-[#2f736d]">
-              типы практики
+              направления
             </p>
             <h2 className="mt-4 text-4xl font-black leading-none tracking-normal sm:text-6xl">
-              Код на основных языках, SQL отдельно
+              Практика под разный темп обучения
             </h2>
           </div>
           <div className="grid gap-4">
@@ -136,26 +138,26 @@ export function Features() {
                 <Code className="h-6 w-6 text-[#e9f6a8]" />
                 <h3 className="mt-4 text-2xl font-black">Код</h3>
                 <p className="mt-2 text-sm font-semibold text-zinc-300">
-                  Алгоритмические задачи на основных языках программирования.
+                  Короткие задачи на мышление, структуры данных и аккуратный код.
                 </p>
               </div>
               <div className="rounded-2xl bg-[#18151f] p-5 text-white">
                 <Layers className="h-6 w-6 text-[#9fd8d2]" />
                 <h3 className="mt-4 text-2xl font-black">SQL</h3>
                 <p className="mt-2 text-sm font-semibold text-zinc-300">
-                  Отдельные задачи с таблицами, запросами и проверкой результата.
+                  Таблицы, запросы, агрегации и проверка результата без лишней возни.
                 </p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {codeLanguages.map((language) => (
+              {practiceDirections.map((direction) => (
                 <div
-                  key={language}
+                  key={direction.name}
                   className="rounded-2xl bg-[#18151f] px-4 py-5 text-center text-lg font-black text-white"
                 >
-                  {language}
+                  {direction.name}
                   <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#9fd8d2]">
-                    доступен
+                    {direction.caption}
                   </p>
                 </div>
               ))}

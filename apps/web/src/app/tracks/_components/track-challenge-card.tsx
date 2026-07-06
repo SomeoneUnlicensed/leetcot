@@ -3,15 +3,26 @@
 import { Check, PieChart } from '@repo/ui/icons';
 import { useIsMobile } from '~/utils/useIsMobile';
 
-import type { Challenge, Submission } from '@repo/db/types';
+import type { Difficulty } from '@repo/db/types';
 import { Badge } from '@repo/ui/components/badge';
 import { DifficultyBadge } from '@repo/ui/components/difficulty-badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@repo/ui/components/tooltip';
 import { cn } from '@repo/ui/cn';
 
+interface TrackChallengeShape {
+  difficulty: Difficulty;
+  id: number;
+  name: string;
+  shortDescription: string;
+  slug: string;
+}
+
 interface TrackChallengeProps {
-  challenge: Challenge & {
-    submission: Submission[];
+  challenge: TrackChallengeShape & {
+    submission: {
+      id: number;
+      isSuccessful: boolean;
+    }[];
   };
   isInProgress: boolean;
   isCompleted: boolean;
@@ -29,6 +40,7 @@ const BGS_BY_DIFFICULTY = {
   MEDIUM: 'to-difficulty-medium/20 dark:to-difficulty-medium-dark/20',
   HARD: 'to-difficulty-hard/20 dark:to-difficulty-hard-dark/20',
   EXTREME: 'to-difficulty-extreme/20 dark:to-difficulty-extreme-dark/20',
+  ULTRA: 'to-fuchsia-300/20',
   // this will never actually be used
   EVENT: 'to-difficulty-extreme/20 dark:to-difficulty-extreme-dark/20',
 } as const;
@@ -132,7 +144,7 @@ export function TrackChallenge({
 }
 
 // million-ignore
-export function MockTrackChallenge({ challenge }: { challenge: Challenge }) {
+export function MockTrackChallenge({ challenge }: { challenge: TrackChallengeShape }) {
   const isMobile = useIsMobile();
   return (
     // TODO: Fix this accessibility issue!

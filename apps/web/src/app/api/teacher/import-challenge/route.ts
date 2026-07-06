@@ -67,6 +67,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       MEDIUM: 3,
       HARD: 5,
       EXTREME: 10,
+      ULTRA: 16,
       EVENT: 3,
     };
 
@@ -84,7 +85,7 @@ export async function POST(req: Request): Promise<NextResponse> {
         content: questionContent,
         order: nextOrder,
         points: finalPoints,
-        language: 'PYTHON', // Default to Python as it is most common for school exams
+        language: challenge.language,
       },
     });
 

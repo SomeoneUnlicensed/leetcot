@@ -20,7 +20,7 @@
     "difficulty": {
       "description": "The difficulty level for this challenge.",
       "type": "string",
-      "enum": ["beginner", "easy", "medium", "hard", "extreme", "event"]
+      "enum": ["beginner", "easy", "medium", "hard", "extreme", "ultra", "event"]
     },
     "language": {
       "description": "The programming language for this challenge.",

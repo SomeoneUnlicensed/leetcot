@@ -29,8 +29,9 @@ const difficultyToNumber = {
   MEDIUM: 2,
   HARD: 3,
   EXTREME: 4,
+  ULTRA: 5,
   // this will never actually be used
-  EVENT: 5,
+  EVENT: 6,
 } as const;
 
 const TITLES_BY_TAG = {
@@ -44,6 +45,8 @@ const TITLES_BY_TAG = {
   HARD: 'bg-clip-text text-transparent select-none bg-gradient-to-r from-red-600 to-red-500 dark:from-red-300 dark:to-red-100',
   EXTREME:
     'bg-clip-text text-transparent select-none bg-gradient-to-r from-purple-600 to-purple-500 dark:from-purple-400 dark:to-purple-100',
+  ULTRA:
+    'bg-clip-text text-transparent select-none bg-gradient-to-r from-rose-300/85 via-amber-200/80 via-emerald-200/80 via-cyan-200/80 to-fuchsia-300/85',
   // this will never actually be used
   EVENT:
     'bg-clip-text text-transparent select-none bg-gradient-to-r from-purple-600 to-purple-500 dark:from-purple-400 dark:to-purple-100',
@@ -57,6 +60,8 @@ export const COLORS_BY_TAGS = {
   MEDIUM: 'dark:bg-yellow-300 bg-yellow-600/50',
   HARD: 'dark:bg-red-300 bg-red-600/50',
   EXTREME: 'dark:bg-purple-300 bg-purple-600/50',
+  ULTRA:
+    'bg-[linear-gradient(90deg,rgba(251,113,133,0.55),rgba(103,232,249,0.45),rgba(217,70,239,0.55))]',
   // this will never actually be used
   EVENT: 'dark:bg-purple-300 bg-purple-600/50',
 } as const;

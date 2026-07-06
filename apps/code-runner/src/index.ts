@@ -10,6 +10,7 @@ import {
   type CodeRunJob,
   type CodeRunPayload,
   type CodeRunResult,
+  type CodeRunTestSummary,
 } from '@repo/code-runner';
 
 const execAsync = promisify(exec);
@@ -26,9 +27,10 @@ function getPositiveInteger(value: string | undefined, fallback: number) {
 const CONCURRENCY = getPositiveInteger(process.env.CODE_RUNNER_CONCURRENCY, 2);
 const TIMEOUT_MS = getPositiveInteger(process.env.CODE_RUNNER_TIMEOUT_MS, 10_000);
 const MAX_OUTPUT_BYTES = getPositiveInteger(process.env.CODE_RUNNER_MAX_OUTPUT_BYTES, 16_000);
-const RUNTIME_IMAGE_ERROR =
-  'Песочница не готова: на сервере не найден Docker-образ для запуска кода. ' +
-  'Администратору нужно заранее выполнить: docker pull python:3.11-alpine';
+const RUNTIME_PULL_TIMEOUT_MS = getPositiveInteger(
+  process.env.CODE_RUNNER_RUNTIME_PULL_TIMEOUT_MS,
+  600_000,
+);
 
 interface DockerRunResult {
   exitCode: number | null;
@@ -38,23 +40,78 @@ interface DockerRunResult {
 }
 
 interface LanguageRuntime {
+  cacheVolumes?: string[];
   command: string[];
+  cpuLimit?: string;
+  env?: string[];
   fileName: string;
   image: string;
+  label: string;
+  memoryLimit?: string;
+  timeoutMs?: number;
 }
 
 const pythonRuntime: LanguageRuntime = {
   command: ['python', 'main.py'],
   fileName: 'main.py',
   image: 'python:3.11-alpine',
+  label: 'Python',
+};
+
+const sqlRuntime: LanguageRuntime = {
+  ...pythonRuntime,
+  label: 'SQL',
+};
+
+const goRuntime: LanguageRuntime = {
+  cacheVolumes: ['litkot-go-build-cache:/root/.cache/go-build', 'litkot-go-mod-cache:/go/pkg/mod'],
+  command: [
+    'env',
+    'GO111MODULE=off',
+    'GOCACHE=/root/.cache/go-build',
+    'GOMODCACHE=/go/pkg/mod',
+    'GOFLAGS=-buildvcs=false',
+    'go',
+    'test',
+    '-vet=off',
+    '-run',
+    'Test',
+    '-count=1',
+    '-timeout',
+    '8s',
+    '.',
+  ],
+  cpuLimit: process.env.CODE_RUNNER_GO_CPU_LIMIT ?? '1.0',
+  fileName: 'main.go',
+  image: 'golang:1.24-alpine',
+  label: 'Go',
+  memoryLimit: process.env.CODE_RUNNER_GO_MEMORY_LIMIT ?? '256m',
+  timeoutMs: getPositiveInteger(process.env.CODE_RUNNER_GO_TIMEOUT_MS, 12_000),
 };
 
 const runtimes = {
   python: pythonRuntime,
   // SQL challenges are graded by generating a Python program (below) that runs the
   // query through the stdlib sqlite3 module — no separate image/runtime needed.
-  sql: pythonRuntime,
+  sql: sqlRuntime,
+  go: goRuntime,
 } satisfies Record<CodeRunPayload['language'], LanguageRuntime>;
+
+const readyRuntimeImages = new Set<string>();
+const hotGoRunners = new Map<number, { baseDir: string; containerName: string }>();
+const hotPythonRunners = new Map<number, { baseDir: string; containerName: string }>();
+
+function getRuntimeUnavailableMessage(language: CodeRunPayload['language']) {
+  if (language === 'sql') {
+    return 'SQL-проверка временно недоступна: сервер не успел подготовить изолированную песочницу. Мы уже пробуем поднять runtime автоматически, повторите проверку через минуту.';
+  }
+
+  if (language === 'go') {
+    return 'Go-проверка временно недоступна: сервер не успел подготовить изолированную песочницу. Мы уже пробуем поднять runtime автоматически, повторите проверку через минуту.';
+  }
+
+  return 'Проверка кода временно недоступна: сервер не успел подготовить изолированную песочницу. Мы уже пробуем поднять runtime автоматически, повторите проверку через минуту.';
+}
 
 // Must match packages/db/seed/data/challenge-ingest.ts's PYTHON_ORACLE_MARKER and
 // apps/web's getChallengeRouteData sanitizePythonTestsForClient.
@@ -101,6 +158,7 @@ function parsePythonOracle(testsRaw: string): PythonOracleConfig | null {
 function buildPythonOracleProgram(userCode: string, oracle: PythonOracleConfig): string {
   return `
 import copy
+import json
 import sys
 
 USER_NS = {}
@@ -116,52 +174,136 @@ ENTRY_POINT = ${JSON.stringify(oracle.entryPoint)}
 RESULT_ORDER_INSENSITIVE = ${oracle.resultOrderInsensitive ? 'True' : 'False'}
 TRIALS = 5
 
+def short_repr(value):
+    text = repr(value)
+    return text if len(text) <= 220 else text[:217] + '...'
+
+def finish(success, passed, cases=None):
+    print(json.dumps({
+        'passed': passed,
+        'total': TRIALS,
+        'cases': cases or [],
+    }, ensure_ascii=False))
+    sys.exit(0 if success else 1)
+
+def failed_case(name, message):
+    return {'name': name, 'passed': False, 'message': message}
+
 user_fn = USER_NS.get(ENTRY_POINT)
 ref_fn = REF_NS.get(ENTRY_POINT)
 generate_case = GEN_NS.get('generate_case')
 
 if user_fn is None:
-    print(f'Функция {ENTRY_POINT} не найдена в решении', file=sys.stderr)
-    sys.exit(1)
+    finish(False, 0, [
+        failed_case('Проверка функции', f'В решении должна быть функция {ENTRY_POINT}(...). Сейчас она не найдена.')
+    ])
 if ref_fn is None or generate_case is None:
-    print('Ошибка конфигурации oracle-проверки', file=sys.stderr)
-    sys.exit(1)
+    finish(False, 0, [
+        failed_case('Настройка проверки', 'Проверка задачи временно настроена неверно. Мы уже знаем, где чинить.')
+    ])
 
 def normalize(value):
+    if hasattr(value, 'next'):
+        result = []
+        seen = 0
+        while value is not None and seen < 10000:
+            result.append(getattr(value, 'val', None))
+            value = getattr(value, 'next', None)
+            seen += 1
+        return result
+    if hasattr(value, 'left') or hasattr(value, 'right'):
+        return (
+            getattr(value, 'val', None),
+            normalize(getattr(value, 'left', None)),
+            normalize(getattr(value, 'right', None)),
+        )
     if isinstance(value, (list, tuple)):
         items = [normalize(item) for item in value]
         if RESULT_ORDER_INSENSITIVE:
             try:
-                return sorted(items)
+                return sorted(items, key=repr)
             except TypeError:
                 return items
         return items
+    if isinstance(value, dict):
+        return {key: normalize(value[key]) for key in sorted(value)}
     return value
 
+def run_callable(obj, args):
+    if ENTRY_POINT == 'FeedingQueue':
+        queue = obj()
+        output = []
+        values = list(args[0])
+        for index, value in enumerate(values):
+            queue.add_cat(value)
+            if index % 3 == 1:
+                output.append(queue.feed_next())
+        while True:
+            value = queue.feed_next()
+            output.append(value)
+            if value is None:
+                break
+        return output
+    return obj(*args)
+
 for trial in range(TRIALS):
+    case_name = f'Тест {trial + 1}'
     args = generate_case()
+    if not isinstance(args, tuple):
+        args = (args,)
     user_args = copy.deepcopy(args)
     ref_args = copy.deepcopy(args)
 
     try:
-        actual = user_fn(*user_args)
+        actual = run_callable(user_fn, user_args)
     except Exception as exc:
-        print(f'Ошибка выполнения на наборе {trial + 1}/{TRIALS}: {exc}', file=sys.stderr)
-        sys.exit(1)
+        finish(False, trial, [
+            failed_case(case_name, f'Решение упало на тесте: {exc}')
+        ])
 
-    expected = ref_fn(*ref_args)
+    expected = run_callable(ref_fn, ref_args)
 
     if normalize(actual) != normalize(expected):
-        print(
-            f'MISMATCH on trial {trial + 1}/{TRIALS}: args={args} '
-            f'expected={expected} actual={actual}',
-            file=sys.stderr,
-        )
-        sys.exit(1)
+        finish(False, trial, [
+            failed_case(
+                case_name,
+                f'Ожидалось {short_repr(expected)}, получено {short_repr(actual)}'
+            )
+        ])
 
-print('OK')
-sys.exit(0)
+finish(True, TRIALS)
 `;
+}
+
+function parseTestSummary(output: string): CodeRunTestSummary | undefined {
+  const line = output
+    .split('\n')
+    .map((part) => part.trim())
+    .reverse()
+    .find((part) => part.startsWith('{') && part.endsWith('}'));
+
+  if (!line) {
+    return undefined;
+  }
+
+  try {
+    const parsed = JSON.parse(line) as Partial<CodeRunTestSummary>;
+    if (
+      typeof parsed.passed === 'number' &&
+      typeof parsed.total === 'number' &&
+      parsed.total >= 0
+    ) {
+      return {
+        cases: Array.isArray(parsed.cases) ? parsed.cases : [],
+        passed: parsed.passed,
+        total: parsed.total,
+      };
+    }
+  } catch {
+    return undefined;
+  }
+
+  return undefined;
 }
 
 /**
@@ -325,8 +467,22 @@ function isMissingRuntimeImageError(output = '') {
   );
 }
 
-async function ensureRuntimeImage(image: string) {
-  await execAsync(`docker image inspect "${image}"`);
+async function ensureRuntimeImage(runtime: LanguageRuntime) {
+  if (readyRuntimeImages.has(runtime.image)) {
+    return;
+  }
+
+  try {
+    await execAsync(`docker image inspect "${runtime.image}"`);
+    readyRuntimeImages.add(runtime.image);
+    return;
+  } catch {
+    console.warn(`${runtime.label} runtime image ${runtime.image} is missing; pulling it now.`);
+  }
+
+  await execAsync(`docker pull "${runtime.image}"`, { timeout: RUNTIME_PULL_TIMEOUT_MS });
+  await execAsync(`docker image inspect "${runtime.image}"`);
+  readyRuntimeImages.add(runtime.image);
 }
 
 async function forceRemoveContainer(containerName: string) {
@@ -339,9 +495,16 @@ async function cleanupSandbox(containerName: string, tmpDir: string) {
 }
 
 async function cleanupStaleSandboxContainers() {
-  const { stdout } = await execAsync(
+  const staleQueries = [
     'docker ps -aq --filter "name=^/litkot-run-" --filter "label=litkot.runner=code-runner"',
-  ).catch(() => ({ stdout: '' }));
+    'docker ps -aq --filter "name=^/litkot-hot-go-" --filter "label=litkot.runner=hot"',
+    'docker ps -aq --filter "name=^/litkot-hot-python-" --filter "label=litkot.runner=hot"',
+  ];
+  const stdout = (
+    await Promise.all(staleQueries.map((query) => execAsync(query).catch(() => ({ stdout: '' }))))
+  )
+    .map((result) => result.stdout)
+    .join('\n');
   const containerIds = stdout.split(/\s+/).filter(Boolean);
 
   if (containerIds.length === 0) {
@@ -352,20 +515,406 @@ async function cleanupStaleSandboxContainers() {
   console.log(`Removed ${containerIds.length} stale sandbox container(s)`);
 }
 
-async function warmRuntimeImages() {
-  const images = [...new Set(Object.values(runtimes).map((runtime) => runtime.image))];
+async function ensureHotGoRunner(workerId: number) {
+  const existing = hotGoRunners.get(workerId);
+  if (existing) {
+    const { stdout } = await execAsync(
+      `docker inspect -f "{{.State.Running}}" "${existing.containerName}"`,
+    ).catch(() => ({ stdout: '' }));
+    if (stdout.trim() === 'true') {
+      return existing;
+    }
+    hotGoRunners.delete(workerId);
+  }
 
-  await Promise.all(
-    images.map(async (image) => {
-      await execAsync(`docker pull "${image}"`, { timeout: 120_000 });
-      console.log(`Runtime image ready: ${image}`);
+  await ensureRuntimeImage(goRuntime);
+
+  const containerName = `litkot-hot-go-${workerId}`;
+  const baseDir = path.join(os.tmpdir(), 'litkot-hot-go', String(workerId));
+  await rm(baseDir, { force: true, recursive: true });
+  await mkdir(baseDir, { recursive: true });
+  await forceRemoveContainer(containerName);
+
+  const normalizedBaseDir = baseDir.replace(/\\/g, '/');
+  await execAsync(
+    [
+      'docker',
+      'run',
+      '-d',
+      '--name',
+      `"${containerName}"`,
+      '--label',
+      'litkot.runner=hot',
+      '--pull',
+      'never',
+      '--network',
+      'none',
+      '--cap-drop',
+      'ALL',
+      '--security-opt',
+      'no-new-privileges',
+      '-m',
+      goRuntime.memoryLimit ?? MEMORY_LIMIT,
+      '--cpus',
+      goRuntime.cpuLimit ?? CPU_LIMIT,
+      '--pids-limit',
+      '128',
+      '-v',
+      `"${normalizedBaseDir}:/work"`,
+      ...(goRuntime.cacheVolumes ?? []).flatMap((volume) => ['-v', volume]),
+      '-w',
+      '/work',
+      goRuntime.image,
+      'sh',
+      '-c',
+      '"sleep infinity"',
+    ].join(' '),
+  );
+
+  const runner = { baseDir, containerName };
+  hotGoRunners.set(workerId, runner);
+  return runner;
+}
+
+async function ensureHotPythonRunner(workerId: number) {
+  const existing = hotPythonRunners.get(workerId);
+  if (existing) {
+    const { stdout } = await execAsync(
+      `docker inspect -f "{{.State.Running}}" "${existing.containerName}"`,
+    ).catch(() => ({ stdout: '' }));
+    if (stdout.trim() === 'true') {
+      return existing;
+    }
+    hotPythonRunners.delete(workerId);
+  }
+
+  await ensureRuntimeImage(pythonRuntime);
+
+  const containerName = `litkot-hot-python-${workerId}`;
+  const baseDir = path.join(os.tmpdir(), 'litkot-hot-python', String(workerId));
+  await rm(baseDir, { force: true, recursive: true });
+  await mkdir(baseDir, { recursive: true });
+  await forceRemoveContainer(containerName);
+
+  const normalizedBaseDir = baseDir.replace(/\\/g, '/');
+  await execAsync(
+    [
+      'docker',
+      'run',
+      '-d',
+      '--name',
+      `"${containerName}"`,
+      '--label',
+      'litkot.runner=hot',
+      '--pull',
+      'never',
+      '--network',
+      'none',
+      '--cap-drop',
+      'ALL',
+      '--security-opt',
+      'no-new-privileges',
+      '-m',
+      pythonRuntime.memoryLimit ?? MEMORY_LIMIT,
+      '--cpus',
+      pythonRuntime.cpuLimit ?? CPU_LIMIT,
+      '--pids-limit',
+      '128',
+      '-v',
+      `"${normalizedBaseDir}:/work"`,
+      '-w',
+      '/work',
+      pythonRuntime.image,
+      'sh',
+      '-c',
+      '"sleep infinity"',
+    ].join(' '),
+  );
+
+  const runner = { baseDir, containerName };
+  hotPythonRunners.set(workerId, runner);
+  return runner;
+}
+
+async function executeGoHotJob(job: CodeRunJob, workerId: number): Promise<CodeRunResult> {
+  const runner = await ensureHotGoRunner(workerId);
+  const jobDir = path.join(runner.baseDir, job.id);
+  await mkdir(jobDir, { recursive: true });
+  await writeFile(path.join(jobDir, goRuntime.fileName), job.payload.code);
+  await writeFile(path.join(jobDir, 'main_test.go'), job.payload.tests);
+
+  const timeoutSeconds = Math.ceil((goRuntime.timeoutMs ?? TIMEOUT_MS) / 1000);
+  const dockerArgs = [
+    'exec',
+    '-w',
+    `/work/${job.id}`,
+    runner.containerName,
+    'timeout',
+    '-s',
+    'KILL',
+    `${timeoutSeconds}s`,
+    ...goRuntime.command,
+  ];
+
+  try {
+    const startTime = performance.now();
+    const result = await runSandboxContainer(
+      dockerArgs,
+      runner.containerName,
+      (goRuntime.timeoutMs ?? TIMEOUT_MS) + 2_000,
+    );
+    const executionTimeMs = Math.round(performance.now() - startTime);
+
+    if (result.timedOut || result.exitCode === 137) {
+      hotGoRunners.delete(workerId);
+      return {
+        error: `ТАЙМАУТ: Код выполнялся дольше ${timeoutSeconds} секунд. Возможно бесконечный цикл или очень медленное выполнение.`,
+        output: trimOutput(result.stdout),
+        success: false,
+      };
+    }
+
+    if (result.exitCode !== 0) {
+      const testSummary = parseTestSummary(result.stdout);
+      const failedCase = testSummary?.cases?.find((item) => !item.passed);
+
+      return {
+        error:
+          failedCase?.message ||
+          trimOutput(result.stderr || `Процесс завершился с кодом ${result.exitCode}`),
+        output: testSummary ? '' : trimOutput(result.stdout),
+        success: false,
+        testSummary,
+      };
+    }
+
+    const testSummary = parseTestSummary(result.stdout);
+
+    return {
+      error: '',
+      executionTimeMs,
+      output: testSummary ? '' : trimOutput(result.stdout),
+      success: true,
+      testSummary,
+    };
+  } finally {
+    await rm(jobDir, { force: true, recursive: true });
+  }
+}
+
+async function executePythonHotJob(job: CodeRunJob, workerId: number): Promise<CodeRunResult> {
+  const runner = await ensureHotPythonRunner(workerId);
+  const jobDir = path.join(runner.baseDir, job.id);
+  await mkdir(jobDir, { recursive: true });
+
+  const pythonOracle =
+    job.payload.language === 'python' ? parsePythonOracle(job.payload.tests) : null;
+  const fullCode =
+    job.payload.language === 'sql'
+      ? buildSqlProgram(job.payload.code, job.payload.tests)
+      : pythonOracle
+        ? buildPythonOracleProgram(job.payload.code, pythonOracle)
+        : `${job.payload.code}\n\n${job.payload.tests}`;
+
+  await writeFile(path.join(jobDir, pythonRuntime.fileName), fullCode);
+
+  const timeoutMs = pythonRuntime.timeoutMs ?? TIMEOUT_MS;
+  const timeoutSeconds = Math.ceil(timeoutMs / 1000);
+  const dockerArgs = [
+    'exec',
+    '-w',
+    `/work/${job.id}`,
+    runner.containerName,
+    'timeout',
+    '-s',
+    'KILL',
+    `${timeoutSeconds}s`,
+    ...pythonRuntime.command,
+  ];
+
+  try {
+    const startTime = performance.now();
+    const result = await runSandboxContainer(dockerArgs, runner.containerName, timeoutMs + 2_000);
+    const executionTimeMs = Math.round(performance.now() - startTime);
+
+    if (result.timedOut || result.exitCode === 137) {
+      hotPythonRunners.delete(workerId);
+      return {
+        error: `ТАЙМАУТ: Код выполнялся дольше ${timeoutSeconds} секунд. Возможно бесконечный цикл или очень медленное выполнение.`,
+        output: trimOutput(result.stdout),
+        success: false,
+      };
+    }
+
+    if (result.exitCode !== 0) {
+      const testSummary = parseTestSummary(result.stdout);
+      const failedCase = testSummary?.cases?.find((item) => !item.passed);
+
+      return {
+        error:
+          failedCase?.message ||
+          trimOutput(result.stderr || `Процесс завершился с кодом ${result.exitCode}`),
+        output: testSummary ? '' : trimOutput(result.stdout),
+        success: false,
+        testSummary,
+      };
+    }
+
+    const testSummary = parseTestSummary(result.stdout);
+
+    return {
+      error: '',
+      executionTimeMs,
+      output: testSummary ? '' : trimOutput(result.stdout),
+      success: true,
+      testSummary,
+    };
+  } finally {
+    await rm(jobDir, { force: true, recursive: true });
+  }
+}
+
+async function warmRuntimeImages() {
+  const runtimeByImage = new Map<string, LanguageRuntime>();
+  Object.values(runtimes).forEach((runtime) => {
+    runtimeByImage.set(runtime.image, runtime);
+  });
+
+  const results = await Promise.allSettled(
+    [...runtimeByImage.values()].map(async (runtime) => {
+      await ensureRuntimeImage(runtime);
+      console.log(`Runtime image ready: ${runtime.image}`);
     }),
   );
+
+  const images = [...runtimeByImage.keys()];
+  results.forEach((result, index) => {
+    if (result.status === 'rejected') {
+      console.warn(
+        `Runtime image warmup failed for ${images[index]}. The runner will retry on demand.`,
+        result.reason,
+      );
+    }
+  });
+}
+
+async function runGoWarmupPackage(packageName: string, mainSource: string, testSource: string) {
+  const tmpDir = path.join(os.tmpdir(), `litkot-go-cache-warmup-${packageName}`);
+  await rm(tmpDir, { force: true, recursive: true });
+  await mkdir(tmpDir, { recursive: true });
+  await writeFile(path.join(tmpDir, 'main.go'), mainSource);
+  await writeFile(path.join(tmpDir, 'main_test.go'), testSource);
+
+  const containerName = `litkot-go-cache-warmup-${packageName}`;
+  const normalizedTmpDir = tmpDir.replace(/\\/g, '/');
+  const args = [
+    'run',
+    '--rm',
+    '--name',
+    containerName,
+    '--label',
+    'litkot.runner=warmup',
+    '--pull',
+    'never',
+    '--network',
+    'none',
+    '--cap-drop',
+    'ALL',
+    '--security-opt',
+    'no-new-privileges',
+    '-m',
+    goRuntime.memoryLimit ?? MEMORY_LIMIT,
+    '--cpus',
+    goRuntime.cpuLimit ?? CPU_LIMIT,
+    '--pids-limit',
+    '128',
+    '-v',
+    `${normalizedTmpDir}:/code`,
+    ...(goRuntime.cacheVolumes ?? []).flatMap((volume) => ['-v', volume]),
+    '-w',
+    '/code',
+    goRuntime.image,
+    ...goRuntime.command,
+  ];
+
+  try {
+    const result = await runSandboxContainer(args, containerName, 60_000);
+    if (result.exitCode !== 0) {
+      const message = result.timedOut
+        ? 'timed out'
+        : trimOutput(result.stderr || result.stdout || 'unknown error');
+      console.warn(`Go build cache warmup failed for ${packageName}: ${message}`);
+    }
+  } finally {
+    await cleanupSandbox(containerName, tmpDir);
+  }
+}
+
+async function warmGoBuildCache() {
+  await runGoWarmupPackage(
+    'stdlib',
+    `package main
+
+import (
+  "container/heap"
+  "fmt"
+  "reflect"
+  "sort"
+  "strconv"
+  "strings"
+)
+
+type warmHeap []int
+
+func (h warmHeap) Len() int           { return len(h) }
+func (h warmHeap) Less(i, j int) bool { return h[i] < h[j] }
+func (h warmHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+func (h *warmHeap) Push(x any)        { *h = append(*h, x.(int)) }
+func (h *warmHeap) Pop() any {
+  old := *h
+  x := old[len(old)-1]
+  *h = old[:len(old)-1]
+  return x
+}
+
+func warm() string {
+  values := []int{3, 1, 2}
+  sort.Ints(values)
+  h := &warmHeap{2, 1}
+  heap.Init(h)
+  heap.Push(h, 3)
+  _ = heap.Pop(h)
+  parsed, _ := strconv.Atoi("42")
+  if !reflect.DeepEqual(values, []int{1, 2, 3}) {
+    return "bad"
+  }
+  return fmt.Sprintf("%s:%d", strings.ToUpper("ok"), parsed)
+}
+`,
+    `package main
+
+import (
+  "math/rand"
+  "testing"
+)
+
+func TestWarm(t *testing.T) {
+  if warm() != "OK:42" {
+    t.Fatal("bad warmup")
+  }
+  if rand.New(rand.NewSource(1)).Intn(10) < 0 {
+    t.Fatal("bad rand")
+  }
+}
+`,
+  );
+  console.log('Go build cache warmed');
 }
 
 async function runSandboxContainer(
   args: string[],
   containerName: string,
+  timeoutMs: number,
 ): Promise<DockerRunResult> {
   return new Promise((resolve, reject) => {
     const child = spawn('docker', args, { windowsHide: true });
@@ -393,7 +942,7 @@ async function runSandboxContainer(
         stdout,
         timedOut: true,
       });
-    }, TIMEOUT_MS);
+    }, timeoutMs);
 
     child.stdout.on('data', (chunk: Buffer) => {
       stdout += chunk.toString('utf8');
@@ -420,144 +969,18 @@ async function runSandboxContainer(
   });
 }
 
-async function executeJob(job: CodeRunJob): Promise<CodeRunResult> {
-  const runtime = runtimes[job.payload.language];
-  const containerName = `litkot-run-${job.id}`;
-  const tmpDir = path.join(os.tmpdir(), `litkot-run-${job.id}`);
-  let shouldCleanupInBackground = false;
-
-  await mkdir(tmpDir, { recursive: true });
-
-  try {
-    try {
-      await ensureRuntimeImage(runtime.image);
-    } catch {
-      return {
-        error: RUNTIME_IMAGE_ERROR,
-        success: false,
-      };
-    }
-
-    const pythonOracle =
-      job.payload.language === 'python' ? parsePythonOracle(job.payload.tests) : null;
-
-    const fullCode =
-      job.payload.language === 'sql'
-        ? buildSqlProgram(job.payload.code, job.payload.tests)
-        : pythonOracle
-          ? buildPythonOracleProgram(job.payload.code, pythonOracle)
-          : `${job.payload.code}\n\n${job.payload.tests}`;
-    const filePath = path.join(tmpDir, runtime.fileName);
-    await writeFile(filePath, fullCode);
-
-    const normalizedTmpDir = tmpDir.replace(/\\/g, '/');
-    const dockerArgs = [
-      'run',
-      '--rm',
-      '--name',
-      containerName,
-      '--label',
-      'litkot.runner=code-runner',
-      '--label',
-      `litkot.job=${job.id}`,
-      '--pull',
-      'never',
-      '--network',
-      'none',
-      '--cap-drop',
-      'ALL',
-      '--security-opt',
-      'no-new-privileges',
-      '-m',
-      MEMORY_LIMIT,
-      '--cpus',
-      CPU_LIMIT,
-      '--pids-limit',
-      '128',
-      '-v',
-      `${normalizedTmpDir}:/code`,
-      '-w',
-      '/code',
-      runtime.image,
-      ...runtime.command,
-    ];
-
-    try {
-      const startTime = performance.now();
-      const result = await runSandboxContainer(dockerArgs, containerName);
-      const executionTimeMs = Math.round(performance.now() - startTime);
-
-      if (result.timedOut) {
-        shouldCleanupInBackground = true;
-
-        return {
-          error: `ТАЙМАУТ: Код выполнялся дольше ${Math.ceil(TIMEOUT_MS / 1000)} секунд. Возможно бесконечный цикл или очень медленное выполнение.`,
-          output: trimOutput(result.stdout),
-          success: false,
-        };
-      }
-
-      if (result.exitCode !== 0) {
-        if (isMissingRuntimeImageError(result.stderr)) {
-          return {
-            error: RUNTIME_IMAGE_ERROR,
-            output: trimOutput(result.stdout),
-            success: false,
-          };
-        }
-
-        return {
-          error: trimOutput(result.stderr || `Процесс завершился с кодом ${result.exitCode}`),
-          output: trimOutput(result.stdout),
-          success: false,
-        };
-      }
-
-      return {
-        error: trimOutput(result.stderr),
-        executionTimeMs,
-        output: trimOutput(result.stdout),
-        success: true,
-      };
-    } catch (error: unknown) {
-      const err = error as {
-        killed?: boolean;
-        message?: string;
-        stderr?: string;
-        stdout?: string;
-      };
-
-      if (err.killed || err.message?.includes('SIGTERM') || err.message?.includes('ETIMEDOUT')) {
-        return {
-          error: `ТАЙМАУТ: Код выполнялся дольше ${Math.ceil(TIMEOUT_MS / 1000)} секунд. Возможно бесконечный цикл или очень медленное выполнение.`,
-          output: trimOutput(err.stdout),
-          success: false,
-        };
-      }
-
-      if (isMissingRuntimeImageError(`${err.stderr || ''}\n${err.message || ''}`)) {
-        return {
-          error: RUNTIME_IMAGE_ERROR,
-          output: trimOutput(err.stdout),
-          success: false,
-        };
-      }
-
-      return {
-        error: trimOutput(err.stderr || err.message || 'Ошибка выполнения тестов'),
-        output: trimOutput(err.stdout),
-        success: false,
-      };
-    }
-  } finally {
-    const cleanup = cleanupSandbox(containerName, tmpDir);
-
-    if (shouldCleanupInBackground) {
-      void cleanup;
-    } else {
-      await cleanup;
-    }
+async function executeJob(job: CodeRunJob, workerId: number): Promise<CodeRunResult> {
+  if (job.payload.language === 'go') {
+    return executeGoHotJob(job, workerId);
   }
+  if (job.payload.language === 'python' || job.payload.language === 'sql') {
+    return executePythonHotJob(job, workerId);
+  }
+
+  return {
+    error: `Язык ${job.payload.language} не поддерживается песочницей`,
+    success: false,
+  };
 }
 
 async function worker(workerId: number) {
@@ -573,7 +996,7 @@ async function worker(workerId: number) {
     console.log(`Worker ${workerId} running job ${job.id}`);
 
     try {
-      const result = await executeJob(job);
+      const result = await executeJob(job, workerId);
       await markCodeRunJob(job.id, result.success ? 'success' : 'failure', result);
       console.log(`Worker ${workerId} finished job ${job.id}`);
     } catch (error: unknown) {
@@ -589,6 +1012,7 @@ async function worker(workerId: number) {
 async function main() {
   await cleanupStaleSandboxContainers();
   await warmRuntimeImages();
+  await warmGoBuildCache();
 
   for (let i = 0; i < CONCURRENCY; i += 1) {
     void worker(i + 1);

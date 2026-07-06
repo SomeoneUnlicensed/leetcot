@@ -1,16 +1,12 @@
-import unittest
+# Видимый smoke-тест. Серверная проверка ниже использует oracle и скрыта от клиента.
+import sys
 
+ENTRY_POINT = "rotate_bowls"
+if globals().get(ENTRY_POINT) is None:
+    print(f'Функция или класс {ENTRY_POINT} не найдены', file=sys.stderr)
+    sys.exit(1)
 
-class TestRotateBowls(unittest.TestCase):
-    def test_examples(self):
-        self.assertEqual(rotate_bowls([1, 2, 3, 4, 5], 2), [4, 5, 1, 2, 3])
-        self.assertEqual(rotate_bowls([7, 8, 9], 3), [7, 8, 9])
-        self.assertEqual(rotate_bowls([], 10), [])
+print('visible smoke OK')
 
-    def test_large_shift(self):
-        self.assertEqual(rotate_bowls(['a', 'b', 'c'], 10), ['c', 'a', 'b'])
-        self.assertEqual(rotate_bowls([1], 99), [1])
-
-
-if __name__ == '__main__':
-    unittest.main()
+# ---LEETCOT-ORACLE---
+# {"entryPoint":"rotate_bowls","referenceSolution":"def rotate_bowls(bowls, k):\n    if not bowls:\n        return []\n    shift = k % len(bowls)\n    if shift == 0:\n        return list(bowls)\n    return list(bowls[-shift:]) + list(bowls[:-shift])\n","seedGenerator":"import random\n\n\ndef generate_case():\n    size = random.randint(0, 30)\n    bowls = [random.randint(-50, 50) for _ in range(size)]\n    k = random.randint(0, 120)\n    return (bowls, k)\n"}

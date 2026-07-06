@@ -28,6 +28,10 @@ export const SORT_KEYS = [
     label: 'Экстрим',
     value: 'extreme',
   },
+  {
+    label: 'Ультра',
+    value: 'ultra',
+  },
 ] as const;
 
 export type ChallengeLabelType = (typeof SORT_KEYS)[number]['label'];
@@ -43,6 +47,7 @@ export type ChallengeTitles =
   | 'Для тех, кто учится'
   | 'Для экспертов'
   | 'Для энтузиастов'
+  | 'Для ультра-задач'
   | 'Отлично для новичков'
   | 'Рекомендуемые испытания';
 
@@ -91,6 +96,12 @@ export function getChallengesAndTitle(
         title: 'Для мастеров',
         challenges: AC.extremeChallenges,
         key: SORT_KEYS[5],
+      };
+    case 'ultra':
+      return {
+        title: 'Для ультра-задач',
+        challenges: AC.ultraChallenges,
+        key: SORT_KEYS[6],
       };
     default:
       return {

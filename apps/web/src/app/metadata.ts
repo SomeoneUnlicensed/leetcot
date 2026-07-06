@@ -53,7 +53,7 @@ interface MetaParamsForChallenge {
   title: string;
   description: string;
   username: string;
-  difficulty: 'BEGINNER' | 'EASY' | 'EVENT' | 'EXTREME' | 'HARD' | 'MEDIUM';
+  difficulty: 'BEGINNER' | 'EASY' | 'EVENT' | 'EXTREME' | 'HARD' | 'MEDIUM' | 'ULTRA';
   date: string;
 }
 

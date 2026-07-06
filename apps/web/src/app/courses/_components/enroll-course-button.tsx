@@ -18,7 +18,10 @@ export function EnrollCourseButton({ courseId, isEnrolled, isLoggedIn }: EnrollC
 
   if (!isLoggedIn) {
     return (
-      <Button disabled className="rounded-xl bg-zinc-400 px-6 py-2 font-bold text-white">
+      <Button
+        disabled
+        className="h-12 rounded-2xl bg-white/[0.08] px-6 text-base font-black text-[#d8d4df]"
+      >
         Войдите, чтобы записаться
       </Button>
     );
@@ -30,7 +33,7 @@ export function EnrollCourseButton({ courseId, isEnrolled, isLoggedIn }: EnrollC
         <Button
           variant="outline"
           disabled={isPending}
-          className="rounded-xl border-red-500/50 px-6 py-2 font-bold text-red-500 hover:bg-red-500/10"
+          className="h-12 rounded-2xl border-red-400/40 bg-white/[0.04] px-6 text-base font-black text-red-300 hover:bg-red-500/10"
           onClick={() => {
             setError(null);
             startTransition(async () => {
@@ -54,7 +57,7 @@ export function EnrollCourseButton({ courseId, isEnrolled, isLoggedIn }: EnrollC
     <div className="flex flex-col items-end gap-1">
       <Button
         disabled={isPending}
-        className="rounded-xl bg-emerald-600 px-8 py-3 font-extrabold text-white shadow-lg transition-all hover:bg-emerald-700 hover:shadow-emerald-950/20"
+        className="h-12 rounded-2xl bg-[#ff4fa3] px-6 text-base font-black text-white shadow-lg shadow-pink-950/30 transition-all hover:bg-[#ff75b9]"
         onClick={() => {
           setError(null);
           startTransition(async () => {

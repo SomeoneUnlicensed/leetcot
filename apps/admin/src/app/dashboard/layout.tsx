@@ -29,11 +29,6 @@ const sidebarNavItems: SidebarNavItem[] = [
     title: 'Треки',
   },
   {
-    href: '/dashboard/championships',
-    icon: 'medal',
-    title: 'Чемпионаты',
-  },
-  {
     href: '/dashboard/notifications',
     icon: 'bell',
     title: 'Уведомления',

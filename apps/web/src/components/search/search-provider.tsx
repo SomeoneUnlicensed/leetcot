@@ -1,13 +1,17 @@
 'use client';
 
 import * as React from 'react';
-import type { Challenge } from '@repo/db/types';
-import { searchChallenges } from '~/app/explore/_components/explore.action';
+import type { Language } from '@repo/db/types';
+import { searchChallenges, type SearchedChallenge } from '~/app/explore/_components/explore.action';
+
+export type SearchLanguage = 'ALL' | 'PYTHON' | 'SQL' | 'GO';
 
 interface SearchContextType {
+  language: SearchLanguage;
   query: string;
   setQuery: (query: string) => void;
-  results: Challenge[];
+  setLanguage: (language: SearchLanguage) => void;
+  results: SearchedChallenge[];
   status: 'error' | 'idle' | 'loading' | 'success';
 }
 
@@ -15,7 +19,8 @@ const SearchContext = React.createContext<SearchContextType | undefined>(undefin
 
 export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [query, setQuery] = React.useState('');
-  const [results, setResults] = React.useState<Challenge[]>([]);
+  const [language, setLanguage] = React.useState<SearchLanguage>('ALL');
+  const [results, setResults] = React.useState<SearchedChallenge[]>([]);
   const [status, setStatus] = React.useState<'error' | 'idle' | 'loading' | 'success'>('idle');
 
   React.useEffect(() => {
@@ -28,8 +33,11 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     const timer = setTimeout(async () => {
       setStatus('loading');
       try {
-        const data = await searchChallenges(query);
-        setResults(data as Challenge[]);
+        const data = await searchChallenges(
+          query,
+          language === 'ALL' ? undefined : (language as Language),
+        );
+        setResults(data);
         setStatus('success');
       } catch (error) {
         console.error('Search error:', error);
@@ -38,10 +46,10 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [language, query]);
 
   return (
-    <SearchContext.Provider value={{ query, setQuery, results, status }}>
+    <SearchContext.Provider value={{ language, query, results, setLanguage, setQuery, status }}>
       {children}
     </SearchContext.Provider>
   );
@@ -53,13 +61,13 @@ export function useSearchStatus(): { status: 'error' | 'idle' | 'loading' | 'suc
   return { status: context.status };
 }
 
-export function useSearchResult(): { results: Challenge[]; query: string } {
+export function useSearchResult(): { results: SearchedChallenge[]; query: string } {
   const context = React.useContext(SearchContext);
   if (!context) throw new Error('useSearchResult must be used within SearchProvider');
   return { results: context.results, query: context.query };
 }
 
-export type Result = Challenge;
+export type Result = SearchedChallenge;
 
 export function useSearchProviderInput(): { query: string; update: (query: string) => void } {
   const context = React.useContext(SearchContext);
@@ -67,8 +75,18 @@ export function useSearchProviderInput(): { query: string; update: (query: strin
   return { query: context.query, update: context.setQuery };
 }
 
-export function useSearchBox(): { query: string; setQuery: (query: string) => void } {
+export function useSearchBox(): {
+  language: SearchLanguage;
+  query: string;
+  setLanguage: (language: SearchLanguage) => void;
+  setQuery: (query: string) => void;
+} {
   const context = React.useContext(SearchContext);
   if (!context) throw new Error('useSearchBox must be used within SearchProvider');
-  return { query: context.query, setQuery: context.setQuery };
+  return {
+    language: context.language,
+    query: context.query,
+    setLanguage: context.setLanguage,
+    setQuery: context.setQuery,
+  };
 }

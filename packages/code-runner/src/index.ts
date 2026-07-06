@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export type CodeRunnerLanguage = 'python' | 'sql';
+export type CodeRunnerLanguage = 'python' | 'sql' | 'go';
 
 export interface CodeRunPayload {
   code: string;
@@ -10,11 +10,24 @@ export interface CodeRunPayload {
   userId: string;
 }
 
+export interface CodeRunCaseResult {
+  message?: string;
+  name: string;
+  passed: boolean;
+}
+
+export interface CodeRunTestSummary {
+  cases?: CodeRunCaseResult[];
+  passed: number;
+  total: number;
+}
+
 export interface CodeRunResult {
   error?: string;
   executionTimeMs?: number;
   output?: string;
   success: boolean;
+  testSummary?: CodeRunTestSummary;
 }
 
 export type CodeRunStatus = 'failure' | 'queued' | 'running' | 'success';
@@ -51,7 +64,7 @@ async function getRedisClient() {
 export function normalizeLanguage(language: string): CodeRunnerLanguage | null {
   const normalized = language.toLowerCase();
 
-  if (normalized === 'python' || normalized === 'sql') {
+  if (normalized === 'python' || normalized === 'sql' || normalized === 'go') {
     return normalized;
   }
 

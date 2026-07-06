@@ -1,5 +1,5 @@
 import { Button } from '@repo/ui/components/button';
-import { ArrowUpRight, BookOpen, Compass } from '@repo/ui/icons';
+import { ArrowUpRight, BookOpen, Code, Compass } from '@repo/ui/icons';
 import Link from 'next/link';
 import { auth } from '~/server/auth';
 
@@ -7,32 +7,35 @@ export async function Hero() {
   const session = await auth();
 
   return (
-    <section className="relative isolate bg-[#0b0b10] px-4 text-white">
-      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-pink-500/10 to-transparent" />
-      <div className="pointer-events-none absolute right-[8%] top-24 -z-10 h-80 w-80 rounded-full bg-pink-500/15 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-10 left-[8%] -z-10 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl" />
+    <section className="relative isolate overflow-hidden bg-[#121018] px-4 text-white">
+      <div className="from-[#ec4899]/16 pointer-events-none absolute inset-x-0 top-0 -z-10 h-48 bg-gradient-to-b to-transparent" />
+      <div className="bg-[#2dd4bf]/12 pointer-events-none absolute right-0 top-20 -z-10 h-[34rem] w-[46rem] rounded-l-full blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 left-0 -z-10 h-[30rem] w-[34rem] rounded-r-full bg-[#f59e0b]/10 blur-3xl" />
 
-      <div className="container relative flex min-h-[calc(100svh-3.5rem)] flex-col justify-center pb-16 pt-14 sm:pb-20 sm:pt-16">
-        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,0.72fr)_minmax(220px,0.28fr)]">
+      <div className="container relative flex min-h-[calc(100svh-3.5rem)] flex-col justify-center pb-20 pt-12 sm:pb-24 sm:pt-14">
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,0.66fr)_minmax(280px,0.34fr)]">
           <div className="max-w-5xl">
-            <div className="mb-7 inline-flex items-center gap-2 rounded-xl border border-pink-400/25 bg-zinc-950/80 px-3 py-2 font-mono text-sm font-bold text-pink-300 shadow-2xl shadow-pink-950/10">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-2xl border border-[#ff8ecb]/30 bg-[#211827]/80 px-4 py-2 text-sm font-black text-[#ffaad8] shadow-2xl shadow-pink-950/10">
               <BookOpen className="h-4 w-4" />
-              ЛитКот · задачи под присмотром кота
+              задачи, курсы и автопроверка
             </div>
 
-            <h1 className="max-w-5xl text-balance font-sans text-5xl font-extrabold leading-[1.03] tracking-normal sm:text-6xl lg:text-[5.25rem]">
-              Учитесь кодить на задачах, которые не хочется бросить на середине
+            <h1
+              className="max-w-4xl text-balance text-4xl leading-[1.14] tracking-normal sm:text-5xl md:text-6xl lg:text-[4.05rem] xl:text-[4.45rem]"
+              style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+            >
+              Практика программирования на русском: Python, SQL и Go
             </h1>
 
-            <p className="mt-7 max-w-2xl text-lg font-medium leading-8 text-zinc-400 sm:text-xl">
-              Задачи по коду, отдельная SQL-практика и обсуждения решений на русском языке. ЛитКот
-              держит маршрут аккуратным: выбрали тему, решили задачу, вернулись к прогрессу.
+            <p className="mt-6 max-w-2xl text-base font-semibold leading-7 text-[#d8d4df]/80 sm:text-lg">
+              Решайте алгоритмические задачи, тренируйте SQL-запросы и проходите стартовый курс Go.
+              Код запускается в браузере, результат проверки сохраняется в профиле.
             </p>
 
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Button
                 asChild
-                className="h-12 rounded-xl bg-pink-500 px-6 text-base font-bold text-white hover:bg-pink-400"
+                className="h-12 rounded-2xl bg-[#ff4fa3] px-6 text-base font-black text-white shadow-lg shadow-pink-950/30 hover:bg-[#ff75b9]"
               >
                 <Link href={session ? '/explore' : '/register'}>
                   <Compass className="mr-2 h-4 w-4" />
@@ -42,7 +45,7 @@ export async function Hero() {
               <Button
                 asChild
                 variant="outline"
-                className="h-12 rounded-xl border-zinc-700 bg-zinc-950 px-6 text-base font-bold text-zinc-100 hover:bg-zinc-900"
+                className="h-12 rounded-2xl border-white/15 bg-white/[0.04] px-6 text-base font-black text-zinc-100 hover:bg-white/10"
               >
                 <Link href="/algorithms">
                   Посмотреть алгоритмы
@@ -53,19 +56,44 @@ export async function Hero() {
           </div>
 
           <div className="hidden h-full items-center justify-end lg:flex">
-            <div className="max-w-64 border-l border-pink-400/15 pl-8">
-              <pre className="select-none font-mono text-sm font-black leading-5 text-pink-400/55">{` /\\_/\\\\
+            <div className="w-full max-w-[22rem]">
+              <pre className="ml-auto w-fit select-none font-mono text-sm font-black leading-5 text-[#ff8ecb]/55">{` /\\_/\\\\
 ( o.o )
  > ^ <`}</pre>
-              <p className="mt-5 text-sm leading-6 text-zinc-500">
-                Кот не решает за вас, но держит рядом задачи, курсы и проверки.
-              </p>
+              <div className="mt-7 rounded-[1.75rem] border border-[#8ef0de]/25 bg-[#1b1722]/85 p-5 shadow-2xl shadow-black/30">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#8ef0de] text-[#121018]">
+                    <Code className="h-5 w-5" />
+                  </div>
+                  <span className="rounded-full bg-[#e9f6a8] px-3 py-1 text-sm font-black text-[#121018]">
+                    новый курс
+                  </span>
+                </div>
+                <h2
+                  className="mt-6 text-3xl leading-none tracking-normal"
+                  style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+                >
+                  Go для сервисных задач
+                </h2>
+                <p className="mt-4 text-sm font-semibold leading-6 text-[#d8d4df]/75">
+                  6 задач на функции, слайсы, map, ошибки и базовую логику сервисов.
+                </p>
+                <Button
+                  asChild
+                  className="mt-6 h-11 rounded-2xl bg-[#8ef0de] px-5 text-sm font-black text-[#121018] hover:bg-[#a8fff0]"
+                >
+                  <Link href="/courses/golang-start">
+                    Открыть Go
+                    <ArrowUpRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="pointer-events-none h-px bg-gradient-to-r from-transparent via-pink-400/20 to-transparent" />
+      <div className="pointer-events-none h-px bg-gradient-to-r from-transparent via-[#ff8ecb]/25 to-transparent" />
     </section>
   );
 }

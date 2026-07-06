@@ -1,0 +1,10 @@
+{
+  "id": "go-cat-purr-window",
+  "label": "Окно мурчания",
+  "description": "Найдите самую длинную непрерывную строку без повторов.",
+  "difficulty": "medium",
+  "language": "go",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": ["go"]
+}

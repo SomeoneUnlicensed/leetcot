@@ -95,7 +95,7 @@ export async function getProgressData(userId: string) {
       total: challenge._count._all,
     });
   });
-  const difficultyOrder = ['BEGINNER', 'EASY', 'MEDIUM', 'HARD', 'EXTREME'] as const;
+  const difficultyOrder = ['BEGINNER', 'EASY', 'MEDIUM', 'HARD', 'EXTREME', 'ULTRA'] as const;
   chartData.sort(
     (a, b) => difficultyOrder.indexOf(a.difficulty) - difficultyOrder.indexOf(b.difficulty),
   );

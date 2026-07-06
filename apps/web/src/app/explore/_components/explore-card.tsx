@@ -1,4 +1,4 @@
-import type { Difficulty, Submission } from '@repo/db/types';
+import type { Difficulty } from '@repo/db/types';
 import { cn } from '@repo/ui/cn';
 import {
   Card,
@@ -30,6 +30,8 @@ export const BORDERS_BY_DIFFICULTY = {
   HARD: 'dark:hover:border-difficulty-hard-dark hover:border-difficulty-hard dark:group-focus:border-difficulty-hard-dark group-focus:border-difficulty-hard',
   EXTREME:
     'dark:hover:border-difficulty-extreme-dark hover:border-difficulty-extreme dark:group-focus:border-difficulty-extreme-dark group-focus:border-difficulty-extreme',
+  ULTRA:
+    'hover:border-fuchsia-300/70 dark:hover:border-fuchsia-200/70 group-focus:border-fuchsia-300/70 dark:group-focus:border-fuchsia-200/70',
   // this will never actually be used
   EVENT:
     'dark:hover:border-difficulty-extreme-dark hover:border-difficulty-extreme dark:group-focus:border-difficulty-extreme-dark group-focus:border-difficulty-extreme',
@@ -44,6 +46,8 @@ export const SHADOWS_BY_DIFFICULTY = {
   HARD: 'hover:shadow-hard group-focus:shadow-hard dark:hover:shadow-hard-dark dark:group-focus:shadow-hard-dark',
   EXTREME:
     'hover:shadow-extreme group-focus:shadow-extreme dark:hover:shadow-extreme-dark dark:group-focus:shadow-extreme-dark',
+  ULTRA:
+    'hover:shadow-[0_0_28px_-14px_rgba(168,85,247,0.45)] group-focus:shadow-[0_0_28px_-14px_rgba(168,85,247,0.45)]',
   // this will never actually be used
   EVENT:
     'hover:shadow-extreme group-focus:shadow-extreme dark:hover:shadow-extreme-dark dark:group-focus:shadow-extreme-dark',
@@ -86,6 +90,13 @@ export function ChallengeDifficultyIcon({ difficulty }: { difficulty: string }) 
           <Sparkle className="group-hover/card:text-difficulty-extreme dark:group-hover/card:text-difficulty-extreme-dark absolute -right-14 -top-24 h-48 w-48 origin-top-right -rotate-3 stroke-[0.33] text-black/10 duration-300 group-hover/card:scale-50 dark:text-white/10" />
         </>
       );
+    case 'ULTRA':
+      return (
+        <>
+          <Sparkle className="absolute -right-4 -top-10 h-24 w-24 stroke-[0.5] text-black/10 duration-500 group-hover/card:-translate-x-4 group-hover/card:translate-y-10 group-hover/card:-rotate-[125deg] group-hover/card:text-fuchsia-300 dark:text-white/10" />
+          <Sparkle className="absolute -right-14 -top-24 h-48 w-48 origin-top-right -rotate-3 stroke-[0.33] text-black/10 duration-300 group-hover/card:scale-50 group-hover/card:text-cyan-300 dark:text-white/10" />
+        </>
+      );
     default:
       return null;
   }
@@ -99,7 +110,10 @@ export interface ExploreCardProps {
       comment: number;
       vote: number;
     };
-    submission: Submission[];
+    submission: {
+      id: number;
+      isSuccessful: boolean;
+    }[];
     user: {
       name: string;
     };

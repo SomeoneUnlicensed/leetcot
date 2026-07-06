@@ -1,31 +1,6 @@
 import { Badge } from '@repo/ui/components/badge';
-import { Card, CardContent } from '@repo/ui/components/card';
-import { Compass } from '@repo/ui/icons';
-import { clsx } from 'clsx';
+import { ArrowUpRight, Compass } from '@repo/ui/icons';
 import Link from 'next/link';
-
-const BGS_BY_COURSE: Record<number, string> = {
-  0: 'to-difficulty-easy/30 dark:to-difficulty-easy-dark/20',
-  1: 'to-difficulty-medium/30 dark:to-difficulty-medium-dark/20',
-  2: 'to-difficulty-hard/30 dark:to-difficulty-hard-dark/20',
-  3: 'to-difficulty-beginner/30 dark:to-difficulty-beginner-dark/20',
-  4: 'to-difficulty-extreme/30 dark:to-difficulty-extreme-dark/20',
-} as const;
-const bgsArray = Object.values(BGS_BY_COURSE);
-
-const EnrolledAndCompletedBadge = ({ text = 'Enrolled' }: { text?: string }) => {
-  const label = text === 'Completed' ? 'Завершено' : 'Вы записаны';
-  return (
-    <div
-      className={clsx(
-        'text-background absolute left-0 top-0 z-10 rounded-br-3xl bg-[#3078c5] px-5 py-1.5 text-sm font-bold dark:bg-blue-400',
-        text === 'Completed' && 'bg-green-700 text-white dark:bg-green-500',
-      )}
-    >
-      {label}
-    </div>
-  );
-};
 
 interface CourseCardProps {
   course: {
@@ -45,81 +20,40 @@ export function CourseCard({ course }: CourseCardProps) {
 
   return (
     <Link href={`/courses/${course.slug}`} className="group">
-      <Card
-        className={clsx(
-          'relative overflow-hidden duration-300',
-          isEnrolled
-            ? 'border-[#3078c5] dark:border-blue-400'
-            : 'dark:group-hover:border-border group-hover:border-neutral-400 group-hover:shadow-xl group-focus:border-neutral-500 dark:group-hover:shadow dark:group-hover:shadow-neutral-400/70',
-        )}
-      >
-        <div className="absolute -bottom-12 -left-4 w-full -translate-x-1/4 translate-y-1/4 rotate-[30deg]">
-          <div
-            className={clsx(
-              '-ml-4 h-12 w-full border-t bg-gradient-to-r to-white duration-500 group-hover:-translate-y-1 dark:to-[#09090b]',
-              isEnrolled
-                ? 'border-blue-500/50 from-blue-100 dark:border-blue-400/50 dark:from-[#2b4567]'
-                : 'border-neutral-500/50 from-neutral-100 dark:border-neutral-700/50 dark:from-neutral-900 dark:group-hover:brightness-150',
-            )}
-          />
-          <div
-            className={clsx(
-              '-ml-8 h-12 w-full border-t bg-gradient-to-r to-white duration-500 group-hover:-translate-y-5 dark:to-[#09090b]',
-              isEnrolled
-                ? 'border-blue-500/50 from-blue-100 dark:border-blue-400/50 dark:from-[#2b4567]'
-                : 'border-neutral-500/50 from-neutral-100 dark:border-neutral-700/50 dark:from-neutral-900 dark:group-hover:brightness-150',
-            )}
-          />
-          <div
-            className={clsx(
-              '-ml-12 h-12 w-full border-t bg-gradient-to-r to-white duration-500 group-hover:-translate-y-8 dark:to-[#09090b]',
-              isEnrolled
-                ? 'border-blue-500/50 from-blue-100 dark:border-blue-400/50 dark:from-[#2b4567]'
-                : 'border-neutral-500/50 from-neutral-100 dark:border-neutral-700/50 dark:from-neutral-900 dark:group-hover:brightness-150',
-            )}
-          />
-          <div
-            className={clsx(
-              '-ml-16 h-12 w-full border-t bg-gradient-to-r to-white duration-500 group-hover:-translate-y-12 dark:to-[#09090b]',
-              isEnrolled
-                ? 'border-blue-500/50 from-blue-100 dark:border-blue-400/50 dark:from-[#2b4567]'
-                : 'border-neutral-500/50 from-neutral-100 dark:border-neutral-700/50 dark:from-neutral-900 dark:group-hover:brightness-150',
-            )}
-          />
-        </div>
-        {isEnrolled ? <EnrolledAndCompletedBadge /> : null}
-        <CardContent className="relative z-10 flex flex-col items-center gap-5 p-8">
-          <div
-            className={clsx(
-              `bg-gradient-to-r from-neutral-500/10 from-10% ${
-                BGS_BY_COURSE[course.id % bgsArray.length]
-              } relative to-100% dark:from-neutral-900`,
-              'flex h-24 w-24 flex-none items-center justify-center rounded-2xl',
-            )}
-          >
-            <Compass
-              size={50}
-              className={clsx(
-                'transition-opacity duration-300',
-                !isEnrolled && 'opacity-50 group-hover:opacity-100 group-focus:opacity-100',
-              )}
-            />
-          </div>
-          <div className="text-center font-semibold capitalize tracking-wide">{course.name}</div>
-          <div className="text-muted-foreground line-clamp-3 text-center text-sm tracking-wide">
-            {course.description}
+      <article className="relative h-full overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-6 transition hover:border-[#8ef0de]/35 hover:bg-white/[0.055]">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-[#2dd4bf]/10 blur-3xl transition group-hover:bg-[#ff4fa3]/10" />
+        <div className="relative flex h-full flex-col">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#8ef0de] text-[#121018]">
+              <Compass className="h-5 w-5" />
+            </div>
+            {isEnrolled ? (
+              <span className="rounded-full bg-[#e9f6a8] px-3 py-1 text-xs font-black text-[#121018]">
+                вы записаны
+              </span>
+            ) : null}
           </div>
 
-          <div className="flex gap-2 text-center">
-            <Badge className="flex-none" variant="default">
-              {course.tracks.length} Треков
+          <h2 className="mt-6 text-2xl font-black text-white">{course.name}</h2>
+          <p className="mt-3 line-clamp-3 text-sm font-semibold leading-6 text-[#d8d4df]/65">
+            {course.description}
+          </p>
+
+          <div className="mt-6 flex flex-wrap gap-2">
+            <Badge className="border-white/10 bg-white/[0.06] text-[#d8d4df]" variant="outline">
+              {course.tracks.length} треков
             </Badge>
-            <Badge className="flex-none" variant="default">
-              {totalChallenges} Задач
+            <Badge className="border-white/10 bg-white/[0.06] text-[#d8d4df]" variant="outline">
+              {totalChallenges} задач
             </Badge>
           </div>
-        </CardContent>
-      </Card>
+
+          <div className="mt-auto flex items-center gap-2 pt-7 text-sm font-black text-[#8ef0de]">
+            Открыть курс
+            <ArrowUpRight className="h-4 w-4 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </div>
+        </div>
+      </article>
     </Link>
   );
 }

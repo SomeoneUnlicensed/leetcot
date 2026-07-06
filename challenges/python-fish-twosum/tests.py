@@ -1,55 +1,12 @@
-import random
-import unittest
+# Видимый smoke-тест. Серверная проверка ниже использует oracle и скрыта от клиента.
+import sys
 
+ENTRY_POINT = "two_fish"
+if globals().get(ENTRY_POINT) is None:
+    print(f'Функция или класс {ENTRY_POINT} не найдены', file=sys.stderr)
+    sys.exit(1)
 
-def _reference_two_fish(nums, target):
-    """Эталонное решение."""
-    seen = {}
-    for i, n in enumerate(nums):
-        diff = target - n
-        if diff in seen:
-            return [seen[diff], i]
-        seen[n] = i
-    return []
+print('visible smoke OK')
 
-
-class TestFishTwoSum(unittest.TestCase):
-    def test_known_cases(self):
-        """Базовые примеры из условия."""
-        self.assertEqual(two_fish([2, 7, 11, 15], 9), [0, 1])
-        self.assertEqual(two_fish([3, 2, 4], 6), [1, 2])
-        self.assertEqual(two_fish([3, 3], 6), [0, 1])
-
-    def test_random_cases(self):
-        """Случайные массивы — результат сверяется с эталоном."""
-        rng = random.Random(99991)
-        for _ in range(40):
-            size = rng.randint(2, 20)
-            nums = [rng.randint(-100, 100) for _ in range(size)]
-            # Гарантируем наличие решения: выбираем два случайных индекса
-            i, j = sorted(rng.sample(range(size), 2))
-            target = nums[i] + nums[j]
-            expected = _reference_two_fish(nums, target)
-            result = two_fish(nums, target)
-            # Проверяем что индексы правильные (порядок [i,j] i<j)
-            self.assertIsInstance(result, list)
-            self.assertEqual(len(result), 2)
-            r0, r1 = result
-            self.assertLess(r0, r1)
-            self.assertEqual(nums[r0] + nums[r1], target)
-
-    def test_large(self):
-        """Большой массив — проверка производительности и корректности."""
-        rng = random.Random(12345)
-        nums = list(range(1, 1001))
-        rng.shuffle(nums)
-        i, j = sorted(rng.sample(range(len(nums)), 2))
-        target = nums[i] + nums[j]
-        result = two_fish(nums, target)
-        self.assertIsInstance(result, list)
-        self.assertEqual(len(result), 2)
-        self.assertEqual(nums[result[0]] + nums[result[1]], target)
-
-
-if __name__ == '__main__':
-    unittest.main()
+# ---LEETCOT-ORACLE---
+# {"entryPoint":"two_fish","referenceSolution":"def two_fish(weights, target):\r\n    prevMap = {} # val : index\r\n    for i, n in enumerate(weights):\r\n        diff = target - n\r\n        if diff in prevMap:\r\n            return [prevMap[diff], i]\r\n        prevMap[n] = i\r\n    return []\r\n","seedGenerator":"import random\n\n\ndef _count_pairs_summing_to(weights, target):\n    count = 0\n    for a in range(len(weights)):\n        for b in range(a + 1, len(weights)):\n            if weights[a] + weights[b] == target:\n                count += 1\n    return count\n\n\ndef generate_case():\n    # The prompt guarantees exactly one valid pair — keep regenerating until that\n    # invariant actually holds instead of trusting it by construction.\n    while True:\n        n = random.randint(2, 10)\n        weights = [random.randint(-30, 30) for _ in range(n)]\n        i, j = random.sample(range(n), 2)\n        target = weights[i] + weights[j]\n        if _count_pairs_summing_to(weights, target) == 1:\n            return (weights, target)\n","resultOrderInsensitive":true}

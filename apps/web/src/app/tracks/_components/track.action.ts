@@ -8,6 +8,24 @@ import { cache } from 'react';
 import { track } from '@vercel/analytics/server';
 import { auth } from '~/server/auth';
 
+function stripChallengeSources<
+  T extends { trackChallenges?: { challenge?: { code?: string; tests?: string } }[] },
+>(trackData: T): T {
+  return {
+    ...trackData,
+    trackChallenges: trackData.trackChallenges?.map((trackChallenge) => ({
+      ...trackChallenge,
+      challenge: trackChallenge.challenge
+        ? {
+            ...trackChallenge.challenge,
+            code: '',
+            tests: '',
+          }
+        : trackChallenge.challenge,
+    })),
+  };
+}
+
 /**
  * Enrolls the session user in the track given a track id.
  * @param id The track id.
@@ -68,7 +86,7 @@ export async function unenrollUserFromTrack(id: number, slug: string) {
  */
 export const getTrackDetails = cache(async (slug: string) => {
   const session = await auth();
-  return prisma.track.findFirstOrThrow({
+  const trackDetails = await prisma.track.findFirstOrThrow({
     where: {
       slug,
     },
@@ -83,6 +101,10 @@ export const getTrackDetails = cache(async (slug: string) => {
               submission: {
                 where: {
                   userId: session?.user?.id ?? '',
+                },
+                select: {
+                  id: true,
+                  isSuccessful: true,
                 },
               },
               user: {
@@ -104,6 +126,8 @@ export const getTrackDetails = cache(async (slug: string) => {
       },
     },
   });
+
+  return stripChallengeSources(trackDetails);
 });
 
 export type EnrolledTrack = Prisma.TrackGetPayload<{
@@ -115,6 +139,10 @@ export type EnrolledTrack = Prisma.TrackGetPayload<{
             submission: {
               where: {
                 userId: string;
+              };
+              select: {
+                id: true;
+                isSuccessful: true;
               };
             };
           };
@@ -135,7 +163,7 @@ export type EnrolledTracks = EnrolledTrack[];
  * Fetches user enrolled tracks based on current session.
  */
 export async function getUserEnrolledTracks(session: Session): Promise<EnrolledTracks> {
-  return prisma.track.findMany({
+  const tracks = await prisma.track.findMany({
     where: {
       enrolledUsers: {
         some: {
@@ -152,6 +180,10 @@ export async function getUserEnrolledTracks(session: Session): Promise<EnrolledT
                 where: {
                   userId: session.user?.id,
                 },
+                select: {
+                  id: true,
+                  isSuccessful: true,
+                },
               },
             },
           },
@@ -167,4 +199,6 @@ export async function getUserEnrolledTracks(session: Session): Promise<EnrolledT
       name: 'asc',
     },
   });
+
+  return tracks.map((trackData) => stripChallengeSources(trackData)) as EnrolledTracks;
 }

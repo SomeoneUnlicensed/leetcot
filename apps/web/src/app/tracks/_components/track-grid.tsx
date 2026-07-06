@@ -20,14 +20,18 @@ export type GridTrack = Prisma.TrackGetPayload<{
     trackChallenges: {
       include: {
         challenge: {
-          include: {
-            submission: {
-              where: {
-                userId: string;
+            include: {
+              submission: {
+                where: {
+                  userId: string;
+                };
+                select: {
+                  id: true;
+                  isSuccessful: true;
+                };
               };
             };
           };
-        };
       };
     };
   };
@@ -75,6 +79,10 @@ function getTracks(session: Session | null): Promise<GridTrack[]> {
               submission: {
                 where: {
                   userId: session?.user?.id ?? '',
+                },
+                select: {
+                  id: true,
+                  isSuccessful: true,
                 },
               },
             },

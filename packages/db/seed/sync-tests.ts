@@ -1,7 +1,7 @@
 /**
  * sync-tests.ts
  *
- * Синхронизирует поле `tests` в БД из файлов challenges/*/tests.py|tests.ts|tests.json
+ * Синхронизирует поле `tests` в БД из файлов задач: tests.py|tests.ts|tests.json.
  * без пересоздания задач. Запускать после изменения тестовых файлов.
  *
  * Использование:
@@ -21,14 +21,50 @@ const CHALLENGES_PATH = path.join(__dirname, '../../../challenges');
 
 const prisma = new PrismaClient();
 
-const TEST_FILE_NAMES = ['tests.py', 'tests.ts', 'tests.js', 'tests.json'];
+const TEST_FILE_NAMES = ['tests.py', 'tests.go', 'tests.ts', 'tests.js', 'tests.json'];
+const PYTHON_ORACLE_MARKER = '# ---LEETCOT-ORACLE---';
+
+function extractEntryPoint(solutionSource: string): string | null {
+  const match = /^(?:def|class)\s+(\w+)\s*(?:\(|:)/m.exec(solutionSource);
+  return match?.[1] ?? null;
+}
+
+async function readOptionalFile(filePath: string): Promise<string | null> {
+  try {
+    return await fs.promises.readFile(filePath, 'utf8');
+  } catch {
+    return null;
+  }
+}
 
 async function readTestsFile(challengeDir: string): Promise<string | null> {
   for (const fileName of TEST_FILE_NAMES) {
     const filePath = path.join(challengeDir, fileName);
     try {
       await fs.promises.access(filePath);
-      return await fs.promises.readFile(filePath, 'utf8');
+      const testsContent = await fs.promises.readFile(filePath, 'utf8');
+
+      if (fileName === 'tests.py') {
+        const solutionContent = await readOptionalFile(path.join(challengeDir, 'solution.py'));
+        const generatorContent = await readOptionalFile(path.join(challengeDir, 'generator.py'));
+        const oracleConfigContent = await readOptionalFile(path.join(challengeDir, 'oracle-config.json'));
+        const visibleTests = (testsContent.split(PYTHON_ORACLE_MARKER)[0] ?? '').trimEnd();
+
+        if (solutionContent && generatorContent) {
+          const entryPoint = extractEntryPoint(solutionContent);
+          if (entryPoint) {
+            const oracleBlock = JSON.stringify({
+              entryPoint,
+              referenceSolution: solutionContent,
+              seedGenerator: generatorContent,
+              ...(oracleConfigContent ? JSON.parse(oracleConfigContent) : {}),
+            });
+            return `${visibleTests}\n\n${PYTHON_ORACLE_MARKER}\n# ${oracleBlock}\n`;
+          }
+        }
+      }
+
+      return testsContent;
     } catch {
       // файл не найден — пробуем следующий
     }

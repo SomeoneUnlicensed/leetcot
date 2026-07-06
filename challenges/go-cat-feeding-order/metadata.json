@@ -1,0 +1,10 @@
+{
+  "id": "go-cat-feeding-order",
+  "label": "Очередь кормления",
+  "description": "Постройте порядок задач с зависимостями и лексикографическим приоритетом.",
+  "difficulty": "extreme",
+  "language": "go",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": ["go"]
+}
