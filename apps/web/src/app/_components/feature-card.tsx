@@ -470,34 +470,30 @@ export function CuratedTracksCard(props: CardProps) {
   );
 }
 
-const availableStacks = ['Python', 'SQL'];
-const upcomingStacks = ['C++', 'Rust', 'Ruby', 'TypeScript', 'и другие'];
+const practiceDirections = ['алгоритмы', 'SQL', 'Golang'];
 
 export function LanguageStackCard(props: CardProps) {
   return (
     <FeatureCard {...props}>
       <div className="mt-6 flex flex-col gap-4">
         <div>
-          <p className="mb-2 text-xs font-bold uppercase tracking-wide text-zinc-500">
-            Уже доступно
-          </p>
+          <p className="mb-2 text-xs font-bold uppercase tracking-wide text-zinc-500">Код</p>
           <div className="flex flex-wrap gap-2">
-            {availableStacks.map((stack) => (
-              <span
-                key={stack}
-                className="rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-600 px-3 py-1 text-xs font-bold text-white"
-              >
-                {stack}
-              </span>
-            ))}
+            <span className="rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-600 px-3 py-1 text-xs font-bold text-white">
+              Python
+            </span>
           </div>
         </div>
         <div>
-          <p className="mb-2 text-xs font-bold uppercase tracking-wide text-zinc-500">
-            Скоро
-          </p>
+          <p className="mb-2 text-xs font-bold uppercase tracking-wide text-zinc-500">Данные</p>
+          <span className="rounded-full border border-cyan-300/40 bg-cyan-300/10 px-3 py-1 text-xs font-bold text-cyan-700 dark:text-cyan-200">
+            SQL
+          </span>
+        </div>
+        <div>
+          <p className="mb-2 text-xs font-bold uppercase tracking-wide text-zinc-500">Темы</p>
           <div className="flex flex-wrap gap-2">
-            {upcomingStacks.map((stack) => (
+            {practiceDirections.map((stack) => (
               <span
                 key={stack}
                 className="rounded-full border border-zinc-300 px-3 py-1 text-xs font-semibold text-zinc-600 dark:border-zinc-700 dark:text-zinc-400"

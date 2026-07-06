@@ -32,10 +32,32 @@ function sanitizeSqlTestsForClient(rawTests: string): string {
 // before that pane's content reaches the client; code-runner reads the untruncated
 // value straight from the DB.
 const PYTHON_ORACLE_MARKER = '# ---LEETCOT-ORACLE---';
+const GO_ORACLE_MARKER = '// ---LEETCOT-GO-ORACLE---';
 
 function sanitizePythonTestsForClient(rawTests: string): string {
   const markerIndex = rawTests.indexOf(PYTHON_ORACLE_MARKER);
   return markerIndex === -1 ? rawTests : rawTests.slice(0, markerIndex).trimEnd();
+}
+
+function sanitizeGoTestsForClient(rawTests: string): string {
+  const markerIndex = rawTests.indexOf(GO_ORACLE_MARKER);
+  return markerIndex === -1 ? rawTests : rawTests.slice(0, markerIndex).trimEnd();
+}
+
+function sanitizeExecutableTestsForClient(rawTests: string): string {
+  return sanitizeGoTestsForClient(sanitizePythonTestsForClient(rawTests));
+}
+
+function sanitizeTestsForClient(language: string, rawTests: string): string {
+  if (language === 'SQL') {
+    return sanitizeSqlTestsForClient(rawTests);
+  }
+
+  if (language === 'GO') {
+    return '';
+  }
+
+  return sanitizeExecutableTestsForClient(rawTests);
 }
 
 // this is to data to populate the description tab (default tab on challenge page)
@@ -205,12 +227,9 @@ export const getChallengeRouteData = cache(async (slug: string, session: Session
             // The starter `code` is actually solution.sql for SQL challenges today
             // (no user.sql file exists in challenges/sql-cat-*) — never ship it.
             code: '',
-            tests: sanitizeSqlTestsForClient(challenge.tests),
           }
         : {}),
-      ...(challenge.language === 'PYTHON'
-        ? { tests: sanitizePythonTestsForClient(challenge.tests) }
-        : {}),
+      tests: sanitizeTestsForClient(challenge.language, challenge.tests),
     },
     track: trackForNavigation,
     nextChallenge,

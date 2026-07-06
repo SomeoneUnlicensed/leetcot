@@ -1,9 +1,9 @@
 export const courses = [
   {
-    name: 'Python Start: первые задачи',
+    name: 'Код Start: первые задачи',
     slug: 'python-start',
     description:
-      'Плавный вход в Python через небольшие задачи про списки, строки, словари и простые алгоритмические паттерны.',
+      'Плавный вход в задачи по коду через списки, строки, словари и простые алгоритмические паттерны на Python.',
     trackSlugs: ['python-start-cats'],
   },
   {
@@ -19,5 +19,12 @@ export const courses = [
     description:
       'Освойте основы SQL в интерактивном SQLite-терминале. Таблицы, JOIN, агрегаты и изменения данных — без установки и лишней боли.',
     trackSlugs: ['sql-cat-fishing'],
+  },
+  {
+    name: 'Golang: сервисный старт',
+    slug: 'golang-start',
+    description:
+      'Отдельный курс по Go для тех, кто хочет писать простые сервисы, уверенно работать с типами, ошибками, коллекциями и конкурентностью.',
+    trackSlugs: ['golang-service-start'],
   },
 ];

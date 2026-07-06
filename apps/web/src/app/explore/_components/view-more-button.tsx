@@ -15,6 +15,8 @@ export const BUTTON_BY_TAGS = {
   HARD: 'bg-red-500/10 text-red-700 hover:text-red-700 dark:text-red-300 dark:bg-red-300/10 hover:bg-red-500/20 dark:hover:bg-red-300/20',
   EXTREME:
     'bg-purple-500/10 text-purple-700 hover:text-purple-700 dark:text-purple-300 dark:bg-purple-300/10 hover:bg-purple-500/20 dark:hover:bg-purple-300/20',
+  ULTRA:
+    'bg-[linear-gradient(90deg,rgba(244,63,94,0.10),rgba(34,211,238,0.10),rgba(168,85,247,0.10))] text-fuchsia-700 hover:text-fuchsia-700 dark:text-fuchsia-200 hover:bg-fuchsia-500/12',
   // this will never actually be used
   EVENT:
     'bg-purple-500/10 text-purple-700 hover:text-purple-700 dark:text-purple-300 dark:bg-purple-300/10 hover:bg-purple-500/20 dark:hover:bg-purple-300/20',

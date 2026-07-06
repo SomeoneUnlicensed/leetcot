@@ -1,16 +1,12 @@
-import unittest
+# Видимый smoke-тест. Серверная проверка ниже использует oracle и скрыта от клиента.
+import sys
 
+ENTRY_POINT = "compact_bowls"
+if globals().get(ENTRY_POINT) is None:
+    print(f'Функция или класс {ENTRY_POINT} не найдены', file=sys.stderr)
+    sys.exit(1)
 
-class TestCompactBowls(unittest.TestCase):
-    def test_examples(self):
-        self.assertEqual(compact_bowls([0, 3, 0, 2, 5]), [3, 2, 5, 0, 0])
-        self.assertEqual(compact_bowls([1, 2, 3]), [1, 2, 3])
-        self.assertEqual(compact_bowls([0, 0]), [0, 0])
+print('visible smoke OK')
 
-    def test_edges(self):
-        self.assertEqual(compact_bowls([]), [])
-        self.assertEqual(compact_bowls([4, 0, -1, 0, 4]), [4, -1, 4, 0, 0])
-
-
-if __name__ == '__main__':
-    unittest.main()
+# ---LEETCOT-ORACLE---
+# {"entryPoint":"compact_bowls","referenceSolution":"def compact_bowls(bowls):\n    non_empty = [item for item in bowls if item != 0]\n    return non_empty + [0] * (len(bowls) - len(non_empty))\n","seedGenerator":"import random\n\n\ndef generate_case():\n    size = random.randint(0, 40)\n    bowls = [random.choice([0, random.randint(-20, 20)]) for _ in range(size)]\n    return (bowls,)\n"}

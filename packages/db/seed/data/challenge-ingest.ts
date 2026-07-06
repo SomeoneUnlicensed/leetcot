@@ -12,8 +12,8 @@ const defaultExcludes = ['blank', 'solutions', 'aot'];
 export const PYTHON_ORACLE_MARKER = '# ---LEETCOT-ORACLE---';
 
 function extractEntryPoint(solutionSource: string): string | null {
-  const match = /^def\s+(\w+)\s*\(/m.exec(solutionSource);
-  return match ? match[1] : null;
+  const match = /^(?:def|class)\s+(\w+)\s*(?:\(|:)/m.exec(solutionSource);
+  return match?.[1] ?? null;
 }
 
 export async function ingestChallenges(
@@ -70,6 +70,7 @@ async function buildChallenge(
   // `tests` JSON below — they must never be readable from `code`/a separate column
   // the client could see, only from the server-only `tests` field.
   let solutionContent: string | undefined;
+  let starterContent: string | undefined;
   let generatorContent: string | undefined;
   let oracleConfigContent: string | undefined;
 
@@ -100,10 +101,10 @@ async function buildChallenge(
             challengeToCreate.description = cleaned;
           }
           if (fileName === 'user') {
+            starterContent = fileContents;
             challengeToCreate.code = fileContents;
           }
           if (fileName === 'solution') {
-            challengeToCreate.code = fileContents;
             solutionContent = fileContents;
           }
           if (fileName === 'generator') {
@@ -141,7 +142,12 @@ async function buildChallenge(
       }
     }
 
-    if (generatorContent && solutionContent && challengeToCreate.language === 'SQL' && challengeToCreate.tests) {
+    if (
+      generatorContent &&
+      solutionContent &&
+      challengeToCreate.language === 'SQL' &&
+      challengeToCreate.tests
+    ) {
       try {
         const testsWithOracle = JSON.parse(challengeToCreate.tests);
         testsWithOracle.referenceSolution = solutionContent;
@@ -165,10 +171,18 @@ async function buildChallenge(
         const visibleTests = challengeToCreate.tests ?? '';
         challengeToCreate.tests = `${visibleTests}\n\n${PYTHON_ORACLE_MARKER}\n# ${oracleBlock}\n`;
       } else {
-        console.error(`generator.py present but no top-level "def" found in solution.py for ${pathToDirectory}`);
+        console.error(
+          `generator.py present but no top-level "def" found in solution.py for ${pathToDirectory}`,
+        );
       }
     }
 
+    if (!challengeToCreate.code && starterContent) {
+      challengeToCreate.code = starterContent;
+    }
+    if (!challengeToCreate.code && solutionContent) {
+      challengeToCreate.code = solutionContent;
+    }
     if (!challengeToCreate.code) {
       challengeToCreate.code = '// Решение пишется здесь';
     }

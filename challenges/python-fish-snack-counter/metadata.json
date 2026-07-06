@@ -4,5 +4,15 @@
   "description": "Посчитай, сколько раз встречается каждое лакомство.",
   "difficulty": "easy",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
 }

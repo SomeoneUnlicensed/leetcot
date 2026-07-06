@@ -4,5 +4,9 @@
   "description": "Покажите котят и имена их наставников.",
   "difficulty": "hard",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql",
+  "supportedLanguages": [
+    "sql"
+  ]
 }

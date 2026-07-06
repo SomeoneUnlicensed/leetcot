@@ -46,65 +46,34 @@ export type TsErrors = [
   CompilerOptionsDiagnostics: monaco.languages.typescript.Diagnostic[],
 ];
 
-function formatTraceback(errorStr: string) {
-  if (
-    errorStr.includes('Traceback') ||
-    errorStr.includes('File "main.py"') ||
-    errorStr.includes('File "<string>"') ||
-    errorStr.includes('line ')
-  ) {
-    const lines = errorStr.split('\n');
-    const cleanedLines = lines.map((line, lineIdx) => {
-      const cleaned = line
-        .replace(/\/code\/main\.py/g, 'решение.py')
-        .replace(/\/tmp\/litkot-run-[^/]+\/main\.py/g, 'решение.py')
-        .replace(/\/tmp\/litkot-run-[^/]+\/main\.js/g, 'решение.js');
+interface CodeRunCaseResult {
+  message?: string;
+  name: string;
+  passed: boolean;
+}
 
-      if (
-        cleaned.includes('line ') &&
-        (cleaned.includes('решение.py') ||
-          cleaned.includes('main.py') ||
-          cleaned.includes('решение.js'))
-      ) {
-        return (
-          <span
-            key={lineIdx}
-            className="my-0.5 block rounded bg-red-500/10 px-2 py-0.5 font-bold text-red-400"
-          >
-            {cleaned}
-          </span>
-        );
-      }
+interface CodeRunTestSummary {
+  cases?: CodeRunCaseResult[];
+  passed: number;
+  total: number;
+}
 
-      const isErrorDescriptor =
-        /^[A-Za-z]+Error:/.test(cleaned.trim()) ||
-        cleaned.trim().startsWith('AssertionError') ||
-        cleaned.trim().startsWith('ReferenceError') ||
-        cleaned.trim().startsWith('TypeError') ||
-        cleaned.trim().startsWith('SyntaxError');
+function formatUserCheckError(errorStr: string) {
+  const cleaned = errorStr
+    .replace(/\[ВЫВОД КОНСОЛИ\]/g, '')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .find(
+      (line) =>
+        !line.startsWith('Traceback') &&
+        !line.startsWith('File ') &&
+        !line.startsWith('at ') &&
+        !line.includes('/tmp/') &&
+        !line.includes('/code/'),
+    );
 
-      if (isErrorDescriptor) {
-        return (
-          <span
-            key={lineIdx}
-            className="my-1 block border-l-2 border-rose-500 pl-2 font-bold text-rose-500"
-          >
-            {cleaned}
-          </span>
-        );
-      }
-
-      return (
-        <span key={lineIdx} className="block opacity-75">
-          {cleaned}
-        </span>
-      );
-    });
-
-    return <div className="space-y-0.5 font-mono text-xs md:text-sm">{cleanedLines}</div>;
-  }
-
-  return <span className="whitespace-pre-wrap">{errorStr}</span>;
+  return cleaned || 'Код не прошел проверку. Проверьте решение и запустите еще раз.';
 }
 
 // million-ignore
@@ -124,6 +93,7 @@ export function CodePanel(props: CodePanelProps) {
     'editor' | 'failure' | 'success' | 'verifying'
   >('editor');
   const [checkingErrors, setCheckingErrors] = useState<string[]>([]);
+  const [checkingSummary, setCheckingSummary] = useState<CodeRunTestSummary | null>(null);
   const [latestSubmissionId, setLatestSubmissionId] = useState<number | null>(null);
   const [executionTimeMs, setExecutionTimeMs] = useState<number | null>(null);
 
@@ -186,6 +156,7 @@ export function CodePanel(props: CodePanelProps) {
     isCheckingRef.current = true;
     setCheckingState('verifying');
     setCheckingErrors([]);
+    setCheckingSummary(null);
     setExecutionTimeMs(null);
 
     // Cute thinking animation delay
@@ -197,7 +168,8 @@ export function CodePanel(props: CodePanelProps) {
 
     try {
       const currentCode = codeRef.current;
-      const isPython = props.challenge.language.toLowerCase() === 'python';
+      const normalizedLanguage = props.challenge.language.toLowerCase();
+      const isQueuedLanguage = ['python', 'go'].includes(normalizedLanguage);
 
       const formattedErrors: string[] = [];
 
@@ -207,7 +179,7 @@ export function CodePanel(props: CodePanelProps) {
         formattedErrors.push((err as Error).message || 'Ошибка валидации кода');
       }
 
-      if (isPython) {
+      if (isQueuedLanguage) {
         try {
           const res = await fetch('/api/execute', {
             method: 'POST',
@@ -215,7 +187,7 @@ export function CodePanel(props: CodePanelProps) {
             body: JSON.stringify({
               challengeId: props.challenge.id,
               code: currentCode,
-              language: 'python',
+              language: normalizedLanguage,
             }),
           });
           const data = await res.json();
@@ -240,6 +212,7 @@ export function CodePanel(props: CodePanelProps) {
                   error?: string;
                   output?: string;
                   success: boolean;
+                  testSummary?: CodeRunTestSummary;
                 }
               | undefined;
 
@@ -270,8 +243,11 @@ export function CodePanel(props: CodePanelProps) {
                 'Проверка заняла слишком много времени. Попробуйте ещё раз через минуту.',
               );
             } else if (!result.success) {
-              formattedErrors.push(result.error || 'Ошибка выполнения');
-              if (result.output) {
+              if (result.testSummary) {
+                setCheckingSummary(result.testSummary);
+              }
+              formattedErrors.push(result.error || 'Код не прошел один из тестов.');
+              if (result.output && !result.testSummary) {
                 formattedErrors.push(`[ВЫВОД КОНСОЛИ]\n${result.output}`);
               }
             }
@@ -417,7 +393,9 @@ export function CodePanel(props: CodePanelProps) {
         ? 'JavaScript'
         : props.challenge.language.toLowerCase() === 'typescript'
           ? 'TypeScript'
-          : props.challenge.language;
+          : props.challenge.language.toLowerCase() === 'go'
+            ? 'Go'
+            : props.challenge.language;
 
   return (
     <div className="relative flex h-full w-full flex-col">
@@ -591,59 +569,56 @@ export function CodePanel(props: CodePanelProps) {
               <span className="mb-2 text-center text-lg font-extrabold text-zinc-800 dark:text-zinc-100">
                 Код не прошел тесты! 😿
               </span>
-              <div className="mt-4 w-full max-w-2xl rounded-xl border border-red-500/20 bg-zinc-950 shadow-2xl shadow-red-950/25">
-                <div className="flex items-center justify-between border-b border-zinc-900 bg-zinc-900/40 px-4 py-3">
+              <div className="mt-4 w-full max-w-2xl rounded-2xl border border-red-500/20 bg-zinc-950/95 shadow-2xl shadow-red-950/25">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-900 bg-zinc-900/40 px-4 py-3">
                   <div className="flex items-center gap-2">
                     <div className="h-2.5 w-2.5 animate-pulse rounded-full bg-red-500/85" />
-                    <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-red-500/80">
-                      Системный отчет об ошибках
+                    <span className="text-xs font-bold uppercase tracking-widest text-red-300/90">
+                      Результат проверки
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      onClick={() => {
-                        const textToCopy = checkingErrors.join('\n');
-                        navigator.clipboard.writeText(textToCopy);
-                        toast({
-                          title: 'Отчет скопирован!',
-                          description: 'Текст ошибок скопирован в буфер обмена.',
-                          variant: 'success',
-                        });
-                      }}
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 gap-1 rounded border border-zinc-800 bg-zinc-900/50 px-2 font-mono text-[9px] text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 active:scale-95"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="10"
-                        height="10"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-                      </svg>
-                      Копировать
-                    </Button>
-                    <span className="rounded border border-red-500/20 bg-red-500/10 px-2 py-0.5 font-mono text-[9px] font-bold text-red-400">
-                      FAILED
+                  {checkingSummary ? (
+                    <span className="rounded-full border border-red-400/20 bg-red-500/10 px-3 py-1 text-sm font-bold text-red-100">
+                      Пройдено {checkingSummary.passed} из {checkingSummary.total}
                     </span>
-                  </div>
+                  ) : null}
                 </div>
-                <div className="max-h-[300px] select-text overflow-y-auto p-5 font-mono text-xs leading-relaxed text-red-200/90 selection:bg-red-500/30 selection:text-red-100">
-                  <div className="space-y-4">
-                    {Array.from(new Set(checkingErrors)).map((err, idx) => (
-                      <div key={idx} className="group flex gap-3">
-                        <span className="select-none font-bold text-red-500/40">0{idx + 1}</span>
-                        <div className="flex-1 select-text">{formatTraceback(err)}</div>
-                      </div>
-                    ))}
-                  </div>
+                <div className="max-h-[300px] select-text overflow-y-auto p-5 text-sm leading-relaxed text-red-100/90 selection:bg-red-500/30 selection:text-red-100">
+                  {checkingSummary?.cases?.length ? (
+                    <div className="space-y-3">
+                      {checkingSummary.cases
+                        .filter((item) => !item.passed)
+                        .map((item, idx) => (
+                          <div
+                            key={`${item.name}-${idx}`}
+                            className="rounded-xl border border-red-500/15 bg-red-500/10 px-4 py-3"
+                          >
+                            <div className="text-xs font-bold uppercase tracking-wider text-red-300/80">
+                              {item.name}
+                            </div>
+                            <div className="mt-1 font-medium text-red-50">
+                              {item.message || 'Ответ отличается от ожидаемого.'}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {Array.from(new Set(checkingErrors)).map((err, idx) => (
+                        <div
+                          key={idx}
+                          className="rounded-xl border border-red-500/15 bg-red-500/10 px-4 py-3"
+                        >
+                          {formatUserCheckError(err)}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {checkingSummary && !checkingSummary.cases?.some((item) => !item.passed) ? (
+                    <div className="rounded-xl border border-red-500/15 bg-red-500/10 px-4 py-3 font-medium text-red-50">
+                      Код не прошел один из скрытых тестов.
+                    </div>
+                  ) : null}
                 </div>
               </div>
               <Button
@@ -658,15 +633,23 @@ export function CodePanel(props: CodePanelProps) {
             </>
           )}
 
-          <div className="absolute bottom-6 left-0 right-0 flex select-none items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider text-zinc-500/80">
+          <div className="absolute bottom-5 left-0 right-0 flex select-none flex-wrap items-center justify-center gap-x-2 gap-y-1 px-4 text-center text-[10px] font-bold uppercase tracking-wider text-zinc-500/80 sm:text-[11px]">
             <img
-              src="https://arlist.tech/icon.svg"
+              src="/arlist-logo.svg"
               alt="Arlist Logo"
-              className="h-4 w-4 drop-shadow-[0_0_12px_rgba(168,85,247,0.8)]"
+              className="h-3.5 w-3.5 shrink-0 drop-shadow-[0_0_12px_rgba(168,85,247,0.8)] sm:h-4 sm:w-4"
             />
             <span className="bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-emerald-400 bg-clip-text text-transparent opacity-90 drop-shadow-sm">
-              Исполняется на Арлист.инфраструктура
+              Исполняется на арлист.инфраструктура
             </span>
+            <a
+              href="https://help.oblakoteka.ru/"
+              target="_blank"
+              rel="noreferrer"
+              className="pointer-events-auto text-zinc-400 underline-offset-4 transition-colors hover:text-zinc-200 hover:underline"
+            >
+              при поддержке Облакотека
+            </a>
           </div>
         </div>
       )}

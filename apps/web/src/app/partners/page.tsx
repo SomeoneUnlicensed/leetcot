@@ -21,21 +21,16 @@ export const metadata: Metadata = {
 };
 
 const stack = [
-  'Python',
-  'SQL',
-  'TypeScript',
-  'JavaScript',
-  'Go',
-  'Java',
-  'Rust',
-  'C++',
-  'Kotlin',
-  'Ruby',
-  'PHP',
-  'Swift',
+  'Python-алгоритмы',
+  'SQL-практика',
+  'Golang-курс',
+  'Контесты',
+  'Скрининг',
+  'Учебные треки',
+  'White label',
   'PostgreSQL',
   'Docker',
-  'Node.js',
+  'API-интеграции',
 ];
 
 const audiences = [
@@ -52,7 +47,7 @@ const audiences = [
   {
     icon: GraduationCap,
     title: 'Университеты и школы',
-    text: 'Практические треки под любой стек и язык программирования для студентов и школьников.',
+    text: 'Практические треки по коду, SQL и темам курса для студентов и школьников.',
   },
   {
     icon: Laptop,
@@ -70,7 +65,9 @@ const products = [
       'Запускайте отдельные челленджи под бренд компании, университета или сообщества: задачи, рейтинг, страница события и итоговые результаты.',
     items: [
       'отдельная страница челленджа',
-      'задачи на любом языке и стеке из большого выбора',
+      'задачи по алгоритмам и структурам данных',
+      'SQL-задачи с таблицами и запросами',
+      'языковые курсы под нужную роль',
       'разные уровни сложности',
       'рейтинг участников',
       'итоговая таблица результатов',
@@ -84,7 +81,7 @@ const products = [
     name: 'Leetcot Screening',
     tagline: 'Техническая оценка кандидатов',
     description:
-      'Leetcot можно использовать как инструмент для первичной проверки навыков кандидатов на широком стеке — от SQL и Python до алгоритмов и backend-навыков на других языках.',
+      'Leetcot можно использовать как инструмент для первичной проверки навыков кандидатов: задачи под роль, понятная проверка и итоговый рейтинг.',
     items: [
       'приватную ссылку на тест',
       'набор задач под уровень кандидата',
@@ -137,26 +134,58 @@ const products = [
 ];
 
 const pilotSteps = [
-  { num: '1', title: 'Выбираем формат', text: 'Challenge, учебный трек, скрининг или закрытый контест.' },
-  { num: '2', title: 'Готовим задачи', text: 'Подбираем или создаём 10–20 задач под нужный стек — от SQL и Python до любых других языков.' },
-  { num: '3', title: 'Запускаем страницу', text: 'Участники получают ссылку на отдельный трек или челлендж.' },
-  { num: '4', title: 'Собираем результаты', text: 'Организатор получает рейтинг, таблицу результатов и краткий отчёт.' },
+  {
+    num: '1',
+    title: 'Выбираем формат',
+    text: 'Challenge, учебный трек, скрининг или закрытый контест.',
+  },
+  {
+    num: '2',
+    title: 'Готовим задачи',
+    text: 'Подбираем или создаём 10–20 задач под цель пилота: от базовой практики до отбора кандидатов.',
+  },
+  {
+    num: '3',
+    title: 'Запускаем страницу',
+    text: 'Участники получают ссылку на отдельный трек или челлендж.',
+  },
+  {
+    num: '4',
+    title: 'Собираем результаты',
+    text: 'Организатор получает рейтинг, таблицу результатов и краткий отчёт.',
+  },
 ];
 
 const reasons = [
   'не нужно разрабатывать платформу с нуля',
   'можно быстро проверить формат на небольшой аудитории',
-  'большой выбор языков и стеков для задач',
+  'разные типы практики: код, SQL, треки и контесты',
   'можно запускать публичные и приватные треки',
   'формат подходит для обучения, найма и developer engagement',
   'платформа гибко дорабатывается под партнёра',
 ];
 
 const scenarios = [
-  { audience: 'Для компании', name: '«Company SQL Challenge»', text: 'публичный челлендж для аналитиков и разработчиков.' },
-  { audience: 'Для университета', name: '«University Algorithms Warmup»', text: 'тренировочный трек для студентов и абитуриентов.' },
-  { audience: 'Для HR-команды', name: '«Junior Backend Screening»', text: 'набор задач для первичной оценки кандидатов.' },
-  { audience: 'Для онлайн-школы', name: '«SQL Practice Track»', text: 'домашние задания и практика с автопроверкой.' },
+  {
+    audience: 'Для компании',
+    name: '«Company SQL Challenge»',
+    text: 'публичный челлендж для аналитиков и разработчиков.',
+  },
+  {
+    audience: 'Для университета',
+    name: '«University Algorithms Warmup»',
+    text: 'тренировочный трек для студентов и абитуриентов.',
+  },
+  {
+    audience: 'Для HR-команды',
+    name: '«Junior Backend Screening»',
+    text: 'набор задач для первичной оценки кандидатов.',
+  },
+  {
+    audience: 'Для онлайн-школы',
+    name: '«SQL Practice Track»',
+    text: 'домашние задания и практика с автопроверкой.',
+  },
 ];
 
 function GradientButton({ children, href }: { children: React.ReactNode; href: string }) {
@@ -184,15 +213,15 @@ export default function PartnersPage() {
               Для партнёров
             </div>
 
-            <h1 className="max-w-3xl font-dela-gothic text-4xl font-normal leading-[1.15] tracking-tight md:text-6xl">
+            <h1 className="font-dela-gothic max-w-3xl text-4xl font-normal leading-[1.15] tracking-tight md:text-6xl">
               <span className="bg-gradient-to-br from-white from-20% via-pink-400 via-55% to-fuchsia-600 to-90% bg-clip-text text-transparent">
                 Запускайте coding challenges, учебные треки и технические отборы на базе Leetcot
               </span>
             </h1>
 
             <p className="max-w-2xl text-lg leading-8 text-white/50">
-              Leetcot — платформа для задач по программированию: большой выбор языков и стеков, алгоритмов и
-              контестов. На базе Leetcot можно быстро запустить branded challenge, образовательный
+              Leetcot — платформа для практики программирования: задачи, SQL-тренировки, курсы и
+              контесты. На базе Leetcot можно быстро запустить branded challenge, образовательный
               трек, технический скрининг кандидатов или white-label формат под задачи партнёра.
             </p>
 
@@ -222,11 +251,13 @@ export default function PartnersPage() {
             <div className="mt-6 grid w-full max-w-xl grid-cols-3 gap-3 border-t border-zinc-900 pt-8">
               {[
                 ['4', 'формата продукта'],
-                ['15+', 'языков и стеков'],
+                ['3', 'направления практики'],
                 ['1–2 нед.', 'на запуск пилота'],
               ].map(([value, label]) => (
                 <div key={label} className="text-center">
-                  <div className="font-mono text-2xl font-black text-pink-300 md:text-3xl">{value}</div>
+                  <div className="font-mono text-2xl font-black text-pink-300 md:text-3xl">
+                    {value}
+                  </div>
                   <div className="mt-1 text-xs text-zinc-500">{label}</div>
                 </div>
               ))}
@@ -387,7 +418,10 @@ export default function PartnersPage() {
             </h2>
             <div className="mt-10 grid gap-4 sm:grid-cols-2">
               {scenarios.map((scenario) => (
-                <div key={scenario.name} className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+                <div
+                  key={scenario.name}
+                  className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5"
+                >
                   <p className="text-xs font-bold uppercase tracking-wide text-pink-400">
                     {scenario.audience}
                   </p>
@@ -403,9 +437,9 @@ export default function PartnersPage() {
           <div className="container max-w-2xl text-center">
             <h2 className="text-2xl font-black md:text-3xl">О Leetcot</h2>
             <p className="mt-6 leading-8 text-zinc-400">
-              Leetcot.ru — независимая платформа для практики программирования на большом выборе языков и стеков, алгоритмов и
-              coding challenges. Проект развивает Летуновский Владимир, школьник и разработчик
-              платформы.
+              Leetcot.ru — независимая платформа для практики программирования: задачи, SQL,
+              языковые курсы и coding challenges. Проект развивает Летуновский Владимир, школьник и
+              разработчик платформы.
             </p>
             <p className="mt-4 leading-8 text-zinc-400">
               Цель Leetcot — сделать практику программирования понятной, доступной и полезной для

@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
 import { UserAvatar } from '@repo/ui/components/user-avatar';
-import { Award, ExternalLink, Play, Settings, Settings2, Trophy, User } from '@repo/ui/icons';
+import { Award, ExternalLink, Play, Settings, Settings2, User } from '@repo/ui/icons';
 import Link from 'next/link';
 import { RoleTypes } from '@repo/db/types';
 import { Suspense } from 'react';
@@ -41,21 +41,13 @@ export async function Navigation() {
     session?.user?.role?.includes(RoleTypes.TEACHER) ||
       session?.user?.role?.includes(RoleTypes.ADMIN),
   );
-  const isChampionshipManager = Boolean(
-    session?.user?.role?.includes(RoleTypes.CHAMPIONSHIP_MANAGER) ||
-      session?.user?.role?.includes(RoleTypes.ADMIN),
-  );
   const TopSectionLinks = (
     <>
       <NavLink title="Задачки" href="/explore" />
       <NavLink title="Алгоритмы" href="/algorithms" />
       <NavLink title="SQL-рыбалка" href="/sql-fishing" />
+      <NavLink title="Go" href="/courses/golang-start" />
       {isTeacher ? <NavLink title="Панель учителя" href="/teacher/exams" /> : null}
-      {isChampionshipManager ? (
-        <a href={`${getAdminUrl()}/dashboard/championships`} className="text-sm font-medium transition-colors hover:text-foreground/80">
-          Панель чемпионатов
-        </a>
-      ) : null}
     </>
   );
 
@@ -125,7 +117,6 @@ export async function Navigation() {
                   session={session}
                   isAdmin={isAdminRole}
                   isTeacher={isTeacher}
-                  isChampionshipManager={isChampionshipManager}
                 />
               ) : null}
               <MobileNav>{NavLinks}</MobileNav>
@@ -142,13 +133,11 @@ function LoginButton({
   isAdmin,
   session,
   isTeacher,
-  isChampionshipManager,
 }: {
   isAdminOrMod: boolean;
   isAdmin: boolean;
   session: Session | null;
   isTeacher: boolean;
-  isChampionshipManager: boolean;
 }) {
   return session?.user ? (
     <DropdownMenu>
@@ -184,14 +173,6 @@ function LoginButton({
               <span>Панель учителя</span>
             </DropdownMenuItem>
           </Link>
-        ) : null}
-        {isChampionshipManager ? (
-          <a className="block" href={`${getAdminUrl()}/dashboard/championships`}>
-            <DropdownMenuItem className="focus:bg-accent rounded-lg p-2 duration-300 focus:outline-none dark:hover:bg-neutral-700/50">
-              <Trophy className="mr-2 h-4 w-4" />
-              <span>Панель чемпионатов</span>
-            </DropdownMenuItem>
-          </a>
         ) : null}
         {isAdminOrMod ? (
           <a className="block" href={getAdminUrl()}>

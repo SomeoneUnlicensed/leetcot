@@ -1,0 +1,10 @@
+{
+  "id": "go-cat-full-bowls",
+  "label": "Полные миски",
+  "description": "Посчитайте, сколько мисок набрали нужный минимум.",
+  "difficulty": "easy",
+  "language": "go",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": ["go"]
+}

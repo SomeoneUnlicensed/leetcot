@@ -4,5 +4,9 @@
   "description": "Найдите рыбные порции для котят: только блюда из рыбы весом от 20 до 60 грамм включительно.",
   "difficulty": "easy",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql",
+  "supportedLanguages": [
+    "sql"
+  ]
 }

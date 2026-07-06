@@ -22,7 +22,15 @@ interface ExploreProps {
   }>;
 }
 
-const difficultyOrder: Difficulty[] = ['BEGINNER', 'EASY', 'MEDIUM', 'HARD', 'EXTREME', 'EVENT'];
+const difficultyOrder: Difficulty[] = [
+  'BEGINNER',
+  'EASY',
+  'MEDIUM',
+  'HARD',
+  'EXTREME',
+  'ULTRA',
+  'EVENT',
+];
 
 const difficultyLabels: Record<Difficulty, string> = {
   BEGINNER: 'Новичок',
@@ -30,6 +38,7 @@ const difficultyLabels: Record<Difficulty, string> = {
   MEDIUM: 'Средняя',
   HARD: 'Сложная',
   EXTREME: 'Экстрим',
+  ULTRA: 'Ультра',
   EVENT: 'Событие',
 };
 
@@ -39,6 +48,8 @@ const difficultyStyles: Record<Difficulty, string> = {
   MEDIUM: 'bg-amber-500/15 text-amber-300',
   HARD: 'bg-rose-500/15 text-rose-300',
   EXTREME: 'bg-violet-500/15 text-violet-300',
+  ULTRA:
+    'bg-[linear-gradient(90deg,rgba(255,59,138,0.22),rgba(34,211,238,0.22),rgba(232,121,249,0.22))] text-fuchsia-100 ring-1 ring-fuchsia-300/30',
   EVENT: 'bg-fuchsia-500/15 text-fuchsia-300',
 };
 
@@ -150,8 +161,8 @@ export async function Explore({ searchParams }: ExploreProps) {
                   Задачи <span className="ml-2 text-xl text-zinc-500">{challenges.length}</span>
                 </h1>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">
-                  Быстрый каталог задач ЛитКота: ищите по названию, языку и сложности, затем
-                  переходите сразу к решению.
+                  Быстрый каталог задач ЛитКота: ищите по названию и сложности, затем переходите
+                  сразу к решению.
                 </p>
               </div>
               {randomChallenge ? (

@@ -27,7 +27,7 @@ export const enum STEPS {
 
 const testCaseRegex = new RegExp('(?:\n|^)s*(?:Equal|Extends|NotEqual|Expect)<');
 const createExploreCardSchema = z.object({
-  difficulty: z.enum(['BEGINNER', 'EASY', 'MEDIUM', 'HARD', 'EXTREME', 'EVENT']),
+  difficulty: z.enum(['BEGINNER', 'EASY', 'MEDIUM', 'HARD', 'EXTREME', 'ULTRA', 'EVENT']),
   name: createNoProfanitySchemaWithValidate((zodString) =>
     zodString
       .min(3, 'Название должно быть длиннее 3 символов')

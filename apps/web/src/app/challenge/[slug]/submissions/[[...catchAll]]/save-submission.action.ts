@@ -16,7 +16,11 @@ import {
 // client-supplied boolean. Other languages are still graded client-side today
 // (TS/JS diagnostics checked in-browser) and remain on the trusted-boolean path
 // below until that grading also moves behind a server-verified job.
-const QUEUE_VERIFIED_LANGUAGES: ChallengeRouteData['challenge']['language'][] = ['SQL', 'PYTHON'];
+const QUEUE_VERIFIED_LANGUAGES: ChallengeRouteData['challenge']['language'][] = [
+  'SQL',
+  'PYTHON',
+  'GO',
+];
 
 interface Args {
   challenge: ChallengeRouteData['challenge'];
@@ -74,56 +78,6 @@ export async function saveSubmission({
       ...(verifiedExecutionTimeMs != null ? { executionTimeMs: verifiedExecutionTimeMs } : {}),
     },
   });
-
-  if (verifiedIsSuccessful) {
-    const activeParticipants = await prisma.championshipParticipant.findMany({
-      where: {
-        userId,
-        championship: {
-          status: 'ACTIVE',
-          challenges: {
-            some: {
-              challengeId: challenge.id,
-            },
-          },
-        },
-      },
-    });
-
-    if (activeParticipants.length > 0) {
-      const pointsMap: Record<string, number> = {
-        BEGINNER: 50,
-        EASY: 100,
-        MEDIUM: 250,
-        HARD: 500,
-        EXTREME: 1000,
-        EVENT: 200,
-      };
-      const points = pointsMap[challenge.difficulty] || 100;
-
-      for (const participant of activeParticipants) {
-        const existingSuccessful = await prisma.submission.findFirst({
-          where: {
-            userId,
-            challengeId: challenge.id,
-            isSuccessful: true,
-            id: { not: submission.id },
-          },
-        });
-
-        if (!existingSuccessful) {
-          await prisma.championshipParticipant.update({
-            where: { id: participant.id },
-            data: {
-              score: {
-                increment: points,
-              },
-            },
-          });
-        }
-      }
-    }
-  }
 
   revalidateTag(createChallengeSubmissionCacheKey(challenge.slug));
   revalidateTag(createCacheKeyForSolutions(challenge.slug));

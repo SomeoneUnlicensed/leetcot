@@ -1,0 +1,10 @@
+{
+  "id": "go-cat-portal-router",
+  "label": "Портальный маршрут",
+  "description": "Найдите минимальную стоимость пути в графе с cooldown после прыжка.",
+  "difficulty": "ultra",
+  "language": "go",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": ["go"]
+}

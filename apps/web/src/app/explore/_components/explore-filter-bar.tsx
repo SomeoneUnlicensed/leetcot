@@ -70,12 +70,11 @@ export function ExploreFilterBar() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="ALL">Все языки</SelectItem>
-            <SelectItem value="SQL">SQL</SelectItem>
             <SelectItem value="PYTHON">Python</SelectItem>
+            <SelectItem value="SQL">SQL</SelectItem>
             <SelectItem value="GO">Go</SelectItem>
           </SelectContent>
         </Select>
-
         <Select
           defaultValue={searchParams.get('difficulty') ?? 'ALL'}
           onValueChange={(v) => onFilterChange('difficulty', v)}
@@ -90,6 +89,7 @@ export function ExploreFilterBar() {
             <SelectItem value="MEDIUM">Средне</SelectItem>
             <SelectItem value="HARD">Сложно</SelectItem>
             <SelectItem value="EXTREME">Экстрим</SelectItem>
+            <SelectItem value="ULTRA">Ультра</SelectItem>
           </SelectContent>
         </Select>
         <Select

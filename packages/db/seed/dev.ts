@@ -212,6 +212,14 @@ async function main() {
         'sql-cat-self-join-friends',
         'sql-cat-fishing-rank',
       ],
+      'golang-service-start': [
+        'go-cat-full-bowls',
+        'go-cat-snack-index',
+        'go-cat-purr-window',
+        'go-cat-ration-log',
+        'go-cat-feeding-order',
+        'go-cat-portal-router',
+      ],
     };
 
     // 4. Создание треков

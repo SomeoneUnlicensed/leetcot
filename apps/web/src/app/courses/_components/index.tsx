@@ -31,18 +31,28 @@ export async function CoursesPage() {
 
   return (
     <>
-      <div className="flex flex-col gap-5 pb-8 md:gap-10 md:py-5">
-        <div className="container">
-          <h1 className="mb-8 text-4xl font-bold tracking-tight text-neutral-900 sm:px-8 md:px-0 dark:text-white">
-            Курсы
-          </h1>
-          <p className="max-w-[69ch] text-lg leading-10 text-neutral-600 sm:px-8 md:px-0 dark:text-white/50">
-            Курсы объединяют несколько треков в структурированную программу обучения. Запишитесь на
-            курс, чтобы последовательно пройти все треки и задачи.
-          </p>
+      <main className="overflow-hidden bg-[#121018] px-4 text-white">
+        <div className="from-[#ec4899]/16 pointer-events-none fixed inset-x-0 top-0 -z-10 h-48 bg-gradient-to-b to-transparent" />
+        <div className="container py-16 md:py-20">
+          <div className="max-w-4xl">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-2xl border border-[#ff8ecb]/30 bg-[#211827]/80 px-4 py-2 text-sm font-black text-[#ffaad8] shadow-2xl shadow-pink-950/10">
+              ЛитКот · курсы
+            </div>
+            <h1
+              className="text-balance text-4xl leading-[1.14] tracking-normal sm:text-5xl md:text-6xl lg:text-[4.05rem]"
+              style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+            >
+              Курсы для практики по направлениям
+            </h1>
+            <p className="mt-6 max-w-2xl text-base font-semibold leading-7 text-[#d8d4df]/80 sm:text-lg">
+              Python-алгоритмы, SQL и Go собраны отдельно, чтобы удобно выбирать формат практики и
+              возвращаться к прогрессу.
+            </p>
+          </div>
         </div>
+
         <div className="container">
-          <section className="w-[calc(100% + 8rem)] grid grid-cols-1 gap-4 sm:px-8 md:-mx-16 md:grid-cols-2 md:px-0 lg:mx-0 lg:w-full xl:grid-cols-3 2xl:gap-8">
+          <section className="grid grid-cols-1 gap-4 pb-16 md:grid-cols-2 xl:grid-cols-3 2xl:gap-6">
             {courses.map((course) => {
               if (course.isComingSoon) {
                 return <CourseCardSoon key={`course-${course.id}`} course={course} />;
@@ -51,7 +61,7 @@ export async function CoursesPage() {
             })}
           </section>
         </div>
-      </div>
+      </main>
       <Footsies />
     </>
   );

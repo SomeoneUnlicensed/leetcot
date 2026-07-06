@@ -38,6 +38,10 @@ const chartConfig = {
     label: 'Экстремальный',
     color: 'hsl(var(--chart-5))',
   },
+  ULTRA: {
+    label: 'Ультра',
+    color: '#e879f9',
+  },
 } satisfies ChartConfig;
 
 export function ProgressChart(props: {

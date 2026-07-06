@@ -4,5 +4,15 @@
   "description": "Проверь корректность строки из скобок.",
   "difficulty": "easy",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
 }

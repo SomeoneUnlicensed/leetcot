@@ -4,5 +4,9 @@
   "description": "Составь рейтинг котов по среднему улову, только тех кто ловил 3+ раза.",
   "difficulty": "medium",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql",
+  "supportedLanguages": [
+    "sql"
+  ]
 }

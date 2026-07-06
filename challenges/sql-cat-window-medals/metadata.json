@@ -4,5 +4,9 @@
   "description": "Постройте рейтинг котов по количеству медалей.",
   "difficulty": "hard",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql",
+  "supportedLanguages": [
+    "sql"
+  ]
 }

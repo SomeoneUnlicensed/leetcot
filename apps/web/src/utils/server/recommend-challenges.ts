@@ -9,6 +9,7 @@ const difficultyWeight: Record<string, number> = {
   MEDIUM: 2,
   HARD: 3,
   EXTREME: 4,
+  ULTRA: 5,
   EVENT: 2,
 };
 
@@ -22,7 +23,11 @@ type ChallengeWithTracks = Challenge & {
 function challengeOnly(challenge: ChallengeWithTracks): Challenge {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { TrackChallenge, ...plainChallenge } = challenge;
-  return plainChallenge;
+  return {
+    ...plainChallenge,
+    code: '',
+    tests: '',
+  };
 }
 
 function difficultyDistance(a: string, b: string) {

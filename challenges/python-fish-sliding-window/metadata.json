@@ -4,5 +4,15 @@
   "description": "Найди самую длинную последовательность уникальных 'точек' в луче света.",
   "difficulty": "medium",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
 }

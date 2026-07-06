@@ -39,10 +39,21 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
                 orderBy: { orderId: 'asc' },
                 include: {
                   challenge: {
-                    include: {
+                    select: {
+                      id: true,
+                      difficulty: true,
+                      language: true,
+                      name: true,
+                      shortDescription: true,
+                      slug: true,
+                      status: true,
                       submission: {
                         where: {
                           userId: session.user.id,
+                          isSuccessful: true,
+                        },
+                        select: {
+                          id: true,
                           isSuccessful: true,
                         },
                         take: 1,
@@ -54,7 +65,17 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
             : {
                 orderBy: { orderId: 'asc' },
                 include: {
-                  challenge: true,
+                  challenge: {
+                    select: {
+                      id: true,
+                      difficulty: true,
+                      language: true,
+                      name: true,
+                      shortDescription: true,
+                      slug: true,
+                      status: true,
+                    },
+                  },
                 },
               },
         },
@@ -78,6 +99,168 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
   const isEnrolled = Array.isArray(course.enrolledUsers) && course.enrolledUsers.length > 0;
 
   const totalChallenges = course.tracks.reduce((acc, t) => acc + t._count.trackChallenges, 0);
+
+  if (course.slug === 'golang-start') {
+    const goChallenges = course.tracks.flatMap((track) =>
+      track.trackChallenges.map((item) => item.challenge),
+    );
+    const difficultyLabels: Record<string, string> = {
+      EASY: 'Легко',
+      MEDIUM: 'Средне',
+      HARD: 'Сложно',
+      EXTREME: 'Экстрим',
+      ULTRA: 'Ультра',
+    };
+    const difficultyClasses: Record<string, string> = {
+      EASY: 'border-emerald-300/30 bg-emerald-300/10 text-emerald-100',
+      MEDIUM: 'border-amber-300/30 bg-amber-300/10 text-amber-100',
+      HARD: 'border-rose-300/30 bg-rose-300/10 text-rose-100',
+      EXTREME: 'border-violet-300/30 bg-violet-300/10 text-violet-100',
+      ULTRA:
+        'border-white/15 bg-[linear-gradient(90deg,rgba(244,63,94,0.22),rgba(34,211,238,0.18),rgba(168,85,247,0.22))] text-fuchsia-50',
+    };
+    const challengeCountLabel = `${goChallenges.length} ${
+      goChallenges.length % 10 === 1 && goChallenges.length % 100 !== 11 ? 'задача' : 'задач'
+    }`;
+
+    return (
+      <>
+        <main className="overflow-hidden bg-[#121018] text-white">
+          <section className="relative isolate border-b border-white/10 px-4">
+            <div className="from-[#ec4899]/16 pointer-events-none absolute inset-x-0 top-0 -z-10 h-48 bg-gradient-to-b to-transparent" />
+            <div className="bg-[#2dd4bf]/12 pointer-events-none absolute right-0 top-20 -z-10 h-[34rem] w-[46rem] rounded-l-full blur-3xl" />
+            <div className="pointer-events-none absolute bottom-0 left-0 -z-10 h-[30rem] w-[34rem] rounded-r-full bg-[#f59e0b]/10 blur-3xl" />
+            <div className="container relative grid min-h-[calc(100svh-3.5rem)] gap-10 py-20 md:grid-cols-[minmax(0,0.62fr)_minmax(280px,0.38fr)] md:items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-2xl border border-[#ff8ecb]/30 bg-[#211827]/80 px-4 py-2 text-sm font-black text-[#ffaad8] shadow-2xl shadow-pink-950/10">
+                  Go · стартовый курс
+                </div>
+                <h1
+                  className="mt-7 max-w-4xl text-balance text-4xl leading-[1.14] tracking-normal sm:text-5xl md:text-6xl lg:text-[4.05rem] xl:text-[4.45rem]"
+                  style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+                >
+                  Go для сервисных задач: функции, данные и проверки
+                </h1>
+                <p className="mt-6 max-w-2xl text-base font-semibold leading-7 text-[#d8d4df]/80 sm:text-lg">
+                  Короткий курс для практики Go: слайсы, map, ошибки, сортировка, окна и графы.
+                  Каждая задача открывается в редакторе и проверяется серверными тестами.
+                </p>
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <EnrollCourseButton
+                    courseId={course.id}
+                    isEnrolled={isEnrolled}
+                    isLoggedIn={Boolean(session?.user)}
+                  />
+                  <Link
+                    className="inline-flex h-12 items-center justify-center rounded-2xl border border-white/15 bg-white/[0.04] px-6 text-base font-black text-white transition hover:bg-white/10"
+                    href="/tracks/golang-service-start"
+                  >
+                    Открыть трек
+                  </Link>
+                </div>
+              </div>
+
+              <div className="rounded-[1.75rem] border border-[#8ef0de]/25 bg-[#1b1722]/85 p-5 shadow-2xl shadow-black/30">
+                <pre className="ml-auto w-fit select-none font-mono text-sm font-black leading-5 text-[#ff8ecb]/55">{` /\\_/\\\\
+( o.o )
+ > ^ <`}</pre>
+                <div className="mt-7 grid gap-3">
+                  {[
+                    [challengeCountLabel, 'в курсе'],
+                    ['Go', 'один язык'],
+                    ['oracle', 'проверка'],
+                  ].map(([value, label]) => (
+                    <div
+                      key={label}
+                      className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3"
+                    >
+                      <div className="font-mono text-2xl font-black text-[#8ef0de]">{value}</div>
+                      <div className="mt-1 text-sm font-semibold text-[#d8d4df]/70">{label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="border-b border-white/10 px-4 py-16">
+            <div className="container">
+              <p className="mb-3 text-center font-mono text-xs font-semibold uppercase tracking-[0.2em] text-[#8ef0de]">
+                программа
+              </p>
+              <h2
+                className="mx-auto max-w-3xl text-center text-3xl leading-tight md:text-4xl"
+                style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+              >
+                Курс идет от простых функций к задачам, похожим на backend-собеседование
+              </h2>
+              <div className="mt-10 grid gap-4 md:grid-cols-3">
+                {[
+                  ['База Go', 'Функции, слайсы, map и аккуратная работа с данными.'],
+                  [
+                    'Ошибки и контракты',
+                    'Возвращаем `error`, проверяем формат входа, не прячем сбои.',
+                  ],
+                  ['Алгоритмы в Go', 'Окна, сортировка, графы, приоритетная очередь и состояния.'],
+                ].map(([title, text]) => (
+                  <div
+                    className="rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-6 transition hover:border-[#8ef0de]/35 hover:bg-white/[0.055]"
+                    key={title}
+                  >
+                    <h3 className="text-xl font-black">{title}</h3>
+                    <p className="mt-3 font-semibold leading-7 text-[#d8d4df]/65">{text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="px-4 py-16">
+            <div className="container">
+              <p className="mb-3 text-center font-mono text-xs font-semibold uppercase tracking-[0.2em] text-[#8ef0de]">
+                задачи курса
+              </p>
+              <h2
+                className="text-center text-3xl leading-tight md:text-4xl"
+                style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+              >
+                {challengeCountLabel} в курсе
+              </h2>
+              <div className="mt-10 grid gap-4 lg:grid-cols-2">
+                {goChallenges.map((challenge, index) => (
+                  <Link
+                    className="group rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-5 transition hover:border-[#8ef0de]/35 hover:bg-white/[0.055]"
+                    href={`/challenge/${challenge.slug}`}
+                    key={challenge.slug}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-mono text-sm font-semibold text-[#8ef0de]">
+                          {String(index + 1).padStart(2, '0')}
+                        </p>
+                        <h3 className="mt-3 text-2xl font-black text-white">{challenge.name}</h3>
+                      </div>
+                      <span
+                        className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider ${
+                          difficultyClasses[challenge.difficulty] ?? 'border-white/10 text-white'
+                        }`}
+                      >
+                        {difficultyLabels[challenge.difficulty] ?? challenge.difficulty}
+                      </span>
+                    </div>
+                    <p className="mt-4 font-semibold leading-7 text-[#d8d4df]/65">
+                      {challenge.shortDescription}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        </main>
+        <Footsies />
+      </>
+    );
+  }
 
   return (
     <>

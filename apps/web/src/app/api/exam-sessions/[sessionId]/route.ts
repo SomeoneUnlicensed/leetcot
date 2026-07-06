@@ -2,6 +2,7 @@ import { exec } from 'node:child_process';
 import { writeFile, mkdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
+import { promisify } from 'node:util';
 import { prisma } from '@repo/db';
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,9 +10,28 @@ import { z } from 'zod';
 
 const PYTHON_RUNTIME_IMAGE = 'python:3.11-alpine';
 const NODE_RUNTIME_IMAGE = 'node:20-alpine';
+const RUNTIME_PULL_TIMEOUT_MS = 600_000;
 const RUNTIME_IMAGE_ERROR =
-  'Песочница не готова: на сервере не найден Docker-образ для запуска кода. ' +
-  'Администратору нужно заранее подготовить runtime images.';
+  'Проверка кода временно недоступна: сервер не успел подготовить изолированную песочницу. Повторите запуск через минуту.';
+
+const execAsync = promisify(exec);
+
+async function ensureRuntimeImage(image: string) {
+  try {
+    await execAsync(`docker image inspect ${image}`);
+    return;
+  } catch {
+    console.warn(`Runtime image ${image} is missing; trying to pull it before exam run.`);
+  }
+
+  try {
+    await execAsync(`docker pull ${image}`, { timeout: RUNTIME_PULL_TIMEOUT_MS });
+    await execAsync(`docker image inspect ${image}`);
+  } catch (error) {
+    console.error(`Runtime image ${image} is unavailable.`, error);
+    throw new Error(RUNTIME_IMAGE_ERROR);
+  }
+}
 
 // Helper function to execute code with stdin
 function runCodeWithStdin(
@@ -383,13 +403,16 @@ export async function PUT(
 
             const isPython = question.language.toLowerCase() === 'python';
             const isFunctionBased = Boolean(question.functionName);
+            const runtimeImage = isPython ? PYTHON_RUNTIME_IMAGE : NODE_RUNTIME_IMAGE;
+            await ensureRuntimeImage(runtimeImage);
+
             const fileName = isPython ? 'main.py' : 'main.js';
             const filePath = path.join(tmpDir, fileName);
 
             const normalizedTmpDir = tmpDir.replace(/\\/g, '/');
             const cmd = isPython
-              ? `docker run -i --rm --pull never --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code ${PYTHON_RUNTIME_IMAGE} python main.py`
-              : `docker run -i --rm --pull never --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code ${NODE_RUNTIME_IMAGE} node main.js`;
+              ? `docker run -i --rm --pull never --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code ${runtimeImage} python main.py`
+              : `docker run -i --rm --pull never --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code ${runtimeImage} node main.js`;
 
             if (!isFunctionBased) {
               await writeFile(filePath, code);
@@ -451,7 +474,15 @@ export async function PUT(
             gradedAnswers.push({
               answerId: answer.id,
               score: 0,
-              testResults: [{ error: `Ошибка тестирования: ${errorMsg}`, passed: false }],
+              testResults: [
+                {
+                  error:
+                    errorMsg === RUNTIME_IMAGE_ERROR
+                      ? RUNTIME_IMAGE_ERROR
+                      : `Ошибка тестирования: ${errorMsg}`,
+                  passed: false,
+                },
+              ],
             });
           } finally {
             await rm(tmpDir, { recursive: true, force: true }).catch(() => undefined);
@@ -546,13 +577,16 @@ export async function PUT(
 
         const isPython = question.language.toLowerCase() === 'python';
         const isFunctionBased = Boolean(question.functionName);
+        const runtimeImage = isPython ? PYTHON_RUNTIME_IMAGE : NODE_RUNTIME_IMAGE;
+        await ensureRuntimeImage(runtimeImage);
+
         const fileName = isPython ? 'main.py' : 'main.js';
         const filePath = path.join(tmpDir, fileName);
 
         const normalizedTmpDir = tmpDir.replace(/\\/g, '/');
         const cmd = isPython
-          ? `docker run -i --rm --pull never --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code ${PYTHON_RUNTIME_IMAGE} python main.py`
-          : `docker run -i --rm --pull never --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code ${NODE_RUNTIME_IMAGE} node main.js`;
+          ? `docker run -i --rm --pull never --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code ${runtimeImage} python main.py`
+          : `docker run -i --rm --pull never --network none -m 128m --cpus 0.5 -v "${normalizedTmpDir}:/code" -w /code ${runtimeImage} node main.js`;
 
         if (!isFunctionBased) {
           await writeFile(filePath, code);
@@ -609,6 +643,9 @@ export async function PUT(
         });
       } catch (runErr) {
         console.error('Run code error:', runErr);
+        if (runErr instanceof Error && runErr.message === RUNTIME_IMAGE_ERROR) {
+          return NextResponse.json({ error: RUNTIME_IMAGE_ERROR }, { status: 503 });
+        }
         return NextResponse.json(
           { error: 'Ошибка при запуске кода в песочнице.' },
           { status: 500 },

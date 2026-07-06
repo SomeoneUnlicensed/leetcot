@@ -26,6 +26,7 @@ export async function GET(req: Request) {
     MEDIUM: 'bg-[#f19c41]',
     HARD: 'bg-[#f87272]',
     EXTREME: 'bg-[#d8b4fe]',
+    ULTRA: 'bg-[#f0abfc]',
     // should never actually be used
     EVENT: 'bg-[#d8b4fe]',
   };
@@ -36,6 +37,7 @@ export async function GET(req: Request) {
     MEDIUM: '#66421b',
     HARD: '#5c2020',
     EXTREME: '#48345c',
+    ULTRA: '#4a2458',
     // should never actually be used
     EVENT: '#48345c',
   };
@@ -77,7 +79,10 @@ export async function GET(req: Request) {
             </defs>
           </svg>
           <div tw="flex h-full flex-col p-10 w-full">
-            <div tw="flex absolute top-10 right-10 items-center text-[#d946ef] text-3xl" style={{ fontFamily: '"Dela Gothic One", sans-serif' }}>
+            <div
+              tw="flex absolute top-10 right-10 items-center text-[#d946ef] text-3xl"
+              style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+            >
               <span tw="mr-4 text-4xl">/\_/\ ( o.o )</span>
               ЛитКот БЕТА
             </div>

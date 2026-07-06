@@ -4,5 +4,9 @@
   "description": "Разделите рыбу на дешёвую, обычную и дорогую по цене.",
   "difficulty": "easy",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql",
+  "supportedLanguages": [
+    "sql"
+  ]
 }

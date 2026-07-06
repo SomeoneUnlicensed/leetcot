@@ -4,5 +4,9 @@
   "description": "Свяжите таблицы и обновите статус сломанных автокормушек Мурзика и Барсика.",
   "difficulty": "easy",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql",
+  "supportedLanguages": [
+    "sql"
+  ]
 }

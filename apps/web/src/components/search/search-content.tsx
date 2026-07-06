@@ -1,7 +1,6 @@
 'use client';
 
 import { DialogClose } from '@radix-ui/react-dialog';
-import type { Challenge } from '@repo/db/types';
 import { DifficultyBadge } from '@repo/ui/components/difficulty-badge';
 import Link from 'next/link';
 import { useSearchResult, useSearchStatus, useSearchBox } from './search-provider';
@@ -9,12 +8,28 @@ import { useRecentSearchesStorage } from './use-recent-searches-storage';
 import { Text } from '@repo/ui/components/typography/typography';
 import { SearchIcon, Loader2 as LoaderIcon, X as XIcon } from '@repo/ui/icons';
 import { ScrollArea, ScrollBar } from '@repo/ui/components/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@repo/ui/components/select';
+import type { SearchLanguage } from './search-provider';
+import type { SearchedChallenge } from '~/app/explore/_components/explore.action';
 
 function useRecentSearches() {
   return useRecentSearchesStorage();
 }
 
 type OnClick = () => void;
+
+const languageLabels: Record<string, string> = {
+  ALL: 'Все языки',
+  GO: 'Go',
+  PYTHON: 'Python',
+  SQL: 'SQL',
+};
 
 interface HitsProps {
   onClick: OnClick;
@@ -52,7 +67,7 @@ function Results({ onClick }: HitsProps) {
   );
 }
 
-function Result({ result, onClick }: { result: Challenge; onClick: OnClick }) {
+function Result({ result, onClick }: { result: SearchedChallenge; onClick: OnClick }) {
   const { onAdd } = useRecentSearches();
   if (result.status !== 'ACTIVE') return null;
 
@@ -69,6 +84,9 @@ function Result({ result, onClick }: { result: Challenge; onClick: OnClick }) {
       <div className="flex items-center gap-4">
         <DifficultyBadge difficulty={result.difficulty} className="w-[80px] justify-center" />
         <span className="text-foreground text-sm font-medium">{result.name}</span>
+        <span className="text-muted-foreground rounded-full border px-2 py-0.5 text-xs">
+          {languageLabels[result.language] ?? result.language}
+        </span>
       </div>
     </Link>
   );
@@ -101,28 +119,41 @@ function ProposedPhrases() {
 }
 
 function Topbar() {
-  const { query, setQuery } = useSearchBox();
+  const { language, query, setLanguage, setQuery } = useSearchBox();
   const { status } = useSearchStatus();
 
   const isLoading = status === 'loading';
 
   return (
-    <div className="relative flex w-full items-center gap-2 border-b p-4">
-      {isLoading ? (
-        <LoaderIcon className="h-6 w-6 animate-spin" />
-      ) : (
-        <SearchIcon className="h-6 w-6" />
-      )}
-      <input
-        aria-label="Поиск испытаний"
-        type="search"
-        className="focus-visible:ring-ring placeholder:text-muted-foreground flex h-10 w-full flex-grow rounded-md bg-transparent px-2 text-sm outline-none"
-        placeholder="Поиск испытаний..."
-        value={query}
-        onChange={(event) => {
-          setQuery(event.currentTarget.value);
-        }}
-      />
+    <div className="relative flex w-full flex-col gap-3 border-b p-4 md:flex-row md:items-center">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        {isLoading ? (
+          <LoaderIcon className="h-6 w-6 animate-spin" />
+        ) : (
+          <SearchIcon className="h-6 w-6" />
+        )}
+        <input
+          aria-label="Поиск испытаний"
+          type="search"
+          className="focus-visible:ring-ring placeholder:text-muted-foreground flex h-10 w-full flex-grow rounded-md bg-transparent px-2 text-sm outline-none"
+          placeholder="Поиск испытаний..."
+          value={query}
+          onChange={(event) => {
+            setQuery(event.currentTarget.value);
+          }}
+        />
+      </div>
+      <Select value={language} onValueChange={(value) => setLanguage(value as SearchLanguage)}>
+        <SelectTrigger className="h-10 w-full rounded-xl md:w-[150px]">
+          <SelectValue placeholder="Язык" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="ALL">Все языки</SelectItem>
+          <SelectItem value="PYTHON">Python</SelectItem>
+          <SelectItem value="SQL">SQL</SelectItem>
+          <SelectItem value="GO">Go</SelectItem>
+        </SelectContent>
+      </Select>
       <DialogClose className="hidden md:block">
         <kbd className="bg-muted dark:group-hover:bg-muted-foreground pointer-events-none hidden h-8 select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
           <span className="text-xs">esc</span>
@@ -135,7 +166,7 @@ function Topbar() {
 function RecentSearches({ onClick }: { onClick: OnClick }) {
   const { getItems, onAdd, onRemove } = useRecentSearches();
 
-  const results = getItems() as Challenge[];
+  const results = getItems() as SearchedChallenge[];
 
   if (results.length === 0) {
     return (

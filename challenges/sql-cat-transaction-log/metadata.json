@@ -4,5 +4,9 @@
   "description": "Скопируйте крупные покупки в журнал аудита.",
   "difficulty": "hard",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql",
+  "supportedLanguages": [
+    "sql"
+  ]
 }

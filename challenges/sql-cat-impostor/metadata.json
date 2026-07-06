@@ -4,5 +4,9 @@
   "description": "Найди имена котов, которые встречаются в базе данных более одного раза.",
   "difficulty": "easy",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql",
+  "supportedLanguages": [
+    "sql"
+  ]
 }

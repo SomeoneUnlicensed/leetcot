@@ -1,16 +1,17 @@
 # ЛитКот (leetcot.ru)
 
-A coding practice platform: programming challenges, courses, and interactive exercises.
+A coding practice platform: multi-language code challenges, SQL practice, courses, and interactive exercises.
 
 ## Practice Kit
 
-`Practice Kit` is the reusable workspace for coding tasks. It gives every product the same
-two-panel experience: task text on the left, editor or runner UI on the right, with the same
-resizable layout that is used on the main challenge page.
+`Practice Kit` is the reusable workspace for tasks with an editor or runner. It gives every
+product the same two-panel experience: task text on the left, editor or runner UI on the right,
+with the same resizable layout that is used on the main challenge page.
 
 Use it when a product needs a coding workspace without rebuilding the split view again:
 
-- regular challenges;
+- regular code challenges;
+- SQL practice screens;
 - LitKot Exams code tasks;
 - partner practice rooms;
 - interview sessions;

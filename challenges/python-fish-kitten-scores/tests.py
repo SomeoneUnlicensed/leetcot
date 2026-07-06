@@ -1,14 +1,12 @@
-import unittest
+# Видимый smoke-тест. Серверная проверка ниже использует oracle и скрыта от клиента.
+import sys
 
+ENTRY_POINT = "best_scores"
+if globals().get(ENTRY_POINT) is None:
+    print(f'Функция или класс {ENTRY_POINT} не найдены', file=sys.stderr)
+    sys.exit(1)
 
-class TestKittenScores(unittest.TestCase):
-    def test_examples(self):
-        self.assertEqual(best_scores([("Mira", 7), ("Mira", 9), ("Bars", 5)]), {"Mira": 9, "Bars": 5})
-        self.assertEqual(best_scores([]), {})
+print('visible smoke OK')
 
-    def test_negative_scores(self):
-        self.assertEqual(best_scores([("A", -3), ("A", -5), ("B", 0)]), {"A": -3, "B": 0})
-
-
-if __name__ == '__main__':
-    unittest.main()
+# ---LEETCOT-ORACLE---
+# {"entryPoint":"best_scores","referenceSolution":"def best_scores(attempts):\n    result = {}\n    for name, score in attempts:\n        if name not in result or score > result[name]:\n            result[name] = score\n    return result\n","seedGenerator":"import random\n\n\ndef generate_case():\n    names = ['Mira', 'Bars', 'Keks', 'Luna', 'Pixel']\n    size = random.randint(0, 40)\n    attempts = [(random.choice(names), random.randint(-10, 100)) for _ in range(size)]\n    return (attempts,)\n"}

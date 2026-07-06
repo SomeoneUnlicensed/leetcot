@@ -4,5 +4,9 @@
   "description": "Покажите разницу очков с предыдущей тренировкой.",
   "difficulty": "hard",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql",
+  "supportedLanguages": [
+    "sql"
+  ]
 }

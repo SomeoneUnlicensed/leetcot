@@ -4,5 +4,15 @@
   "description": "Найдите максимальную прибыль от покупки и продажи рыбных акций за один день.",
   "difficulty": "easy",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
 }

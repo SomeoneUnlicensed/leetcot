@@ -4,5 +4,9 @@
   "description": "Покажите вторую страницу рейтинга по два участника.",
   "difficulty": "medium",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql",
+  "supportedLanguages": [
+    "sql"
+  ]
 }

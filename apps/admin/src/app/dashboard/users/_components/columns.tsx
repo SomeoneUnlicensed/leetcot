@@ -50,7 +50,7 @@ function RolesCell({ row }: { row: { original: BannedUsers[0] } }) {
         onClick={async () => {
           // eslint-disable-next-line no-alert
           const rolesStr = window.prompt(
-            'Введите роли через запятую (USER, ADMIN, TEACHER, BUSINESS_ADMIN, CHAMPIONSHIP_MANAGER, STUDENT, MODERATOR, CREATOR):',
+            'Введите роли через запятую (USER, ADMIN, TEACHER, BUSINESS_ADMIN, STUDENT, MODERATOR, CREATOR):',
             currentRoles.join(', '),
           );
           if (rolesStr !== null) {

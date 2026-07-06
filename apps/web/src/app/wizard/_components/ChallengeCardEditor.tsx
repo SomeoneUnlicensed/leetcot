@@ -82,8 +82,11 @@ export function ChallengeCardEditor({ form }: ChallengeCardEditorProps) {
                       <SelectItem className="brightness-150" value="HARD">
                         СЛОЖНО
                       </SelectItem>
-                      <SelectItem className="rounded-b-lg brightness-150" value="EXTREME">
+                      <SelectItem className="brightness-150" value="EXTREME">
                         ЭКСТРИМ
+                      </SelectItem>
+                      <SelectItem className="rounded-b-lg" value="ULTRA">
+                        УЛЬТРА
                       </SelectItem>
                     </SelectContent>
                   </Select>

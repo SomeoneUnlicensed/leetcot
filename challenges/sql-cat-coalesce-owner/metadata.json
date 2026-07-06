@@ -4,5 +4,9 @@
   "description": "Замените пустые значения ответственным по умолчанию.",
   "difficulty": "easy",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql",
+  "supportedLanguages": [
+    "sql"
+  ]
 }

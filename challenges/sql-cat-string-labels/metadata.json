@@ -4,5 +4,9 @@
   "description": "Соберите читаемую подпись из нескольких колонок.",
   "difficulty": "easy",
   "language": "sql",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "sql",
+  "supportedLanguages": [
+    "sql"
+  ]
 }

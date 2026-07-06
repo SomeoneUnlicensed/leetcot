@@ -4,5 +4,15 @@
   "description": "Помоги организовать очередь котов по их голоду.",
   "difficulty": "medium",
   "language": "python",
-  "author": "ЛитКот"
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
 }
