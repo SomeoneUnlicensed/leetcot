@@ -9,19 +9,24 @@ import (
 func ParseRationLog(lines []string) (int, error) {
 	total := 0
 	for _, line := range lines {
-		parts := strings.Split(line, ":")
-		if len(parts) != 2 || parts[0] == "" || len(parts[1]) < 2 {
+		line = strings.ReplaceAll(line, "\r", "")
+		if line == "" {
+			continue
+		}
+
+		parts := strings.Split(line, " ")
+		if len(parts) != 3 || parts[0] == "" {
 			return 0, fmt.Errorf("bad line")
 		}
-		sign := parts[1][0]
-		if sign != '+' && sign != '-' {
+		sign := parts[1]
+		if sign != "+" && sign != "-" {
 			return 0, fmt.Errorf("bad sign")
 		}
-		value, err := strconv.Atoi(parts[1][1:])
+		value, err := strconv.Atoi(parts[2])
 		if err != nil || value < 0 {
 			return 0, fmt.Errorf("bad value")
 		}
-		if sign == '-' {
+		if sign == "-" {
 			total -= value
 		} else {
 			total += value

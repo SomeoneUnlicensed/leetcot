@@ -489,6 +489,15 @@ function formatGoFailure(stdout: string, stderr: string, exitCode: number | null
     ].join('\n');
   }
 
+  const compileMessages = combinedOutput
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => /^(\.\/)?main\.go:\d+:\d+:/.test(line));
+
+  if (compileMessages.length > 0) {
+    return ['Go-код не скомпилировался:', ...compileMessages.slice(0, 8)].join('\n');
+  }
+
   const failedTestName = combinedOutput.match(/--- FAIL:\s+([^\s(]+)/)?.[1];
   const testMessage = combinedOutput
     .split('\n')

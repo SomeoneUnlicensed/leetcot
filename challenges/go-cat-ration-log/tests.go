@@ -3,16 +3,17 @@ package main
 import (
 	"math/rand"
 	"strconv"
+	"strings"
 	"testing"
 )
 
 func TestParseRationLogVisible(t *testing.T) {
-	got, err := ParseRationLog([]string{"barsik:+10", "mira:-3"})
+	got, err := ParseRationLog([]string{"barsik + 10", "mira - 3", ""})
 	if err != nil || got != 7 {
-		t.Fatalf("got %d/%v, want 7/nil", got, err)
+		t.Fatalf("ParseRationLog should parse lines like \"barsik + 10\" and skip empty lines: got %d/%v, want 7/nil", got, err)
 	}
 	if _, err := ParseRationLog([]string{"bad"}); err == nil {
-		t.Fatalf("expected error for malformed line")
+		t.Fatalf("expected error for malformed line without name, sign and number")
 	}
 }
 
@@ -21,27 +22,23 @@ func TestParseRationLogVisible(t *testing.T) {
 func refParseRationLog(lines []string) (int, bool) {
 	total := 0
 	for _, line := range lines {
-		colon := -1
-		for i, ch := range line {
-			if ch == ':' {
-				if colon != -1 {
-					return 0, false
-				}
-				colon = i
-			}
+		line = strings.ReplaceAll(line, "\r", "")
+		if line == "" {
+			continue
 		}
-		if colon <= 0 || colon+2 > len(line) {
+		parts := strings.Split(line, " ")
+		if len(parts) != 3 || parts[0] == "" {
 			return 0, false
 		}
-		sign := line[colon+1]
-		if sign != '+' && sign != '-' {
+		sign := parts[1]
+		if sign != "+" && sign != "-" {
 			return 0, false
 		}
-		value, err := strconv.Atoi(line[colon+2:])
+		value, err := strconv.Atoi(parts[2])
 		if err != nil || value < 0 {
 			return 0, false
 		}
-		if sign == '-' {
+		if sign == "-" {
 			total -= value
 		} else {
 			total += value
@@ -57,14 +54,14 @@ func TestParseRationLogOracle(t *testing.T) {
 		lines := make([]string, rng.Intn(40))
 		for i := range lines {
 			if rng.Intn(10) == 0 {
-				lines[i] = []string{"bad", ":10", "cat:*3", "cat:+x"}[rng.Intn(4)]
+				lines[i] = []string{"bad", " + 10", "cat * 3", "cat + x", "cat + -1", ""}[rng.Intn(6)]
 				continue
 			}
 			sign := "+"
 			if rng.Intn(2) == 0 {
 				sign = "-"
 			}
-			lines[i] = names[rng.Intn(len(names))] + ":" + sign + strconv.Itoa(rng.Intn(200))
+			lines[i] = names[rng.Intn(len(names))] + " " + sign + " " + strconv.Itoa(rng.Intn(200))
 		}
 		want, ok := refParseRationLog(lines)
 		got, err := ParseRationLog(lines)

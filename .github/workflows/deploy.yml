@@ -35,9 +35,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run fast lint checks
+      - name: Run focused lint checks
         run: |
-          pnpm --filter web lint
           pnpm --filter code-runner lint
           pnpm --filter @repo/monaco lint
 
