@@ -59,6 +59,10 @@ jobs:
     env:
       IMAGE_REPOSITORY: ghcr.io/someoneunlicensed/leetcot
       KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+      CODE_RUNNER_CONCURRENCY: "1"
+      CODE_RUNNER_TIMEOUT_MS: "12000"
+      CODE_RUNNER_GO_TIMEOUT_MS: "12000"
+      CODE_RUNNER_MAX_QUEUE_DEPTH: "50"
 
     steps:
       - name: Download image artifact
@@ -74,6 +78,11 @@ jobs:
       - name: Restart deployment (rolling update)
         run: |
           IMAGE="${IMAGE_REPOSITORY}:${GITHUB_SHA}"
+          kubectl -n production set env deploy/leetcot-code-runner \
+            CODE_RUNNER_CONCURRENCY="${CODE_RUNNER_CONCURRENCY}" \
+            CODE_RUNNER_TIMEOUT_MS="${CODE_RUNNER_TIMEOUT_MS}" \
+            CODE_RUNNER_GO_TIMEOUT_MS="${CODE_RUNNER_GO_TIMEOUT_MS}" \
+            CODE_RUNNER_MAX_QUEUE_DEPTH="${CODE_RUNNER_MAX_QUEUE_DEPTH}"
           kubectl -n production set image deploy/leetcot-app app="$IMAGE"
           kubectl -n production set image deploy/leetcot-code-runner code-runner="$IMAGE"
 
