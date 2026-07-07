@@ -101,18 +101,6 @@ const readyRuntimeImages = new Set<string>();
 const hotGoRunners = new Map<number, { baseDir: string; containerName: string }>();
 const hotPythonRunners = new Map<number, { baseDir: string; containerName: string }>();
 
-function getRuntimeUnavailableMessage(language: CodeRunPayload['language']) {
-  if (language === 'sql') {
-    return 'SQL-проверка временно недоступна: сервер не успел подготовить изолированную песочницу. Мы уже пробуем поднять runtime автоматически, повторите проверку через минуту.';
-  }
-
-  if (language === 'go') {
-    return 'Go-проверка временно недоступна: сервер не успел подготовить изолированную песочницу. Мы уже пробуем поднять runtime автоматически, повторите проверку через минуту.';
-  }
-
-  return 'Проверка кода временно недоступна: сервер не успел подготовить изолированную песочницу. Мы уже пробуем поднять runtime автоматически, повторите проверку через минуту.';
-}
-
 // Must match packages/db/seed/data/challenge-ingest.ts's PYTHON_ORACLE_MARKER and
 // apps/web's getChallengeRouteData sanitizePythonTestsForClient.
 const PYTHON_ORACLE_MARKER = '# ---LEETCOT-ORACLE---';
@@ -471,7 +459,7 @@ function formatGoFailure(stdout: string, stderr: string, exitCode: number | null
     return `Go-проверка завершилась с кодом ${exitCode ?? 'unknown'}`;
   }
 
-  if (/redeclared in this block/.test(combinedOutput)) {
+  if (combinedOutput.includes('redeclared in this block')) {
     return [
       'Go-код не скомпилировался: функция объявлена больше одного раза.',
       'Оставьте в редакторе один вариант решения и запустите проверку снова.',
@@ -480,7 +468,7 @@ function formatGoFailure(stdout: string, stderr: string, exitCode: number | null
     ].join('\n');
   }
 
-  if (/expected 'package', found/.test(combinedOutput)) {
+  if (combinedOutput.includes("expected 'package', found")) {
     return [
       'Go-код не скомпилировался: файл должен начинаться с package main.',
       'Можно оставить только функцию решения — сервер сам добавит package main.',
@@ -498,11 +486,11 @@ function formatGoFailure(stdout: string, stderr: string, exitCode: number | null
     return ['Go-код не скомпилировался:', ...compileMessages.slice(0, 8)].join('\n');
   }
 
-  const failedTestName = combinedOutput.match(/--- FAIL:\s+([^\s(]+)/)?.[1];
+  const failedTestName = /--- FAIL:\s+([^\s(]+)/.exec(combinedOutput)?.[1];
   const testMessage = combinedOutput
     .split('\n')
     .map((line) => line.trim())
-    .map((line) => line.match(/(?:^|\s)[\w-]+_test\.go:\d+:\s+(.+)$/)?.[1])
+    .map((line) => /(?:^|\s)[\w-]+_test\.go:\d+:\s+(.+)$/.exec(line)?.[1])
     .find(Boolean);
 
   if (testMessage) {
@@ -514,15 +502,6 @@ function formatGoFailure(stdout: string, stderr: string, exitCode: number | null
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : 'Unknown runner error';
-}
-
-function isMissingRuntimeImageError(output = '') {
-  return (
-    output.includes('No such image') ||
-    output.includes('Unable to find image') ||
-    output.includes('pull access denied') ||
-    output.includes('not found: manifest unknown')
-  );
 }
 
 async function ensureRuntimeImage(runtime: LanguageRuntime) {
