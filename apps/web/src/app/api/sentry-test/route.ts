@@ -2,6 +2,8 @@ import * as Sentry from '@sentry/nextjs';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
+  await import('../../../../sentry.server.config');
+
   const expectedToken = process.env.SENTRY_TEST_TOKEN;
   const actualToken = req.headers.get('x-sentry-test-token');
 
@@ -10,7 +12,7 @@ export async function POST(req: Request) {
   }
 
   const eventId = Sentry.captureException(new Error('LeetCot web Sentry smoke test'));
-  await Sentry.flush(2000);
+  const flushOk = await Sentry.flush(5000);
 
-  return NextResponse.json({ eventId, ok: true });
+  return NextResponse.json({ eventId, flushOk, ok: true });
 }
