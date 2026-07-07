@@ -66,7 +66,7 @@ function formatUserCheckError(errorStr: string) {
     .filter(Boolean);
 
   const goTestMessage = lines
-    .map((line) => line.match(/(?:^|\s)[\w-]+_test\.go:\d+:\s+(.+)$/)?.[1])
+    .map((line) => /(?:^|\s)[\w-]+_test\.go:\d+:\s+(.+)$/.exec(line)?.[1])
     .find(Boolean);
 
   const cleaned =
