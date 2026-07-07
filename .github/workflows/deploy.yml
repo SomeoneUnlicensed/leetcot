@@ -3,50 +3,32 @@ name: Deploy Production on Release
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
-  deploy:
-    runs-on: [self-hosted, linux, cld4, production]
+  build:
+    runs-on: ubuntu-latest
 
     env:
       IMAGE_REPOSITORY: ghcr.io/someoneunlicensed/leetcot
-      KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+      IMAGE_TAG: ${{ github.sha }}
 
     steps:
-      - name: Free disk space before build
-        run: |
-          echo "=== Disk before cleanup ==="
-          df -h /
-          docker image prune -a -f || true
-          docker builder prune -a -f || true
-          sudo journalctl --vacuum-size=50M || true
-          echo "=== Disk after cleanup ==="
-          df -h /
-
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Copy .env file
-        run: |
-          if [ -f /home/runner/secrets.env ]; then
-            cp /home/runner/secrets.env ./.env
-          else
-            echo "::error::Host secrets.env file not found at /home/runner/secrets.env"
-            exit 1
-          fi
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Build app image (with BuildKit)
+      - name: Build app image on GitHub runner
         env:
           DOCKER_BUILDKIT: "1"
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         run: |
-          IMAGE="${IMAGE_REPOSITORY}:${GITHUB_SHA}"
-          get_env() {
-            grep -m1 "^$1=" ./.env | cut -d= -f2-
-          }
-          export SENTRY_AUTH_TOKEN="$(get_env SENTRY_AUTH_TOKEN)"
-          NEXT_PUBLIC_SENTRY_DSN="$(get_env NEXT_PUBLIC_SENTRY_DSN)"
-          SENTRY_ORG="$(get_env SENTRY_ORG)"
-          SENTRY_PROJECT="$(get_env SENTRY_PROJECT)"
+          IMAGE="${IMAGE_REPOSITORY}:${IMAGE_TAG}"
 
           docker build \
             --secret id=sentry_auth_token,env=SENTRY_AUTH_TOKEN \
@@ -58,12 +40,36 @@ jobs:
             -t "${IMAGE_REPOSITORY}:latest" \
             .
 
+      - name: Export image artifact
+        run: |
+          IMAGE="${IMAGE_REPOSITORY}:${IMAGE_TAG}"
+          docker save "$IMAGE" "${IMAGE_REPOSITORY}:latest" | gzip -1 > leetcot-image.tar.gz
+
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: leetcot-image-${{ github.sha }}
+          path: leetcot-image.tar.gz
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: [self-hosted, linux, cld4, production]
+
+    env:
+      IMAGE_REPOSITORY: ghcr.io/someoneunlicensed/leetcot
+      KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    steps:
+      - name: Download image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: leetcot-image-${{ github.sha }}
+
       - name: Import image into k3s containerd
         run: |
-          IMAGE="${IMAGE_REPOSITORY}:${GITHUB_SHA}"
-          docker save "$IMAGE" "${IMAGE_REPOSITORY}:latest" -o /tmp/leetcot.tar
-          sudo k3s ctr -n k8s.io images import --all-platforms /tmp/leetcot.tar
-          rm -f /tmp/leetcot.tar
+          gzip -dc leetcot-image.tar.gz | sudo k3s ctr -n k8s.io images import --all-platforms -
+          rm -f leetcot-image.tar.gz
 
       - name: Restart deployment (rolling update)
         run: |
