@@ -12,6 +12,8 @@ interface CoursePageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({ params }: CoursePageProps): Promise<Metadata> {
   const { slug } = await params;
   const course = await prisma.course.findFirst({ where: { slug } });
