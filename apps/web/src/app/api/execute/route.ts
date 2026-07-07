@@ -7,7 +7,7 @@ import {
 import { prisma } from '@repo/db';
 import { verifySolution } from 'altcha-lib/v1';
 import { NextResponse } from 'next/server';
-import { ALTCHA_HMAC_KEY } from '~/server/altcha';
+import { getAltchaHmacKey } from '~/server/altcha';
 import { auth } from '~/server/auth';
 
 const MAX_QUEUE_DEPTH = Number(process.env.CODE_RUNNER_MAX_QUEUE_DEPTH ?? 20);
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     // Проверка антибот-защиты (ALTCHA proof-of-work) — решается невидимо в
     // фоне на клиенте, не мешает живым пользователям, но не даёт скриптам
     // задёшево заваливать очередь проверки мусорными отправками.
-    if (!captcha || !(await verifySolution(captcha, ALTCHA_HMAC_KEY))) {
+    if (!captcha || !(await verifySolution(captcha, getAltchaHmacKey()))) {
       return NextResponse.json(
         {
           success: false,
