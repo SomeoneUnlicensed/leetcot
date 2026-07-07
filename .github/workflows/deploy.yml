@@ -14,7 +14,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run fast lint checks
+        run: |
+          pnpm --filter web lint
+          pnpm --filter code-runner lint
+          pnpm --filter @repo/monaco lint
+
+      - name: Run fast type checks
+        run: |
+          pnpm --filter web typecheck
+          pnpm --filter code-runner typecheck
+          pnpm --filter @repo/code-runner typecheck
+          pnpm --filter @repo/monaco typecheck
+
   build:
+    needs: quality
     runs-on: ubuntu-latest
 
     env:
@@ -70,7 +105,10 @@ jobs:
       - name: Pull image into k3s containerd
         run: |
           IMAGE="${IMAGE_REPOSITORY}:${GITHUB_SHA}"
-          sudo k3s ctr -n k8s.io images pull --user "${GITHUB_ACTOR}:${GHCR_TOKEN}" "$IMAGE"
+          echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
+          docker pull "$IMAGE"
+          docker save "$IMAGE" | sudo k3s ctr -n k8s.io images import --all-platforms -
+          docker logout ghcr.io
 
       - name: Restart deployment (rolling update)
         run: |
