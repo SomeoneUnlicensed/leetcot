@@ -489,6 +489,17 @@ function formatGoFailure(stdout: string, stderr: string, exitCode: number | null
     ].join('\n');
   }
 
+  const failedTestName = combinedOutput.match(/--- FAIL:\s+([^\s(]+)/)?.[1];
+  const testMessage = combinedOutput
+    .split('\n')
+    .map((line) => line.trim())
+    .map((line) => line.match(/(?:^|\s)[\w-]+_test\.go:\d+:\s+(.+)$/)?.[1])
+    .find(Boolean);
+
+  if (testMessage) {
+    return failedTestName ? `Тест ${failedTestName}: ${testMessage}` : testMessage;
+  }
+
   return combinedOutput;
 }
 

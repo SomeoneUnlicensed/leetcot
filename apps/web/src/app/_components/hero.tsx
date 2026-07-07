@@ -24,12 +24,12 @@ export async function Hero() {
               className="max-w-4xl text-balance text-4xl leading-[1.14] tracking-normal sm:text-5xl md:text-6xl lg:text-[4.05rem] xl:text-[4.45rem]"
               style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
             >
-              ЛитКот: кодовые задачки с котячьей проверкой
+              Решайте задачки, которые не хочется бросать на середине
             </h1>
 
             <p className="mt-6 max-w-2xl text-base font-semibold leading-7 text-[#d8d4df]/80 sm:text-lg">
-              Решайте алгоритмы, SQL-рыбалку и Go-треки без скучных лекций. ЛитКот запускает код,
-              проверяет ответ и бережно складывает прогресс в профиль.
+              Алгоритмы, SQL-рыбалка и Go-треки с котячьими сюжетами, быстрой проверкой и
+              прогрессом в профиле. ЛитКот держит темп, а не душит лекциями.
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">

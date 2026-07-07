@@ -59,16 +59,26 @@ interface CodeRunTestSummary {
 }
 
 function formatUserCheckError(errorStr: string) {
-  const cleaned = errorStr
+  const lines = errorStr
     .replace(/\[ВЫВОД КОНСОЛИ\]/g, '')
     .split('\n')
     .map((line) => line.trim())
-    .filter(Boolean)
-    .find(
+    .filter(Boolean);
+
+  const goTestMessage = lines
+    .map((line) => line.match(/(?:^|\s)[\w-]+_test\.go:\d+:\s+(.+)$/)?.[1])
+    .find(Boolean);
+
+  const cleaned =
+    goTestMessage ||
+    lines.find(
       (line) =>
         !line.startsWith('Traceback') &&
         !line.startsWith('File ') &&
         !line.startsWith('at ') &&
+        !line.startsWith('--- FAIL') &&
+        line !== 'FAIL' &&
+        !line.startsWith('FAIL\t') &&
         !line.includes('/tmp/') &&
         !line.includes('/code/'),
     );
@@ -630,6 +640,12 @@ export function CodePanel(props: CodePanelProps) {
                   Esc
                 </kbd>
               </Button>
+              <Link
+                href="/code-checks"
+                className="mt-4 text-sm font-semibold text-zinc-500 underline-offset-4 transition-colors hover:text-zinc-200 hover:underline"
+              >
+                Как мы проверяем код?
+              </Link>
             </>
           )}
 
