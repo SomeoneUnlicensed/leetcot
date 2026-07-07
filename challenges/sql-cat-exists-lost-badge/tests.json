@@ -2,12 +2,189 @@
   "schema": "CREATE TABLE cats (id INTEGER PRIMARY KEY, name TEXT); CREATE TABLE medals (id INTEGER PRIMARY KEY, cat_id INTEGER, title TEXT);",
   "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Мурка'), (3, 'Патч'); INSERT INTO medals (id, cat_id, title) VALUES (1, 1, 'SQL-ус'), (2, 1, 'JOIN-лапа'), (3, 3, 'SELECT-хвост');",
   "expectedType": "select",
-  "expected": [
+  "cases": [
     {
-      "name": "Барсик"
+      "name": "Тест 1",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Патч'), (2, 'Рыжик'), (3, 'Снежок'), (4, 'Барсик'); INSERT INTO medals (id, cat_id, title) VALUES (1, 4, 'JOIN-лапа'), (2, 4, 'SQL-ус'), (3, 3, 'SQL-ус'), (4, 3, 'INSERT-коготь');",
+      "expected": [
+        {
+          "name": "Снежок"
+        },
+        {
+          "name": "Барсик"
+        }
+      ]
     },
     {
-      "name": "Патч"
+      "name": "Тест 2",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Патч'), (2, 'Мурка'), (3, 'Рыжик'); INSERT INTO medals (id, cat_id, title) VALUES (1, 2, 'JOIN-лапа'), (2, 1, 'INSERT-коготь'), (3, 1, 'SELECT-хвост');",
+      "expected": [
+        {
+          "name": "Патч"
+        },
+        {
+          "name": "Мурка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 3",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Патч'), (3, 'Рыжик'), (4, 'Снежок'), (5, 'Мурка'); INSERT INTO medals (id, cat_id, title) VALUES (1, 5, 'INSERT-коготь');",
+      "expected": [
+        {
+          "name": "Мурка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Рыжик'), (2, 'Снежок'), (3, 'Барсик'), (4, 'Патч'); INSERT INTO medals (id, cat_id, title) VALUES (1, 1, 'SQL-ус');",
+      "expected": [
+        {
+          "name": "Рыжик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Мурка'), (3, 'Рыжик'), (4, 'Патч'), (5, 'Снежок'); INSERT INTO medals (id, cat_id, title) VALUES (1, 4, 'SQL-ус');",
+      "expected": [
+        {
+          "name": "Патч"
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Рыжик'), (2, 'Патч'), (3, 'Мурка'); INSERT INTO medals (id, cat_id, title) VALUES (1, 1, 'SELECT-хвост'), (2, 1, 'SELECT-хвост');",
+      "expected": [
+        {
+          "name": "Рыжик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Снежок'), (2, 'Барсик'), (3, 'Рыжик'); INSERT INTO medals (id, cat_id, title) VALUES (1, 2, 'JOIN-лапа');",
+      "expected": [
+        {
+          "name": "Барсик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Рыжик'), (2, 'Барсик'), (3, 'Снежок'); INSERT INTO medals (id, cat_id, title) VALUES (1, 1, 'JOIN-лапа');",
+      "expected": [
+        {
+          "name": "Рыжик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Снежок'), (2, 'Барсик'), (3, 'Мурка'); INSERT INTO medals (id, cat_id, title) VALUES (1, 2, 'SQL-ус'), (2, 2, 'SELECT-хвост');",
+      "expected": [
+        {
+          "name": "Барсик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Рыжик'), (2, 'Патч'), (3, 'Мурка'), (4, 'Барсик'), (5, 'Снежок'); INSERT INTO medals (id, cat_id, title) VALUES (1, 2, 'INSERT-коготь'), (2, 2, 'SELECT-хвост');",
+      "expected": [
+        {
+          "name": "Патч"
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Патч'), (2, 'Барсик'), (3, 'Мурка'); INSERT INTO medals (id, cat_id, title) VALUES (1, 3, 'INSERT-коготь'), (2, 1, 'JOIN-лапа'), (3, 1, 'SQL-ус');",
+      "expected": [
+        {
+          "name": "Патч"
+        },
+        {
+          "name": "Мурка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Мурка'), (3, 'Снежок'); INSERT INTO medals (id, cat_id, title) VALUES (1, 1, 'SELECT-хвост'), (2, 1, 'INSERT-коготь'), (3, 2, 'SQL-ус');",
+      "expected": [
+        {
+          "name": "Барсик"
+        },
+        {
+          "name": "Мурка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурка'), (2, 'Барсик'), (3, 'Рыжик'), (4, 'Снежок'), (5, 'Патч'); INSERT INTO medals (id, cat_id, title) VALUES (1, 2, 'JOIN-лапа'), (2, 5, 'JOIN-лапа');",
+      "expected": [
+        {
+          "name": "Барсик"
+        },
+        {
+          "name": "Патч"
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Снежок'), (2, 'Патч'), (3, 'Рыжик'), (4, 'Мурка'); INSERT INTO medals (id, cat_id, title) VALUES (1, 1, 'INSERT-коготь'), (2, 1, 'INSERT-коготь'), (3, 3, 'SQL-ус'), (4, 3, 'SELECT-хвост'), (5, 2, 'SELECT-хвост');",
+      "expected": [
+        {
+          "name": "Снежок"
+        },
+        {
+          "name": "Патч"
+        },
+        {
+          "name": "Рыжик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Снежок'), (2, 'Рыжик'), (3, 'Патч'); INSERT INTO medals (id, cat_id, title) VALUES (1, 1, 'JOIN-лапа');",
+      "expected": [
+        {
+          "name": "Снежок"
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Снежок'), (3, 'Мурка'), (4, 'Рыжик'); INSERT INTO medals (id, cat_id, title) VALUES (1, 4, 'INSERT-коготь');",
+      "expected": [
+        {
+          "name": "Рыжик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Патч'), (3, 'Мурка'), (4, 'Рыжик'); INSERT INTO medals (id, cat_id, title) VALUES (1, 3, 'SQL-ус');",
+      "expected": [
+        {
+          "name": "Мурка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Рыжик'), (2, 'Снежок'), (3, 'Патч'), (4, 'Барсик'); INSERT INTO medals (id, cat_id, title) VALUES (1, 2, 'INSERT-коготь'), (2, 2, 'JOIN-лапа');",
+      "expected": [
+        {
+          "name": "Снежок"
+        }
+      ]
     }
   ]
 }

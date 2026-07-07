@@ -97,7 +97,7 @@ jobs:
     env:
       IMAGE_REPOSITORY: ghcr.io/someoneunlicensed/leetcot
       KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-      CODE_RUNNER_CONCURRENCY: "1"
+      CODE_RUNNER_CONCURRENCY: "5"
       CODE_RUNNER_TIMEOUT_MS: "12000"
       CODE_RUNNER_GO_TIMEOUT_MS: "12000"
       CODE_RUNNER_MAX_QUEUE_DEPTH: "50"

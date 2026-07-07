@@ -5,7 +5,9 @@ import {
   normalizeLanguage,
 } from '@repo/code-runner';
 import { prisma } from '@repo/db';
+import { verifySolution } from 'altcha-lib/v1';
 import { NextResponse } from 'next/server';
+import { ALTCHA_HMAC_KEY } from '~/server/altcha';
 import { auth } from '~/server/auth';
 
 const MAX_QUEUE_DEPTH = Number(process.env.CODE_RUNNER_MAX_QUEUE_DEPTH ?? 20);
@@ -18,7 +20,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Не авторизован.' }, { status: 401 });
     }
 
-    const { code, challengeId, language } = (await req.json()) as {
+    const { code, challengeId, language, captcha } = (await req.json()) as {
+      captcha?: string;
       challengeId?: number;
       code?: string;
       language?: string;
@@ -28,6 +31,19 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { success: false, error: 'Мяу! Переданы не все параметры.' },
         { status: 400 },
+      );
+    }
+
+    // Проверка антибот-защиты (ALTCHA proof-of-work) — решается невидимо в
+    // фоне на клиенте, не мешает живым пользователям, но не даёт скриптам
+    // задёшево заваливать очередь проверки мусорными отправками.
+    if (!captcha || !(await verifySolution(captcha, ALTCHA_HMAC_KEY))) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Не пройдена проверка антибот-защиты. Обновите страницу и попробуйте снова.',
+        },
+        { status: 403 },
       );
     }
 

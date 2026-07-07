@@ -45,7 +45,14 @@ export function Footsies() {
             className="transition-colors duration-300 hover:text-zinc-200 hover:underline"
           >
             Условия использования
-          </Link>
+          </Link>{' '}
+          |{' '}
+          <a
+            href="mailto:hello@arlist.ru"
+            className="transition-colors duration-300 hover:text-zinc-200 hover:underline"
+          >
+            hello@arlist.ru
+          </a>
         </span>
         <span>
           <div className="inline-block rotate-180">©</div>

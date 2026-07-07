@@ -2,19 +2,387 @@
   "schema": "CREATE TABLE awards (cat TEXT PRIMARY KEY, points INTEGER, tier TEXT);",
   "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Барсик', 50, NULL), ('Мурка', 120, NULL), ('Патч', 10, NULL);",
   "expectedType": "state",
-  "expected": [
+  "expectedQuery": "SELECT cat, tier FROM awards ORDER BY points DESC;",
+  "cases": [
     {
-      "cat": "Мурка",
-      "tier": "gold"
+      "name": "Тест 1",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Патч', 120, NULL), ('Рыжик', 53, NULL), ('Снежок', 99, NULL), ('Барсик', 100, NULL);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "tier": "gold"
+        },
+        {
+          "cat": "Барсик",
+          "tier": "gold"
+        },
+        {
+          "cat": "Снежок",
+          "tier": "silver"
+        },
+        {
+          "cat": "Рыжик",
+          "tier": "silver"
+        }
+      ]
     },
     {
-      "cat": "Барсик",
-      "tier": "silver"
+      "name": "Тест 2",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Патч', 171, NULL), ('Мурка', 64, NULL), ('Рыжик', 155, NULL);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "tier": "gold"
+        },
+        {
+          "cat": "Рыжик",
+          "tier": "gold"
+        },
+        {
+          "cat": "Мурка",
+          "tier": "silver"
+        }
+      ]
     },
     {
-      "cat": "Патч",
-      "tier": "bronze"
+      "name": "Тест 3",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Барсик', 155, NULL), ('Патч', 50, NULL), ('Рыжик', 66, NULL), ('Снежок', 49, NULL), ('Мурка', 183, NULL);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "tier": "gold"
+        },
+        {
+          "cat": "Барсик",
+          "tier": "gold"
+        },
+        {
+          "cat": "Рыжик",
+          "tier": "silver"
+        },
+        {
+          "cat": "Патч",
+          "tier": "silver"
+        },
+        {
+          "cat": "Снежок",
+          "tier": "bronze"
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Рыжик', 49, NULL), ('Снежок', 50, NULL), ('Барсик', 99, NULL), ('Патч', 195, NULL);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "tier": "gold"
+        },
+        {
+          "cat": "Барсик",
+          "tier": "silver"
+        },
+        {
+          "cat": "Снежок",
+          "tier": "silver"
+        },
+        {
+          "cat": "Рыжик",
+          "tier": "bronze"
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Барсик', 189, NULL), ('Мурка', 135, NULL), ('Рыжик', 99, NULL), ('Патч', 100, NULL), ('Снежок', 63, NULL);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "tier": "gold"
+        },
+        {
+          "cat": "Мурка",
+          "tier": "gold"
+        },
+        {
+          "cat": "Патч",
+          "tier": "gold"
+        },
+        {
+          "cat": "Рыжик",
+          "tier": "silver"
+        },
+        {
+          "cat": "Снежок",
+          "tier": "silver"
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Рыжик', 49, NULL), ('Патч', 120, NULL), ('Мурка', 188, NULL);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "tier": "gold"
+        },
+        {
+          "cat": "Патч",
+          "tier": "gold"
+        },
+        {
+          "cat": "Рыжик",
+          "tier": "bronze"
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Снежок', 24, NULL), ('Барсик', 50, NULL), ('Рыжик', 99, NULL);",
+      "expected": [
+        {
+          "cat": "Рыжик",
+          "tier": "silver"
+        },
+        {
+          "cat": "Барсик",
+          "tier": "silver"
+        },
+        {
+          "cat": "Снежок",
+          "tier": "bronze"
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Рыжик', 21, NULL), ('Барсик', 50, NULL), ('Снежок', 129, NULL);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "tier": "gold"
+        },
+        {
+          "cat": "Барсик",
+          "tier": "silver"
+        },
+        {
+          "cat": "Рыжик",
+          "tier": "bronze"
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Снежок', 1, NULL), ('Барсик', 50, NULL), ('Мурка', 99, NULL);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "tier": "silver"
+        },
+        {
+          "cat": "Барсик",
+          "tier": "silver"
+        },
+        {
+          "cat": "Снежок",
+          "tier": "bronze"
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Рыжик', 49, NULL), ('Патч', 50, NULL), ('Мурка', 99, NULL), ('Барсик', 100, NULL), ('Снежок', 41, NULL);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "tier": "gold"
+        },
+        {
+          "cat": "Мурка",
+          "tier": "silver"
+        },
+        {
+          "cat": "Патч",
+          "tier": "silver"
+        },
+        {
+          "cat": "Рыжик",
+          "tier": "bronze"
+        },
+        {
+          "cat": "Снежок",
+          "tier": "bronze"
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Патч', 121, NULL), ('Барсик', 47, NULL), ('Мурка', 99, NULL);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "tier": "gold"
+        },
+        {
+          "cat": "Мурка",
+          "tier": "silver"
+        },
+        {
+          "cat": "Барсик",
+          "tier": "bronze"
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Барсик', 49, NULL), ('Мурка', 123, NULL), ('Снежок', 99, NULL);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "tier": "gold"
+        },
+        {
+          "cat": "Снежок",
+          "tier": "silver"
+        },
+        {
+          "cat": "Барсик",
+          "tier": "bronze"
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Мурка', 49, NULL), ('Барсик', 50, NULL), ('Рыжик', 99, NULL), ('Снежок', 33, NULL), ('Патч', 18, NULL);",
+      "expected": [
+        {
+          "cat": "Рыжик",
+          "tier": "silver"
+        },
+        {
+          "cat": "Барсик",
+          "tier": "silver"
+        },
+        {
+          "cat": "Мурка",
+          "tier": "bronze"
+        },
+        {
+          "cat": "Снежок",
+          "tier": "bronze"
+        },
+        {
+          "cat": "Патч",
+          "tier": "bronze"
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Снежок', 168, NULL), ('Патч', 50, NULL), ('Рыжик', 99, NULL), ('Мурка', 100, NULL);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "tier": "gold"
+        },
+        {
+          "cat": "Мурка",
+          "tier": "gold"
+        },
+        {
+          "cat": "Рыжик",
+          "tier": "silver"
+        },
+        {
+          "cat": "Патч",
+          "tier": "silver"
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Снежок', 61, NULL), ('Рыжик', 50, NULL), ('Патч', 174, NULL);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "tier": "gold"
+        },
+        {
+          "cat": "Снежок",
+          "tier": "silver"
+        },
+        {
+          "cat": "Рыжик",
+          "tier": "silver"
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Барсик', 49, NULL), ('Снежок', 50, NULL), ('Мурка', 182, NULL), ('Рыжик', 100, NULL);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "tier": "gold"
+        },
+        {
+          "cat": "Рыжик",
+          "tier": "gold"
+        },
+        {
+          "cat": "Снежок",
+          "tier": "silver"
+        },
+        {
+          "cat": "Барсик",
+          "tier": "bronze"
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Барсик', 49, NULL), ('Патч', 138, NULL), ('Мурка', 28, NULL), ('Рыжик', 63, NULL);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "tier": "gold"
+        },
+        {
+          "cat": "Рыжик",
+          "tier": "silver"
+        },
+        {
+          "cat": "Барсик",
+          "tier": "bronze"
+        },
+        {
+          "cat": "Мурка",
+          "tier": "bronze"
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO awards (cat, points, tier) VALUES ('Рыжик', 49, NULL), ('Снежок', 160, NULL), ('Патч', 99, NULL), ('Барсик', 100, NULL);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "tier": "gold"
+        },
+        {
+          "cat": "Барсик",
+          "tier": "gold"
+        },
+        {
+          "cat": "Патч",
+          "tier": "silver"
+        },
+        {
+          "cat": "Рыжик",
+          "tier": "bronze"
+        }
+      ]
     }
-  ],
-  "expectedQuery": "SELECT cat, tier FROM awards ORDER BY points DESC;"
+  ]
 }

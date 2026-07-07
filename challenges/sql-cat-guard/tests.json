@@ -3,5 +3,204 @@
   "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Мурзик','дневная',20),('Васька','ночная',22),('Барсик','дневная',18),('Рыжик','ночная',21);",
   "expectedType": "state",
   "expectedQuery": "SELECT name, shift, fish_salary FROM guards WHERE name='Граф'",
-  "expected": [{ "name": "Граф", "shift": "ночная", "fish_salary": 25 }]
+  "cases": [
+    {
+      "name": "Тест 1",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Барсик','ночная',30), ('Рыжик','ночная',21), ('Снежок','дневная',30), ('Мурзик','дневная',27);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 2",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Барсик','ночная',23), ('Васька','дневная',16), ('Рыжик','дневная',28);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 3",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Мурзик','дневная',15), ('Барсик','ночная',23), ('Рыжик','дневная',21), ('Снежок','ночная',30), ('Васька','ночная',19);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Рыжик','дневная',17), ('Снежок','дневная',15), ('Мурзик','ночная',24), ('Барсик','дневная',22);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Мурзик','дневная',29), ('Васька','дневная',16), ('Рыжик','дневная',18), ('Барсик','ночная',30), ('Снежок','дневная',27);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Рыжик','дневная',19), ('Барсик','ночная',26), ('Васька','ночная',15);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Снежок','дневная',26), ('Мурзик','дневная',21), ('Рыжик','дневная',17);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Рыжик','дневная',17), ('Мурзик','дневная',22), ('Снежок','дневная',27);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Снежок','дневная',25), ('Мурзик','ночная',17), ('Васька','ночная',16);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Рыжик','дневная',21), ('Барсик','ночная',30), ('Васька','ночная',20), ('Мурзик','дневная',30), ('Снежок','ночная',17);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Барсик','ночная',20), ('Мурзик','дневная',29), ('Васька','ночная',19);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Мурзик','ночная',15), ('Васька','ночная',30), ('Снежок','ночная',29);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Васька','дневная',19), ('Мурзик','дневная',20), ('Рыжик','дневная',17), ('Снежок','дневная',24), ('Барсик','дневная',28);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Снежок','дневная',29), ('Барсик','ночная',29), ('Рыжик','ночная',27), ('Васька','дневная',23);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Снежок','дневная',15), ('Рыжик','дневная',19), ('Барсик','ночная',22);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Мурзик','дневная',29), ('Снежок','дневная',28), ('Васька','ночная',22), ('Рыжик','дневная',15);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Мурзик','дневная',23), ('Барсик','дневная',15), ('Васька','дневная',27), ('Рыжик','ночная',23);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO guards (name, shift, fish_salary) VALUES ('Рыжик','дневная',21), ('Снежок','ночная',30), ('Барсик','дневная',30), ('Мурзик','ночная',29);",
+      "expected": [
+        {
+          "name": "Граф",
+          "shift": "ночная",
+          "fish_salary": 25
+        }
+      ]
+    }
+  ]
 }

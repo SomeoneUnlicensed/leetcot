@@ -1,8 +1,8 @@
 package main
 
 import (
-	"container/heap"
-	"math/rand"
+	"encoding/json"
+	"fmt"
 	"testing"
 )
 
@@ -16,95 +16,86 @@ func TestMinPortalCostVisible(t *testing.T) {
 	}
 }
 
-// ---LEETCOT-GO-ORACLE---
+// ---LEETCOT-HIDDEN-TESTS---
 
-type oracleState struct {
-	node int
-	wait int
-	cost int
+// Fixed bank of (input, expected output) pairs, computed once offline from the
+// reference solution — see scripts/generate-closed-tests. No reference
+// implementation or randomness runs at grading time anymore.
+type minPortalCostCase struct {
+	name     string
+	n        int
+	edges    []Edge
+	start    int
+	finish   int
+	cooldown int
+	want     int
 }
 
-type oraclePQ []oracleState
-
-func (p oraclePQ) Len() int            { return len(p) }
-func (p oraclePQ) Less(i, j int) bool  { return p[i].cost < p[j].cost }
-func (p oraclePQ) Swap(i, j int)       { p[i], p[j] = p[j], p[i] }
-func (p *oraclePQ) Push(x interface{}) { *p = append(*p, x.(oracleState)) }
-func (p *oraclePQ) Pop() interface{} {
-	old := *p
-	x := old[len(old)-1]
-	*p = old[:len(old)-1]
-	return x
+var minPortalCostCases = []minPortalCostCase{
+	{name: "Тест 1", n: 8, edges: []Edge{{From: 1, To: 4, Cost: 3, Portal: true}, {From: 2, To: 4, Cost: 30, Portal: false}, {From: 3, To: 0, Cost: 19, Portal: false}, {From: 3, To: 2, Cost: 17, Portal: true}, {From: 3, To: 6, Cost: 22, Portal: false}, {From: 3, To: 7, Cost: 12, Portal: false}, {From: 4, To: 6, Cost: 10, Portal: false}, {From: 5, To: 0, Cost: 28, Portal: false}, {From: 5, To: 1, Cost: 5, Portal: true}, {From: 5, To: 2, Cost: 19, Portal: false}, {From: 5, To: 6, Cost: 16, Portal: false}, {From: 5, To: 7, Cost: 19, Portal: true}, {From: 6, To: 2, Cost: 8, Portal: false}, {From: 6, To: 7, Cost: 4, Portal: false}, {From: 7, To: 2, Cost: 20, Portal: false}}, start: 0, finish: 3, cooldown: 2, want: -1},
+	{name: "Тест 2", n: 5, edges: []Edge{{From: 1, To: 3, Cost: 19, Portal: false}, {From: 3, To: 0, Cost: 25, Portal: true}}, start: 1, finish: 2, cooldown: 1, want: -1},
+	{name: "Тест 3", n: 4, edges: []Edge{{From: 2, To: 0, Cost: 19, Portal: true}, {From: 3, To: 2, Cost: 5, Portal: false}}, start: 0, finish: 2, cooldown: 0, want: -1},
+	{name: "Тест 4", n: 2, edges: []Edge{}, start: 1, finish: 0, cooldown: 1, want: -1},
+	{name: "Тест 5", n: 5, edges: []Edge{{From: 0, To: 1, Cost: 12, Portal: false}, {From: 0, To: 3, Cost: 14, Portal: true}, {From: 1, To: 0, Cost: 6, Portal: false}, {From: 2, To: 0, Cost: 11, Portal: false}, {From: 2, To: 4, Cost: 15, Portal: false}, {From: 4, To: 3, Cost: 16, Portal: false}}, start: 3, finish: 1, cooldown: 2, want: -1},
+	{name: "Тест 6", n: 5, edges: []Edge{{From: 0, To: 1, Cost: 11, Portal: false}, {From: 1, To: 0, Cost: 27, Portal: false}, {From: 1, To: 3, Cost: 25, Portal: false}, {From: 2, To: 4, Cost: 12, Portal: true}, {From: 3, To: 0, Cost: 27, Portal: false}, {From: 3, To: 4, Cost: 25, Portal: false}, {From: 4, To: 0, Cost: 17, Portal: true}, {From: 4, To: 1, Cost: 17, Portal: false}}, start: 0, finish: 3, cooldown: 2, want: 36},
+	{name: "Тест 7", n: 10, edges: []Edge{{From: 0, To: 2, Cost: 27, Portal: false}, {From: 0, To: 4, Cost: 20, Portal: true}, {From: 0, To: 5, Cost: 25, Portal: false}, {From: 0, To: 7, Cost: 5, Portal: false}, {From: 1, To: 8, Cost: 26, Portal: false}, {From: 2, To: 6, Cost: 6, Portal: false}, {From: 3, To: 4, Cost: 16, Portal: true}, {From: 3, To: 7, Cost: 30, Portal: true}, {From: 4, To: 7, Cost: 21, Portal: true}, {From: 4, To: 8, Cost: 25, Portal: false}, {From: 4, To: 9, Cost: 2, Portal: false}, {From: 5, To: 1, Cost: 10, Portal: false}, {From: 5, To: 7, Cost: 21, Portal: false}, {From: 5, To: 8, Cost: 24, Portal: true}, {From: 6, To: 0, Cost: 11, Portal: false}, {From: 6, To: 4, Cost: 23, Portal: false}, {From: 7, To: 2, Cost: 4, Portal: false}, {From: 7, To: 4, Cost: 23, Portal: true}, {From: 7, To: 5, Cost: 2, Portal: false}, {From: 7, To: 8, Cost: 1, Portal: false}, {From: 8, To: 5, Cost: 3, Portal: true}, {From: 9, To: 0, Cost: 16, Portal: false}, {From: 9, To: 5, Cost: 30, Portal: true}, {From: 9, To: 8, Cost: 25, Portal: false}}, start: 9, finish: 9, cooldown: 1, want: 0},
+	{name: "Тест 8", n: 2, edges: []Edge{}, start: 1, finish: 0, cooldown: 1, want: -1},
+	{name: "Тест 9", n: 9, edges: []Edge{{From: 0, To: 3, Cost: 30, Portal: false}, {From: 2, To: 3, Cost: 23, Portal: false}, {From: 2, To: 7, Cost: 21, Portal: false}, {From: 2, To: 8, Cost: 26, Portal: false}, {From: 3, To: 4, Cost: 6, Portal: false}, {From: 3, To: 7, Cost: 30, Portal: true}, {From: 3, To: 8, Cost: 24, Portal: false}, {From: 4, To: 1, Cost: 9, Portal: false}, {From: 4, To: 5, Cost: 27, Portal: true}, {From: 4, To: 7, Cost: 30, Portal: false}, {From: 5, To: 1, Cost: 17, Portal: false}, {From: 5, To: 2, Cost: 9, Portal: true}, {From: 5, To: 4, Cost: 19, Portal: false}, {From: 5, To: 7, Cost: 2, Portal: true}, {From: 6, To: 3, Cost: 26, Portal: false}, {From: 6, To: 7, Cost: 25, Portal: false}, {From: 6, To: 8, Cost: 29, Portal: false}, {From: 7, To: 2, Cost: 23, Portal: true}, {From: 7, To: 5, Cost: 15, Portal: false}, {From: 8, To: 0, Cost: 8, Portal: false}, {From: 8, To: 3, Cost: 11, Portal: false}, {From: 8, To: 4, Cost: 25, Portal: true}, {From: 8, To: 5, Cost: 11, Portal: false}, {From: 8, To: 6, Cost: 11, Portal: false}, {From: 8, To: 7, Cost: 30, Portal: false}}, start: 6, finish: 2, cooldown: 3, want: 48},
+	{name: "Тест 10", n: 10, edges: []Edge{{From: 0, To: 1, Cost: 30, Portal: true}, {From: 0, To: 9, Cost: 26, Portal: true}, {From: 1, To: 7, Cost: 29, Portal: true}, {From: 1, To: 8, Cost: 13, Portal: true}, {From: 1, To: 9, Cost: 21, Portal: false}, {From: 2, To: 1, Cost: 27, Portal: true}, {From: 2, To: 4, Cost: 16, Portal: true}, {From: 2, To: 8, Cost: 20, Portal: false}, {From: 4, To: 6, Cost: 20, Portal: false}, {From: 4, To: 9, Cost: 18, Portal: false}, {From: 5, To: 4, Cost: 20, Portal: false}, {From: 5, To: 8, Cost: 20, Portal: false}, {From: 5, To: 9, Cost: 21, Portal: false}, {From: 6, To: 0, Cost: 6, Portal: true}, {From: 6, To: 1, Cost: 4, Portal: true}, {From: 6, To: 2, Cost: 1, Portal: false}, {From: 6, To: 8, Cost: 9, Portal: false}, {From: 7, To: 5, Cost: 23, Portal: true}, {From: 7, To: 6, Cost: 15, Portal: true}, {From: 8, To: 1, Cost: 29, Portal: false}, {From: 8, To: 2, Cost: 9, Portal: false}, {From: 8, To: 7, Cost: 25, Portal: false}, {From: 9, To: 2, Cost: 2, Portal: true}, {From: 9, To: 3, Cost: 13, Portal: false}, {From: 9, To: 4, Cost: 11, Portal: true}}, start: 2, finish: 6, cooldown: 3, want: 36},
+	{name: "Тест 11", n: 4, edges: []Edge{{From: 0, To: 1, Cost: 5, Portal: true}, {From: 2, To: 0, Cost: 6, Portal: true}, {From: 2, To: 1, Cost: 11, Portal: true}, {From: 2, To: 3, Cost: 4, Portal: true}}, start: 1, finish: 3, cooldown: 2, want: -1},
+	{name: "Тест 12", n: 2, edges: []Edge{{From: 1, To: 0, Cost: 19, Portal: false}}, start: 0, finish: 0, cooldown: 1, want: 0},
+	{name: "Тест 13", n: 8, edges: []Edge{{From: 2, To: 1, Cost: 14, Portal: false}, {From: 2, To: 4, Cost: 26, Portal: true}, {From: 2, To: 6, Cost: 17, Portal: false}, {From: 3, To: 0, Cost: 17, Portal: true}, {From: 3, To: 7, Cost: 7, Portal: false}, {From: 4, To: 0, Cost: 23, Portal: false}, {From: 4, To: 2, Cost: 6, Portal: false}, {From: 4, To: 5, Cost: 25, Portal: false}, {From: 4, To: 6, Cost: 16, Portal: false}, {From: 5, To: 3, Cost: 17, Portal: true}, {From: 5, To: 4, Cost: 6, Portal: false}, {From: 5, To: 7, Cost: 5, Portal: false}, {From: 6, To: 5, Cost: 28, Portal: false}, {From: 7, To: 1, Cost: 16, Portal: true}, {From: 7, To: 2, Cost: 25, Portal: false}}, start: 0, finish: 4, cooldown: 0, want: -1},
+	{name: "Тест 14", n: 6, edges: []Edge{{From: 0, To: 2, Cost: 14, Portal: false}, {From: 2, To: 0, Cost: 29, Portal: true}, {From: 4, To: 0, Cost: 27, Portal: false}, {From: 5, To: 3, Cost: 27, Portal: true}}, start: 3, finish: 4, cooldown: 0, want: -1},
+	{name: "Тест 15", n: 4, edges: []Edge{{From: 0, To: 2, Cost: 15, Portal: false}, {From: 0, To: 3, Cost: 16, Portal: false}, {From: 2, To: 0, Cost: 23, Portal: true}, {From: 3, To: 2, Cost: 4, Portal: false}}, start: 0, finish: 2, cooldown: 0, want: 15},
+	{name: "Тест 16", n: 6, edges: []Edge{{From: 0, To: 4, Cost: 16, Portal: true}, {From: 1, To: 0, Cost: 25, Portal: false}, {From: 1, To: 5, Cost: 11, Portal: false}, {From: 2, To: 0, Cost: 9, Portal: true}, {From: 2, To: 3, Cost: 9, Portal: false}, {From: 2, To: 4, Cost: 15, Portal: true}, {From: 3, To: 0, Cost: 30, Portal: false}, {From: 3, To: 1, Cost: 5, Portal: true}, {From: 3, To: 2, Cost: 27, Portal: false}, {From: 4, To: 0, Cost: 9, Portal: true}, {From: 4, To: 5, Cost: 14, Portal: false}, {From: 5, To: 4, Cost: 17, Portal: false}}, start: 2, finish: 3, cooldown: 0, want: 9},
+	{name: "Тест 17", n: 5, edges: []Edge{{From: 0, To: 1, Cost: 16, Portal: false}, {From: 2, To: 1, Cost: 15, Portal: false}, {From: 3, To: 2, Cost: 1, Portal: false}, {From: 3, To: 4, Cost: 3, Portal: false}, {From: 4, To: 0, Cost: 15, Portal: false}, {From: 4, To: 3, Cost: 16, Portal: false}}, start: 4, finish: 2, cooldown: 1, want: 17},
+	{name: "Тест 18", n: 4, edges: []Edge{{From: 0, To: 1, Cost: 4, Portal: false}, {From: 0, To: 3, Cost: 13, Portal: false}, {From: 3, To: 1, Cost: 22, Portal: false}, {From: 3, To: 2, Cost: 2, Portal: false}}, start: 1, finish: 3, cooldown: 0, want: -1},
+	{name: "Тест 19", n: 5, edges: []Edge{{From: 2, To: 3, Cost: 17, Portal: true}, {From: 3, To: 2, Cost: 6, Portal: false}, {From: 4, To: 1, Cost: 30, Portal: false}}, start: 3, finish: 1, cooldown: 0, want: -1},
+	{name: "Тест 20", n: 6, edges: []Edge{{From: 1, To: 3, Cost: 2, Portal: false}, {From: 2, To: 5, Cost: 14, Portal: true}, {From: 3, To: 1, Cost: 16, Portal: false}, {From: 3, To: 5, Cost: 18, Portal: false}, {From: 4, To: 1, Cost: 3, Portal: true}, {From: 4, To: 2, Cost: 16, Portal: false}, {From: 4, To: 5, Cost: 3, Portal: false}, {From: 5, To: 2, Cost: 12, Portal: true}}, start: 0, finish: 1, cooldown: 1, want: -1},
+	{name: "Тест 21", n: 5, edges: []Edge{{From: 1, To: 2, Cost: 19, Portal: false}, {From: 4, To: 1, Cost: 28, Portal: false}}, start: 0, finish: 3, cooldown: 2, want: -1},
+	{name: "Тест 22", n: 7, edges: []Edge{{From: 0, To: 1, Cost: 12, Portal: false}, {From: 1, To: 6, Cost: 3, Portal: true}, {From: 3, To: 6, Cost: 17, Portal: false}, {From: 4, To: 3, Cost: 9, Portal: false}, {From: 5, To: 0, Cost: 7, Portal: true}, {From: 6, To: 0, Cost: 21, Portal: true}, {From: 6, To: 1, Cost: 11, Portal: false}, {From: 6, To: 2, Cost: 30, Portal: false}}, start: 0, finish: 2, cooldown: 1, want: 45},
+	{name: "Тест 23", n: 9, edges: []Edge{{From: 0, To: 7, Cost: 1, Portal: false}, {From: 0, To: 8, Cost: 17, Portal: true}, {From: 1, To: 0, Cost: 21, Portal: false}, {From: 1, To: 2, Cost: 18, Portal: false}, {From: 1, To: 3, Cost: 13, Portal: true}, {From: 1, To: 7, Cost: 5, Portal: false}, {From: 1, To: 8, Cost: 25, Portal: false}, {From: 2, To: 0, Cost: 5, Portal: true}, {From: 2, To: 3, Cost: 22, Portal: false}, {From: 3, To: 2, Cost: 5, Portal: false}, {From: 3, To: 4, Cost: 13, Portal: true}, {From: 3, To: 5, Cost: 24, Portal: true}, {From: 4, To: 7, Cost: 9, Portal: false}, {From: 5, To: 0, Cost: 2, Portal: false}, {From: 5, To: 3, Cost: 18, Portal: true}, {From: 5, To: 8, Cost: 10, Portal: false}, {From: 6, To: 3, Cost: 7, Portal: false}, {From: 6, To: 5, Cost: 5, Portal: false}, {From: 6, To: 7, Cost: 9, Portal: true}, {From: 6, To: 8, Cost: 11, Portal: true}, {From: 7, To: 4, Cost: 20, Portal: false}, {From: 7, To: 6, Cost: 19, Portal: false}, {From: 8, To: 3, Cost: 7, Portal: false}, {From: 8, To: 6, Cost: 29, Portal: false}, {From: 8, To: 7, Cost: 15, Portal: false}}, start: 6, finish: 0, cooldown: 3, want: 7},
+	{name: "Тест 24", n: 5, edges: []Edge{{From: 0, To: 1, Cost: 27, Portal: true}, {From: 0, To: 4, Cost: 16, Portal: false}, {From: 1, To: 0, Cost: 9, Portal: false}, {From: 2, To: 3, Cost: 29, Portal: false}, {From: 3, To: 0, Cost: 24, Portal: true}}, start: 4, finish: 3, cooldown: 2, want: -1},
+	{name: "Тест 25", n: 7, edges: []Edge{{From: 0, To: 2, Cost: 3, Portal: false}, {From: 0, To: 6, Cost: 4, Portal: false}, {From: 1, To: 2, Cost: 8, Portal: true}, {From: 1, To: 4, Cost: 26, Portal: false}, {From: 2, To: 3, Cost: 21, Portal: true}, {From: 2, To: 4, Cost: 23, Portal: false}, {From: 2, To: 6, Cost: 24, Portal: true}, {From: 3, To: 2, Cost: 13, Portal: false}, {From: 3, To: 4, Cost: 7, Portal: true}, {From: 3, To: 6, Cost: 3, Portal: false}, {From: 6, To: 1, Cost: 4, Portal: true}}, start: 1, finish: 1, cooldown: 1, want: 0},
+	{name: "Тест 26", n: 9, edges: []Edge{{From: 0, To: 1, Cost: 17, Portal: false}, {From: 0, To: 7, Cost: 16, Portal: false}, {From: 1, To: 0, Cost: 15, Portal: false}, {From: 1, To: 3, Cost: 7, Portal: true}, {From: 1, To: 5, Cost: 29, Portal: false}, {From: 3, To: 0, Cost: 6, Portal: false}, {From: 3, To: 4, Cost: 8, Portal: false}, {From: 3, To: 6, Cost: 15, Portal: false}, {From: 4, To: 3, Cost: 3, Portal: false}, {From: 4, To: 6, Cost: 22, Portal: false}, {From: 4, To: 8, Cost: 30, Portal: true}, {From: 5, To: 1, Cost: 3, Portal: false}, {From: 5, To: 2, Cost: 30, Portal: false}, {From: 5, To: 8, Cost: 17, Portal: false}, {From: 6, To: 2, Cost: 22, Portal: false}, {From: 6, To: 3, Cost: 25, Portal: true}, {From: 6, To: 4, Cost: 10, Portal: false}, {From: 6, To: 5, Cost: 2, Portal: true}, {From: 7, To: 2, Cost: 17, Portal: true}, {From: 7, To: 6, Cost: 19, Portal: true}, {From: 8, To: 6, Cost: 10, Portal: true}}, start: 7, finish: 5, cooldown: 2, want: 49},
+	{name: "Тест 27", n: 7, edges: []Edge{{From: 1, To: 2, Cost: 13, Portal: true}, {From: 2, To: 4, Cost: 14, Portal: true}, {From: 3, To: 0, Cost: 25, Portal: false}, {From: 4, To: 1, Cost: 27, Portal: false}, {From: 5, To: 1, Cost: 11, Portal: true}, {From: 5, To: 3, Cost: 19, Portal: true}, {From: 5, To: 6, Cost: 29, Portal: false}, {From: 6, To: 0, Cost: 6, Portal: true}, {From: 6, To: 1, Cost: 26, Portal: false}, {From: 6, To: 3, Cost: 26, Portal: false}}, start: 0, finish: 1, cooldown: 3, want: -1},
+	{name: "Тест 28", n: 10, edges: []Edge{{From: 0, To: 2, Cost: 15, Portal: false}, {From: 0, To: 3, Cost: 11, Portal: false}, {From: 0, To: 5, Cost: 21, Portal: false}, {From: 0, To: 6, Cost: 20, Portal: false}, {From: 0, To: 9, Cost: 11, Portal: true}, {From: 1, To: 4, Cost: 30, Portal: true}, {From: 1, To: 5, Cost: 9, Portal: false}, {From: 2, To: 7, Cost: 13, Portal: true}, {From: 2, To: 9, Cost: 7, Portal: false}, {From: 3, To: 4, Cost: 5, Portal: true}, {From: 3, To: 5, Cost: 12, Portal: false}, {From: 3, To: 9, Cost: 1, Portal: true}, {From: 4, To: 1, Cost: 2, Portal: true}, {From: 4, To: 3, Cost: 7, Portal: false}, {From: 4, To: 5, Cost: 9, Portal: false}, {From: 4, To: 6, Cost: 17, Portal: false}, {From: 5, To: 0, Cost: 30, Portal: false}, {From: 5, To: 1, Cost: 20, Portal: false}, {From: 5, To: 4, Cost: 29, Portal: true}, {From: 5, To: 8, Cost: 9, Portal: true}, {From: 6, To: 5, Cost: 28, Portal: false}, {From: 7, To: 1, Cost: 17, Portal: true}, {From: 7, To: 3, Cost: 14, Portal: true}, {From: 7, To: 4, Cost: 7, Portal: true}, {From: 7, To: 6, Cost: 23, Portal: true}, {From: 8, To: 0, Cost: 10, Portal: true}, {From: 8, To: 1, Cost: 5, Portal: true}, {From: 8, To: 4, Cost: 5, Portal: true}, {From: 8, To: 9, Cost: 20, Portal: true}}, start: 1, finish: 0, cooldown: 1, want: 39},
+	{name: "Тест 29", n: 3, edges: []Edge{{From: 0, To: 2, Cost: 7, Portal: false}, {From: 1, To: 2, Cost: 20, Portal: true}}, start: 2, finish: 0, cooldown: 1, want: -1},
+	{name: "Тест 30", n: 9, edges: []Edge{{From: 0, To: 4, Cost: 13, Portal: false}, {From: 0, To: 5, Cost: 30, Portal: true}, {From: 0, To: 6, Cost: 4, Portal: false}, {From: 0, To: 7, Cost: 29, Portal: false}, {From: 2, To: 4, Cost: 9, Portal: true}, {From: 2, To: 6, Cost: 3, Portal: true}, {From: 2, To: 7, Cost: 4, Portal: true}, {From: 3, To: 0, Cost: 14, Portal: false}, {From: 3, To: 4, Cost: 23, Portal: true}, {From: 3, To: 6, Cost: 27, Portal: false}, {From: 3, To: 7, Cost: 5, Portal: false}, {From: 4, To: 1, Cost: 5, Portal: false}, {From: 4, To: 5, Cost: 24, Portal: true}, {From: 4, To: 6, Cost: 9, Portal: false}, {From: 6, To: 0, Cost: 27, Portal: false}, {From: 6, To: 7, Cost: 27, Portal: false}, {From: 7, To: 2, Cost: 6, Portal: false}, {From: 7, To: 5, Cost: 30, Portal: false}, {From: 7, To: 6, Cost: 29, Portal: false}, {From: 7, To: 8, Cost: 29, Portal: true}, {From: 8, To: 0, Cost: 1, Portal: true}}, start: 5, finish: 7, cooldown: 2, want: -1},
+	{name: "Тест 31", n: 7, edges: []Edge{{From: 1, To: 0, Cost: 26, Portal: false}, {From: 1, To: 2, Cost: 26, Portal: true}, {From: 1, To: 3, Cost: 26, Portal: true}, {From: 2, To: 3, Cost: 4, Portal: true}, {From: 2, To: 4, Cost: 1, Portal: false}, {From: 2, To: 6, Cost: 11, Portal: false}, {From: 3, To: 6, Cost: 18, Portal: false}, {From: 4, To: 6, Cost: 4, Portal: false}, {From: 5, To: 6, Cost: 16, Portal: false}, {From: 6, To: 2, Cost: 14, Portal: false}}, start: 3, finish: 5, cooldown: 1, want: -1},
+	{name: "Тест 32", n: 6, edges: []Edge{{From: 2, To: 1, Cost: 16, Portal: true}}, start: 2, finish: 5, cooldown: 1, want: -1},
+	{name: "Тест 33", n: 8, edges: []Edge{{From: 0, To: 3, Cost: 7, Portal: false}, {From: 0, To: 7, Cost: 17, Portal: true}, {From: 3, To: 5, Cost: 14, Portal: false}, {From: 3, To: 6, Cost: 16, Portal: false}, {From: 4, To: 3, Cost: 11, Portal: false}, {From: 4, To: 5, Cost: 1, Portal: true}, {From: 4, To: 6, Cost: 24, Portal: true}, {From: 4, To: 7, Cost: 9, Portal: true}, {From: 6, To: 5, Cost: 3, Portal: false}, {From: 7, To: 6, Cost: 25, Portal: false}}, start: 3, finish: 6, cooldown: 2, want: 16},
+	{name: "Тест 34", n: 7, edges: []Edge{{From: 0, To: 1, Cost: 15, Portal: false}, {From: 0, To: 4, Cost: 8, Portal: true}, {From: 0, To: 6, Cost: 23, Portal: false}, {From: 1, To: 3, Cost: 30, Portal: false}, {From: 2, To: 0, Cost: 30, Portal: false}, {From: 2, To: 1, Cost: 5, Portal: false}, {From: 4, To: 3, Cost: 2, Portal: true}, {From: 5, To: 1, Cost: 21, Portal: true}, {From: 6, To: 5, Cost: 15, Portal: false}}, start: 0, finish: 0, cooldown: 2, want: 0},
+	{name: "Тест 35", n: 5, edges: []Edge{{From: 0, To: 3, Cost: 18, Portal: false}}, start: 1, finish: 2, cooldown: 2, want: -1},
+	{name: "Тест 36", n: 2, edges: []Edge{}, start: 0, finish: 1, cooldown: 0, want: -1},
+	{name: "Тест 37", n: 8, edges: []Edge{{From: 0, To: 2, Cost: 12, Portal: false}, {From: 0, To: 3, Cost: 19, Portal: true}, {From: 0, To: 5, Cost: 5, Portal: false}, {From: 1, To: 4, Cost: 22, Portal: false}, {From: 1, To: 5, Cost: 1, Portal: true}, {From: 2, To: 1, Cost: 9, Portal: false}, {From: 3, To: 4, Cost: 11, Portal: true}, {From: 4, To: 0, Cost: 6, Portal: false}, {From: 4, To: 1, Cost: 6, Portal: false}, {From: 4, To: 2, Cost: 26, Portal: false}, {From: 4, To: 7, Cost: 9, Portal: true}, {From: 5, To: 0, Cost: 28, Portal: true}, {From: 6, To: 3, Cost: 24, Portal: false}}, start: 5, finish: 3, cooldown: 2, want: 96},
+	{name: "Тест 38", n: 9, edges: []Edge{{From: 0, To: 6, Cost: 6, Portal: false}, {From: 1, To: 2, Cost: 8, Portal: true}, {From: 1, To: 4, Cost: 22, Portal: false}, {From: 1, To: 5, Cost: 24, Portal: true}, {From: 1, To: 7, Cost: 9, Portal: false}, {From: 4, To: 1, Cost: 6, Portal: false}, {From: 4, To: 2, Cost: 13, Portal: false}, {From: 5, To: 0, Cost: 29, Portal: false}, {From: 5, To: 2, Cost: 9, Portal: false}, {From: 5, To: 3, Cost: 23, Portal: true}, {From: 5, To: 8, Cost: 14, Portal: false}, {From: 6, To: 0, Cost: 18, Portal: false}, {From: 6, To: 8, Cost: 6, Portal: false}, {From: 8, To: 4, Cost: 7, Portal: true}, {From: 8, To: 7, Cost: 30, Portal: true}}, start: 1, finish: 5, cooldown: 0, want: 24},
+	{name: "Тест 39", n: 7, edges: []Edge{{From: 0, To: 1, Cost: 13, Portal: true}, {From: 0, To: 3, Cost: 8, Portal: false}, {From: 0, To: 6, Cost: 4, Portal: true}, {From: 2, To: 6, Cost: 8, Portal: true}, {From: 3, To: 1, Cost: 16, Portal: true}, {From: 3, To: 4, Cost: 13, Portal: true}, {From: 4, To: 0, Cost: 12, Portal: false}, {From: 4, To: 2, Cost: 11, Portal: false}, {From: 5, To: 0, Cost: 20, Portal: false}, {From: 5, To: 4, Cost: 14, Portal: false}, {From: 6, To: 2, Cost: 9, Portal: false}}, start: 5, finish: 1, cooldown: 2, want: 33},
+	{name: "Тест 40", n: 4, edges: []Edge{{From: 0, To: 3, Cost: 5, Portal: false}, {From: 1, To: 0, Cost: 14, Portal: true}, {From: 2, To: 1, Cost: 17, Portal: false}}, start: 0, finish: 2, cooldown: 0, want: -1},
 }
 
-func refMinPortalCost(n int, edges []Edge, start, finish int, cooldown int) int {
-	if start < 0 || start >= n || finish < 0 || finish >= n {
-		return -1
-	}
-	graph := make([][]Edge, n)
-	for _, edge := range edges {
-		if edge.From >= 0 && edge.From < n && edge.To >= 0 && edge.To < n {
-			graph[edge.From] = append(graph[edge.From], edge)
+func TestMinPortalCostClosed(t *testing.T) {
+	total := len(minPortalCostCases)
+	for i, c := range minPortalCostCases {
+		got := MinPortalCost(c.n, c.edges, c.start, c.finish, c.cooldown)
+		if got != c.want {
+			printSummary(i, total, c.name, fmt.Sprintf("ожидалось %d, получено %d", c.want, got))
+			t.FailNow()
 		}
 	}
-	const inf = int(^uint(0) >> 1)
-	dist := make([][]int, n)
-	for i := range dist {
-		dist[i] = make([]int, cooldown+1)
-		for j := range dist[i] {
-			dist[i][j] = inf
-		}
-	}
-	dist[start][0] = 0
-	q := &oraclePQ{{node: start, wait: 0, cost: 0}}
-	heap.Init(q)
-	for q.Len() > 0 {
-		cur := heap.Pop(q).(oracleState)
-		if cur.cost != dist[cur.node][cur.wait] {
-			continue
-		}
-		if cur.node == finish {
-			return cur.cost
-		}
-		waitAfter := cur.wait
-		if waitAfter > 0 {
-			waitAfter--
-		}
-		for _, edge := range graph[cur.node] {
-			if edge.Portal && cur.wait > 0 {
-				continue
-			}
-			nextWait := waitAfter
-			if edge.Portal {
-				nextWait = cooldown
-			}
-			nextCost := cur.cost + edge.Cost
-			if nextCost < dist[edge.To][nextWait] {
-				dist[edge.To][nextWait] = nextCost
-				heap.Push(q, oracleState{node: edge.To, wait: nextWait, cost: nextCost})
-			}
-		}
-	}
-	return -1
+	printSummary(total, total, "", "")
 }
 
-func TestMinPortalCostOracle(t *testing.T) {
-	rng := rand.New(rand.NewSource(46))
-	for trial := 0; trial < 70; trial++ {
-		n := 2 + rng.Intn(9)
-		edges := make([]Edge, 0)
-		for from := 0; from < n; from++ {
-			for to := 0; to < n; to++ {
-				if from != to && rng.Intn(4) == 0 {
-					edges = append(edges, Edge{From: from, To: to, Cost: 1 + rng.Intn(30), Portal: rng.Intn(3) == 0})
-				}
-			}
-		}
-		start := rng.Intn(n)
-		finish := rng.Intn(n)
-		cooldown := rng.Intn(4)
-		if got, want := MinPortalCost(n, edges, start, finish, cooldown), refMinPortalCost(n, edges, start, finish, cooldown); got != want {
-			t.Fatalf("trial %d: got %d, want %d; n=%d start=%d finish=%d cooldown=%d edges=%#v", trial, got, want, n, start, finish, cooldown, edges)
-		}
+func printSummary(passed, total int, failedName, failedMessage string) {
+	type caseResult struct {
+		Name    string `json:"name"`
+		Passed  bool   `json:"passed"`
+		Message string `json:"message,omitempty"`
 	}
+	cases := []caseResult{}
+	if failedName != "" {
+		cases = append(cases, caseResult{Name: failedName, Passed: false, Message: failedMessage})
+	}
+	summary, _ := json.Marshal(map[string]any{"passed": passed, "total": total, "cases": cases})
+	fmt.Println(string(summary))
 }

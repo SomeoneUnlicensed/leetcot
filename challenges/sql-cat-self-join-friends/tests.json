@@ -2,18 +2,342 @@
   "schema": "CREATE TABLE cats (id INTEGER PRIMARY KEY, name TEXT, mentor_id INTEGER);",
   "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Барсик', NULL), (2, 'Мурка', NULL), (3, 'Пиксель', 1), (4, 'Байт', 2), (5, 'Скрипт', 1);",
   "expectedType": "select",
-  "expected": [
+  "cases": [
     {
-      "kitten": "Пиксель",
-      "mentor": "Барсик"
+      "name": "Тест 1",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Мурка', NULL), (2, 'Дымка', NULL), (3, 'Барсик', NULL), (4, 'Форк', 2), (5, 'Скрипт', 1), (6, 'Байт', 1), (7, 'Тег', 2);",
+      "expected": [
+        {
+          "kitten": "Форк",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Скрипт",
+          "mentor": "Мурка"
+        },
+        {
+          "kitten": "Байт",
+          "mentor": "Мурка"
+        },
+        {
+          "kitten": "Тег",
+          "mentor": "Дымка"
+        }
+      ]
     },
     {
-      "kitten": "Байт",
-      "mentor": "Мурка"
+      "name": "Тест 2",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Мурка', NULL), (2, 'Дымка', NULL), (3, 'Пиксель', 1), (4, 'Тег', 1), (5, 'Форк', 1);",
+      "expected": [
+        {
+          "kitten": "Пиксель",
+          "mentor": "Мурка"
+        },
+        {
+          "kitten": "Тег",
+          "mentor": "Мурка"
+        },
+        {
+          "kitten": "Форк",
+          "mentor": "Мурка"
+        }
+      ]
     },
     {
-      "kitten": "Скрипт",
-      "mentor": "Барсик"
+      "name": "Тест 3",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Мурка', NULL), (2, 'Дымка', NULL), (3, 'Барсик', NULL), (4, 'Байт', 1), (5, 'Пиксель', 2), (6, 'Скрипт', 2), (7, 'Тег', 3);",
+      "expected": [
+        {
+          "kitten": "Байт",
+          "mentor": "Мурка"
+        },
+        {
+          "kitten": "Пиксель",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Скрипт",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Тег",
+          "mentor": "Барсик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Дымка', NULL), (2, 'Мурка', NULL), (3, 'Байт', 1), (4, 'Скрипт', 2);",
+      "expected": [
+        {
+          "kitten": "Байт",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Скрипт",
+          "mentor": "Мурка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Барсик', NULL), (2, 'Мурка', NULL), (3, 'Дымка', NULL), (4, 'Скрипт', 1), (5, 'Тег', 1), (6, 'Байт', 1), (7, 'Пиксель', 2);",
+      "expected": [
+        {
+          "kitten": "Скрипт",
+          "mentor": "Барсик"
+        },
+        {
+          "kitten": "Тег",
+          "mentor": "Барсик"
+        },
+        {
+          "kitten": "Байт",
+          "mentor": "Барсик"
+        },
+        {
+          "kitten": "Пиксель",
+          "mentor": "Мурка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Мурка', NULL), (2, 'Барсик', NULL), (3, 'Дымка', NULL), (4, 'Байт', 3), (5, 'Форк', 2), (6, 'Тег', 3), (7, 'Пиксель', 2);",
+      "expected": [
+        {
+          "kitten": "Байт",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Форк",
+          "mentor": "Барсик"
+        },
+        {
+          "kitten": "Тег",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Пиксель",
+          "mentor": "Барсик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Дымка', NULL), (2, 'Барсик', NULL), (3, 'Мурка', NULL), (4, 'Байт', 3), (5, 'Тег', 1), (6, 'Скрипт', 3);",
+      "expected": [
+        {
+          "kitten": "Байт",
+          "mentor": "Мурка"
+        },
+        {
+          "kitten": "Тег",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Скрипт",
+          "mentor": "Мурка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Дымка', NULL), (2, 'Мурка', NULL), (3, 'Барсик', NULL), (4, 'Тег', 1), (5, 'Пиксель', 1);",
+      "expected": [
+        {
+          "kitten": "Тег",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Пиксель",
+          "mentor": "Дымка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Барсик', NULL), (2, 'Дымка', NULL), (3, 'Мурка', NULL), (4, 'Тег', 3), (5, 'Пиксель', 2), (6, 'Скрипт', 3);",
+      "expected": [
+        {
+          "kitten": "Тег",
+          "mentor": "Мурка"
+        },
+        {
+          "kitten": "Пиксель",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Скрипт",
+          "mentor": "Мурка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Мурка', NULL), (2, 'Барсик', NULL), (3, 'Дымка', NULL), (4, 'Скрипт', 2), (5, 'Байт', 3), (6, 'Форк', 1);",
+      "expected": [
+        {
+          "kitten": "Скрипт",
+          "mentor": "Барсик"
+        },
+        {
+          "kitten": "Байт",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Форк",
+          "mentor": "Мурка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Барсик', NULL), (2, 'Дымка', NULL), (3, 'Мурка', NULL), (4, 'Скрипт', 3), (5, 'Тег', 1), (6, 'Пиксель', 1), (7, 'Байт', 2);",
+      "expected": [
+        {
+          "kitten": "Скрипт",
+          "mentor": "Мурка"
+        },
+        {
+          "kitten": "Тег",
+          "mentor": "Барсик"
+        },
+        {
+          "kitten": "Пиксель",
+          "mentor": "Барсик"
+        },
+        {
+          "kitten": "Байт",
+          "mentor": "Дымка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Барсик', NULL), (2, 'Дымка', NULL), (3, 'Мурка', NULL), (4, 'Скрипт', 2), (5, 'Форк', 3), (6, 'Пиксель', 2);",
+      "expected": [
+        {
+          "kitten": "Скрипт",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Форк",
+          "mentor": "Мурка"
+        },
+        {
+          "kitten": "Пиксель",
+          "mentor": "Дымка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Барсик', NULL), (2, 'Дымка', NULL), (3, 'Тег', 1), (4, 'Скрипт', 1);",
+      "expected": [
+        {
+          "kitten": "Тег",
+          "mentor": "Барсик"
+        },
+        {
+          "kitten": "Скрипт",
+          "mentor": "Барсик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Мурка', NULL), (2, 'Дымка', NULL), (3, 'Барсик', NULL), (4, 'Байт', 2), (5, 'Пиксель', 2), (6, 'Тег', 2), (7, 'Форк', 3);",
+      "expected": [
+        {
+          "kitten": "Байт",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Пиксель",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Тег",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Форк",
+          "mentor": "Барсик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Мурка', NULL), (2, 'Дымка', NULL), (3, 'Тег', 1), (4, 'Скрипт', 2), (5, 'Пиксель', 1), (6, 'Форк', 1);",
+      "expected": [
+        {
+          "kitten": "Тег",
+          "mentor": "Мурка"
+        },
+        {
+          "kitten": "Скрипт",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Пиксель",
+          "mentor": "Мурка"
+        },
+        {
+          "kitten": "Форк",
+          "mentor": "Мурка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Барсик', NULL), (2, 'Дымка', NULL), (3, 'Мурка', NULL), (4, 'Форк', 2), (5, 'Байт', 3);",
+      "expected": [
+        {
+          "kitten": "Форк",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Байт",
+          "mentor": "Мурка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Барсик', NULL), (2, 'Мурка', NULL), (3, 'Дымка', NULL), (4, 'Тег', 1), (5, 'Байт', 1);",
+      "expected": [
+        {
+          "kitten": "Тег",
+          "mentor": "Барсик"
+        },
+        {
+          "kitten": "Байт",
+          "mentor": "Барсик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO cats (id, name, mentor_id) VALUES (1, 'Мурка', NULL), (2, 'Дымка', NULL), (3, 'Барсик', NULL), (4, 'Форк', 2), (5, 'Тег', 1), (6, 'Пиксель', 2), (7, 'Байт', 2);",
+      "expected": [
+        {
+          "kitten": "Форк",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Тег",
+          "mentor": "Мурка"
+        },
+        {
+          "kitten": "Пиксель",
+          "mentor": "Дымка"
+        },
+        {
+          "kitten": "Байт",
+          "mentor": "Дымка"
+        }
+      ]
     }
   ]
 }

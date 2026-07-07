@@ -2,26 +2,534 @@
   "schema": "CREATE TABLE scores (cat TEXT, medals INTEGER);",
   "seed": "INSERT INTO scores (cat, medals) VALUES ('Барсик', 5), ('Мурка', 7), ('Снежок', 7), ('Патч', 2);",
   "expectedType": "select",
-  "expected": [
+  "cases": [
     {
-      "cat": "Мурка",
-      "medals": 7,
-      "place": 1
+      "name": "Тест 1",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Снежок', 14), ('Патч', 8), ('Дымка', 13), ('Барсик', 13), ('Рыжик', 8);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "medals": 14,
+          "place": 1
+        },
+        {
+          "cat": "Барсик",
+          "medals": 13,
+          "place": 2
+        },
+        {
+          "cat": "Дымка",
+          "medals": 13,
+          "place": 2
+        },
+        {
+          "cat": "Патч",
+          "medals": 8,
+          "place": 4
+        },
+        {
+          "cat": "Рыжик",
+          "medals": 8,
+          "place": 4
+        }
+      ]
     },
     {
-      "cat": "Снежок",
-      "medals": 7,
-      "place": 1
+      "name": "Тест 2",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Снежок', 11), ('Патч', 13), ('Мурка', 11), ('Рыжик', 12), ('Дымка', 12), ('Барсик', 5);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "medals": 13,
+          "place": 1
+        },
+        {
+          "cat": "Дымка",
+          "medals": 12,
+          "place": 2
+        },
+        {
+          "cat": "Рыжик",
+          "medals": 12,
+          "place": 2
+        },
+        {
+          "cat": "Мурка",
+          "medals": 11,
+          "place": 4
+        },
+        {
+          "cat": "Снежок",
+          "medals": 11,
+          "place": 4
+        },
+        {
+          "cat": "Барсик",
+          "medals": 5,
+          "place": 6
+        }
+      ]
     },
     {
-      "cat": "Барсик",
-      "medals": 5,
-      "place": 3
+      "name": "Тест 3",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Барсик', 1), ('Снежок', 14), ('Патч', 2), ('Дымка', 2), ('Рыжик', 1), ('Мурка', 1);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "medals": 14,
+          "place": 1
+        },
+        {
+          "cat": "Дымка",
+          "medals": 2,
+          "place": 2
+        },
+        {
+          "cat": "Патч",
+          "medals": 2,
+          "place": 2
+        },
+        {
+          "cat": "Барсик",
+          "medals": 1,
+          "place": 4
+        },
+        {
+          "cat": "Мурка",
+          "medals": 1,
+          "place": 4
+        },
+        {
+          "cat": "Рыжик",
+          "medals": 1,
+          "place": 4
+        }
+      ]
     },
     {
-      "cat": "Патч",
-      "medals": 2,
-      "place": 4
+      "name": "Тест 4",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Патч', 3), ('Дымка', 2), ('Рыжик', 13), ('Барсик', 2), ('Снежок', 3);",
+      "expected": [
+        {
+          "cat": "Рыжик",
+          "medals": 13,
+          "place": 1
+        },
+        {
+          "cat": "Патч",
+          "medals": 3,
+          "place": 2
+        },
+        {
+          "cat": "Снежок",
+          "medals": 3,
+          "place": 2
+        },
+        {
+          "cat": "Барсик",
+          "medals": 2,
+          "place": 4
+        },
+        {
+          "cat": "Дымка",
+          "medals": 2,
+          "place": 4
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Мурка', 13), ('Барсик', 13), ('Патч', 13), ('Дымка', 4), ('Снежок', 4);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "medals": 13,
+          "place": 1
+        },
+        {
+          "cat": "Мурка",
+          "medals": 13,
+          "place": 1
+        },
+        {
+          "cat": "Патч",
+          "medals": 13,
+          "place": 1
+        },
+        {
+          "cat": "Дымка",
+          "medals": 4,
+          "place": 4
+        },
+        {
+          "cat": "Снежок",
+          "medals": 4,
+          "place": 4
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Снежок', 11), ('Дымка', 11), ('Мурка', 11), ('Патч', 3);",
+      "expected": [
+        {
+          "cat": "Дымка",
+          "medals": 11,
+          "place": 1
+        },
+        {
+          "cat": "Мурка",
+          "medals": 11,
+          "place": 1
+        },
+        {
+          "cat": "Снежок",
+          "medals": 11,
+          "place": 1
+        },
+        {
+          "cat": "Патч",
+          "medals": 3,
+          "place": 4
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Рыжик', 14), ('Барсик', 9), ('Дымка', 14), ('Патч', 14);",
+      "expected": [
+        {
+          "cat": "Дымка",
+          "medals": 14,
+          "place": 1
+        },
+        {
+          "cat": "Патч",
+          "medals": 14,
+          "place": 1
+        },
+        {
+          "cat": "Рыжик",
+          "medals": 14,
+          "place": 1
+        },
+        {
+          "cat": "Барсик",
+          "medals": 9,
+          "place": 4
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Дымка', 2), ('Рыжик', 4), ('Барсик', 1), ('Патч', 4), ('Снежок', 4), ('Мурка', 4);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "medals": 4,
+          "place": 1
+        },
+        {
+          "cat": "Патч",
+          "medals": 4,
+          "place": 1
+        },
+        {
+          "cat": "Рыжик",
+          "medals": 4,
+          "place": 1
+        },
+        {
+          "cat": "Снежок",
+          "medals": 4,
+          "place": 1
+        },
+        {
+          "cat": "Дымка",
+          "medals": 2,
+          "place": 5
+        },
+        {
+          "cat": "Барсик",
+          "medals": 1,
+          "place": 6
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Дымка', 14), ('Барсик', 11), ('Мурка', 11), ('Снежок', 14);",
+      "expected": [
+        {
+          "cat": "Дымка",
+          "medals": 14,
+          "place": 1
+        },
+        {
+          "cat": "Снежок",
+          "medals": 14,
+          "place": 1
+        },
+        {
+          "cat": "Барсик",
+          "medals": 11,
+          "place": 3
+        },
+        {
+          "cat": "Мурка",
+          "medals": 11,
+          "place": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Снежок', 14), ('Дымка', 8), ('Мурка', 8), ('Патч', 14);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "medals": 14,
+          "place": 1
+        },
+        {
+          "cat": "Снежок",
+          "medals": 14,
+          "place": 1
+        },
+        {
+          "cat": "Дымка",
+          "medals": 8,
+          "place": 3
+        },
+        {
+          "cat": "Мурка",
+          "medals": 8,
+          "place": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Снежок', 9), ('Барсик', 13), ('Мурка', 13), ('Дымка', 9);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "medals": 13,
+          "place": 1
+        },
+        {
+          "cat": "Мурка",
+          "medals": 13,
+          "place": 1
+        },
+        {
+          "cat": "Дымка",
+          "medals": 9,
+          "place": 3
+        },
+        {
+          "cat": "Снежок",
+          "medals": 9,
+          "place": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Дымка', 8), ('Мурка', 8), ('Барсик', 6), ('Рыжик', 6);",
+      "expected": [
+        {
+          "cat": "Дымка",
+          "medals": 8,
+          "place": 1
+        },
+        {
+          "cat": "Мурка",
+          "medals": 8,
+          "place": 1
+        },
+        {
+          "cat": "Барсик",
+          "medals": 6,
+          "place": 3
+        },
+        {
+          "cat": "Рыжик",
+          "medals": 6,
+          "place": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Патч', 4), ('Барсик', 3), ('Рыжик', 4), ('Мурка', 11), ('Дымка', 3), ('Снежок', 14);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "medals": 14,
+          "place": 1
+        },
+        {
+          "cat": "Мурка",
+          "medals": 11,
+          "place": 2
+        },
+        {
+          "cat": "Патч",
+          "medals": 4,
+          "place": 3
+        },
+        {
+          "cat": "Рыжик",
+          "medals": 4,
+          "place": 3
+        },
+        {
+          "cat": "Барсик",
+          "medals": 3,
+          "place": 5
+        },
+        {
+          "cat": "Дымка",
+          "medals": 3,
+          "place": 5
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Дымка', 2), ('Снежок', 2), ('Патч', 2), ('Мурка', 11), ('Рыжик', 2);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "medals": 11,
+          "place": 1
+        },
+        {
+          "cat": "Дымка",
+          "medals": 2,
+          "place": 2
+        },
+        {
+          "cat": "Патч",
+          "medals": 2,
+          "place": 2
+        },
+        {
+          "cat": "Рыжик",
+          "medals": 2,
+          "place": 2
+        },
+        {
+          "cat": "Снежок",
+          "medals": 2,
+          "place": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Дымка', 1), ('Снежок', 13), ('Патч', 1), ('Рыжик', 1);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "medals": 13,
+          "place": 1
+        },
+        {
+          "cat": "Дымка",
+          "medals": 1,
+          "place": 2
+        },
+        {
+          "cat": "Патч",
+          "medals": 1,
+          "place": 2
+        },
+        {
+          "cat": "Рыжик",
+          "medals": 1,
+          "place": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Барсик', 1), ('Дымка', 1), ('Мурка', 8), ('Рыжик', 8);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "medals": 8,
+          "place": 1
+        },
+        {
+          "cat": "Рыжик",
+          "medals": 8,
+          "place": 1
+        },
+        {
+          "cat": "Барсик",
+          "medals": 1,
+          "place": 3
+        },
+        {
+          "cat": "Дымка",
+          "medals": 1,
+          "place": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Барсик', 12), ('Дымка', 13), ('Мурка', 13), ('Снежок', 13);",
+      "expected": [
+        {
+          "cat": "Дымка",
+          "medals": 13,
+          "place": 1
+        },
+        {
+          "cat": "Мурка",
+          "medals": 13,
+          "place": 1
+        },
+        {
+          "cat": "Снежок",
+          "medals": 13,
+          "place": 1
+        },
+        {
+          "cat": "Барсик",
+          "medals": 12,
+          "place": 4
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO scores (cat, medals) VALUES ('Снежок', 11), ('Рыжик', 8), ('Дымка', 11), ('Патч', 11);",
+      "expected": [
+        {
+          "cat": "Дымка",
+          "medals": 11,
+          "place": 1
+        },
+        {
+          "cat": "Патч",
+          "medals": 11,
+          "place": 1
+        },
+        {
+          "cat": "Снежок",
+          "medals": 11,
+          "place": 1
+        },
+        {
+          "cat": "Рыжик",
+          "medals": 8,
+          "place": 4
+        }
+      ]
     }
   ]
 }

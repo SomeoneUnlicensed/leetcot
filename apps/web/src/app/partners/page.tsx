@@ -239,14 +239,20 @@ export default function PartnersPage() {
               </Button>
             </div>
 
-            <a
-              href="https://t.me/cosharra"
-              target="_blank"
-              rel="noreferrer"
-              className="font-mono text-sm text-zinc-500 transition-colors hover:text-pink-300"
-            >
-              Telegram: @cosharra
-            </a>
+            <p className="font-mono text-sm text-zinc-500">
+              <a
+                href="https://t.me/cosharra"
+                target="_blank"
+                rel="noreferrer"
+                className="transition-colors hover:text-pink-300"
+              >
+                Telegram: @cosharra
+              </a>{' '}
+              ·{' '}
+              <a href="mailto:hello@arlist.ru" className="transition-colors hover:text-pink-300">
+                hello@arlist.ru
+              </a>
+            </p>
 
             <div className="mt-6 grid w-full max-w-xl grid-cols-3 gap-3 border-t border-zinc-900 pt-8">
               {[
@@ -459,7 +465,7 @@ export default function PartnersPage() {
             </p>
             <GradientButton href="https://t.me/cosharra">Обсудить пилот</GradientButton>
             <p className="font-mono text-sm text-zinc-500">
-              Telegram: @cosharra · Сайт: Leetcot.ru
+              Telegram: @cosharra · hello@arlist.ru · Сайт: Leetcot.ru
             </p>
           </div>
         </section>

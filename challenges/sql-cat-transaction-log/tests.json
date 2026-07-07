@@ -2,15 +2,299 @@
   "schema": "CREATE TABLE purchases (id INTEGER PRIMARY KEY, cat TEXT, amount INTEGER); CREATE TABLE audit_log (cat TEXT, amount INTEGER);",
   "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Барсик', 40), (2, 'Мурка', 120), (3, 'Патч', 95), (4, 'Снежок', 130);",
   "expectedType": "state",
-  "expected": [
+  "expectedQuery": "SELECT cat, amount FROM audit_log ORDER BY amount DESC;",
+  "cases": [
     {
-      "cat": "Снежок",
-      "amount": 130
+      "name": "Тест 1",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Патч', 140), (2, 'Рыжик', 73), (3, 'Снежок', 100), (4, 'Барсик', 27), (5, 'Мурка', 119);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "amount": 140
+        },
+        {
+          "cat": "Мурка",
+          "amount": 119
+        },
+        {
+          "cat": "Снежок",
+          "amount": 100
+        }
+      ]
     },
     {
-      "cat": "Мурка",
-      "amount": 120
+      "name": "Тест 2",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Патч', 191), (2, 'Мурка', 84), (3, 'Рыжик', 175), (4, 'Снежок', 29);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "amount": 191
+        },
+        {
+          "cat": "Рыжик",
+          "amount": 175
+        }
+      ]
+    },
+    {
+      "name": "Тест 3",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Барсик', 175), (2, 'Патч', 100), (3, 'Рыжик', 86), (4, 'Снежок', 161), (5, 'Мурка', 79);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "amount": 175
+        },
+        {
+          "cat": "Снежок",
+          "amount": 161
+        },
+        {
+          "cat": "Патч",
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Рыжик', 99), (2, 'Снежок', 100), (3, 'Барсик', 100), (4, 'Патч', 94), (5, 'Мурка', 35);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "amount": 100
+        },
+        {
+          "cat": "Барсик",
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Барсик', 186), (2, 'Мурка', 27), (3, 'Рыжик', 83), (4, 'Патч', 186), (5, 'Снежок', 33);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "amount": 186
+        },
+        {
+          "cat": "Патч",
+          "amount": 186
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Рыжик', 99), (2, 'Патч', 140), (3, 'Мурка', 115), (4, 'Барсик', 101);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "amount": 140
+        },
+        {
+          "cat": "Мурка",
+          "amount": 115
+        },
+        {
+          "cat": "Барсик",
+          "amount": 101
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Снежок', 44), (2, 'Барсик', 100), (3, 'Рыжик', 100), (4, 'Мурка', 149);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "amount": 149
+        },
+        {
+          "cat": "Барсик",
+          "amount": 100
+        },
+        {
+          "cat": "Рыжик",
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Рыжик', 41), (2, 'Барсик', 100), (3, 'Снежок', 149), (4, 'Патч', 73);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "amount": 149
+        },
+        {
+          "cat": "Барсик",
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Снежок', 21), (2, 'Барсик', 100), (3, 'Мурка', 100), (4, 'Патч', 174);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "amount": 174
+        },
+        {
+          "cat": "Барсик",
+          "amount": 100
+        },
+        {
+          "cat": "Мурка",
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Рыжик', 99), (2, 'Патч', 100), (3, 'Мурка', 100), (4, 'Барсик', 91), (5, 'Снежок', 187);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "amount": 187
+        },
+        {
+          "cat": "Патч",
+          "amount": 100
+        },
+        {
+          "cat": "Мурка",
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Патч', 141), (2, 'Барсик', 67), (3, 'Мурка', 100), (4, 'Снежок', 97);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "amount": 141
+        },
+        {
+          "cat": "Мурка",
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Барсик', 99), (2, 'Мурка', 143), (3, 'Снежок', 100), (4, 'Патч', 137);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "amount": 143
+        },
+        {
+          "cat": "Патч",
+          "amount": 137
+        },
+        {
+          "cat": "Снежок",
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Мурка', 99), (2, 'Барсик', 100), (3, 'Рыжик', 100), (4, 'Снежок', 67), (5, 'Патч', 53);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "amount": 100
+        },
+        {
+          "cat": "Рыжик",
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Снежок', 188), (2, 'Патч', 100), (3, 'Рыжик', 100), (4, 'Мурка', 121), (5, 'Барсик', 120);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "amount": 188
+        },
+        {
+          "cat": "Мурка",
+          "amount": 121
+        },
+        {
+          "cat": "Барсик",
+          "amount": 120
+        },
+        {
+          "cat": "Патч",
+          "amount": 100
+        },
+        {
+          "cat": "Рыжик",
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Снежок', 81), (2, 'Рыжик', 100), (3, 'Патч', 194), (4, 'Барсик', 57);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "amount": 194
+        },
+        {
+          "cat": "Рыжик",
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Барсик', 99), (2, 'Снежок', 100), (3, 'Мурка', 86), (4, 'Рыжик', 80), (5, 'Патч', 182);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "amount": 182
+        },
+        {
+          "cat": "Снежок",
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Барсик', 99), (2, 'Патч', 158), (3, 'Мурка', 48), (4, 'Рыжик', 26), (5, 'Снежок', 83);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "amount": 158
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO purchases (id, cat, amount) VALUES (1, 'Рыжик', 99), (2, 'Снежок', 180), (3, 'Патч', 100), (4, 'Барсик', 142), (5, 'Мурка', 95);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "amount": 180
+        },
+        {
+          "cat": "Барсик",
+          "amount": 142
+        },
+        {
+          "cat": "Патч",
+          "amount": 100
+        }
+      ]
     }
-  ],
-  "expectedQuery": "SELECT cat, amount FROM audit_log ORDER BY amount DESC;"
+  ]
 }

@@ -2,12 +2,240 @@
   "schema": "CREATE TABLE cats (id INTEGER PRIMARY KEY, name TEXT); CREATE TABLE feedings (id INTEGER PRIMARY KEY, cat_id INTEGER, food TEXT);",
   "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Мурка'), (3, 'Снежок'), (4, 'Патч'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 1, 'тунец'), (2, 3, 'лосось');",
   "expectedType": "select",
-  "expected": [
+  "cases": [
     {
-      "name": "Мурка"
+      "name": "Тест 1",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Снежок'), (2, 'Патч'), (3, 'Дымка'), (4, 'Барсик'), (5, 'Рыжик'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 4, 'тунец'), (2, 4, 'креветки'), (3, 5, 'тунец'), (4, 5, 'креветки'), (5, 1, 'лосось'), (6, 1, 'тунец'), (7, 3, 'тунец'), (8, 3, 'тунец');",
+      "expected": [
+        {
+          "name": "Патч"
+        }
+      ]
     },
     {
-      "name": "Патч"
+      "name": "Тест 2",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Снежок'), (2, 'Патч'), (3, 'Мурка'), (4, 'Рыжик'), (5, 'Дымка'), (6, 'Барсик'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 3, 'лосось'), (2, 5, 'креветки'), (3, 5, 'сардина'), (4, 2, 'сардина'), (5, 2, 'тунец');",
+      "expected": [
+        {
+          "name": "Снежок"
+        },
+        {
+          "name": "Рыжик"
+        },
+        {
+          "name": "Барсик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 3",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Снежок'), (3, 'Патч'), (4, 'Дымка'), (5, 'Рыжик'), (6, 'Мурка'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 1, 'лосось'), (2, 5, 'креветки'), (3, 5, 'креветки'), (4, 6, 'лосось'), (5, 2, 'креветки'), (6, 3, 'тунец');",
+      "expected": [
+        {
+          "name": "Дымка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Патч'), (2, 'Дымка'), (3, 'Рыжик'), (4, 'Барсик'), (5, 'Снежок'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 1, 'креветки'), (2, 5, 'тунец'), (3, 5, 'лосось');",
+      "expected": [
+        {
+          "name": "Дымка"
+        },
+        {
+          "name": "Рыжик"
+        },
+        {
+          "name": "Барсик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурка'), (2, 'Барсик'), (3, 'Патч'), (4, 'Дымка'), (5, 'Снежок'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 1, 'сардина'), (2, 2, 'лосось'), (3, 2, 'креветки');",
+      "expected": [
+        {
+          "name": "Патч"
+        },
+        {
+          "name": "Дымка"
+        },
+        {
+          "name": "Снежок"
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Снежок'), (2, 'Дымка'), (3, 'Мурка'), (4, 'Патч'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 4, 'сардина'), (2, 4, 'тунец');",
+      "expected": [
+        {
+          "name": "Снежок"
+        },
+        {
+          "name": "Дымка"
+        },
+        {
+          "name": "Мурка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Рыжик'), (2, 'Барсик'), (3, 'Дымка'), (4, 'Патч'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 1, 'тунец'), (2, 2, 'креветки'), (3, 4, 'тунец'), (4, 4, 'лосось');",
+      "expected": [
+        {
+          "name": "Дымка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Дымка'), (2, 'Рыжик'), (3, 'Барсик'), (4, 'Патч'), (5, 'Снежок'), (6, 'Мурка'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 1, 'лосось');",
+      "expected": [
+        {
+          "name": "Рыжик"
+        },
+        {
+          "name": "Барсик"
+        },
+        {
+          "name": "Патч"
+        },
+        {
+          "name": "Снежок"
+        },
+        {
+          "name": "Мурка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Дымка'), (2, 'Барсик'), (3, 'Мурка'), (4, 'Снежок'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 1, 'сардина'), (2, 2, 'креветки'), (3, 3, 'креветки');",
+      "expected": [
+        {
+          "name": "Снежок"
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Снежок'), (2, 'Дымка'), (3, 'Мурка'), (4, 'Патч'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 4, 'тунец'), (2, 2, 'сардина'), (3, 2, 'тунец');",
+      "expected": [
+        {
+          "name": "Снежок"
+        },
+        {
+          "name": "Мурка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Снежок'), (2, 'Барсик'), (3, 'Мурка'), (4, 'Дымка'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 4, 'креветки'), (2, 3, 'лосось'), (3, 3, 'тунец'), (4, 1, 'креветки');",
+      "expected": [
+        {
+          "name": "Барсик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Дымка'), (2, 'Мурка'), (3, 'Барсик'), (4, 'Рыжик'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 4, 'лосось'), (2, 4, 'тунец'), (3, 2, 'креветки');",
+      "expected": [
+        {
+          "name": "Дымка"
+        },
+        {
+          "name": "Барсик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Патч'), (2, 'Барсик'), (3, 'Рыжик'), (4, 'Мурка'), (5, 'Дымка'), (6, 'Снежок'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 2, 'тунец'), (2, 6, 'сардина');",
+      "expected": [
+        {
+          "name": "Патч"
+        },
+        {
+          "name": "Рыжик"
+        },
+        {
+          "name": "Мурка"
+        },
+        {
+          "name": "Дымка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Дымка'), (2, 'Снежок'), (3, 'Патч'), (4, 'Мурка'), (5, 'Рыжик'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 4, 'креветки'), (2, 4, 'креветки');",
+      "expected": [
+        {
+          "name": "Дымка"
+        },
+        {
+          "name": "Снежок"
+        },
+        {
+          "name": "Патч"
+        },
+        {
+          "name": "Рыжик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Дымка'), (2, 'Снежок'), (3, 'Патч'), (4, 'Рыжик'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 2, 'лосось'), (2, 2, 'тунец');",
+      "expected": [
+        {
+          "name": "Дымка"
+        },
+        {
+          "name": "Патч"
+        },
+        {
+          "name": "Рыжик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Дымка'), (3, 'Мурка'), (4, 'Рыжик'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 1, 'лосось'), (2, 1, 'лосось'), (3, 2, 'сардина');",
+      "expected": [
+        {
+          "name": "Мурка"
+        },
+        {
+          "name": "Рыжик"
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Дымка'), (3, 'Мурка'), (4, 'Снежок'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 3, 'креветки'), (2, 1, 'сардина'), (3, 1, 'сардина'), (4, 4, 'лосось'), (5, 4, 'тунец');",
+      "expected": [
+        {
+          "name": "Дымка"
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Снежок'), (2, 'Рыжик'), (3, 'Дымка'), (4, 'Патч'); INSERT INTO feedings (id, cat_id, food) VALUES (1, 4, 'сардина'), (2, 4, 'креветки'), (3, 1, 'лосось'), (4, 1, 'сардина');",
+      "expected": [
+        {
+          "name": "Рыжик"
+        },
+        {
+          "name": "Дымка"
+        }
+      ]
     }
   ]
 }

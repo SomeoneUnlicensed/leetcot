@@ -2,21 +2,369 @@
   "schema": "CREATE TABLE dry_pantry (name TEXT); CREATE TABLE cold_pantry (name TEXT);",
   "seed": "INSERT INTO dry_pantry (name) VALUES ('сухой корм'), ('тунец'), ('печенье'); INSERT INTO cold_pantry (name) VALUES ('лосось'), ('тунец'), ('сметана');",
   "expectedType": "select",
-  "expected": [
+  "cases": [
     {
-      "name": "лосось"
+      "name": "Тест 1",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('печенье'), ('крекеры'); INSERT INTO cold_pantry (name) VALUES ('печенье'), ('сметана');",
+      "expected": [
+        {
+          "name": "крекеры"
+        },
+        {
+          "name": "печенье"
+        },
+        {
+          "name": "сметана"
+        }
+      ]
     },
     {
-      "name": "печенье"
+      "name": "Тест 2",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('печенье'), ('тунец'), ('крекеры'), ('мюсли'); INSERT INTO cold_pantry (name) VALUES ('печенье'), ('лосось');",
+      "expected": [
+        {
+          "name": "крекеры"
+        },
+        {
+          "name": "лосось"
+        },
+        {
+          "name": "мюсли"
+        },
+        {
+          "name": "печенье"
+        },
+        {
+          "name": "тунец"
+        }
+      ]
     },
     {
-      "name": "сметана"
+      "name": "Тест 3",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('сухой корм'), ('печенье'), ('крекеры'); INSERT INTO cold_pantry (name) VALUES ('сухой корм'), ('йогурт'), ('сметана');",
+      "expected": [
+        {
+          "name": "йогурт"
+        },
+        {
+          "name": "крекеры"
+        },
+        {
+          "name": "печенье"
+        },
+        {
+          "name": "сметана"
+        },
+        {
+          "name": "сухой корм"
+        }
+      ]
     },
     {
-      "name": "сухой корм"
+      "name": "Тест 4",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('крекеры'), ('мюсли'); INSERT INTO cold_pantry (name) VALUES ('крекеры'), ('сметана'), ('лосось');",
+      "expected": [
+        {
+          "name": "крекеры"
+        },
+        {
+          "name": "лосось"
+        },
+        {
+          "name": "мюсли"
+        },
+        {
+          "name": "сметана"
+        }
+      ]
     },
     {
-      "name": "тунец"
+      "name": "Тест 5",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('сухой корм'), ('тунец'), ('крекеры'), ('печенье'); INSERT INTO cold_pantry (name) VALUES ('сухой корм'), ('йогурт');",
+      "expected": [
+        {
+          "name": "йогурт"
+        },
+        {
+          "name": "крекеры"
+        },
+        {
+          "name": "печенье"
+        },
+        {
+          "name": "сухой корм"
+        },
+        {
+          "name": "тунец"
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('крекеры'), ('печенье'), ('тунец'), ('сухой корм'); INSERT INTO cold_pantry (name) VALUES ('сметана'), ('тунец'), ('йогурт');",
+      "expected": [
+        {
+          "name": "йогурт"
+        },
+        {
+          "name": "крекеры"
+        },
+        {
+          "name": "печенье"
+        },
+        {
+          "name": "сметана"
+        },
+        {
+          "name": "сухой корм"
+        },
+        {
+          "name": "тунец"
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('мюсли'), ('сухой корм'), ('крекеры'), ('тунец'); INSERT INTO cold_pantry (name) VALUES ('мюсли'), ('йогурт');",
+      "expected": [
+        {
+          "name": "йогурт"
+        },
+        {
+          "name": "крекеры"
+        },
+        {
+          "name": "мюсли"
+        },
+        {
+          "name": "сухой корм"
+        },
+        {
+          "name": "тунец"
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('крекеры'), ('сухой корм'); INSERT INTO cold_pantry (name) VALUES ('крекеры'), ('сметана'), ('йогурт'), ('лосось');",
+      "expected": [
+        {
+          "name": "йогурт"
+        },
+        {
+          "name": "крекеры"
+        },
+        {
+          "name": "лосось"
+        },
+        {
+          "name": "сметана"
+        },
+        {
+          "name": "сухой корм"
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('мюсли'), ('сухой корм'), ('тунец'), ('печенье'); INSERT INTO cold_pantry (name) VALUES ('мюсли'), ('сметана');",
+      "expected": [
+        {
+          "name": "мюсли"
+        },
+        {
+          "name": "печенье"
+        },
+        {
+          "name": "сметана"
+        },
+        {
+          "name": "сухой корм"
+        },
+        {
+          "name": "тунец"
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('крекеры'), ('печенье'), ('тунец'); INSERT INTO cold_pantry (name) VALUES ('сметана'), ('тунец'), ('йогурт');",
+      "expected": [
+        {
+          "name": "йогурт"
+        },
+        {
+          "name": "крекеры"
+        },
+        {
+          "name": "печенье"
+        },
+        {
+          "name": "сметана"
+        },
+        {
+          "name": "тунец"
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('печенье'), ('сухой корм'); INSERT INTO cold_pantry (name) VALUES ('печенье'), ('лосось'), ('сметана');",
+      "expected": [
+        {
+          "name": "лосось"
+        },
+        {
+          "name": "печенье"
+        },
+        {
+          "name": "сметана"
+        },
+        {
+          "name": "сухой корм"
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('сухой корм'), ('тунец'), ('мюсли'); INSERT INTO cold_pantry (name) VALUES ('сухой корм'), ('творог'), ('лосось');",
+      "expected": [
+        {
+          "name": "лосось"
+        },
+        {
+          "name": "мюсли"
+        },
+        {
+          "name": "сухой корм"
+        },
+        {
+          "name": "творог"
+        },
+        {
+          "name": "тунец"
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('тунец'), ('сухой корм'); INSERT INTO cold_pantry (name) VALUES ('тунец'), ('сметана');",
+      "expected": [
+        {
+          "name": "сметана"
+        },
+        {
+          "name": "сухой корм"
+        },
+        {
+          "name": "тунец"
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('мюсли'), ('печенье'), ('крекеры'); INSERT INTO cold_pantry (name) VALUES ('мюсли'), ('тунец'), ('творог');",
+      "expected": [
+        {
+          "name": "крекеры"
+        },
+        {
+          "name": "мюсли"
+        },
+        {
+          "name": "печенье"
+        },
+        {
+          "name": "творог"
+        },
+        {
+          "name": "тунец"
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('мюсли'), ('крекеры'), ('печенье'), ('сухой корм'); INSERT INTO cold_pantry (name) VALUES ('мюсли'), ('сметана');",
+      "expected": [
+        {
+          "name": "крекеры"
+        },
+        {
+          "name": "мюсли"
+        },
+        {
+          "name": "печенье"
+        },
+        {
+          "name": "сметана"
+        },
+        {
+          "name": "сухой корм"
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('сухой корм'), ('мюсли'), ('тунец'); INSERT INTO cold_pantry (name) VALUES ('сметана'), ('лосось'), ('творог'), ('тунец');",
+      "expected": [
+        {
+          "name": "лосось"
+        },
+        {
+          "name": "мюсли"
+        },
+        {
+          "name": "сметана"
+        },
+        {
+          "name": "сухой корм"
+        },
+        {
+          "name": "творог"
+        },
+        {
+          "name": "тунец"
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('сухой корм'), ('печенье'); INSERT INTO cold_pantry (name) VALUES ('сухой корм'), ('йогурт');",
+      "expected": [
+        {
+          "name": "йогурт"
+        },
+        {
+          "name": "печенье"
+        },
+        {
+          "name": "сухой корм"
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO dry_pantry (name) VALUES ('крекеры'), ('мюсли'), ('печенье'), ('сухой корм'); INSERT INTO cold_pantry (name) VALUES ('крекеры'), ('йогурт'), ('лосось');",
+      "expected": [
+        {
+          "name": "йогурт"
+        },
+        {
+          "name": "крекеры"
+        },
+        {
+          "name": "лосось"
+        },
+        {
+          "name": "мюсли"
+        },
+        {
+          "name": "печенье"
+        },
+        {
+          "name": "сухой корм"
+        }
+      ]
     }
   ]
 }

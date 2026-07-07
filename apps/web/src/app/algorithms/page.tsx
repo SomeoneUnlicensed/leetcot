@@ -12,7 +12,7 @@ const topics = [
 const stats = [
   ['30+', 'Python-задач'],
   ['6', 'ключевых тем'],
-  ['oracle', 'быстрая проверка'],
+  ['40', 'скрытых тестов на задачу'],
 ];
 
 export default function AlgorithmsLanding() {

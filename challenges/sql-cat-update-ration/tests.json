@@ -2,19 +2,387 @@
   "schema": "CREATE TABLE rations (cat TEXT PRIMARY KEY, grams INTEGER, active INTEGER);",
   "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Барсик', 80, 1), ('Мурка', 70, 0), ('Патч', 60, 1);",
   "expectedType": "state",
-  "expected": [
+  "expectedQuery": "SELECT cat, grams FROM rations ORDER BY cat;",
+  "cases": [
     {
-      "cat": "Барсик",
-      "grams": 90
+      "name": "Тест 1",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Патч', 78, 0), ('Рыжик', 56, 0), ('Снежок', 42, 1), ('Барсик', 92, 1);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "grams": 102
+        },
+        {
+          "cat": "Патч",
+          "grams": 78
+        },
+        {
+          "cat": "Рыжик",
+          "grams": 56
+        },
+        {
+          "cat": "Снежок",
+          "grams": 52
+        }
+      ]
     },
     {
-      "cat": "Мурка",
-      "grams": 70
+      "name": "Тест 2",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Патч', 34, 1), ('Мурка', 50, 1), ('Рыжик', 85, 0);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "grams": 60
+        },
+        {
+          "cat": "Патч",
+          "grams": 44
+        },
+        {
+          "cat": "Рыжик",
+          "grams": 85
+        }
+      ]
     },
     {
-      "cat": "Патч",
-      "grams": 70
+      "name": "Тест 3",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Барсик', 31, 0), ('Патч', 90, 0), ('Рыжик', 63, 0), ('Снежок', 100, 0), ('Мурка', 59, 1);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "grams": 31
+        },
+        {
+          "cat": "Мурка",
+          "grams": 69
+        },
+        {
+          "cat": "Патч",
+          "grams": 90
+        },
+        {
+          "cat": "Рыжик",
+          "grams": 63
+        },
+        {
+          "cat": "Снежок",
+          "grams": 100
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Рыжик', 38, 1), ('Снежок', 32, 0), ('Барсик', 81, 0), ('Патч', 100, 0);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "grams": 81
+        },
+        {
+          "cat": "Патч",
+          "grams": 100
+        },
+        {
+          "cat": "Рыжик",
+          "grams": 48
+        },
+        {
+          "cat": "Снежок",
+          "grams": 32
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Барсик', 61, 0), ('Мурка', 36, 0), ('Рыжик', 50, 0), ('Патч', 44, 1), ('Снежок', 77, 0);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "grams": 61
+        },
+        {
+          "cat": "Мурка",
+          "grams": 36
+        },
+        {
+          "cat": "Патч",
+          "grams": 54
+        },
+        {
+          "cat": "Рыжик",
+          "grams": 50
+        },
+        {
+          "cat": "Снежок",
+          "grams": 77
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Рыжик', 90, 1), ('Патч', 77, 0), ('Мурка', 70, 0);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "grams": 70
+        },
+        {
+          "cat": "Патч",
+          "grams": 77
+        },
+        {
+          "cat": "Рыжик",
+          "grams": 100
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Снежок', 37, 0), ('Барсик', 94, 1), ('Рыжик', 57, 0);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "grams": 104
+        },
+        {
+          "cat": "Рыжик",
+          "grams": 57
+        },
+        {
+          "cat": "Снежок",
+          "grams": 37
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Рыжик', 47, 1), ('Барсик', 61, 0), ('Снежок', 94, 0);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "grams": 61
+        },
+        {
+          "cat": "Рыжик",
+          "grams": 57
+        },
+        {
+          "cat": "Снежок",
+          "grams": 94
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Снежок', 94, 0), ('Барсик', 89, 1), ('Мурка', 40, 0);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "grams": 99
+        },
+        {
+          "cat": "Мурка",
+          "grams": 40
+        },
+        {
+          "cat": "Снежок",
+          "grams": 94
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Рыжик', 89, 0), ('Патч', 92, 1), ('Мурка', 65, 0), ('Барсик', 50, 0), ('Снежок', 34, 0);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "grams": 50
+        },
+        {
+          "cat": "Мурка",
+          "grams": 65
+        },
+        {
+          "cat": "Патч",
+          "grams": 102
+        },
+        {
+          "cat": "Рыжик",
+          "grams": 89
+        },
+        {
+          "cat": "Снежок",
+          "grams": 34
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Патч', 42, 1), ('Барсик', 87, 0), ('Мурка', 68, 1);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "grams": 87
+        },
+        {
+          "cat": "Мурка",
+          "grams": 78
+        },
+        {
+          "cat": "Патч",
+          "grams": 52
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Барсик', 91, 1), ('Мурка', 65, 1), ('Снежок', 88, 0);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "grams": 101
+        },
+        {
+          "cat": "Мурка",
+          "grams": 75
+        },
+        {
+          "cat": "Снежок",
+          "grams": 88
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Мурка', 53, 0), ('Барсик', 46, 1), ('Рыжик', 39, 0), ('Снежок', 98, 0), ('Патч', 57, 1);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "grams": 56
+        },
+        {
+          "cat": "Мурка",
+          "grams": 53
+        },
+        {
+          "cat": "Патч",
+          "grams": 67
+        },
+        {
+          "cat": "Рыжик",
+          "grams": 39
+        },
+        {
+          "cat": "Снежок",
+          "grams": 98
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Снежок', 68, 1), ('Патч', 89, 1), ('Рыжик', 80, 1), ('Мурка', 80, 0);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "grams": 80
+        },
+        {
+          "cat": "Патч",
+          "grams": 99
+        },
+        {
+          "cat": "Рыжик",
+          "grams": 90
+        },
+        {
+          "cat": "Снежок",
+          "grams": 78
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Снежок', 37, 1), ('Рыжик', 48, 0), ('Патч', 77, 0);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "grams": 77
+        },
+        {
+          "cat": "Рыжик",
+          "grams": 48
+        },
+        {
+          "cat": "Снежок",
+          "grams": 47
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Барсик', 30, 0), ('Снежок', 82, 0), ('Мурка', 63, 0), ('Рыжик', 60, 1);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "grams": 30
+        },
+        {
+          "cat": "Мурка",
+          "grams": 63
+        },
+        {
+          "cat": "Рыжик",
+          "grams": 70
+        },
+        {
+          "cat": "Снежок",
+          "grams": 82
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Барсик', 44, 0), ('Патч', 33, 0), ('Мурка', 61, 1), ('Рыжик', 79, 0);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "grams": 44
+        },
+        {
+          "cat": "Мурка",
+          "grams": 71
+        },
+        {
+          "cat": "Патч",
+          "grams": 33
+        },
+        {
+          "cat": "Рыжик",
+          "grams": 79
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO rations (cat, grams, active) VALUES ('Рыжик', 92, 0), ('Снежок', 93, 1), ('Патч', 53, 0), ('Барсик', 91, 0);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "grams": 91
+        },
+        {
+          "cat": "Патч",
+          "grams": 53
+        },
+        {
+          "cat": "Рыжик",
+          "grams": 92
+        },
+        {
+          "cat": "Снежок",
+          "grams": 103
+        }
+      ]
     }
-  ],
-  "expectedQuery": "SELECT cat, grams FROM rations ORDER BY cat;"
+  ]
 }

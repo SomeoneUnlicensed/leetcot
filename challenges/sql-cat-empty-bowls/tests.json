@@ -2,14 +2,242 @@
   "schema": "CREATE TABLE bowls (id INTEGER PRIMARY KEY, place TEXT, dish TEXT);",
   "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'окно', 'тунец'), (2, 'диван', NULL), (3, 'кухня', 'лосось'), (4, 'балкон', NULL);",
   "expectedType": "select",
-  "expected": [
+  "cases": [
     {
-      "place": "диван",
-      "dish_name": "пусто"
+      "name": "Тест 1",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'балкон', 'форель'), (2, 'терраса', NULL), (3, 'коридор', 'форель'), (4, 'кухня', 'лосось'), (5, 'окно', 'тунец');",
+      "expected": [
+        {
+          "place": "терраса",
+          "dish_name": "пусто"
+        }
+      ]
     },
     {
-      "place": "балкон",
-      "dish_name": "пусто"
+      "name": "Тест 2",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'кухня', NULL), (2, 'балкон', 'сардина'), (3, 'диван', 'сардина'), (4, 'спальня', NULL), (5, 'коридор', 'лосось'), (6, 'окно', NULL);",
+      "expected": [
+        {
+          "place": "кухня",
+          "dish_name": "пусто"
+        },
+        {
+          "place": "спальня",
+          "dish_name": "пусто"
+        },
+        {
+          "place": "окно",
+          "dish_name": "пусто"
+        }
+      ]
+    },
+    {
+      "name": "Тест 3",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'окно', NULL), (2, 'кухня', 'тунец'), (3, 'балкон', NULL), (4, 'терраса', 'тунец'), (5, 'коридор', 'форель'), (6, 'спальня', 'сардина');",
+      "expected": [
+        {
+          "place": "окно",
+          "dish_name": "пусто"
+        },
+        {
+          "place": "балкон",
+          "dish_name": "пусто"
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'коридор', 'тунец'), (2, 'спальня', 'тунец'), (3, 'терраса', 'форель'), (4, 'балкон', NULL);",
+      "expected": [
+        {
+          "place": "балкон",
+          "dish_name": "пусто"
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'терраса', NULL), (2, 'балкон', 'лосось'), (3, 'диван', 'тунец'), (4, 'окно', 'сардина'), (5, 'коридор', 'форель'), (6, 'кухня', 'лосось');",
+      "expected": [
+        {
+          "place": "терраса",
+          "dish_name": "пусто"
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'кухня', 'лосось'), (2, 'коридор', NULL), (3, 'диван', NULL), (4, 'балкон', 'форель');",
+      "expected": [
+        {
+          "place": "коридор",
+          "dish_name": "пусто"
+        },
+        {
+          "place": "диван",
+          "dish_name": "пусто"
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'коридор', NULL), (2, 'терраса', 'тунец'), (3, 'спальня', NULL), (4, 'окно', 'лосось'), (5, 'балкон', 'тунец');",
+      "expected": [
+        {
+          "place": "коридор",
+          "dish_name": "пусто"
+        },
+        {
+          "place": "спальня",
+          "dish_name": "пусто"
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'спальня', 'лосось'), (2, 'коридор', 'лосось'), (3, 'окно', NULL), (4, 'терраса', 'лосось');",
+      "expected": [
+        {
+          "place": "окно",
+          "dish_name": "пусто"
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'диван', 'тунец'), (2, 'терраса', 'сардина'), (3, 'окно', NULL), (4, 'коридор', 'форель'), (5, 'кухня', NULL), (6, 'спальня', 'тунец');",
+      "expected": [
+        {
+          "place": "окно",
+          "dish_name": "пусто"
+        },
+        {
+          "place": "кухня",
+          "dish_name": "пусто"
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'диван', 'форель'), (2, 'коридор', 'форель'), (3, 'кухня', 'сардина'), (4, 'терраса', NULL);",
+      "expected": [
+        {
+          "place": "терраса",
+          "dish_name": "пусто"
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'диван', NULL), (2, 'окно', 'форель'), (3, 'кухня', NULL), (4, 'коридор', NULL);",
+      "expected": [
+        {
+          "place": "диван",
+          "dish_name": "пусто"
+        },
+        {
+          "place": "кухня",
+          "dish_name": "пусто"
+        },
+        {
+          "place": "коридор",
+          "dish_name": "пусто"
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'терраса', 'сардина'), (2, 'диван', 'форель'), (3, 'окно', 'сардина'), (4, 'коридор', NULL);",
+      "expected": [
+        {
+          "place": "коридор",
+          "dish_name": "пусто"
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'балкон', NULL), (2, 'окно', NULL), (3, 'коридор', 'лосось'), (4, 'спальня', 'лосось');",
+      "expected": [
+        {
+          "place": "балкон",
+          "dish_name": "пусто"
+        },
+        {
+          "place": "окно",
+          "dish_name": "пусто"
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'терраса', NULL), (2, 'кухня', 'тунец'), (3, 'балкон', NULL), (4, 'диван', 'форель'), (5, 'коридор', 'сардина');",
+      "expected": [
+        {
+          "place": "терраса",
+          "dish_name": "пусто"
+        },
+        {
+          "place": "балкон",
+          "dish_name": "пусто"
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'терраса', 'тунец'), (2, 'кухня', NULL), (3, 'балкон', 'лосось'), (4, 'коридор', NULL);",
+      "expected": [
+        {
+          "place": "кухня",
+          "dish_name": "пусто"
+        },
+        {
+          "place": "коридор",
+          "dish_name": "пусто"
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'спальня', 'тунец'), (2, 'окно', 'форель'), (3, 'диван', NULL), (4, 'терраса', NULL), (5, 'коридор', 'сардина');",
+      "expected": [
+        {
+          "place": "диван",
+          "dish_name": "пусто"
+        },
+        {
+          "place": "терраса",
+          "dish_name": "пусто"
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'коридор', NULL), (2, 'окно', NULL), (3, 'диван', NULL), (4, 'терраса', 'сардина'), (5, 'кухня', 'тунец'), (6, 'балкон', 'тунец');",
+      "expected": [
+        {
+          "place": "коридор",
+          "dish_name": "пусто"
+        },
+        {
+          "place": "окно",
+          "dish_name": "пусто"
+        },
+        {
+          "place": "диван",
+          "dish_name": "пусто"
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO bowls (id, place, dish) VALUES (1, 'терраса', NULL), (2, 'спальня', 'форель'), (3, 'коридор', 'лосось'), (4, 'кухня', 'форель'), (5, 'балкон', 'сардина');",
+      "expected": [
+        {
+          "place": "терраса",
+          "dish_name": "пусто"
+        }
+      ]
     }
   ]
 }

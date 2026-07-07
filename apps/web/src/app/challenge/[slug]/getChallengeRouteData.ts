@@ -8,8 +8,8 @@ import { validateCompilerOptions } from '~/utils/validateCompilerOptions';
 export type ChallengeRouteData = NonNullable<Awaited<ReturnType<typeof getChallengeRouteData>>>;
 
 // SQL challenges are ingested without a `user.sql` starter file, so `code` ends up
-// holding the raw `solution.sql` contents, and `tests` holds the answer key
-// (`expected`/`expectedQuery`, and for oracle-graded challenges `referenceSolution`).
+// holding the raw `solution.sql` contents, and `tests` holds the answer key (a
+// fixed bank of pre-computed `cases`, each with its own seed SQL + expected rows).
 // This object gets serialized straight into the client bundle (SqlTerminal only
 // needs `schema`/`seed` to run the local sandbox), so strip anything answer-revealing
 // before it ever leaves the server. Grading itself never uses this — /api/execute
@@ -18,29 +18,29 @@ function sanitizeSqlTestsForClient(rawTests: string): string {
   try {
     const parsed = JSON.parse(rawTests) as Record<string, unknown>;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { expected, expectedQuery, referenceSolution, seedGenerator, ...clientSafe } = parsed;
+    const { cases, ...clientSafe } = parsed;
     return JSON.stringify(clientSafe);
   } catch {
     return rawTests;
   }
 }
 
-// Must match packages/db/seed/data/challenge-ingest.ts's PYTHON_ORACLE_MARKER —
-// for oracle-graded Python challenges, everything after this marker is the hidden
-// reference solution + random-case generator, appended to the same `tests` field
-// that's otherwise shown verbatim in the student's "Tests" editor pane. Strip it
-// before that pane's content reaches the client; code-runner reads the untruncated
-// value straight from the DB.
-const PYTHON_ORACLE_MARKER = '# ---LEETCOT-ORACLE---';
-const GO_ORACLE_MARKER = '// ---LEETCOT-GO-ORACLE---';
+// Must match packages/code-runner's PYTHON_HIDDEN_TESTS_MARKER — everything after
+// this marker is the hidden fixed test-case bank (+ the generator needed to
+// reconstruct each case's input), appended to the same `tests` field that's
+// otherwise shown verbatim in the student's "Tests" editor pane. Strip it before
+// that pane's content reaches the client; code-runner reads the untruncated value
+// straight from the DB.
+const PYTHON_HIDDEN_TESTS_MARKER = '# ---LEETCOT-HIDDEN-TESTS---';
+const GO_HIDDEN_TESTS_MARKER = '// ---LEETCOT-HIDDEN-TESTS---';
 
 function sanitizePythonTestsForClient(rawTests: string): string {
-  const markerIndex = rawTests.indexOf(PYTHON_ORACLE_MARKER);
+  const markerIndex = rawTests.indexOf(PYTHON_HIDDEN_TESTS_MARKER);
   return markerIndex === -1 ? rawTests : rawTests.slice(0, markerIndex).trimEnd();
 }
 
 function sanitizeGoTestsForClient(rawTests: string): string {
-  const markerIndex = rawTests.indexOf(GO_ORACLE_MARKER);
+  const markerIndex = rawTests.indexOf(GO_HIDDEN_TESTS_MARKER);
   return markerIndex === -1 ? rawTests : rawTests.slice(0, markerIndex).trimEnd();
 }
 

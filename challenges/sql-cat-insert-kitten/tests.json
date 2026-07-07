@@ -2,22 +2,455 @@
   "schema": "CREATE TABLE kittens (id INTEGER PRIMARY KEY, name TEXT, level INTEGER);",
   "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Пиксель', 1), (2, 'Байт', 2);",
   "expectedType": "state",
-  "expected": [
+  "expectedQuery": "SELECT id, name, level FROM kittens ORDER BY id;",
+  "cases": [
     {
-      "id": 1,
-      "name": "Пиксель",
-      "level": 1
+      "name": "Тест 1",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Тег', 4), (2, 'Форк', 4), (4, 'Коммит', 4);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Тег",
+          "level": 4
+        },
+        {
+          "id": 2,
+          "name": "Форк",
+          "level": 4
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        },
+        {
+          "id": 4,
+          "name": "Коммит",
+          "level": 4
+        }
+      ]
     },
     {
-      "id": 2,
-      "name": "Байт",
-      "level": 2
+      "name": "Тест 2",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Тег', 3), (2, 'Байт', 3);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Тег",
+          "level": 3
+        },
+        {
+          "id": 2,
+          "name": "Байт",
+          "level": 3
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        }
+      ]
     },
     {
-      "id": 3,
-      "name": "Скрипт",
-      "level": 1
+      "name": "Тест 3",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Пиксель', 5), (2, 'Тег', 1), (4, 'Форк', 5), (5, 'Коммит', 1);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Пиксель",
+          "level": 5
+        },
+        {
+          "id": 2,
+          "name": "Тег",
+          "level": 1
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        },
+        {
+          "id": 4,
+          "name": "Форк",
+          "level": 5
+        },
+        {
+          "id": 5,
+          "name": "Коммит",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Форк', 2), (2, 'Коммит', 1), (4, 'Пиксель', 1);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Форк",
+          "level": 2
+        },
+        {
+          "id": 2,
+          "name": "Коммит",
+          "level": 1
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        },
+        {
+          "id": 4,
+          "name": "Пиксель",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Пиксель', 5), (2, 'Байт', 1), (4, 'Форк', 4), (5, 'Тег', 2);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Пиксель",
+          "level": 5
+        },
+        {
+          "id": 2,
+          "name": "Байт",
+          "level": 1
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        },
+        {
+          "id": 4,
+          "name": "Форк",
+          "level": 4
+        },
+        {
+          "id": 5,
+          "name": "Тег",
+          "level": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Форк', 1), (2, 'Тег', 2);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Форк",
+          "level": 1
+        },
+        {
+          "id": 2,
+          "name": "Тег",
+          "level": 2
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Коммит', 5), (2, 'Пиксель', 1);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Коммит",
+          "level": 5
+        },
+        {
+          "id": 2,
+          "name": "Пиксель",
+          "level": 1
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Форк', 1), (2, 'Пиксель', 1);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Форк",
+          "level": 1
+        },
+        {
+          "id": 2,
+          "name": "Пиксель",
+          "level": 1
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Коммит', 1), (2, 'Пиксель', 3);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Коммит",
+          "level": 1
+        },
+        {
+          "id": 2,
+          "name": "Пиксель",
+          "level": 3
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Форк', 1), (2, 'Тег', 2), (4, 'Байт', 4), (5, 'Пиксель', 4);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Форк",
+          "level": 1
+        },
+        {
+          "id": 2,
+          "name": "Тег",
+          "level": 2
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        },
+        {
+          "id": 4,
+          "name": "Байт",
+          "level": 4
+        },
+        {
+          "id": 5,
+          "name": "Пиксель",
+          "level": 4
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Тег', 5), (2, 'Пиксель', 4);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Тег",
+          "level": 5
+        },
+        {
+          "id": 2,
+          "name": "Пиксель",
+          "level": 4
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Пиксель', 4), (2, 'Байт', 1);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Пиксель",
+          "level": 4
+        },
+        {
+          "id": 2,
+          "name": "Байт",
+          "level": 1
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Байт', 2), (2, 'Пиксель', 2), (4, 'Форк', 2), (5, 'Коммит', 2);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Байт",
+          "level": 2
+        },
+        {
+          "id": 2,
+          "name": "Пиксель",
+          "level": 2
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        },
+        {
+          "id": 4,
+          "name": "Форк",
+          "level": 2
+        },
+        {
+          "id": 5,
+          "name": "Коммит",
+          "level": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Коммит', 1), (2, 'Тег', 4), (4, 'Форк', 3);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Коммит",
+          "level": 1
+        },
+        {
+          "id": 2,
+          "name": "Тег",
+          "level": 4
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        },
+        {
+          "id": 4,
+          "name": "Форк",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Коммит', 2), (2, 'Форк', 1);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Коммит",
+          "level": 2
+        },
+        {
+          "id": 2,
+          "name": "Форк",
+          "level": 1
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Пиксель', 2), (2, 'Коммит', 4), (4, 'Байт', 1);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Пиксель",
+          "level": 2
+        },
+        {
+          "id": 2,
+          "name": "Коммит",
+          "level": 4
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        },
+        {
+          "id": 4,
+          "name": "Байт",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Пиксель', 2), (2, 'Тег', 5), (4, 'Байт', 3);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Пиксель",
+          "level": 2
+        },
+        {
+          "id": 2,
+          "name": "Тег",
+          "level": 5
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        },
+        {
+          "id": 4,
+          "name": "Байт",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO kittens (id, name, level) VALUES (1, 'Форк', 2), (2, 'Коммит', 2), (4, 'Тег', 4);",
+      "expected": [
+        {
+          "id": 1,
+          "name": "Форк",
+          "level": 2
+        },
+        {
+          "id": 2,
+          "name": "Коммит",
+          "level": 2
+        },
+        {
+          "id": 3,
+          "name": "Скрипт",
+          "level": 1
+        },
+        {
+          "id": 4,
+          "name": "Тег",
+          "level": 4
+        }
+      ]
     }
-  ],
-  "expectedQuery": "SELECT id, name, level FROM kittens ORDER BY id;"
+  ]
 }

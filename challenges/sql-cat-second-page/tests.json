@@ -2,14 +2,258 @@
   "schema": "CREATE TABLE leaderboard (cat TEXT, points INTEGER);",
   "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Мурка', 100), ('Барсик', 90), ('Патч', 80), ('Снежок', 70), ('Линт', 60);",
   "expectedType": "select",
-  "expected": [
+  "cases": [
     {
-      "cat": "Патч",
-      "points": 80
+      "name": "Тест 1",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Снежок', 107), ('Пушок', 63), ('Барсик', 34), ('Рыжик', 134), ('Дымка', 17), ('Мурка', 109);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "points": 107
+        },
+        {
+          "cat": "Пушок",
+          "points": 63
+        }
+      ]
     },
     {
-      "cat": "Снежок",
-      "points": 70
+      "name": "Тест 2",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Рыжик', 64), ('Снежок', 19), ('Линт', 50), ('Барсик', 120), ('Патч', 110), ('Пушок', 140);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "points": 110
+        },
+        {
+          "cat": "Рыжик",
+          "points": 64
+        }
+      ]
+    },
+    {
+      "name": "Тест 3",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Мурка', 26), ('Рыжик', 13), ('Дымка', 130), ('Патч', 76), ('Барсик', 69), ('Пушок', 59), ('Линт', 148);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "points": 76
+        },
+        {
+          "cat": "Барсик",
+          "points": 69
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Барсик', 15), ('Пушок', 112), ('Рыжик', 150), ('Линт', 84), ('Дымка', 25);",
+      "expected": [
+        {
+          "cat": "Линт",
+          "points": 84
+        },
+        {
+          "cat": "Дымка",
+          "points": 25
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Пушок', 23), ('Снежок', 50), ('Барсик', 38), ('Мурка', 105), ('Дымка', 130), ('Патч', 73), ('Рыжик', 107);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "points": 105
+        },
+        {
+          "cat": "Патч",
+          "points": 73
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Рыжик', 105), ('Дымка', 91), ('Пушок', 15), ('Линт', 79), ('Мурка', 135), ('Патч', 60), ('Снежок', 115);",
+      "expected": [
+        {
+          "cat": "Рыжик",
+          "points": 105
+        },
+        {
+          "cat": "Дымка",
+          "points": 91
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Пушок', 24), ('Дымка', 139), ('Патч', 64), ('Линт', 19), ('Мурка', 32), ('Снежок', 121);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "points": 64
+        },
+        {
+          "cat": "Мурка",
+          "points": 32
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Рыжик', 45), ('Мурка', 73), ('Пушок', 139), ('Линт', 63), ('Барсик', 112);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "points": 73
+        },
+        {
+          "cat": "Линт",
+          "points": 63
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Снежок', 138), ('Пушок', 128), ('Мурка', 30), ('Барсик', 95), ('Рыжик', 20), ('Патч', 107);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "points": 107
+        },
+        {
+          "cat": "Барсик",
+          "points": 95
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Патч', 81), ('Барсик', 51), ('Рыжик', 18), ('Дымка', 143), ('Линт', 135), ('Пушок', 93);",
+      "expected": [
+        {
+          "cat": "Пушок",
+          "points": 93
+        },
+        {
+          "cat": "Патч",
+          "points": 81
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Барсик', 141), ('Мурка', 131), ('Патч', 57), ('Рыжик', 34), ('Снежок', 124);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "points": 124
+        },
+        {
+          "cat": "Патч",
+          "points": 57
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Снежок', 105), ('Барсик', 133), ('Мурка', 80), ('Пушок', 127), ('Линт', 68);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "points": 105
+        },
+        {
+          "cat": "Мурка",
+          "points": 80
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Снежок', 57), ('Мурка', 43), ('Пушок', 28), ('Дымка', 146), ('Барсик', 64);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "points": 57
+        },
+        {
+          "cat": "Мурка",
+          "points": 43
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Мурка', 28), ('Патч', 125), ('Снежок', 87), ('Дымка', 129), ('Пушок', 111), ('Рыжик', 110);",
+      "expected": [
+        {
+          "cat": "Пушок",
+          "points": 111
+        },
+        {
+          "cat": "Рыжик",
+          "points": 110
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Дымка', 47), ('Патч', 104), ('Рыжик', 71), ('Барсик', 39), ('Пушок', 96);",
+      "expected": [
+        {
+          "cat": "Рыжик",
+          "points": 71
+        },
+        {
+          "cat": "Дымка",
+          "points": 47
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Линт', 114), ('Барсик', 76), ('Мурка', 70), ('Дымка', 66), ('Патч', 12);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "points": 70
+        },
+        {
+          "cat": "Дымка",
+          "points": 66
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Снежок', 16), ('Барсик', 73), ('Мурка', 108), ('Линт', 117), ('Рыжик', 74);",
+      "expected": [
+        {
+          "cat": "Рыжик",
+          "points": 74
+        },
+        {
+          "cat": "Барсик",
+          "points": 73
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO leaderboard (cat, points) VALUES ('Барсик', 136), ('Линт', 56), ('Пушок', 132), ('Дымка', 85), ('Снежок', 127), ('Рыжик', 77);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "points": 127
+        },
+        {
+          "cat": "Дымка",
+          "points": 85
+        }
+      ]
     }
   ]
 }

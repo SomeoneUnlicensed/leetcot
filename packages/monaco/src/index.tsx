@@ -11,6 +11,7 @@ import type * as monaco_editor from 'monaco-editor/esm/vs/editor/editor.api';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import Link from 'next/link';
+import { useAltchaPayload } from './altcha';
 import { useResetEditor } from './editor-hooks';
 import SplitEditor, { type SplitEditorProps } from './split-editor';
 import { useLocalStorage } from './useLocalStorage';
@@ -106,6 +107,7 @@ export function CodePanel(props: CodePanelProps) {
   const [checkingSummary, setCheckingSummary] = useState<CodeRunTestSummary | null>(null);
   const [latestSubmissionId, setLatestSubmissionId] = useState<number | null>(null);
   const [executionTimeMs, setExecutionTimeMs] = useState<number | null>(null);
+  const { getPayload: getCaptchaPayload, widgetRef: captchaWidgetRef } = useAltchaPayload();
 
   const disabled = props.submissionDisabled;
 
@@ -191,10 +193,20 @@ export function CodePanel(props: CodePanelProps) {
 
       if (isQueuedLanguage) {
         try {
+          const captcha = await getCaptchaPayload();
+
+          if (!captcha) {
+            formattedErrors.push(
+              'Не удалось пройти проверку антибот-защиты. Обновите страницу и попробуйте снова.',
+            );
+            throw new Error('ALTCHA_UNAVAILABLE');
+          }
+
           const res = await fetch('/api/execute', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+              captcha,
               challengeId: props.challenge.id,
               code: currentCode,
               language: normalizedLanguage,
@@ -209,13 +221,6 @@ export function CodePanel(props: CodePanelProps) {
             }
           } else if (data.jobId) {
             queueJobId = data.jobId as string;
-            toast({
-              title: 'Проверка в очереди',
-              description:
-                data.position > 1
-                  ? `Минутку, перед вами проверок: ${data.position - 1}.`
-                  : 'Минутку, сервер проверки уже взял ваше решение.',
-            });
 
             let result:
               | {
@@ -226,17 +231,30 @@ export function CodePanel(props: CodePanelProps) {
                 }
               | undefined;
 
-            for (let attempt = 0; attempt < 90; attempt += 1) {
-              await new Promise((resolve) => {
-                setTimeout(resolve, 1000);
-              });
+            // Give a worker a brief moment to grab the job before deciding whether
+            // this actually queued — most submissions are picked up almost
+            // instantly, and a "you're in a queue" toast for those is just noise.
+            await new Promise((resolve) => {
+              setTimeout(resolve, 400);
+            });
 
-              const statusRes = await fetch(`/api/execute?jobId=${data.jobId as string}`);
+            for (let attempt = 0; attempt < 90; attempt += 1) {
+              const statusRes = await fetch(`/api/execute?jobId=${queueJobId}`);
               const statusData = await statusRes.json();
 
               if (!statusData.success) {
                 formattedErrors.push(statusData.error || 'Ошибка получения результата проверки');
                 break;
+              }
+
+              if (attempt === 0 && statusData.status === 'queued') {
+                toast({
+                  title: 'Проверка в очереди',
+                  description:
+                    statusData.position > 1
+                      ? `Минутку, перед вами проверок: ${statusData.position - 1}.`
+                      : 'Минутку, сервер проверки уже взял ваше решение.',
+                });
               }
 
               if (statusData.status === 'success' || statusData.status === 'failure') {
@@ -246,6 +264,10 @@ export function CodePanel(props: CodePanelProps) {
                 }
                 break;
               }
+
+              await new Promise((resolve) => {
+                setTimeout(resolve, 1000);
+              });
             }
 
             if (!result) {
@@ -263,7 +285,9 @@ export function CodePanel(props: CodePanelProps) {
             }
           }
         } catch (fetchErr: any) {
-          formattedErrors.push(`Ошибка соединения с песочницей: ${fetchErr.message}`);
+          if (fetchErr?.message !== 'ALTCHA_UNAVAILABLE') {
+            formattedErrors.push(`Ошибка соединения с песочницей: ${fetchErr.message}`);
+          }
         }
       } else {
         formattedErrors.push(
@@ -409,6 +433,16 @@ export function CodePanel(props: CodePanelProps) {
 
   return (
     <div className="relative flex h-full w-full flex-col">
+      <altcha-widget
+        ref={captchaWidgetRef}
+        challenge="/api/captcha"
+        auto="onload"
+        display="invisible"
+        hidefooter
+        hidelogo
+        name="altcha"
+        style={{ display: 'none' }}
+      />
       <div className="sticky top-0 z-20 flex h-[48px] shrink-0 items-center justify-between border-b border-zinc-800 bg-zinc-950/90 px-4 py-2 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">{props.settingsElement}</div>

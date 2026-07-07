@@ -2,22 +2,506 @@
   "schema": "CREATE TABLE daily_catch (day INTEGER PRIMARY KEY, fish_count INTEGER);",
   "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 3), (2, 5), (3, 2), (4, 8);",
   "expectedType": "select",
-  "expected": [
+  "cases": [
     {
-      "day": 1,
-      "total_so_far": 3
+      "name": "Тест 1",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 10), (2, 14), (3, 13), (4, 13), (5, 2);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 10
+        },
+        {
+          "day": 2,
+          "total_so_far": 24
+        },
+        {
+          "day": 3,
+          "total_so_far": 37
+        },
+        {
+          "day": 4,
+          "total_so_far": 50
+        },
+        {
+          "day": 5,
+          "total_so_far": 52
+        }
+      ]
     },
     {
-      "day": 2,
-      "total_so_far": 8
+      "name": "Тест 2",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 2), (2, 2), (3, 6), (4, 14);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 2
+        },
+        {
+          "day": 2,
+          "total_so_far": 4
+        },
+        {
+          "day": 3,
+          "total_so_far": 10
+        },
+        {
+          "day": 4,
+          "total_so_far": 24
+        }
+      ]
     },
     {
-      "day": 3,
-      "total_so_far": 10
+      "name": "Тест 3",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 10), (2, 9), (3, 3), (4, 6), (5, 15);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 10
+        },
+        {
+          "day": 2,
+          "total_so_far": 19
+        },
+        {
+          "day": 3,
+          "total_so_far": 22
+        },
+        {
+          "day": 4,
+          "total_so_far": 28
+        },
+        {
+          "day": 5,
+          "total_so_far": 43
+        }
+      ]
     },
     {
-      "day": 4,
-      "total_so_far": 18
+      "name": "Тест 4",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 5), (2, 2), (3, 12), (4, 7), (5, 8);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 5
+        },
+        {
+          "day": 2,
+          "total_so_far": 7
+        },
+        {
+          "day": 3,
+          "total_so_far": 19
+        },
+        {
+          "day": 4,
+          "total_so_far": 26
+        },
+        {
+          "day": 5,
+          "total_so_far": 34
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 12), (2, 6), (3, 13), (4, 12), (5, 14), (6, 12);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 12
+        },
+        {
+          "day": 2,
+          "total_so_far": 18
+        },
+        {
+          "day": 3,
+          "total_so_far": 31
+        },
+        {
+          "day": 4,
+          "total_so_far": 43
+        },
+        {
+          "day": 5,
+          "total_so_far": 57
+        },
+        {
+          "day": 6,
+          "total_so_far": 69
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 8), (2, 13), (3, 5), (4, 1);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 8
+        },
+        {
+          "day": 2,
+          "total_so_far": 21
+        },
+        {
+          "day": 3,
+          "total_so_far": 26
+        },
+        {
+          "day": 4,
+          "total_so_far": 27
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 3), (2, 7), (3, 11), (4, 1), (5, 2), (6, 14);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 3
+        },
+        {
+          "day": 2,
+          "total_so_far": 10
+        },
+        {
+          "day": 3,
+          "total_so_far": 21
+        },
+        {
+          "day": 4,
+          "total_so_far": 22
+        },
+        {
+          "day": 5,
+          "total_so_far": 24
+        },
+        {
+          "day": 6,
+          "total_so_far": 38
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 6), (2, 7), (3, 3), (4, 4), (5, 12);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 6
+        },
+        {
+          "day": 2,
+          "total_so_far": 13
+        },
+        {
+          "day": 3,
+          "total_so_far": 16
+        },
+        {
+          "day": 4,
+          "total_so_far": 20
+        },
+        {
+          "day": 5,
+          "total_so_far": 32
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 10), (2, 6), (3, 5), (4, 3), (5, 3), (6, 14), (7, 11);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 10
+        },
+        {
+          "day": 2,
+          "total_so_far": 16
+        },
+        {
+          "day": 3,
+          "total_so_far": 21
+        },
+        {
+          "day": 4,
+          "total_so_far": 24
+        },
+        {
+          "day": 5,
+          "total_so_far": 27
+        },
+        {
+          "day": 6,
+          "total_so_far": 41
+        },
+        {
+          "day": 7,
+          "total_so_far": 52
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 7), (2, 8), (3, 10), (4, 1);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 7
+        },
+        {
+          "day": 2,
+          "total_so_far": 15
+        },
+        {
+          "day": 3,
+          "total_so_far": 25
+        },
+        {
+          "day": 4,
+          "total_so_far": 26
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 14), (2, 9), (3, 14), (4, 15), (5, 13), (6, 8), (7, 8);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 14
+        },
+        {
+          "day": 2,
+          "total_so_far": 23
+        },
+        {
+          "day": 3,
+          "total_so_far": 37
+        },
+        {
+          "day": 4,
+          "total_so_far": 52
+        },
+        {
+          "day": 5,
+          "total_so_far": 65
+        },
+        {
+          "day": 6,
+          "total_so_far": 73
+        },
+        {
+          "day": 7,
+          "total_so_far": 81
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 5), (2, 11), (3, 9), (4, 11), (5, 6), (6, 3), (7, 7);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 5
+        },
+        {
+          "day": 2,
+          "total_so_far": 16
+        },
+        {
+          "day": 3,
+          "total_so_far": 25
+        },
+        {
+          "day": 4,
+          "total_so_far": 36
+        },
+        {
+          "day": 5,
+          "total_so_far": 42
+        },
+        {
+          "day": 6,
+          "total_so_far": 45
+        },
+        {
+          "day": 7,
+          "total_so_far": 52
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 5), (2, 11), (3, 15), (4, 11), (5, 13), (6, 14);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 5
+        },
+        {
+          "day": 2,
+          "total_so_far": 16
+        },
+        {
+          "day": 3,
+          "total_so_far": 31
+        },
+        {
+          "day": 4,
+          "total_so_far": 42
+        },
+        {
+          "day": 5,
+          "total_so_far": 55
+        },
+        {
+          "day": 6,
+          "total_so_far": 69
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 10), (2, 12), (3, 13), (4, 11);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 10
+        },
+        {
+          "day": 2,
+          "total_so_far": 22
+        },
+        {
+          "day": 3,
+          "total_so_far": 35
+        },
+        {
+          "day": 4,
+          "total_so_far": 46
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 1), (2, 9), (3, 12), (4, 1), (5, 3);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 1
+        },
+        {
+          "day": 2,
+          "total_so_far": 10
+        },
+        {
+          "day": 3,
+          "total_so_far": 22
+        },
+        {
+          "day": 4,
+          "total_so_far": 23
+        },
+        {
+          "day": 5,
+          "total_so_far": 26
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 8), (2, 8), (3, 5), (4, 7), (5, 4), (6, 8);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 8
+        },
+        {
+          "day": 2,
+          "total_so_far": 16
+        },
+        {
+          "day": 3,
+          "total_so_far": 21
+        },
+        {
+          "day": 4,
+          "total_so_far": 28
+        },
+        {
+          "day": 5,
+          "total_so_far": 32
+        },
+        {
+          "day": 6,
+          "total_so_far": 40
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 13), (2, 5), (3, 6), (4, 5), (5, 3), (6, 13), (7, 12);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 13
+        },
+        {
+          "day": 2,
+          "total_so_far": 18
+        },
+        {
+          "day": 3,
+          "total_so_far": 24
+        },
+        {
+          "day": 4,
+          "total_so_far": 29
+        },
+        {
+          "day": 5,
+          "total_so_far": 32
+        },
+        {
+          "day": 6,
+          "total_so_far": 45
+        },
+        {
+          "day": 7,
+          "total_so_far": 57
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO daily_catch (day, fish_count) VALUES (1, 2), (2, 11), (3, 8), (4, 6), (5, 4);",
+      "expected": [
+        {
+          "day": 1,
+          "total_so_far": 2
+        },
+        {
+          "day": 2,
+          "total_so_far": 13
+        },
+        {
+          "day": 3,
+          "total_so_far": 21
+        },
+        {
+          "day": 4,
+          "total_so_far": 27
+        },
+        {
+          "day": 5,
+          "total_so_far": 31
+        }
+      ]
     }
   ]
 }

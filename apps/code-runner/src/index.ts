@@ -101,25 +101,31 @@ const readyRuntimeImages = new Set<string>();
 const hotGoRunners = new Map<number, { baseDir: string; containerName: string }>();
 const hotPythonRunners = new Map<number, { baseDir: string; containerName: string }>();
 
-// Must match packages/db/seed/data/challenge-ingest.ts's PYTHON_ORACLE_MARKER and
+// Must match packages/db/seed/data/challenge-ingest.ts's PYTHON_HIDDEN_TESTS_MARKER and
 // apps/web's getChallengeRouteData sanitizePythonTestsForClient.
-const PYTHON_ORACLE_MARKER = '# ---LEETCOT-ORACLE---';
+const PYTHON_HIDDEN_TESTS_MARKER = '# ---LEETCOT-HIDDEN-TESTS---';
 
-interface PythonOracleConfig {
+interface PythonClosedTestCase {
+  expected: unknown;
+  name: string;
+  seed: number;
+}
+
+interface PythonClosedTestConfig {
   entryPoint: string;
-  referenceSolution: string;
+  cases: PythonClosedTestCase[];
   seedGenerator: string;
   // Some problems explicitly allow the result list in any order (e.g. two_fish may
-  // return either index first) — set via challenges/*/oracle-config.json.
+  // return either index first) — set via challenges/*/test-config.json.
   resultOrderInsensitive?: boolean;
 }
 
-function parsePythonOracle(testsRaw: string): PythonOracleConfig | null {
-  const markerIndex = testsRaw.indexOf(PYTHON_ORACLE_MARKER);
+function parsePythonClosedTests(testsRaw: string): PythonClosedTestConfig | null {
+  const markerIndex = testsRaw.indexOf(PYTHON_HIDDEN_TESTS_MARKER);
   if (markerIndex === -1) {
     return null;
   }
-  const afterMarker = testsRaw.slice(markerIndex + PYTHON_ORACLE_MARKER.length);
+  const afterMarker = testsRaw.slice(markerIndex + PYTHON_HIDDEN_TESTS_MARKER.length);
   const jsonLine = afterMarker
     .split('\n')
     .map((line) => line.trim())
@@ -130,37 +136,39 @@ function parsePythonOracle(testsRaw: string): PythonOracleConfig | null {
   }
 
   try {
-    return JSON.parse(jsonLine.slice(jsonLine.indexOf('{'))) as PythonOracleConfig;
+    return JSON.parse(jsonLine.slice(jsonLine.indexOf('{'))) as PythonClosedTestConfig;
   } catch {
     return null;
   }
 }
 
 /**
- * Runs the user's function against the author's reference solution on freshly
- * generated random inputs (not the same data every run, unlike the visible
- * tests.py's fixed-seed cases), so a submission has to be genuinely equivalent to
- * the reference rather than overfit to specific fixed inputs. Arguments are
- * deep-copied per call since some solutions (e.g. permutations) mutate their input.
+ * Checks the user's function against a fixed bank of pre-computed (input, expected
+ * output) cases baked in at authoring time — no reference solution is executed
+ * here. Each case's input is reconstructed deterministically by re-seeding the
+ * generator with its stored seed (`generate_case()` is still run live because some
+ * inputs are non-JSON-serializable objects like linked lists/trees, but the value
+ * it's compared against was computed once, offline, by the author's solution and
+ * is fixed forever). Arguments are deep-copied per call since some solutions (e.g.
+ * permutations) mutate their input.
  */
-function buildPythonOracleProgram(userCode: string, oracle: PythonOracleConfig): string {
+function buildPythonClosedTestProgram(userCode: string, config: PythonClosedTestConfig): string {
   return `
 import copy
 import json
+import random
 import sys
 
 USER_NS = {}
 exec(${JSON.stringify(userCode)}, USER_NS)
 
-REF_NS = {}
-exec(${JSON.stringify(oracle.referenceSolution)}, REF_NS)
-
 GEN_NS = {}
-exec(${JSON.stringify(oracle.seedGenerator)}, GEN_NS)
+exec(${JSON.stringify(config.seedGenerator)}, GEN_NS)
 
-ENTRY_POINT = ${JSON.stringify(oracle.entryPoint)}
-RESULT_ORDER_INSENSITIVE = ${oracle.resultOrderInsensitive ? 'True' : 'False'}
-TRIALS = 5
+ENTRY_POINT = ${JSON.stringify(config.entryPoint)}
+RESULT_ORDER_INSENSITIVE = ${config.resultOrderInsensitive ? 'True' : 'False'}
+CASES = json.loads(${JSON.stringify(JSON.stringify(config.cases))})
+TOTAL = len(CASES)
 
 def short_repr(value):
     text = repr(value)
@@ -169,7 +177,7 @@ def short_repr(value):
 def finish(success, passed, cases=None):
     print(json.dumps({
         'passed': passed,
-        'total': TRIALS,
+        'total': TOTAL,
         'cases': cases or [],
     }, ensure_ascii=False))
     sys.exit(0 if success else 1)
@@ -178,14 +186,13 @@ def failed_case(name, message):
     return {'name': name, 'passed': False, 'message': message}
 
 user_fn = USER_NS.get(ENTRY_POINT)
-ref_fn = REF_NS.get(ENTRY_POINT)
 generate_case = GEN_NS.get('generate_case')
 
 if user_fn is None:
     finish(False, 0, [
         failed_case('Проверка функции', f'В решении должна быть функция {ENTRY_POINT}(...). Сейчас она не найдена.')
     ])
-if ref_fn is None or generate_case is None:
+if generate_case is None or TOTAL == 0:
     finish(False, 0, [
         failed_case('Настройка проверки', 'Проверка задачи временно настроена неверно. Мы уже знаем, где чинить.')
     ])
@@ -200,11 +207,11 @@ def normalize(value):
             seen += 1
         return result
     if hasattr(value, 'left') or hasattr(value, 'right'):
-        return (
+        return [
             getattr(value, 'val', None),
             normalize(getattr(value, 'left', None)),
             normalize(getattr(value, 'right', None)),
-        )
+        ]
     if isinstance(value, (list, tuple)):
         items = [normalize(item) for item in value]
         if RESULT_ORDER_INSENSITIVE:
@@ -214,7 +221,7 @@ def normalize(value):
                 return items
         return items
     if isinstance(value, dict):
-        return {key: normalize(value[key]) for key in sorted(value)}
+        return {key: normalize(value[key]) for key in value}
     return value
 
 def run_callable(obj, args):
@@ -234,32 +241,31 @@ def run_callable(obj, args):
         return output
     return obj(*args)
 
-for trial in range(TRIALS):
-    case_name = f'Тест {trial + 1}'
+for index, case in enumerate(CASES):
+    case_name = case['name']
+    random.seed(case['seed'])
     args = generate_case()
     if not isinstance(args, tuple):
         args = (args,)
     user_args = copy.deepcopy(args)
-    ref_args = copy.deepcopy(args)
 
     try:
         actual = run_callable(user_fn, user_args)
     except Exception as exc:
-        finish(False, trial, [
+        finish(False, index, [
             failed_case(case_name, f'Решение упало на тесте: {exc}')
         ])
 
-    expected = run_callable(ref_fn, ref_args)
-
-    if normalize(actual) != normalize(expected):
-        finish(False, trial, [
+    normalized_actual = normalize(actual)
+    if normalized_actual != case['expected']:
+        finish(False, index, [
             failed_case(
                 case_name,
-                f'Ожидалось {short_repr(expected)}, получено {short_repr(actual)}'
+                f'Ожидалось {short_repr(case["expected"])}, получено {short_repr(normalized_actual)}'
             )
         ])
 
-finish(True, TRIALS)
+finish(True, TOTAL)
 `;
 }
 
@@ -295,22 +301,13 @@ function parseTestSummary(output: string): CodeRunTestSummary | undefined {
 }
 
 /**
- * SQL challenges store their test fixture as JSON in `tests`, not as literal source
- * code appended after the user's solution like the other languages. This
- * synthesizes a self-contained Python script that runs the check in one of two
- * modes:
- *
- * - Oracle mode (`seedGenerator` + `referenceSolution` present, folded in by
- *   challenge-ingest.ts from a challenge's generator.py/solution.sql): generates a
- *   FRESH random seed on every run, runs both the author's reference solution and
- *   the user's query against the identical seed, and compares the two outputs.
- *   Because the data is never the same twice and the expected rows are never
- *   computed until the check actually happens, a user can't just hardcode a
- *   literal result set that matches a fixed, publicly-visible fixture — the query
- *   has to be genuinely equivalent to the reference solution. Repeated a few times
- *   so a query that only coincidentally matches one random draw still fails.
- * - Legacy mode (fallback for challenges without a generator): compares against
- *   the static `expected`/`expectedQuery` in the fixture, same as before.
+ * SQL challenges store their test fixture as JSON in `tests`. `cases` is a fixed
+ * bank of (seed SQL, expected rows) pairs computed once, offline, by the author's
+ * solution.sql — no reference query runs here. Each case seeds its own isolated
+ * in-memory schema, runs the user's query, and compares the row set against the
+ * pre-computed `expected`. Stops at the first failing case and prints a
+ * CodeRunTestSummary-shaped JSON line (`{passed, total, cases}`), matching the
+ * Python/Go harnesses so the client renders the same "passed X of N" progress UI.
  */
 function buildSqlProgram(userSql: string, testsJson: string): string {
   return `
@@ -324,9 +321,23 @@ USER_SQL = ${JSON.stringify(userSql)}
 SCHEMA = TESTS.get('schema')
 EXPECTED_TYPE = TESTS.get('expectedType')
 EXPECTED_QUERY = TESTS.get('expectedQuery')
-SEED_GENERATOR = TESTS.get('seedGenerator')
-REFERENCE_SOLUTION = TESTS.get('referenceSolution')
-ORACLE_TRIALS = 3
+CASES = TESTS.get('cases') or []
+TOTAL = len(CASES)
+
+def finish(success, passed, cases=None):
+    print(json.dumps({
+        'passed': passed,
+        'total': TOTAL,
+        'cases': cases or [],
+    }, ensure_ascii=False))
+    sys.exit(0 if success else 1)
+
+def failed_case(name, message):
+    return {'name': name, 'passed': False, 'message': message}
+
+def short_repr(value):
+    text = repr(value)
+    return text if len(text) <= 220 else text[:217] + '...'
 
 def _num(value):
     if isinstance(value, bool):
@@ -389,48 +400,37 @@ def run_query(seed_sql, query):
         rows = [dict(row) for row in cur.fetchall()]
     else:
         conn.commit()
-        rows = None
+        rows = []
 
     if EXPECTED_TYPE == 'state' and EXPECTED_QUERY:
         cur.execute(EXPECTED_QUERY)
         return [dict(row) for row in cur.fetchall()]
-    return rows if rows is not None else []
+    return rows
 
-def generate_seed():
-    namespace = {}
-    exec(SEED_GENERATOR, namespace)
-    seed_sql = namespace.get('GENERATED_SEED')
-    if not isinstance(seed_sql, str):
-        raise RuntimeError('generator.py must set GENERATED_SEED to a SQL string')
-    return seed_sql
+if TOTAL == 0:
+    finish(False, 0, [
+        failed_case('Настройка проверки', 'Проверка задачи временно настроена неверно. Мы уже знаем, где чинить.')
+    ])
 
-try:
-    if SEED_GENERATOR and REFERENCE_SOLUTION:
-        for trial in range(ORACLE_TRIALS):
-            seed_sql = generate_seed()
-            oracle_rows = run_query(seed_sql, REFERENCE_SOLUTION)
-            user_rows = run_query(seed_sql, USER_SQL)
-            if not rows_match(user_rows, oracle_rows):
-                print(
-                    f'MISMATCH on trial {trial + 1}/{ORACLE_TRIALS}: '
-                    f'expected={oracle_rows} actual={user_rows}',
-                    file=sys.stderr,
-                )
-                sys.exit(1)
-        print('OK')
-        sys.exit(0)
-    else:
-        actual_rows = run_query(TESTS.get('seed'), USER_SQL)
-        expected = TESTS.get('expected') or []
-        if rows_match(actual_rows, expected):
-            print('OK')
-            sys.exit(0)
-        else:
-            print(f'MISMATCH expected={expected} actual={actual_rows}', file=sys.stderr)
-            sys.exit(1)
-except Exception as exc:
-    print(f'SQL_ERROR: {exc}', file=sys.stderr)
-    sys.exit(1)
+for index, case in enumerate(CASES):
+    case_name = case['name']
+    try:
+        actual_rows = run_query(case.get('seed'), USER_SQL)
+    except Exception as exc:
+        finish(False, index, [
+            failed_case(case_name, f'SQL_ERROR: {exc}')
+        ])
+
+    expected_rows = case['expected']
+    if not rows_match(actual_rows, expected_rows):
+        finish(False, index, [
+            failed_case(
+                case_name,
+                f'Ожидалось {short_repr(expected_rows)}, получено {short_repr(actual_rows)}'
+            )
+        ])
+
+finish(True, TOTAL)
 `;
 }
 
@@ -746,13 +746,13 @@ async function executePythonHotJob(job: CodeRunJob, workerId: number): Promise<C
   const jobDir = path.join(runner.baseDir, job.id);
   await mkdir(jobDir, { recursive: true });
 
-  const pythonOracle =
-    job.payload.language === 'python' ? parsePythonOracle(job.payload.tests) : null;
+  const pythonClosedTests =
+    job.payload.language === 'python' ? parsePythonClosedTests(job.payload.tests) : null;
   const fullCode =
     job.payload.language === 'sql'
       ? buildSqlProgram(job.payload.code, job.payload.tests)
-      : pythonOracle
-        ? buildPythonOracleProgram(job.payload.code, pythonOracle)
+      : pythonClosedTests
+        ? buildPythonClosedTestProgram(job.payload.code, pythonClosedTests)
         : `${job.payload.code}\n\n${job.payload.tests}`;
 
   await writeFile(path.join(jobDir, pythonRuntime.fileName), fullCode);
