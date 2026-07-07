@@ -6,7 +6,11 @@ on:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, linux, production]
+    runs-on: [self-hosted, linux, cld4, production]
+
+    env:
+      IMAGE_REPOSITORY: ghcr.io/someoneunlicensed/leetcot
+      KUBECONFIG: /etc/rancher/k3s/k3s.yaml
 
     steps:
       - name: Free disk space before build
@@ -34,24 +38,38 @@ jobs:
       - name: Build app image (with BuildKit)
         env:
           DOCKER_BUILDKIT: "1"
-        run: docker build -t ghcr.io/someoneunlicensed/leetcot:latest .
+        run: |
+          IMAGE="${IMAGE_REPOSITORY}:${GITHUB_SHA}"
+          docker build \
+            -t "$IMAGE" \
+            -t "${IMAGE_REPOSITORY}:latest" \
+            .
 
       - name: Import image into k3s containerd
         run: |
-          docker save ghcr.io/someoneunlicensed/leetcot:latest -o /tmp/leetcot.tar
+          IMAGE="${IMAGE_REPOSITORY}:${GITHUB_SHA}"
+          docker save "$IMAGE" "${IMAGE_REPOSITORY}:latest" -o /tmp/leetcot.tar
           sudo k3s ctr -n k8s.io images import --all-platforms /tmp/leetcot.tar
           rm -f /tmp/leetcot.tar
 
       - name: Restart deployment (rolling update)
         run: |
-          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-          kubectl -n production rollout restart deploy/leetcot-app
-          kubectl -n production rollout restart deploy/leetcot-code-runner
-          kubectl -n production rollout status deploy/leetcot-app --timeout=300s
+          IMAGE="${IMAGE_REPOSITORY}:${GITHUB_SHA}"
+          kubectl -n production set image deploy/leetcot-app app="$IMAGE"
+          kubectl -n production set image deploy/leetcot-code-runner code-runner="$IMAGE"
+
+          if ! kubectl -n production rollout status deploy/leetcot-app --timeout=300s; then
+            kubectl -n production rollout undo deploy/leetcot-app
+            exit 1
+          fi
+
+          if ! kubectl -n production rollout status deploy/leetcot-code-runner --timeout=300s; then
+            kubectl -n production rollout undo deploy/leetcot-code-runner
+            exit 1
+          fi
 
       - name: Apply database migrations
         run: |
-          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
           POD=$(kubectl -n production get pod -l app=leetcot-app -o jsonpath='{.items[0].metadata.name}')
           kubectl -n production exec "$POD" -- pnpm --filter @repo/db exec prisma migrate deploy
 
