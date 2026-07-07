@@ -267,7 +267,7 @@ export function CodePanel(props: CodePanelProps) {
         toast({
           variant: 'destructive',
           title: 'Проверка провалена',
-          description: 'Код не прошел компиляцию или тесты.',
+          description: 'Код не прошел проверку. Посмотрите результат тестов.',
         });
       } else {
         const submission = await props.saveSubmission(
