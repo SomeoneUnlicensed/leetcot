@@ -47,7 +47,7 @@ export default function Page() {
         <p>
           Если у вас есть дополнительные вопросы или вам требуется дополнительная информация о
           настоящей Политике конфиденциальности, либо вы хотите связаться с Оператором, обращайтесь
-          по адресу <a href="mailto:meow@leetcot.ru">meow@leetcot.ru</a>.
+          по адресу <a href="mailto:hello@leetcot.ru">hello@leetcot.ru</a>.
         </p>
 
         <p>
@@ -144,7 +144,7 @@ export default function Page() {
 
         <p>
           Если вы хотите воспользоваться любым из этих прав, пожалуйста, свяжитесь с нами по адресу{' '}
-          <a href="mailto:meow@leetcot.ru">meow@leetcot.ru</a>.
+          <a href="mailto:hello@leetcot.ru">hello@leetcot.ru</a>.
         </p>
 
         <h2>Информация для детей</h2>
@@ -166,7 +166,7 @@ export default function Page() {
           <br />
           Юридический адрес: г. Москва.
           <br />
-          Контактный адрес электронной почты: <a href="mailto:meow@leetcot.ru">meow@leetcot.ru</a>.
+          Контактный адрес электронной почты: <a href="mailto:hello@leetcot.ru">hello@leetcot.ru</a>.
         </p>
 
         <h2>Изменения в Политике конфиденциальности</h2>
