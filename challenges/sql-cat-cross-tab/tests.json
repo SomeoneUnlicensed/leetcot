@@ -2,21 +2,434 @@
   "schema": "CREATE TABLE shifts (cat TEXT, shift TEXT, fish_count INTEGER);",
   "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Барсик', 'day', 4), ('Барсик', 'night', 7), ('Мурка', 'day', 5), ('Мурка', 'night', 1), ('Патч', 'day', 3);",
   "expectedType": "select",
-  "expected": [
+  "cases": [
     {
-      "cat": "Барсик",
-      "day_fish": 4,
-      "night_fish": 7
+      "name": "Тест 1",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Рыжик', 'day', 8), ('Рыжик', 'night', 11), ('Барсик', 'day', 8), ('Барсик', 'night', 1), ('Патч', 'night', 10), ('Мурка', 'day', 8), ('Мурка', 'night', 5);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "day_fish": 8,
+          "night_fish": 1
+        },
+        {
+          "cat": "Мурка",
+          "day_fish": 8,
+          "night_fish": 5
+        },
+        {
+          "cat": "Патч",
+          "day_fish": 0,
+          "night_fish": 10
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 8,
+          "night_fish": 11
+        }
+      ]
     },
     {
-      "cat": "Мурка",
-      "day_fish": 5,
-      "night_fish": 1
+      "name": "Тест 2",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Мурка', 'day', 11), ('Мурка', 'night', 14), ('Патч', 'day', 10), ('Патч', 'night', 1), ('Рыжик', 'day', 7), ('Рыжик', 'night', 11), ('Барсик', 'day', 9), ('Барсик', 'night', 6);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "day_fish": 9,
+          "night_fish": 6
+        },
+        {
+          "cat": "Мурка",
+          "day_fish": 11,
+          "night_fish": 14
+        },
+        {
+          "cat": "Патч",
+          "day_fish": 10,
+          "night_fish": 1
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 7,
+          "night_fish": 11
+        }
+      ]
     },
     {
-      "cat": "Патч",
-      "day_fish": 3,
-      "night_fish": 0
+      "name": "Тест 3",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Рыжик', 'night', 10), ('Барсик', 'day', 14), ('Барсик', 'night', 8), ('Патч', 'day', 12), ('Патч', 'night', 8), ('Мурка', 'day', 7), ('Мурка', 'night', 11);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "day_fish": 14,
+          "night_fish": 8
+        },
+        {
+          "cat": "Мурка",
+          "day_fish": 7,
+          "night_fish": 11
+        },
+        {
+          "cat": "Патч",
+          "day_fish": 12,
+          "night_fish": 8
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 0,
+          "night_fish": 10
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Патч', 'day', 1), ('Патч', 'night', 7), ('Барсик', 'day', 13), ('Барсик', 'night', 1), ('Рыжик', 'day', 5), ('Рыжик', 'night', 13), ('Мурка', 'day', 4), ('Мурка', 'night', 15);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "day_fish": 13,
+          "night_fish": 1
+        },
+        {
+          "cat": "Мурка",
+          "day_fish": 4,
+          "night_fish": 15
+        },
+        {
+          "cat": "Патч",
+          "day_fish": 1,
+          "night_fish": 7
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 5,
+          "night_fish": 13
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Барсик', 'day', 4), ('Барсик', 'night', 11), ('Мурка', 'day', 6), ('Мурка', 'night', 8), ('Рыжик', 'night', 2);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "day_fish": 4,
+          "night_fish": 11
+        },
+        {
+          "cat": "Мурка",
+          "day_fish": 6,
+          "night_fish": 8
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 0,
+          "night_fish": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Рыжик', 'day', 8), ('Рыжик', 'night', 13), ('Патч', 'day', 1), ('Патч', 'night', 5), ('Мурка', 'day', 14), ('Мурка', 'night', 7);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "day_fish": 14,
+          "night_fish": 7
+        },
+        {
+          "cat": "Патч",
+          "day_fish": 1,
+          "night_fish": 5
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 8,
+          "night_fish": 13
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Рыжик', 'day', 6), ('Рыжик', 'night', 10), ('Мурка', 'day', 1), ('Мурка', 'night', 2), ('Барсик', 'day', 2), ('Барсик', 'night', 9);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "day_fish": 2,
+          "night_fish": 9
+        },
+        {
+          "cat": "Мурка",
+          "day_fish": 1,
+          "night_fish": 2
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 6,
+          "night_fish": 10
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Барсик', 'day', 3), ('Барсик', 'night', 4), ('Патч', 'day', 7), ('Патч', 'night', 11), ('Рыжик', 'day', 7), ('Рыжик', 'night', 8);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "day_fish": 3,
+          "night_fish": 4
+        },
+        {
+          "cat": "Патч",
+          "day_fish": 7,
+          "night_fish": 11
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 7,
+          "night_fish": 8
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Барсик', 'day', 1), ('Мурка', 'day', 10), ('Мурка', 'night', 2), ('Патч', 'day', 12), ('Рыжик', 'day', 12), ('Рыжик', 'night', 8);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "day_fish": 1,
+          "night_fish": 0
+        },
+        {
+          "cat": "Мурка",
+          "day_fish": 10,
+          "night_fish": 2
+        },
+        {
+          "cat": "Патч",
+          "day_fish": 12,
+          "night_fish": 0
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 12,
+          "night_fish": 8
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Рыжик', 'day', 14), ('Рыжик', 'night', 5), ('Патч', 'day', 9), ('Патч', 'night', 8), ('Мурка', 'day', 12), ('Мурка', 'night', 6);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "day_fish": 12,
+          "night_fish": 6
+        },
+        {
+          "cat": "Патч",
+          "day_fish": 9,
+          "night_fish": 8
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 14,
+          "night_fish": 5
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Барсик', 'day', 3), ('Барсик', 'night', 13), ('Мурка', 'day', 13), ('Мурка', 'night', 3), ('Патч', 'day', 2), ('Патч', 'night', 9), ('Рыжик', 'day', 1), ('Рыжик', 'night', 10);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "day_fish": 3,
+          "night_fish": 13
+        },
+        {
+          "cat": "Мурка",
+          "day_fish": 13,
+          "night_fish": 3
+        },
+        {
+          "cat": "Патч",
+          "day_fish": 2,
+          "night_fish": 9
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 1,
+          "night_fish": 10
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Барсик', 'day', 8), ('Патч', 'day', 12), ('Патч', 'night', 14), ('Мурка', 'day', 11), ('Мурка', 'night', 10);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "day_fish": 8,
+          "night_fish": 0
+        },
+        {
+          "cat": "Мурка",
+          "day_fish": 11,
+          "night_fish": 10
+        },
+        {
+          "cat": "Патч",
+          "day_fish": 12,
+          "night_fish": 14
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Рыжик', 'day', 11), ('Барсик', 'day', 9), ('Барсик', 'night', 14), ('Мурка', 'day', 7), ('Мурка', 'night', 3);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "day_fish": 9,
+          "night_fish": 14
+        },
+        {
+          "cat": "Мурка",
+          "day_fish": 7,
+          "night_fish": 3
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 11,
+          "night_fish": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Мурка', 'day', 2), ('Мурка', 'night', 11), ('Рыжик', 'day', 14), ('Рыжик', 'night', 7), ('Патч', 'day', 5), ('Барсик', 'day', 6);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "day_fish": 6,
+          "night_fish": 0
+        },
+        {
+          "cat": "Мурка",
+          "day_fish": 2,
+          "night_fish": 11
+        },
+        {
+          "cat": "Патч",
+          "day_fish": 5,
+          "night_fish": 0
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 14,
+          "night_fish": 7
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Рыжик', 'night', 1), ('Патч', 'night', 14), ('Барсик', 'day', 2), ('Барсик', 'night', 6);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "day_fish": 2,
+          "night_fish": 6
+        },
+        {
+          "cat": "Патч",
+          "day_fish": 0,
+          "night_fish": 14
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 0,
+          "night_fish": 1
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Барсик', 'day', 7), ('Барсик', 'night', 14), ('Рыжик', 'day', 11), ('Рыжик', 'night', 4), ('Мурка', 'day', 6), ('Мурка', 'night', 11), ('Патч', 'day', 5), ('Патч', 'night', 1);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "day_fish": 7,
+          "night_fish": 14
+        },
+        {
+          "cat": "Мурка",
+          "day_fish": 6,
+          "night_fish": 11
+        },
+        {
+          "cat": "Патч",
+          "day_fish": 5,
+          "night_fish": 1
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 11,
+          "night_fish": 4
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Барсик', 'day', 9), ('Барсик', 'night', 11), ('Патч', 'day', 4), ('Мурка', 'day', 5), ('Мурка', 'night', 14), ('Рыжик', 'day', 14), ('Рыжик', 'night', 11);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "day_fish": 9,
+          "night_fish": 11
+        },
+        {
+          "cat": "Мурка",
+          "day_fish": 5,
+          "night_fish": 14
+        },
+        {
+          "cat": "Патч",
+          "day_fish": 4,
+          "night_fish": 0
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 14,
+          "night_fish": 11
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO shifts (cat, shift, fish_count) VALUES ('Патч', 'day', 11), ('Рыжик', 'day', 8), ('Рыжик', 'night', 15), ('Барсик', 'day', 12), ('Барсик', 'night', 2), ('Мурка', 'day', 13), ('Мурка', 'night', 3);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "day_fish": 12,
+          "night_fish": 2
+        },
+        {
+          "cat": "Мурка",
+          "day_fish": 13,
+          "night_fish": 3
+        },
+        {
+          "cat": "Патч",
+          "day_fish": 11,
+          "night_fish": 0
+        },
+        {
+          "cat": "Рыжик",
+          "day_fish": 8,
+          "night_fish": 15
+        }
+      ]
     }
   ]
 }

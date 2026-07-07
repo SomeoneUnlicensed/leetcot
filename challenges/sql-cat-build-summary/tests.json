@@ -2,19 +2,387 @@
   "schema": "CREATE TABLE catches (cat TEXT, fish_count INTEGER);",
   "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Барсик', 4), ('Барсик', 6), ('Мурка', 3), ('Патч', 9);",
   "expectedType": "state",
-  "expected": [
+  "expectedQuery": "SELECT cat, total_fish FROM catch_summary ORDER BY total_fish DESC;",
+  "cases": [
     {
-      "cat": "Барсик",
-      "total_fish": 10
+      "name": "Тест 1",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Патч', 8), ('Патч', 11), ('Рыжик', 13), ('Рыжик', 4), ('Снежок', 8), ('Барсик', 15);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "total_fish": 19
+        },
+        {
+          "cat": "Рыжик",
+          "total_fish": 17
+        },
+        {
+          "cat": "Барсик",
+          "total_fish": 15
+        },
+        {
+          "cat": "Снежок",
+          "total_fish": 8
+        }
+      ]
     },
     {
-      "cat": "Патч",
-      "total_fish": 9
+      "name": "Тест 2",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Патч', 13), ('Патч', 11), ('Патч', 14), ('Мурка', 5), ('Мурка', 10), ('Рыжик', 10);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "total_fish": 38
+        },
+        {
+          "cat": "Мурка",
+          "total_fish": 15
+        },
+        {
+          "cat": "Рыжик",
+          "total_fish": 10
+        }
+      ]
     },
     {
-      "cat": "Мурка",
-      "total_fish": 3
+      "name": "Тест 3",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Барсик', 2), ('Барсик', 10), ('Барсик', 1), ('Патч', 5), ('Патч', 9), ('Рыжик', 4), ('Снежок', 8), ('Снежок', 9), ('Снежок', 14), ('Мурка', 8), ('Мурка', 7), ('Мурка', 11);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "total_fish": 31
+        },
+        {
+          "cat": "Мурка",
+          "total_fish": 26
+        },
+        {
+          "cat": "Патч",
+          "total_fish": 14
+        },
+        {
+          "cat": "Барсик",
+          "total_fish": 13
+        },
+        {
+          "cat": "Рыжик",
+          "total_fish": 4
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Рыжик', 2), ('Снежок', 1), ('Барсик', 9), ('Барсик', 15), ('Патч', 13), ('Патч', 13);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "total_fish": 26
+        },
+        {
+          "cat": "Барсик",
+          "total_fish": 24
+        },
+        {
+          "cat": "Рыжик",
+          "total_fish": 2
+        },
+        {
+          "cat": "Снежок",
+          "total_fish": 1
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Барсик', 11), ('Барсик', 15), ('Барсик', 9), ('Мурка', 14), ('Рыжик', 13), ('Рыжик', 4), ('Патч', 1), ('Патч', 15), ('Патч', 3), ('Снежок', 6);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "total_fish": 35
+        },
+        {
+          "cat": "Патч",
+          "total_fish": 19
+        },
+        {
+          "cat": "Рыжик",
+          "total_fish": 17
+        },
+        {
+          "cat": "Мурка",
+          "total_fish": 14
+        },
+        {
+          "cat": "Снежок",
+          "total_fish": 6
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Рыжик', 3), ('Патч', 10), ('Патч', 8), ('Патч', 13), ('Мурка', 6), ('Мурка', 6), ('Мурка', 13);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "total_fish": 31
+        },
+        {
+          "cat": "Мурка",
+          "total_fish": 25
+        },
+        {
+          "cat": "Рыжик",
+          "total_fish": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Снежок', 2), ('Снежок', 6), ('Снежок', 10), ('Барсик', 15), ('Рыжик', 4), ('Рыжик', 1), ('Рыжик', 2);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "total_fish": 18
+        },
+        {
+          "cat": "Барсик",
+          "total_fish": 15
+        },
+        {
+          "cat": "Рыжик",
+          "total_fish": 7
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Рыжик', 1), ('Рыжик', 2), ('Рыжик', 3), ('Барсик', 13), ('Снежок', 4), ('Снежок', 7), ('Снежок', 11);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "total_fish": 22
+        },
+        {
+          "cat": "Барсик",
+          "total_fish": 13
+        },
+        {
+          "cat": "Рыжик",
+          "total_fish": 6
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Снежок', 1), ('Снежок', 6), ('Снежок', 9), ('Барсик', 15), ('Барсик', 10), ('Мурка', 6);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "total_fish": 25
+        },
+        {
+          "cat": "Снежок",
+          "total_fish": 16
+        },
+        {
+          "cat": "Мурка",
+          "total_fish": 6
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Рыжик', 4), ('Патч', 14), ('Патч', 8), ('Мурка', 11), ('Мурка', 13), ('Барсик', 1), ('Снежок', 8), ('Снежок', 6), ('Снежок', 2);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "total_fish": 24
+        },
+        {
+          "cat": "Патч",
+          "total_fish": 22
+        },
+        {
+          "cat": "Снежок",
+          "total_fish": 16
+        },
+        {
+          "cat": "Рыжик",
+          "total_fish": 4
+        },
+        {
+          "cat": "Барсик",
+          "total_fish": 1
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Патч', 8), ('Патч', 11), ('Патч', 10), ('Барсик', 2), ('Мурка', 5), ('Мурка', 3);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "total_fish": 29
+        },
+        {
+          "cat": "Мурка",
+          "total_fish": 8
+        },
+        {
+          "cat": "Барсик",
+          "total_fish": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Барсик', 1), ('Барсик', 6), ('Мурка', 5), ('Мурка', 11), ('Снежок', 12), ('Снежок', 14);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "total_fish": 26
+        },
+        {
+          "cat": "Мурка",
+          "total_fish": 16
+        },
+        {
+          "cat": "Барсик",
+          "total_fish": 7
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Мурка', 11), ('Барсик', 14), ('Рыжик', 12), ('Снежок', 3), ('Патч', 9);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "total_fish": 14
+        },
+        {
+          "cat": "Рыжик",
+          "total_fish": 12
+        },
+        {
+          "cat": "Мурка",
+          "total_fish": 11
+        },
+        {
+          "cat": "Патч",
+          "total_fish": 9
+        },
+        {
+          "cat": "Снежок",
+          "total_fish": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Снежок', 2), ('Снежок', 11), ('Снежок', 8), ('Патч', 8), ('Патч', 11), ('Рыжик', 7), ('Рыжик', 13), ('Мурка', 5);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "total_fish": 21
+        },
+        {
+          "cat": "Рыжик",
+          "total_fish": 20
+        },
+        {
+          "cat": "Патч",
+          "total_fish": 19
+        },
+        {
+          "cat": "Мурка",
+          "total_fish": 5
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Снежок', 1), ('Рыжик', 15), ('Патч', 3), ('Патч', 14), ('Патч', 12);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "total_fish": 29
+        },
+        {
+          "cat": "Рыжик",
+          "total_fish": 15
+        },
+        {
+          "cat": "Снежок",
+          "total_fish": 1
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Барсик', 8), ('Снежок', 7), ('Мурка', 12), ('Мурка', 5), ('Мурка', 4), ('Рыжик', 4), ('Рыжик', 1), ('Рыжик', 5);",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "total_fish": 21
+        },
+        {
+          "cat": "Рыжик",
+          "total_fish": 10
+        },
+        {
+          "cat": "Барсик",
+          "total_fish": 8
+        },
+        {
+          "cat": "Снежок",
+          "total_fish": 7
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Барсик', 13), ('Патч', 12), ('Патч', 9), ('Патч', 11), ('Мурка', 2), ('Мурка', 15), ('Рыжик', 4);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "total_fish": 32
+        },
+        {
+          "cat": "Мурка",
+          "total_fish": 17
+        },
+        {
+          "cat": "Барсик",
+          "total_fish": 13
+        },
+        {
+          "cat": "Рыжик",
+          "total_fish": 4
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Рыжик', 4), ('Снежок', 11), ('Снежок', 8), ('Патч', 8), ('Барсик', 8), ('Барсик', 15);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "total_fish": 23
+        },
+        {
+          "cat": "Снежок",
+          "total_fish": 19
+        },
+        {
+          "cat": "Патч",
+          "total_fish": 8
+        },
+        {
+          "cat": "Рыжик",
+          "total_fish": 4
+        }
+      ]
     }
-  ],
-  "expectedQuery": "SELECT cat, total_fish FROM catch_summary ORDER BY total_fish DESC;"
+  ]
 }

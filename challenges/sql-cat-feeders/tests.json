@@ -3,10 +3,310 @@
   "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Васька'), (3, 'Барсик'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 1, 'Мурзик-Миска-2', 'broken'), (3, 2, 'Васька-Миска-1', 'active'), (4, 3, 'Барсик-Миска-1', 'broken'), (5, 3, 'Барсик-Миска-2', 'active');",
   "expectedType": "state",
   "expectedQuery": "SELECT id, status FROM feeders WHERE cat_id IN (1, 3) ORDER BY id",
-  "expected": [
-    { "id": 1, "status": "active" },
-    { "id": 2, "status": "active" },
-    { "id": 4, "status": "active" },
-    { "id": 5, "status": "active" }
+  "cases": [
+    {
+      "name": "Тест 1",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Васька'), (3, 'Барсик'), (4, 'Снежок'), (5, 'Дымка'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'active'), (2, 1, 'Мурзик-Миска-2', 'broken'), (3, 2, 'Васька-Миска-3', 'broken'), (4, 3, 'Барсик-Миска-4', 'broken'), (5, 3, 'Барсик-Миска-5', 'active'), (6, 4, 'Снежок-Миска-6', 'active'), (7, 5, 'Дымка-Миска-7', 'broken'), (8, 5, 'Дымка-Миска-8', 'broken');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 2,
+          "status": "active"
+        },
+        {
+          "id": 4,
+          "status": "active"
+        },
+        {
+          "id": 5,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 2",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Пушок'), (3, 'Барсик'), (4, 'Снежок'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 2, 'Пушок-Миска-2', 'broken'), (3, 2, 'Пушок-Миска-3', 'broken'), (4, 3, 'Барсик-Миска-4', 'broken'), (5, 4, 'Снежок-Миска-5', 'active'), (6, 4, 'Снежок-Миска-6', 'active');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 4,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 3",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Пушок'), (3, 'Барсик'), (4, 'Снежок'), (5, 'Дымка'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 2, 'Пушок-Миска-2', 'active'), (3, 2, 'Пушок-Миска-3', 'broken'), (4, 3, 'Барсик-Миска-4', 'broken'), (5, 4, 'Снежок-Миска-5', 'active'), (6, 4, 'Снежок-Миска-6', 'broken'), (7, 5, 'Дымка-Миска-7', 'broken');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 4,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Пушок'), (3, 'Барсик'), (4, 'Дымка'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 1, 'Мурзик-Миска-2', 'broken'), (3, 2, 'Пушок-Миска-3', 'active'), (4, 2, 'Пушок-Миска-4', 'broken'), (5, 3, 'Барсик-Миска-5', 'broken'), (6, 4, 'Дымка-Миска-6', 'active'), (7, 4, 'Дымка-Миска-7', 'broken');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 2,
+          "status": "active"
+        },
+        {
+          "id": 5,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Васька'), (3, 'Барсик'), (4, 'Рыжик'), (5, 'Снежок'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 1, 'Мурзик-Миска-2', 'broken'), (3, 2, 'Васька-Миска-3', 'broken'), (4, 3, 'Барсик-Миска-4', 'broken'), (5, 3, 'Барсик-Миска-5', 'broken'), (6, 4, 'Рыжик-Миска-6', 'broken'), (7, 5, 'Снежок-Миска-7', 'broken');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 2,
+          "status": "active"
+        },
+        {
+          "id": 4,
+          "status": "active"
+        },
+        {
+          "id": 5,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Пушок'), (3, 'Барсик'), (4, 'Снежок'), (5, 'Рыжик'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 2, 'Пушок-Миска-2', 'active'), (3, 2, 'Пушок-Миска-3', 'active'), (4, 3, 'Барсик-Миска-4', 'broken'), (5, 4, 'Снежок-Миска-5', 'active'), (6, 5, 'Рыжик-Миска-6', 'broken');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 4,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Васька'), (3, 'Барсик'), (4, 'Дымка'), (5, 'Рыжик'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 2, 'Васька-Миска-2', 'broken'), (3, 2, 'Васька-Миска-3', 'broken'), (4, 3, 'Барсик-Миска-4', 'broken'), (5, 4, 'Дымка-Миска-5', 'broken'), (6, 4, 'Дымка-Миска-6', 'broken'), (7, 5, 'Рыжик-Миска-7', 'active');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 4,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Васька'), (3, 'Барсик'), (4, 'Дымка'), (5, 'Снежок'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 2, 'Васька-Миска-2', 'broken'), (3, 3, 'Барсик-Миска-3', 'broken'), (4, 4, 'Дымка-Миска-4', 'active'), (5, 5, 'Снежок-Миска-5', 'active'), (6, 5, 'Снежок-Миска-6', 'active');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 3,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Васька'), (3, 'Барсик'), (4, 'Рыжик'), (5, 'Дымка'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 2, 'Васька-Миска-2', 'active'), (3, 2, 'Васька-Миска-3', 'broken'), (4, 3, 'Барсик-Миска-4', 'broken'), (5, 3, 'Барсик-Миска-5', 'broken'), (6, 4, 'Рыжик-Миска-6', 'active'), (7, 5, 'Дымка-Миска-7', 'active');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 4,
+          "status": "active"
+        },
+        {
+          "id": 5,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Пушок'), (3, 'Барсик'), (4, 'Снежок'), (5, 'Рыжик'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 2, 'Пушок-Миска-2', 'active'), (3, 2, 'Пушок-Миска-3', 'broken'), (4, 3, 'Барсик-Миска-4', 'broken'), (5, 4, 'Снежок-Миска-5', 'broken'), (6, 4, 'Снежок-Миска-6', 'broken'), (7, 5, 'Рыжик-Миска-7', 'broken'), (8, 5, 'Рыжик-Миска-8', 'active');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 4,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Васька'), (3, 'Барсик'), (4, 'Рыжик'), (5, 'Дымка'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 2, 'Васька-Миска-2', 'broken'), (3, 3, 'Барсик-Миска-3', 'broken'), (4, 3, 'Барсик-Миска-4', 'broken'), (5, 4, 'Рыжик-Миска-5', 'active'), (6, 5, 'Дымка-Миска-6', 'broken'), (7, 5, 'Дымка-Миска-7', 'broken');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 3,
+          "status": "active"
+        },
+        {
+          "id": 4,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Васька'), (3, 'Барсик'), (4, 'Рыжик'), (5, 'Дымка'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 1, 'Мурзик-Миска-2', 'broken'), (3, 2, 'Васька-Миска-3', 'active'), (4, 2, 'Васька-Миска-4', 'broken'), (5, 3, 'Барсик-Миска-5', 'broken'), (6, 4, 'Рыжик-Миска-6', 'active'), (7, 5, 'Дымка-Миска-7', 'broken'), (8, 5, 'Дымка-Миска-8', 'active');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 2,
+          "status": "active"
+        },
+        {
+          "id": 5,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Васька'), (3, 'Барсик'), (4, 'Рыжик'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 2, 'Васька-Миска-2', 'broken'), (3, 3, 'Барсик-Миска-3', 'broken'), (4, 4, 'Рыжик-Миска-4', 'broken'), (5, 4, 'Рыжик-Миска-5', 'broken');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 3,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Пушок'), (3, 'Барсик'), (4, 'Снежок'), (5, 'Дымка'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'active'), (2, 1, 'Мурзик-Миска-2', 'broken'), (3, 2, 'Пушок-Миска-3', 'active'), (4, 2, 'Пушок-Миска-4', 'broken'), (5, 3, 'Барсик-Миска-5', 'broken'), (6, 3, 'Барсик-Миска-6', 'active'), (7, 4, 'Снежок-Миска-7', 'active'), (8, 4, 'Снежок-Миска-8', 'broken'), (9, 5, 'Дымка-Миска-9', 'active');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 2,
+          "status": "active"
+        },
+        {
+          "id": 5,
+          "status": "active"
+        },
+        {
+          "id": 6,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Васька'), (3, 'Барсик'), (4, 'Снежок'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 2, 'Васька-Миска-2', 'active'), (3, 3, 'Барсик-Миска-3', 'broken'), (4, 4, 'Снежок-Миска-4', 'active'), (5, 4, 'Снежок-Миска-5', 'active');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 3,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Пушок'), (3, 'Барсик'), (4, 'Рыжик'), (5, 'Дымка'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 1, 'Мурзик-Миска-2', 'broken'), (3, 2, 'Пушок-Миска-3', 'broken'), (4, 2, 'Пушок-Миска-4', 'broken'), (5, 3, 'Барсик-Миска-5', 'broken'), (6, 4, 'Рыжик-Миска-6', 'broken'), (7, 4, 'Рыжик-Миска-7', 'active'), (8, 5, 'Дымка-Миска-8', 'broken');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 2,
+          "status": "active"
+        },
+        {
+          "id": 5,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Пушок'), (3, 'Барсик'), (4, 'Рыжик'), (5, 'Снежок'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 1, 'Мурзик-Миска-2', 'active'), (3, 2, 'Пушок-Миска-3', 'broken'), (4, 3, 'Барсик-Миска-4', 'broken'), (5, 4, 'Рыжик-Миска-5', 'active'), (6, 4, 'Рыжик-Миска-6', 'active'), (7, 5, 'Снежок-Миска-7', 'broken'), (8, 5, 'Снежок-Миска-8', 'broken');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 2,
+          "status": "active"
+        },
+        {
+          "id": 4,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурзик'), (2, 'Пушок'), (3, 'Барсик'), (4, 'Снежок'), (5, 'Дымка'); INSERT INTO feeders (id, cat_id, name, status) VALUES (1, 1, 'Мурзик-Миска-1', 'broken'), (2, 2, 'Пушок-Миска-2', 'active'), (3, 2, 'Пушок-Миска-3', 'broken'), (4, 3, 'Барсик-Миска-4', 'broken'), (5, 3, 'Барсик-Миска-5', 'broken'), (6, 4, 'Снежок-Миска-6', 'broken'), (7, 4, 'Снежок-Миска-7', 'active'), (8, 5, 'Дымка-Миска-8', 'broken');",
+      "expected": [
+        {
+          "id": 1,
+          "status": "active"
+        },
+        {
+          "id": 4,
+          "status": "active"
+        },
+        {
+          "id": 5,
+          "status": "active"
+        }
+      ]
+    }
   ]
 }

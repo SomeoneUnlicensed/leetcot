@@ -4,18 +4,6 @@ import path from 'node:path';
 
 const defaultExcludes = ['blank', 'solutions', 'aot'];
 
-// Python's `tests` field holds raw source that's also rendered verbatim in the
-// student's visible "Tests" editor pane (unlike SQL's JSON `tests`), so the oracle
-// config can't just replace the field's shape without breaking that pane. Instead
-// it's appended after this marker, which getChallengeRouteData strips before the
-// value ever reaches the client — code-runner is the only reader of the full string.
-export const PYTHON_ORACLE_MARKER = '# ---LEETCOT-ORACLE---';
-
-function extractEntryPoint(solutionSource: string): string | null {
-  const match = /^(?:def|class)\s+(\w+)\s*(?:\(|:)/m.exec(solutionSource);
-  return match?.[1] ?? null;
-}
-
 export async function ingestChallenges(
   challengePath: string,
   excludes = defaultExcludes,
@@ -65,14 +53,14 @@ async function buildChallenge(
     status: 'ACTIVE',
   } as Prisma.ChallengeCreateManyInput & { author: string };
 
-  // For SQL challenges with a random-data oracle (`generator.py` alongside
-  // solution.sql), the reference solution and seed generator get folded into the
-  // `tests` JSON below — they must never be readable from `code`/a separate column
-  // the client could see, only from the server-only `tests` field.
-  let solutionContent: string | undefined;
+  // solution.py/generator.py/solution.sql/generator.py are authoring-time inputs
+  // only, used offline (see scripts/generate-closed-tests) to bake a fixed bank of
+  // (input, expected-output) cases directly into tests.py/tests.json/tests.go.
+  // Ingestion just reads that already-baked `tests` file verbatim — it never reads
+  // solution/generator content itself, so there's nothing here that could leak an
+  // answer key into `code`/a client-visible column.
   let starterContent: string | undefined;
-  let generatorContent: string | undefined;
-  let oracleConfigContent: string | undefined;
+  let solutionContent: string | undefined;
 
   try {
     const files = await fs.promises.readdir(pathToDirectory);
@@ -107,12 +95,6 @@ async function buildChallenge(
           if (fileName === 'solution') {
             solutionContent = fileContents;
           }
-          if (fileName === 'generator') {
-            generatorContent = fileContents;
-          }
-          if (fileName === 'oracle-config') {
-            oracleConfigContent = fileContents;
-          }
           if (fileName === 'tests') {
             challengeToCreate.tests = fileContents;
           }
@@ -139,41 +121,6 @@ async function buildChallenge(
         } catch (jsonError) {
           console.error(`Error reading or parsing ${fileName}:`, jsonError);
         }
-      }
-    }
-
-    if (
-      generatorContent &&
-      solutionContent &&
-      challengeToCreate.language === 'SQL' &&
-      challengeToCreate.tests
-    ) {
-      try {
-        const testsWithOracle = JSON.parse(challengeToCreate.tests);
-        testsWithOracle.referenceSolution = solutionContent;
-        testsWithOracle.seedGenerator = generatorContent;
-        challengeToCreate.tests = JSON.stringify(testsWithOracle);
-      } catch (oracleError) {
-        console.error(`Error folding generator.py into tests for ${pathToDirectory}:`, oracleError);
-      }
-    }
-
-    if (generatorContent && solutionContent && challengeToCreate.language === 'PYTHON') {
-      const entryPoint = extractEntryPoint(solutionContent);
-      if (entryPoint) {
-        const extraConfig = oracleConfigContent ? JSON.parse(oracleConfigContent) : {};
-        const oracleBlock = JSON.stringify({
-          entryPoint,
-          referenceSolution: solutionContent,
-          seedGenerator: generatorContent,
-          ...extraConfig,
-        });
-        const visibleTests = challengeToCreate.tests ?? '';
-        challengeToCreate.tests = `${visibleTests}\n\n${PYTHON_ORACLE_MARKER}\n# ${oracleBlock}\n`;
-      } else {
-        console.error(
-          `generator.py present but no top-level "def" found in solution.py for ${pathToDirectory}`,
-        );
       }
     }
 

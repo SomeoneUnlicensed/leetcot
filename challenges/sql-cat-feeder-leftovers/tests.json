@@ -2,18 +2,386 @@
   "schema": "CREATE TABLE feeders (id INTEGER PRIMARY KEY, name TEXT); CREATE TABLE leftovers (feeder_id INTEGER, grams INTEGER);",
   "seed": "INSERT INTO feeders (id, name) VALUES (1, 'окно'), (2, 'кухня'), (3, 'балкон'); INSERT INTO leftovers (feeder_id, grams) VALUES (1, 30), (3, 5);",
   "expectedType": "select",
-  "expected": [
+  "cases": [
     {
-      "name": "окно",
-      "grams_left": 30
+      "name": "Тест 1",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'балкон'), (2, 'спальня'), (3, 'коридор'), (4, 'окно'); INSERT INTO leftovers (feeder_id, grams) VALUES (4, 25), (3, 14);",
+      "expected": [
+        {
+          "name": "балкон",
+          "grams_left": 0
+        },
+        {
+          "name": "спальня",
+          "grams_left": 0
+        },
+        {
+          "name": "коридор",
+          "grams_left": 14
+        },
+        {
+          "name": "окно",
+          "grams_left": 25
+        }
+      ]
     },
     {
-      "name": "кухня",
-      "grams_left": 0
+      "name": "Тест 2",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'балкон'), (2, 'кухня'), (3, 'спальня'); INSERT INTO leftovers (feeder_id, grams) VALUES (2, 39), (1, 3);",
+      "expected": [
+        {
+          "name": "балкон",
+          "grams_left": 3
+        },
+        {
+          "name": "кухня",
+          "grams_left": 39
+        },
+        {
+          "name": "спальня",
+          "grams_left": 0
+        }
+      ]
     },
     {
-      "name": "балкон",
-      "grams_left": 5
+      "name": "Тест 3",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'окно'), (2, 'балкон'), (3, 'спальня'), (4, 'коридор'), (5, 'кухня'); INSERT INTO leftovers (feeder_id, grams) VALUES (5, 1);",
+      "expected": [
+        {
+          "name": "окно",
+          "grams_left": 0
+        },
+        {
+          "name": "балкон",
+          "grams_left": 0
+        },
+        {
+          "name": "спальня",
+          "grams_left": 0
+        },
+        {
+          "name": "коридор",
+          "grams_left": 0
+        },
+        {
+          "name": "кухня",
+          "grams_left": 1
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'спальня'), (2, 'коридор'), (3, 'окно'), (4, 'балкон'); INSERT INTO leftovers (feeder_id, grams) VALUES (1, 5);",
+      "expected": [
+        {
+          "name": "спальня",
+          "grams_left": 5
+        },
+        {
+          "name": "коридор",
+          "grams_left": 0
+        },
+        {
+          "name": "окно",
+          "grams_left": 0
+        },
+        {
+          "name": "балкон",
+          "grams_left": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'окно'), (2, 'кухня'), (3, 'спальня'), (4, 'балкон'), (5, 'коридор'); INSERT INTO leftovers (feeder_id, grams) VALUES (4, 50);",
+      "expected": [
+        {
+          "name": "окно",
+          "grams_left": 0
+        },
+        {
+          "name": "кухня",
+          "grams_left": 0
+        },
+        {
+          "name": "спальня",
+          "grams_left": 0
+        },
+        {
+          "name": "балкон",
+          "grams_left": 50
+        },
+        {
+          "name": "коридор",
+          "grams_left": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'спальня'), (2, 'балкон'), (3, 'кухня'); INSERT INTO leftovers (feeder_id, grams) VALUES (1, 43);",
+      "expected": [
+        {
+          "name": "спальня",
+          "grams_left": 43
+        },
+        {
+          "name": "балкон",
+          "grams_left": 0
+        },
+        {
+          "name": "кухня",
+          "grams_left": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'коридор'), (2, 'окно'), (3, 'спальня'); INSERT INTO leftovers (feeder_id, grams) VALUES (2, 38);",
+      "expected": [
+        {
+          "name": "коридор",
+          "grams_left": 0
+        },
+        {
+          "name": "окно",
+          "grams_left": 38
+        },
+        {
+          "name": "спальня",
+          "grams_left": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'спальня'), (2, 'окно'), (3, 'коридор'); INSERT INTO leftovers (feeder_id, grams) VALUES (1, 9);",
+      "expected": [
+        {
+          "name": "спальня",
+          "grams_left": 9
+        },
+        {
+          "name": "окно",
+          "grams_left": 0
+        },
+        {
+          "name": "коридор",
+          "grams_left": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'коридор'), (2, 'окно'), (3, 'кухня'); INSERT INTO leftovers (feeder_id, grams) VALUES (2, 33);",
+      "expected": [
+        {
+          "name": "коридор",
+          "grams_left": 0
+        },
+        {
+          "name": "окно",
+          "grams_left": 33
+        },
+        {
+          "name": "кухня",
+          "grams_left": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'спальня'), (2, 'балкон'), (3, 'кухня'), (4, 'окно'), (5, 'коридор'); INSERT INTO leftovers (feeder_id, grams) VALUES (2, 30);",
+      "expected": [
+        {
+          "name": "спальня",
+          "grams_left": 0
+        },
+        {
+          "name": "балкон",
+          "grams_left": 30
+        },
+        {
+          "name": "кухня",
+          "grams_left": 0
+        },
+        {
+          "name": "окно",
+          "grams_left": 0
+        },
+        {
+          "name": "коридор",
+          "grams_left": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'балкон'), (2, 'окно'), (3, 'кухня'); INSERT INTO leftovers (feeder_id, grams) VALUES (3, 7), (1, 29);",
+      "expected": [
+        {
+          "name": "балкон",
+          "grams_left": 29
+        },
+        {
+          "name": "окно",
+          "grams_left": 0
+        },
+        {
+          "name": "кухня",
+          "grams_left": 7
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'окно'), (2, 'кухня'), (3, 'коридор'); INSERT INTO leftovers (feeder_id, grams) VALUES (1, 31), (2, 18);",
+      "expected": [
+        {
+          "name": "окно",
+          "grams_left": 31
+        },
+        {
+          "name": "кухня",
+          "grams_left": 18
+        },
+        {
+          "name": "коридор",
+          "grams_left": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'кухня'), (2, 'окно'), (3, 'спальня'), (4, 'коридор'), (5, 'балкон'); INSERT INTO leftovers (feeder_id, grams) VALUES (2, 42), (5, 47);",
+      "expected": [
+        {
+          "name": "кухня",
+          "grams_left": 0
+        },
+        {
+          "name": "окно",
+          "grams_left": 42
+        },
+        {
+          "name": "спальня",
+          "grams_left": 0
+        },
+        {
+          "name": "коридор",
+          "grams_left": 0
+        },
+        {
+          "name": "балкон",
+          "grams_left": 47
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'коридор'), (2, 'балкон'), (3, 'спальня'), (4, 'кухня'); INSERT INTO leftovers (feeder_id, grams) VALUES (1, 20), (3, 30), (2, 44);",
+      "expected": [
+        {
+          "name": "коридор",
+          "grams_left": 20
+        },
+        {
+          "name": "балкон",
+          "grams_left": 44
+        },
+        {
+          "name": "спальня",
+          "grams_left": 30
+        },
+        {
+          "name": "кухня",
+          "grams_left": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'коридор'), (2, 'спальня'), (3, 'балкон'); INSERT INTO leftovers (feeder_id, grams) VALUES (1, 4);",
+      "expected": [
+        {
+          "name": "коридор",
+          "grams_left": 4
+        },
+        {
+          "name": "спальня",
+          "grams_left": 0
+        },
+        {
+          "name": "балкон",
+          "grams_left": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'окно'), (2, 'коридор'), (3, 'кухня'), (4, 'спальня'); INSERT INTO leftovers (feeder_id, grams) VALUES (4, 1);",
+      "expected": [
+        {
+          "name": "окно",
+          "grams_left": 0
+        },
+        {
+          "name": "коридор",
+          "grams_left": 0
+        },
+        {
+          "name": "кухня",
+          "grams_left": 0
+        },
+        {
+          "name": "спальня",
+          "grams_left": 1
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'окно'), (2, 'балкон'), (3, 'кухня'), (4, 'спальня'); INSERT INTO leftovers (feeder_id, grams) VALUES (3, 8);",
+      "expected": [
+        {
+          "name": "окно",
+          "grams_left": 0
+        },
+        {
+          "name": "балкон",
+          "grams_left": 0
+        },
+        {
+          "name": "кухня",
+          "grams_left": 8
+        },
+        {
+          "name": "спальня",
+          "grams_left": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO feeders (id, name) VALUES (1, 'спальня'), (2, 'коридор'), (3, 'балкон'), (4, 'окно'); INSERT INTO leftovers (feeder_id, grams) VALUES (2, 32);",
+      "expected": [
+        {
+          "name": "спальня",
+          "grams_left": 0
+        },
+        {
+          "name": "коридор",
+          "grams_left": 32
+        },
+        {
+          "name": "балкон",
+          "grams_left": 0
+        },
+        {
+          "name": "окно",
+          "grams_left": 0
+        }
+      ]
     }
   ]
 }

@@ -3,11 +3,450 @@
   "seed": "INSERT INTO prices VALUES (1,'Сёмга',100.0,'premium'),(2,'Треска',40.0,'standard'),(3,'Тунец',150.0,'premium'),(4,'Карп',30.0,'standard'),(5,'Лосось',120.0,'premium');",
   "expectedType": "state",
   "expectedQuery": "SELECT id, ROUND(price, 2) as price FROM prices ORDER BY id",
-  "expected": [
-    { "id": 1, "price": 120.0 },
-    { "id": 2, "price": 40.0 },
-    { "id": 3, "price": 180.0 },
-    { "id": 4, "price": 30.0 },
-    { "id": 5, "price": 144.0 }
+  "cases": [
+    {
+      "name": "Тест 1",
+      "seed": "INSERT INTO prices VALUES (1,'Тунец',128.62,'standard'), (2,'Карп',68.29,'premium'), (3,'Скумбрия',225.46,'premium'), (4,'Сёмга',159.71,'premium'), (5,'Лосось',180.04,'standard');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 128.62
+        },
+        {
+          "id": 2,
+          "price": 81.95
+        },
+        {
+          "id": 3,
+          "price": 270.55
+        },
+        {
+          "id": 4,
+          "price": 191.65
+        },
+        {
+          "id": 5,
+          "price": 180.04
+        }
+      ]
+    },
+    {
+      "name": "Тест 2",
+      "seed": "INSERT INTO prices VALUES (1,'Тунец',216.38,'standard'), (2,'Карп',68.81,'premium'), (3,'Треска',176.69,'premium'), (4,'Лосось',166.85,'standard'), (5,'Скумбрия',217.86,'standard'), (6,'Сёмга',105.57,'standard');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 216.38
+        },
+        {
+          "id": 2,
+          "price": 82.57
+        },
+        {
+          "id": 3,
+          "price": 212.03
+        },
+        {
+          "id": 4,
+          "price": 166.85
+        },
+        {
+          "id": 5,
+          "price": 217.86
+        },
+        {
+          "id": 6,
+          "price": 105.57
+        }
+      ]
+    },
+    {
+      "name": "Тест 3",
+      "seed": "INSERT INTO prices VALUES (1,'Сёмга',159.29,'premium'), (2,'Тунец',127.92,'standard'), (3,'Карп',64.1,'standard'), (4,'Скумбрия',144.42,'standard'), (5,'Лосось',111.34,'standard'), (6,'Треска',73.34,'standard');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 191.15
+        },
+        {
+          "id": 2,
+          "price": 127.92
+        },
+        {
+          "id": 3,
+          "price": 64.1
+        },
+        {
+          "id": 4,
+          "price": 144.42
+        },
+        {
+          "id": 5,
+          "price": 111.34
+        },
+        {
+          "id": 6,
+          "price": 73.34
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO prices VALUES (1,'Карп',35.3,'premium'), (2,'Скумбрия',231.13,'premium'), (3,'Лосось',195.99,'standard'), (4,'Сёмга',143.44,'premium'), (5,'Тунец',59.71,'premium');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 42.36
+        },
+        {
+          "id": 2,
+          "price": 277.36
+        },
+        {
+          "id": 3,
+          "price": 195.99
+        },
+        {
+          "id": 4,
+          "price": 172.13
+        },
+        {
+          "id": 5,
+          "price": 71.65
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO prices VALUES (1,'Треска',77.28,'standard'), (2,'Сёмга',56.08,'premium'), (3,'Карп',219.74,'premium'), (4,'Скумбрия',43.45,'premium'), (5,'Тунец',188.17,'premium');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 77.28
+        },
+        {
+          "id": 2,
+          "price": 67.3
+        },
+        {
+          "id": 3,
+          "price": 263.69
+        },
+        {
+          "id": 4,
+          "price": 52.14
+        },
+        {
+          "id": 5,
+          "price": 225.8
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO prices VALUES (1,'Тунец',154.89,'premium'), (2,'Скумбрия',189.01,'standard'), (3,'Треска',25.03,'premium'), (4,'Карп',65.56,'premium');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 185.87
+        },
+        {
+          "id": 2,
+          "price": 189.01
+        },
+        {
+          "id": 3,
+          "price": 30.04
+        },
+        {
+          "id": 4,
+          "price": 78.67
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO prices VALUES (1,'Лосось',41.65,'standard'), (2,'Сёмга',229.23,'standard'), (3,'Скумбрия',39.77,'premium'), (4,'Карп',75.35,'premium');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 41.65
+        },
+        {
+          "id": 2,
+          "price": 229.23
+        },
+        {
+          "id": 3,
+          "price": 47.72
+        },
+        {
+          "id": 4,
+          "price": 90.42
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO prices VALUES (1,'Скумбрия',51.47,'premium'), (2,'Лосось',136.46,'standard'), (3,'Сёмга',26.97,'premium'), (4,'Карп',109.81,'premium'), (5,'Тунец',226.39,'standard'), (6,'Треска',131.57,'premium');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 61.76
+        },
+        {
+          "id": 2,
+          "price": 136.46
+        },
+        {
+          "id": 3,
+          "price": 32.36
+        },
+        {
+          "id": 4,
+          "price": 131.77
+        },
+        {
+          "id": 5,
+          "price": 226.39
+        },
+        {
+          "id": 6,
+          "price": 157.88
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO prices VALUES (1,'Скумбрия',21.48,'standard'), (2,'Сёмга',226.61,'standard'), (3,'Треска',147.48,'premium'), (4,'Тунец',29.41,'standard');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 21.48
+        },
+        {
+          "id": 2,
+          "price": 226.61
+        },
+        {
+          "id": 3,
+          "price": 176.98
+        },
+        {
+          "id": 4,
+          "price": 29.41
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO prices VALUES (1,'Тунец',133.0,'premium'), (2,'Скумбрия',206.44,'premium'), (3,'Треска',132.72,'premium'), (4,'Карп',239.05,'standard');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 159.6
+        },
+        {
+          "id": 2,
+          "price": 247.73
+        },
+        {
+          "id": 3,
+          "price": 159.26
+        },
+        {
+          "id": 4,
+          "price": 239.05
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO prices VALUES (1,'Тунец',129.43,'standard'), (2,'Сёмга',62.82,'standard'), (3,'Треска',52.61,'premium'), (4,'Скумбрия',224.79,'standard');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 129.43
+        },
+        {
+          "id": 2,
+          "price": 62.82
+        },
+        {
+          "id": 3,
+          "price": 63.13
+        },
+        {
+          "id": 4,
+          "price": 224.79
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO prices VALUES (1,'Скумбрия',130.98,'standard'), (2,'Треска',125.85,'standard'), (3,'Сёмга',72.36,'standard'), (4,'Лосось',163.57,'premium');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 130.98
+        },
+        {
+          "id": 2,
+          "price": 125.85
+        },
+        {
+          "id": 3,
+          "price": 72.36
+        },
+        {
+          "id": 4,
+          "price": 196.28
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO prices VALUES (1,'Карп',71.79,'premium'), (2,'Сёмга',49.95,'standard'), (3,'Лосось',69.2,'standard'), (4,'Треска',119.26,'premium'), (5,'Скумбрия',159.93,'standard'), (6,'Тунец',83.44,'premium');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 86.15
+        },
+        {
+          "id": 2,
+          "price": 49.95
+        },
+        {
+          "id": 3,
+          "price": 69.2
+        },
+        {
+          "id": 4,
+          "price": 143.11
+        },
+        {
+          "id": 5,
+          "price": 159.93
+        },
+        {
+          "id": 6,
+          "price": 100.13
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO prices VALUES (1,'Скумбрия',171.44,'standard'), (2,'Тунец',177.37,'premium'), (3,'Карп',198.83,'premium'), (4,'Треска',71.35,'premium'), (5,'Лосось',102.35,'standard');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 171.44
+        },
+        {
+          "id": 2,
+          "price": 212.84
+        },
+        {
+          "id": 3,
+          "price": 238.6
+        },
+        {
+          "id": 4,
+          "price": 85.62
+        },
+        {
+          "id": 5,
+          "price": 102.35
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO prices VALUES (1,'Скумбрия',205.12,'premium'), (2,'Тунец',179.8,'premium'), (3,'Карп',46.94,'premium'), (4,'Лосось',101.82,'standard');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 246.14
+        },
+        {
+          "id": 2,
+          "price": 215.76
+        },
+        {
+          "id": 3,
+          "price": 56.33
+        },
+        {
+          "id": 4,
+          "price": 101.82
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO prices VALUES (1,'Сёмга',114.19,'premium'), (2,'Скумбрия',79.54,'standard'), (3,'Треска',22.33,'standard'), (4,'Лосось',97.06,'premium');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 137.03
+        },
+        {
+          "id": 2,
+          "price": 79.54
+        },
+        {
+          "id": 3,
+          "price": 22.33
+        },
+        {
+          "id": 4,
+          "price": 116.47
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO prices VALUES (1,'Сёмга',181.97,'standard'), (2,'Скумбрия',45.34,'standard'), (3,'Треска',108.36,'premium'), (4,'Тунец',78.05,'standard');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 181.97
+        },
+        {
+          "id": 2,
+          "price": 45.34
+        },
+        {
+          "id": 3,
+          "price": 130.03
+        },
+        {
+          "id": 4,
+          "price": 78.05
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO prices VALUES (1,'Тунец',164.48,'standard'), (2,'Лосось',87.96,'premium'), (3,'Скумбрия',65.11,'standard'), (4,'Карп',47.14,'standard');",
+      "expected": [
+        {
+          "id": 1,
+          "price": 164.48
+        },
+        {
+          "id": 2,
+          "price": 105.55
+        },
+        {
+          "id": 3,
+          "price": 65.11
+        },
+        {
+          "id": 4,
+          "price": 47.14
+        }
+      ]
+    }
   ]
 }

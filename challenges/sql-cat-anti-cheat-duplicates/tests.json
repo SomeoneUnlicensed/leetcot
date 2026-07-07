@@ -2,14 +2,258 @@
   "schema": "CREATE TABLE applications (id INTEGER PRIMARY KEY, cat TEXT, email TEXT);",
   "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Барсик', 'barsik@mail'), (2, 'Мурка', 'murka@mail'), (3, 'Барсик', 'barsik@mail'), (4, 'Патч', 'patch@mail'), (5, 'Мурка', 'murka@mail');",
   "expectedType": "select",
-  "expected": [
+  "cases": [
     {
-      "cat": "Барсик",
-      "duplicates": 2
+      "name": "Тест 1",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Патч', 'патч@mail'), (2, 'Снежок', 'снежок@mail'), (3, 'Рыжик', 'рыжик@mail'), (4, 'Патч', 'патч@mail'), (5, 'Патч', 'патч@mail'), (6, 'Рыжик', 'рыжик@mail'), (7, 'Рыжик', 'рыжик@mail'), (8, 'Барсик', 'барсик@mail');",
+      "expected": [
+        {
+          "cat": "Патч",
+          "duplicates": 3
+        },
+        {
+          "cat": "Рыжик",
+          "duplicates": 3
+        }
+      ]
     },
     {
-      "cat": "Мурка",
-      "duplicates": 2
+      "name": "Тест 2",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Рыжик', 'рыжик@mail'), (2, 'Мурка', 'мурка@mail'), (3, 'Снежок', 'снежок@mail'), (4, 'Патч', 'патч@mail'), (5, 'Патч', 'патч@mail'), (6, 'Мурка', 'мурка@mail'), (7, 'Мурка', 'мурка@mail');",
+      "expected": [
+        {
+          "cat": "Мурка",
+          "duplicates": 3
+        },
+        {
+          "cat": "Патч",
+          "duplicates": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 3",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Рыжик', 'рыжик@mail'), (2, 'Снежок', 'снежок@mail'), (3, 'Барсик', 'барсик@mail'), (4, 'Барсик', 'барсик@mail'), (5, 'Патч', 'патч@mail'), (6, 'Патч', 'патч@mail');",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "duplicates": 2
+        },
+        {
+          "cat": "Патч",
+          "duplicates": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Снежок', 'снежок@mail'), (2, 'Рыжик', 'рыжик@mail'), (3, 'Рыжик', 'рыжик@mail'), (4, 'Снежок', 'снежок@mail'), (5, 'Барсик', 'барсик@mail'), (6, 'Патч', 'патч@mail'), (7, 'Рыжик', 'рыжик@mail');",
+      "expected": [
+        {
+          "cat": "Рыжик",
+          "duplicates": 3
+        },
+        {
+          "cat": "Снежок",
+          "duplicates": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Мурка', 'мурка@mail'), (2, 'Мурка', 'мурка@mail'), (3, 'Мурка', 'мурка@mail'), (4, 'Рыжик', 'рыжик@mail'), (5, 'Барсик', 'барсик@mail'), (6, 'Барсик', 'барсик@mail'), (7, 'Патч', 'патч@mail');",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "duplicates": 2
+        },
+        {
+          "cat": "Мурка",
+          "duplicates": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Рыжик', 'рыжик@mail'), (2, 'Барсик', 'барсик@mail'), (3, 'Патч', 'патч@mail'), (4, 'Патч', 'патч@mail'), (5, 'Мурка', 'мурка@mail'), (6, 'Рыжик', 'рыжик@mail');",
+      "expected": [
+        {
+          "cat": "Патч",
+          "duplicates": 2
+        },
+        {
+          "cat": "Рыжик",
+          "duplicates": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Снежок', 'снежок@mail'), (2, 'Барсик', 'барсик@mail'), (3, 'Мурка', 'мурка@mail'), (4, 'Снежок', 'снежок@mail'), (5, 'Рыжик', 'рыжик@mail'), (6, 'Барсик', 'барсик@mail');",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "duplicates": 2
+        },
+        {
+          "cat": "Снежок",
+          "duplicates": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Барсик', 'барсик@mail'), (2, 'Патч', 'патч@mail'), (3, 'Барсик', 'барсик@mail'), (4, 'Снежок', 'снежок@mail'), (5, 'Рыжик', 'рыжик@mail'), (6, 'Рыжик', 'рыжик@mail');",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "duplicates": 2
+        },
+        {
+          "cat": "Рыжик",
+          "duplicates": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Снежок', 'снежок@mail'), (2, 'Снежок', 'снежок@mail'), (3, 'Патч', 'патч@mail'), (4, 'Барсик', 'барсик@mail'), (5, 'Мурка', 'мурка@mail'), (6, 'Барсик', 'барсик@mail');",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "duplicates": 2
+        },
+        {
+          "cat": "Снежок",
+          "duplicates": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Рыжик', 'рыжик@mail'), (2, 'Рыжик', 'рыжик@mail'), (3, 'Мурка', 'мурка@mail'), (4, 'Патч', 'патч@mail'), (5, 'Барсик', 'барсик@mail'), (6, 'Патч', 'патч@mail');",
+      "expected": [
+        {
+          "cat": "Патч",
+          "duplicates": 2
+        },
+        {
+          "cat": "Рыжик",
+          "duplicates": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Барсик', 'барсик@mail'), (2, 'Барсик', 'барсик@mail'), (3, 'Снежок', 'снежок@mail'), (4, 'Патч', 'патч@mail'), (5, 'Патч', 'патч@mail'), (6, 'Барсик', 'барсик@mail'), (7, 'Мурка', 'мурка@mail');",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "duplicates": 3
+        },
+        {
+          "cat": "Патч",
+          "duplicates": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Патч', 'патч@mail'), (2, 'Барсик', 'барсик@mail'), (3, 'Мурка', 'мурка@mail'), (4, 'Снежок', 'снежок@mail'), (5, 'Мурка', 'мурка@mail'), (6, 'Мурка', 'мурка@mail'), (7, 'Барсик', 'барсик@mail');",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "duplicates": 2
+        },
+        {
+          "cat": "Мурка",
+          "duplicates": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Барсик', 'барсик@mail'), (2, 'Барсик', 'барсик@mail'), (3, 'Мурка', 'мурка@mail'), (4, 'Рыжик', 'рыжик@mail'), (5, 'Снежок', 'снежок@mail'), (6, 'Мурка', 'мурка@mail');",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "duplicates": 2
+        },
+        {
+          "cat": "Мурка",
+          "duplicates": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Снежок', 'снежок@mail'), (2, 'Снежок', 'снежок@mail'), (3, 'Патч', 'патч@mail'), (4, 'Мурка', 'мурка@mail'), (5, 'Снежок', 'снежок@mail'), (6, 'Патч', 'патч@mail'), (7, 'Рыжик', 'рыжик@mail');",
+      "expected": [
+        {
+          "cat": "Патч",
+          "duplicates": 2
+        },
+        {
+          "cat": "Снежок",
+          "duplicates": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Патч', 'патч@mail'), (2, 'Рыжик', 'рыжик@mail'), (3, 'Рыжик', 'рыжик@mail'), (4, 'Снежок', 'снежок@mail'), (5, 'Барсик', 'барсик@mail'), (6, 'Снежок', 'снежок@mail');",
+      "expected": [
+        {
+          "cat": "Рыжик",
+          "duplicates": 2
+        },
+        {
+          "cat": "Снежок",
+          "duplicates": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Барсик', 'барсик@mail'), (2, 'Снежок', 'снежок@mail'), (3, 'Мурка', 'мурка@mail'), (4, 'Барсик', 'барсик@mail'), (5, 'Рыжик', 'рыжик@mail'), (6, 'Барсик', 'барсик@mail'), (7, 'Снежок', 'снежок@mail');",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "duplicates": 3
+        },
+        {
+          "cat": "Снежок",
+          "duplicates": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Барсик', 'барсик@mail'), (2, 'Патч', 'патч@mail'), (3, 'Барсик', 'барсик@mail'), (4, 'Барсик', 'барсик@mail'), (5, 'Патч', 'патч@mail'), (6, 'Мурка', 'мурка@mail'), (7, 'Рыжик', 'рыжик@mail');",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "duplicates": 3
+        },
+        {
+          "cat": "Патч",
+          "duplicates": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO applications (id, cat, email) VALUES (1, 'Рыжик', 'рыжик@mail'), (2, 'Рыжик', 'рыжик@mail'), (3, 'Снежок', 'снежок@mail'), (4, 'Барсик', 'барсик@mail'), (5, 'Патч', 'патч@mail'), (6, 'Снежок', 'снежок@mail'), (7, 'Рыжик', 'рыжик@mail');",
+      "expected": [
+        {
+          "cat": "Рыжик",
+          "duplicates": 3
+        },
+        {
+          "cat": "Снежок",
+          "duplicates": 2
+        }
+      ]
     }
   ]
 }

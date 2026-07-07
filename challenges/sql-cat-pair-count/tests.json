@@ -2,18 +2,386 @@
   "schema": "CREATE TABLE cats (id INTEGER PRIMARY KEY, name TEXT); CREATE TABLE meals (id INTEGER PRIMARY KEY, cat_id INTEGER, food TEXT);",
   "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Мурка'), (3, 'Снежок'); INSERT INTO meals (id, cat_id, food) VALUES (1, 1, 'тунец'), (2, 1, 'лосось'), (3, 2, 'сметана'), (4, 1, 'сардина');",
   "expectedType": "select",
-  "expected": [
+  "cases": [
     {
-      "name": "Барсик",
-      "meal_count": 3
+      "name": "Тест 1",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Снежок'), (2, 'Патч'), (3, 'Рыжик'), (4, 'Барсик'); INSERT INTO meals (id, cat_id, food) VALUES (1, 1, 'сардина'), (2, 1, 'сардина'), (3, 1, 'лосось'), (4, 3, 'тунец'), (5, 3, 'сардина'), (6, 3, 'сметана'), (7, 3, 'лосось'), (8, 4, 'тунец'), (9, 4, 'тунец');",
+      "expected": [
+        {
+          "name": "Рыжик",
+          "meal_count": 4
+        },
+        {
+          "name": "Снежок",
+          "meal_count": 3
+        },
+        {
+          "name": "Барсик",
+          "meal_count": 2
+        },
+        {
+          "name": "Патч",
+          "meal_count": 0
+        }
+      ]
     },
     {
-      "name": "Мурка",
-      "meal_count": 1
+      "name": "Тест 2",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Снежок'), (2, 'Мурка'), (3, 'Патч'); INSERT INTO meals (id, cat_id, food) VALUES (1, 1, 'сметана'), (2, 1, 'лосось'), (3, 2, 'тунец'), (4, 2, 'лосось'), (5, 2, 'сардина'), (6, 2, 'сардина'), (7, 3, 'сметана'), (8, 3, 'тунец'), (9, 3, 'тунец');",
+      "expected": [
+        {
+          "name": "Мурка",
+          "meal_count": 4
+        },
+        {
+          "name": "Патч",
+          "meal_count": 3
+        },
+        {
+          "name": "Снежок",
+          "meal_count": 2
+        }
+      ]
     },
     {
-      "name": "Снежок",
-      "meal_count": 0
+      "name": "Тест 3",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Снежок'), (3, 'Патч'), (4, 'Рыжик'), (5, 'Мурка'); INSERT INTO meals (id, cat_id, food) VALUES (1, 1, 'тунец'), (2, 1, 'тунец'), (3, 1, 'сардина'), (4, 1, 'сметана'), (5, 2, 'лосось'), (6, 3, 'сардина'), (7, 3, 'сардина'), (8, 3, 'лосось'), (9, 5, 'тунец'), (10, 5, 'сметана');",
+      "expected": [
+        {
+          "name": "Барсик",
+          "meal_count": 4
+        },
+        {
+          "name": "Патч",
+          "meal_count": 3
+        },
+        {
+          "name": "Мурка",
+          "meal_count": 2
+        },
+        {
+          "name": "Снежок",
+          "meal_count": 1
+        },
+        {
+          "name": "Рыжик",
+          "meal_count": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Патч'), (2, 'Рыжик'), (3, 'Барсик'), (4, 'Снежок'); INSERT INTO meals (id, cat_id, food) VALUES (1, 1, 'тунец'), (2, 3, 'сметана'), (3, 3, 'тунец'), (4, 3, 'лосось'), (5, 4, 'сметана'), (6, 4, 'сметана'), (7, 4, 'лосось'), (8, 4, 'тунец');",
+      "expected": [
+        {
+          "name": "Снежок",
+          "meal_count": 4
+        },
+        {
+          "name": "Барсик",
+          "meal_count": 3
+        },
+        {
+          "name": "Патч",
+          "meal_count": 1
+        },
+        {
+          "name": "Рыжик",
+          "meal_count": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Мурка'), (3, 'Патч'), (4, 'Снежок'), (5, 'Рыжик'); INSERT INTO meals (id, cat_id, food) VALUES (1, 1, 'тунец'), (2, 1, 'сардина'), (3, 1, 'лосось'), (4, 1, 'тунец'), (5, 2, 'тунец'), (6, 3, 'сардина'), (7, 3, 'лосось'), (8, 4, 'тунец'), (9, 4, 'лосось'), (10, 4, 'тунец');",
+      "expected": [
+        {
+          "name": "Барсик",
+          "meal_count": 4
+        },
+        {
+          "name": "Снежок",
+          "meal_count": 3
+        },
+        {
+          "name": "Патч",
+          "meal_count": 2
+        },
+        {
+          "name": "Мурка",
+          "meal_count": 1
+        },
+        {
+          "name": "Рыжик",
+          "meal_count": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Патч'), (2, 'Снежок'), (3, 'Мурка'); INSERT INTO meals (id, cat_id, food) VALUES (1, 2, 'сардина'), (2, 3, 'сметана'), (3, 3, 'тунец');",
+      "expected": [
+        {
+          "name": "Мурка",
+          "meal_count": 2
+        },
+        {
+          "name": "Снежок",
+          "meal_count": 1
+        },
+        {
+          "name": "Патч",
+          "meal_count": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Рыжик'), (2, 'Барсик'), (3, 'Патч'); INSERT INTO meals (id, cat_id, food) VALUES (1, 1, 'тунец'), (2, 1, 'сметана'), (3, 1, 'тунец'), (4, 1, 'лосось'), (5, 3, 'сардина'), (6, 3, 'тунец'), (7, 3, 'лосось');",
+      "expected": [
+        {
+          "name": "Рыжик",
+          "meal_count": 4
+        },
+        {
+          "name": "Патч",
+          "meal_count": 3
+        },
+        {
+          "name": "Барсик",
+          "meal_count": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Патч'), (2, 'Барсик'), (3, 'Рыжик'); INSERT INTO meals (id, cat_id, food) VALUES (1, 2, 'лосось'), (2, 3, 'лосось'), (3, 3, 'сардина'), (4, 3, 'тунец'), (5, 3, 'сардина');",
+      "expected": [
+        {
+          "name": "Рыжик",
+          "meal_count": 4
+        },
+        {
+          "name": "Барсик",
+          "meal_count": 1
+        },
+        {
+          "name": "Патч",
+          "meal_count": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Рыжик'), (2, 'Барсик'), (3, 'Мурка'); INSERT INTO meals (id, cat_id, food) VALUES (1, 2, 'сардина'), (2, 2, 'тунец'), (3, 3, 'тунец'), (4, 3, 'сардина'), (5, 3, 'лосось'), (6, 3, 'сардина');",
+      "expected": [
+        {
+          "name": "Мурка",
+          "meal_count": 4
+        },
+        {
+          "name": "Барсик",
+          "meal_count": 2
+        },
+        {
+          "name": "Рыжик",
+          "meal_count": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Патч'), (2, 'Снежок'), (3, 'Мурка'), (4, 'Барсик'), (5, 'Рыжик'); INSERT INTO meals (id, cat_id, food) VALUES (1, 2, 'сардина'), (2, 3, 'сметана'), (3, 3, 'лосось'), (4, 3, 'тунец'), (5, 4, 'сардина'), (6, 4, 'сметана'), (7, 4, 'тунец'), (8, 4, 'лосось'), (9, 5, 'тунец'), (10, 5, 'сардина');",
+      "expected": [
+        {
+          "name": "Барсик",
+          "meal_count": 4
+        },
+        {
+          "name": "Мурка",
+          "meal_count": 3
+        },
+        {
+          "name": "Рыжик",
+          "meal_count": 2
+        },
+        {
+          "name": "Снежок",
+          "meal_count": 1
+        },
+        {
+          "name": "Патч",
+          "meal_count": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Снежок'), (2, 'Барсик'), (3, 'Мурка'); INSERT INTO meals (id, cat_id, food) VALUES (1, 1, 'сардина'), (2, 1, 'лосось'), (3, 1, 'тунец'), (4, 1, 'сардина'), (5, 2, 'лосось'), (6, 2, 'тунец');",
+      "expected": [
+        {
+          "name": "Снежок",
+          "meal_count": 4
+        },
+        {
+          "name": "Барсик",
+          "meal_count": 2
+        },
+        {
+          "name": "Мурка",
+          "meal_count": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Мурка'), (3, 'Рыжик'); INSERT INTO meals (id, cat_id, food) VALUES (1, 1, 'тунец'), (2, 1, 'сметана'), (3, 1, 'сардина'), (4, 2, 'сардина'), (5, 2, 'лосось'), (6, 3, 'тунец'), (7, 3, 'лосось'), (8, 3, 'сардина'), (9, 3, 'сметана');",
+      "expected": [
+        {
+          "name": "Рыжик",
+          "meal_count": 4
+        },
+        {
+          "name": "Барсик",
+          "meal_count": 3
+        },
+        {
+          "name": "Мурка",
+          "meal_count": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Мурка'), (2, 'Барсик'), (3, 'Патч'), (4, 'Рыжик'), (5, 'Снежок'); INSERT INTO meals (id, cat_id, food) VALUES (1, 1, 'лосось'), (2, 3, 'лосось'), (3, 3, 'сметана'), (4, 3, 'тунец'), (5, 3, 'сардина'), (6, 4, 'лосось'), (7, 4, 'тунец'), (8, 5, 'сардина'), (9, 5, 'лосось'), (10, 5, 'сметана');",
+      "expected": [
+        {
+          "name": "Патч",
+          "meal_count": 4
+        },
+        {
+          "name": "Снежок",
+          "meal_count": 3
+        },
+        {
+          "name": "Рыжик",
+          "meal_count": 2
+        },
+        {
+          "name": "Мурка",
+          "meal_count": 1
+        },
+        {
+          "name": "Барсик",
+          "meal_count": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Рыжик'), (2, 'Снежок'), (3, 'Патч'), (4, 'Мурка'); INSERT INTO meals (id, cat_id, food) VALUES (1, 2, 'сметана'), (2, 2, 'сардина'), (3, 2, 'сардина'), (4, 3, 'лосось'), (5, 3, 'сметана'), (6, 4, 'лосось'), (7, 4, 'лосось'), (8, 4, 'сметана'), (9, 4, 'лосось');",
+      "expected": [
+        {
+          "name": "Мурка",
+          "meal_count": 4
+        },
+        {
+          "name": "Снежок",
+          "meal_count": 3
+        },
+        {
+          "name": "Патч",
+          "meal_count": 2
+        },
+        {
+          "name": "Рыжик",
+          "meal_count": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Рыжик'), (2, 'Патч'), (3, 'Снежок'); INSERT INTO meals (id, cat_id, food) VALUES (1, 1, 'тунец'), (2, 3, 'лосось'), (3, 3, 'тунец');",
+      "expected": [
+        {
+          "name": "Снежок",
+          "meal_count": 2
+        },
+        {
+          "name": "Рыжик",
+          "meal_count": 1
+        },
+        {
+          "name": "Патч",
+          "meal_count": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Рыжик'), (3, 'Мурка'), (4, 'Патч'); INSERT INTO meals (id, cat_id, food) VALUES (1, 1, 'сардина'), (2, 3, 'сметана'), (3, 3, 'лосось'), (4, 3, 'лосось'), (5, 4, 'сметана'), (6, 4, 'сметана');",
+      "expected": [
+        {
+          "name": "Мурка",
+          "meal_count": 3
+        },
+        {
+          "name": "Патч",
+          "meal_count": 2
+        },
+        {
+          "name": "Барсик",
+          "meal_count": 1
+        },
+        {
+          "name": "Рыжик",
+          "meal_count": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Барсик'), (2, 'Снежок'), (3, 'Мурка'), (4, 'Патч'); INSERT INTO meals (id, cat_id, food) VALUES (1, 1, 'сметана'), (2, 3, 'сардина'), (3, 3, 'сметана'), (4, 3, 'сметана'), (5, 4, 'тунец'), (6, 4, 'лосось'), (7, 4, 'лосось'), (8, 4, 'лосось');",
+      "expected": [
+        {
+          "name": "Патч",
+          "meal_count": 4
+        },
+        {
+          "name": "Мурка",
+          "meal_count": 3
+        },
+        {
+          "name": "Барсик",
+          "meal_count": 1
+        },
+        {
+          "name": "Снежок",
+          "meal_count": 0
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO cats (id, name) VALUES (1, 'Патч'), (2, 'Рыжик'), (3, 'Снежок'), (4, 'Барсик'); INSERT INTO meals (id, cat_id, food) VALUES (1, 1, 'лосось'), (2, 2, 'сардина'), (3, 2, 'лосось'), (4, 2, 'сардина'), (5, 3, 'сардина'), (6, 3, 'сметана');",
+      "expected": [
+        {
+          "name": "Рыжик",
+          "meal_count": 3
+        },
+        {
+          "name": "Снежок",
+          "meal_count": 2
+        },
+        {
+          "name": "Патч",
+          "meal_count": 1
+        },
+        {
+          "name": "Барсик",
+          "meal_count": 0
+        }
+      ]
     }
   ]
 }

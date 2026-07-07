@@ -2,22 +2,462 @@
   "schema": "CREATE TABLE market (id INTEGER PRIMARY KEY, fish TEXT, price INTEGER);",
   "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'килька', 40), (2, 'окунь', 95), (3, 'лосось', 240), (4, 'сом', 130);",
   "expectedType": "select",
-  "expected": [
+  "cases": [
     {
-      "fish": "килька",
-      "price_level": "дешево"
+      "name": "Тест 1",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'сом', 79), (2, 'карась', 80), (3, 'судак', 150), (4, 'лосось', 151), (5, 'килька', 209);",
+      "expected": [
+        {
+          "fish": "сом",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "карась",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "судак",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "лосось",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "килька",
+          "price_level": "дорого"
+        }
+      ]
     },
     {
-      "fish": "окунь",
-      "price_level": "обычно"
+      "name": "Тест 2",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'лосось', 167), (2, 'сом', 80), (3, 'окунь', 150), (4, 'треска', 151), (5, 'судак', 91), (6, 'килька', 230);",
+      "expected": [
+        {
+          "fish": "сом",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "судак",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "окунь",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "треска",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "лосось",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "килька",
+          "price_level": "дорого"
+        }
+      ]
     },
     {
-      "fish": "сом",
-      "price_level": "обычно"
+      "name": "Тест 3",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'килька', 16), (2, 'лосось', 250), (3, 'сом', 150), (4, 'карась', 151), (5, 'судак', 250), (6, 'треска', 286);",
+      "expected": [
+        {
+          "fish": "килька",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "сом",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "карась",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "лосось",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "судак",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "треска",
+          "price_level": "дорого"
+        }
+      ]
     },
     {
-      "fish": "лосось",
-      "price_level": "дорого"
+      "name": "Тест 4",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'судак', 79), (2, 'треска', 80), (3, 'карась', 40), (4, 'сом', 151);",
+      "expected": [
+        {
+          "fish": "карась",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "судак",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "треска",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "сом",
+          "price_level": "дорого"
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'карась', 79), (2, 'сом', 80), (3, 'окунь', 150), (4, 'килька', 204), (5, 'судак', 288), (6, 'лосось', 62);",
+      "expected": [
+        {
+          "fish": "лосось",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "карась",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "сом",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "окунь",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "килька",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "судак",
+          "price_level": "дорого"
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'лосось', 79), (2, 'судак', 201), (3, 'окунь', 150), (4, 'сом', 151);",
+      "expected": [
+        {
+          "fish": "лосось",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "окунь",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "сом",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "судак",
+          "price_level": "дорого"
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'судак', 269), (2, 'карась', 80), (3, 'треска', 150), (4, 'килька', 151), (5, 'сом', 133);",
+      "expected": [
+        {
+          "fish": "карась",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "сом",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "треска",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "килька",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "судак",
+          "price_level": "дорого"
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'треска', 79), (2, 'судак', 269), (3, 'килька', 150), (4, 'карась', 245);",
+      "expected": [
+        {
+          "fish": "треска",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "килька",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "карась",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "судак",
+          "price_level": "дорого"
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'окунь', 79), (2, 'карась', 51), (3, 'килька', 150), (4, 'судак', 30), (5, 'лосось', 204), (6, 'треска', 96);",
+      "expected": [
+        {
+          "fish": "судак",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "карась",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "окунь",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "треска",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "килька",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "лосось",
+          "price_level": "дорого"
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'окунь', 79), (2, 'судак', 80), (3, 'лосось', 150), (4, 'карась', 27);",
+      "expected": [
+        {
+          "fish": "карась",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "окунь",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "судак",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "лосось",
+          "price_level": "обычно"
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'окунь', 253), (2, 'килька', 105), (3, 'лосось', 150), (4, 'судак', 151);",
+      "expected": [
+        {
+          "fish": "килька",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "лосось",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "судак",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "окунь",
+          "price_level": "дорого"
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'карась', 257), (2, 'окунь', 80), (3, 'килька', 126), (4, 'судак', 84);",
+      "expected": [
+        {
+          "fish": "окунь",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "судак",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "килька",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "карась",
+          "price_level": "дорого"
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'сом', 105), (2, 'килька', 80), (3, 'судак', 119), (4, 'треска', 25);",
+      "expected": [
+        {
+          "fish": "треска",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "килька",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "сом",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "судак",
+          "price_level": "обычно"
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'карась', 240), (2, 'лосось', 80), (3, 'сом', 213), (4, 'окунь', 151), (5, 'судак', 70);",
+      "expected": [
+        {
+          "fish": "судак",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "лосось",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "окунь",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "сом",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "карась",
+          "price_level": "дорого"
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'карась', 79), (2, 'лосось', 85), (3, 'сом', 198), (4, 'судак', 151);",
+      "expected": [
+        {
+          "fish": "карась",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "лосось",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "судак",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "сом",
+          "price_level": "дорого"
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'треска', 79), (2, 'килька', 142), (3, 'окунь', 150), (4, 'карась', 151), (5, 'судак', 161);",
+      "expected": [
+        {
+          "fish": "треска",
+          "price_level": "дешево"
+        },
+        {
+          "fish": "килька",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "окунь",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "карась",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "судак",
+          "price_level": "дорого"
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'судак', 152), (2, 'килька', 80), (3, 'окунь', 150), (4, 'карась', 151), (5, 'лосось', 224), (6, 'сом', 139);",
+      "expected": [
+        {
+          "fish": "килька",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "сом",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "окунь",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "карась",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "судак",
+          "price_level": "дорого"
+        },
+        {
+          "fish": "лосось",
+          "price_level": "дорого"
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO market (id, fish, price) VALUES (1, 'карась', 103), (2, 'треска', 80), (3, 'судак', 150), (4, 'лосось', 151), (5, 'сом', 139);",
+      "expected": [
+        {
+          "fish": "треска",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "карась",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "сом",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "судак",
+          "price_level": "обычно"
+        },
+        {
+          "fish": "лосось",
+          "price_level": "дорого"
+        }
+      ]
     }
   ]
 }

@@ -2,31 +2,639 @@
   "schema": "CREATE TABLE catches (cat TEXT, fish_count INTEGER);",
   "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Барсик', 12), ('Васька', 18), ('Мурзик', 12), ('Соня', 7), ('Тихон', 18);",
   "expectedType": "select",
-  "expected": [
+  "cases": [
     {
-      "cat": "Васька",
-      "fish_count": 18,
-      "place": 1
+      "name": "Тест 1",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Соня', 16), ('Патч', 7), ('Снежок', 16), ('Мурзик', 7), ('Барсик', 7), ('Тихон', 16);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "fish_count": 16,
+          "place": 1
+        },
+        {
+          "cat": "Соня",
+          "fish_count": 16,
+          "place": 1
+        },
+        {
+          "cat": "Тихон",
+          "fish_count": 16,
+          "place": 1
+        },
+        {
+          "cat": "Барсик",
+          "fish_count": 7,
+          "place": 2
+        },
+        {
+          "cat": "Мурзик",
+          "fish_count": 7,
+          "place": 2
+        },
+        {
+          "cat": "Патч",
+          "fish_count": 7,
+          "place": 2
+        }
+      ]
     },
     {
-      "cat": "Тихон",
-      "fish_count": 18,
-      "place": 1
+      "name": "Тест 2",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Мурзик', 7), ('Соня', 22), ('Васька', 7), ('Тихон', 10), ('Снежок', 20), ('Барсик', 20), ('Патч', 7);",
+      "expected": [
+        {
+          "cat": "Соня",
+          "fish_count": 22,
+          "place": 1
+        },
+        {
+          "cat": "Барсик",
+          "fish_count": 20,
+          "place": 2
+        },
+        {
+          "cat": "Снежок",
+          "fish_count": 20,
+          "place": 2
+        },
+        {
+          "cat": "Тихон",
+          "fish_count": 10,
+          "place": 3
+        },
+        {
+          "cat": "Васька",
+          "fish_count": 7,
+          "place": 4
+        },
+        {
+          "cat": "Мурзик",
+          "fish_count": 7,
+          "place": 4
+        },
+        {
+          "cat": "Патч",
+          "fish_count": 7,
+          "place": 4
+        }
+      ]
     },
     {
-      "cat": "Барсик",
-      "fish_count": 12,
-      "place": 2
+      "name": "Тест 3",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Барсик', 20), ('Мурзик', 16), ('Соня', 3), ('Патч', 3), ('Снежок', 1), ('Тихон', 16), ('Васька', 16);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "fish_count": 20,
+          "place": 1
+        },
+        {
+          "cat": "Васька",
+          "fish_count": 16,
+          "place": 2
+        },
+        {
+          "cat": "Мурзик",
+          "fish_count": 16,
+          "place": 2
+        },
+        {
+          "cat": "Тихон",
+          "fish_count": 16,
+          "place": 2
+        },
+        {
+          "cat": "Патч",
+          "fish_count": 3,
+          "place": 3
+        },
+        {
+          "cat": "Соня",
+          "fish_count": 3,
+          "place": 3
+        },
+        {
+          "cat": "Снежок",
+          "fish_count": 1,
+          "place": 4
+        }
+      ]
     },
     {
-      "cat": "Мурзик",
-      "fish_count": 12,
-      "place": 2
+      "name": "Тест 4",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Снежок', 13), ('Тихон', 1), ('Патч', 3), ('Соня', 3), ('Барсик', 13);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "fish_count": 13,
+          "place": 1
+        },
+        {
+          "cat": "Снежок",
+          "fish_count": 13,
+          "place": 1
+        },
+        {
+          "cat": "Патч",
+          "fish_count": 3,
+          "place": 2
+        },
+        {
+          "cat": "Соня",
+          "fish_count": 3,
+          "place": 2
+        },
+        {
+          "cat": "Тихон",
+          "fish_count": 1,
+          "place": 3
+        }
+      ]
     },
     {
-      "cat": "Соня",
-      "fish_count": 7,
-      "place": 3
+      "name": "Тест 5",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Патч', 6), ('Соня', 12), ('Васька', 16), ('Барсик', 2), ('Снежок', 16), ('Мурзик', 6), ('Тихон', 2);",
+      "expected": [
+        {
+          "cat": "Васька",
+          "fish_count": 16,
+          "place": 1
+        },
+        {
+          "cat": "Снежок",
+          "fish_count": 16,
+          "place": 1
+        },
+        {
+          "cat": "Соня",
+          "fish_count": 12,
+          "place": 2
+        },
+        {
+          "cat": "Мурзик",
+          "fish_count": 6,
+          "place": 3
+        },
+        {
+          "cat": "Патч",
+          "fish_count": 6,
+          "place": 3
+        },
+        {
+          "cat": "Барсик",
+          "fish_count": 2,
+          "place": 4
+        },
+        {
+          "cat": "Тихон",
+          "fish_count": 2,
+          "place": 4
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Мурзик', 22), ('Снежок', 19), ('Васька', 22), ('Соня', 22), ('Барсик', 5);",
+      "expected": [
+        {
+          "cat": "Васька",
+          "fish_count": 22,
+          "place": 1
+        },
+        {
+          "cat": "Мурзик",
+          "fish_count": 22,
+          "place": 1
+        },
+        {
+          "cat": "Соня",
+          "fish_count": 22,
+          "place": 1
+        },
+        {
+          "cat": "Снежок",
+          "fish_count": 19,
+          "place": 2
+        },
+        {
+          "cat": "Барсик",
+          "fish_count": 5,
+          "place": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Снежок', 19), ('Патч', 19), ('Тихон', 7), ('Барсик', 7), ('Соня', 19), ('Васька', 2);",
+      "expected": [
+        {
+          "cat": "Патч",
+          "fish_count": 19,
+          "place": 1
+        },
+        {
+          "cat": "Снежок",
+          "fish_count": 19,
+          "place": 1
+        },
+        {
+          "cat": "Соня",
+          "fish_count": 19,
+          "place": 1
+        },
+        {
+          "cat": "Барсик",
+          "fish_count": 7,
+          "place": 2
+        },
+        {
+          "cat": "Тихон",
+          "fish_count": 7,
+          "place": 2
+        },
+        {
+          "cat": "Васька",
+          "fish_count": 2,
+          "place": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Тихон', 5), ('Снежок', 8), ('Барсик', 17), ('Патч', 5), ('Соня', 8);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "fish_count": 17,
+          "place": 1
+        },
+        {
+          "cat": "Снежок",
+          "fish_count": 8,
+          "place": 2
+        },
+        {
+          "cat": "Соня",
+          "fish_count": 8,
+          "place": 2
+        },
+        {
+          "cat": "Патч",
+          "fish_count": 5,
+          "place": 3
+        },
+        {
+          "cat": "Тихон",
+          "fish_count": 5,
+          "place": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Васька', 1), ('Патч', 17), ('Барсик', 20), ('Снежок', 20), ('Мурзик', 1), ('Тихон', 15), ('Соня', 11);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "fish_count": 20,
+          "place": 1
+        },
+        {
+          "cat": "Снежок",
+          "fish_count": 20,
+          "place": 1
+        },
+        {
+          "cat": "Патч",
+          "fish_count": 17,
+          "place": 2
+        },
+        {
+          "cat": "Тихон",
+          "fish_count": 15,
+          "place": 3
+        },
+        {
+          "cat": "Соня",
+          "fish_count": 11,
+          "place": 4
+        },
+        {
+          "cat": "Васька",
+          "fish_count": 1,
+          "place": 5
+        },
+        {
+          "cat": "Мурзик",
+          "fish_count": 1,
+          "place": 5
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Васька', 9), ('Снежок', 15), ('Мурзик', 15), ('Патч', 9), ('Соня', 16);",
+      "expected": [
+        {
+          "cat": "Соня",
+          "fish_count": 16,
+          "place": 1
+        },
+        {
+          "cat": "Мурзик",
+          "fish_count": 15,
+          "place": 2
+        },
+        {
+          "cat": "Снежок",
+          "fish_count": 15,
+          "place": 2
+        },
+        {
+          "cat": "Васька",
+          "fish_count": 9,
+          "place": 3
+        },
+        {
+          "cat": "Патч",
+          "fish_count": 9,
+          "place": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Васька', 21), ('Барсик', 17), ('Мурзик', 17), ('Снежок', 16), ('Патч', 16);",
+      "expected": [
+        {
+          "cat": "Васька",
+          "fish_count": 21,
+          "place": 1
+        },
+        {
+          "cat": "Барсик",
+          "fish_count": 17,
+          "place": 2
+        },
+        {
+          "cat": "Мурзик",
+          "fish_count": 17,
+          "place": 2
+        },
+        {
+          "cat": "Патч",
+          "fish_count": 16,
+          "place": 3
+        },
+        {
+          "cat": "Снежок",
+          "fish_count": 16,
+          "place": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Патч', 9), ('Васька', 16), ('Барсик', 9), ('Снежок', 9), ('Тихон', 12);",
+      "expected": [
+        {
+          "cat": "Васька",
+          "fish_count": 16,
+          "place": 1
+        },
+        {
+          "cat": "Тихон",
+          "fish_count": 12,
+          "place": 2
+        },
+        {
+          "cat": "Барсик",
+          "fish_count": 9,
+          "place": 3
+        },
+        {
+          "cat": "Патч",
+          "fish_count": 9,
+          "place": 3
+        },
+        {
+          "cat": "Снежок",
+          "fish_count": 9,
+          "place": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Соня', 21), ('Барсик', 21), ('Снежок', 6), ('Тихон', 21), ('Васька', 6);",
+      "expected": [
+        {
+          "cat": "Барсик",
+          "fish_count": 21,
+          "place": 1
+        },
+        {
+          "cat": "Соня",
+          "fish_count": 21,
+          "place": 1
+        },
+        {
+          "cat": "Тихон",
+          "fish_count": 21,
+          "place": 1
+        },
+        {
+          "cat": "Васька",
+          "fish_count": 6,
+          "place": 2
+        },
+        {
+          "cat": "Снежок",
+          "fish_count": 6,
+          "place": 2
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Патч', 22), ('Мурзик', 15), ('Соня', 15), ('Васька', 15), ('Снежок', 24), ('Тихон', 22);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "fish_count": 24,
+          "place": 1
+        },
+        {
+          "cat": "Патч",
+          "fish_count": 22,
+          "place": 2
+        },
+        {
+          "cat": "Тихон",
+          "fish_count": 22,
+          "place": 2
+        },
+        {
+          "cat": "Васька",
+          "fish_count": 15,
+          "place": 3
+        },
+        {
+          "cat": "Мурзик",
+          "fish_count": 15,
+          "place": 3
+        },
+        {
+          "cat": "Соня",
+          "fish_count": 15,
+          "place": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Патч', 5), ('Мурзик', 22), ('Соня', 2), ('Снежок', 2), ('Тихон', 22);",
+      "expected": [
+        {
+          "cat": "Мурзик",
+          "fish_count": 22,
+          "place": 1
+        },
+        {
+          "cat": "Тихон",
+          "fish_count": 22,
+          "place": 1
+        },
+        {
+          "cat": "Патч",
+          "fish_count": 5,
+          "place": 2
+        },
+        {
+          "cat": "Снежок",
+          "fish_count": 2,
+          "place": 3
+        },
+        {
+          "cat": "Соня",
+          "fish_count": 2,
+          "place": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Тихон', 22), ('Барсик', 14), ('Васька', 14), ('Патч', 1), ('Снежок', 22), ('Соня', 22);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "fish_count": 22,
+          "place": 1
+        },
+        {
+          "cat": "Соня",
+          "fish_count": 22,
+          "place": 1
+        },
+        {
+          "cat": "Тихон",
+          "fish_count": 22,
+          "place": 1
+        },
+        {
+          "cat": "Барсик",
+          "fish_count": 14,
+          "place": 2
+        },
+        {
+          "cat": "Васька",
+          "fish_count": 14,
+          "place": 2
+        },
+        {
+          "cat": "Патч",
+          "fish_count": 1,
+          "place": 3
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Снежок', 23), ('Барсик', 18), ('Васька', 9), ('Патч', 9), ('Мурзик', 22), ('Соня', 4), ('Тихон', 22);",
+      "expected": [
+        {
+          "cat": "Снежок",
+          "fish_count": 23,
+          "place": 1
+        },
+        {
+          "cat": "Мурзик",
+          "fish_count": 22,
+          "place": 2
+        },
+        {
+          "cat": "Тихон",
+          "fish_count": 22,
+          "place": 2
+        },
+        {
+          "cat": "Барсик",
+          "fish_count": 18,
+          "place": 3
+        },
+        {
+          "cat": "Васька",
+          "fish_count": 9,
+          "place": 4
+        },
+        {
+          "cat": "Патч",
+          "fish_count": 9,
+          "place": 4
+        },
+        {
+          "cat": "Соня",
+          "fish_count": 4,
+          "place": 5
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO catches (cat, fish_count) VALUES ('Патч', 10), ('Тихон', 6), ('Снежок', 16), ('Мурзик', 6), ('Соня', 21), ('Барсик', 6);",
+      "expected": [
+        {
+          "cat": "Соня",
+          "fish_count": 21,
+          "place": 1
+        },
+        {
+          "cat": "Снежок",
+          "fish_count": 16,
+          "place": 2
+        },
+        {
+          "cat": "Патч",
+          "fish_count": 10,
+          "place": 3
+        },
+        {
+          "cat": "Барсик",
+          "fish_count": 6,
+          "place": 4
+        },
+        {
+          "cat": "Мурзик",
+          "fish_count": 6,
+          "place": 4
+        },
+        {
+          "cat": "Тихон",
+          "fish_count": 6,
+          "place": 4
+        }
+      ]
     }
   ]
 }

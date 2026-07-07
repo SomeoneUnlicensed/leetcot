@@ -170,7 +170,7 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
                   {[
                     [challengeCountLabel, 'в курсе'],
                     ['Go', 'один язык'],
-                    ['oracle', 'проверка'],
+                    ['40', 'скрытых тестов на задачу'],
                   ].map(([value, label]) => (
                     <div
                       key={label}

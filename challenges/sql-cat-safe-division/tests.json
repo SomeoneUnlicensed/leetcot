@@ -2,18 +2,386 @@
   "schema": "CREATE TABLE funnels (channel TEXT, visits INTEGER, signups INTEGER);",
   "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('поиск', 100, 25), ('соцсети', 0, 0), ('письма', 40, 8);",
   "expectedType": "select",
-  "expected": [
+  "cases": [
     {
-      "channel": "поиск",
-      "conversion": 0.25
+      "name": "Тест 1",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('письма', 130, 97), ('реклама', 63, 12), ('реферал', 134, 7), ('поиск', 0, 0);",
+      "expected": [
+        {
+          "channel": "письма",
+          "conversion": 0.75
+        },
+        {
+          "channel": "реклама",
+          "conversion": 0.19
+        },
+        {
+          "channel": "реферал",
+          "conversion": 0.05
+        },
+        {
+          "channel": "поиск",
+          "conversion": null
+        }
+      ]
     },
     {
-      "channel": "письма",
-      "conversion": 0.2
+      "name": "Тест 2",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('письма', 181, 78), ('соцсети', 74, 27), ('реклама', 0, 0);",
+      "expected": [
+        {
+          "channel": "письма",
+          "conversion": 0.43
+        },
+        {
+          "channel": "соцсети",
+          "conversion": 0.36
+        },
+        {
+          "channel": "реклама",
+          "conversion": null
+        }
+      ]
     },
     {
-      "channel": "соцсети",
-      "conversion": null
+      "name": "Тест 3",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('поиск', 26, 19), ('письма', 13, 13), ('реклама', 130, 66), ('реферал', 151, 59), ('соцсети', 0, 0);",
+      "expected": [
+        {
+          "channel": "письма",
+          "conversion": 1.0
+        },
+        {
+          "channel": "поиск",
+          "conversion": 0.73
+        },
+        {
+          "channel": "реклама",
+          "conversion": 0.51
+        },
+        {
+          "channel": "реферал",
+          "conversion": 0.39
+        },
+        {
+          "channel": "соцсети",
+          "conversion": null
+        }
+      ]
+    },
+    {
+      "name": "Тест 4",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('реклама', 33, 4), ('реферал', 0, 0), ('поиск', 15, 12), ('письма', 150, 74);",
+      "expected": [
+        {
+          "channel": "поиск",
+          "conversion": 0.8
+        },
+        {
+          "channel": "письма",
+          "conversion": 0.49
+        },
+        {
+          "channel": "реклама",
+          "conversion": 0.12
+        },
+        {
+          "channel": "реферал",
+          "conversion": null
+        }
+      ]
+    },
+    {
+      "name": "Тест 5",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('поиск', 17, 14), ('соцсети', 73, 6), ('реклама', 50, 7), ('письма', 105, 60), ('реферал', 0, 0);",
+      "expected": [
+        {
+          "channel": "поиск",
+          "conversion": 0.82
+        },
+        {
+          "channel": "письма",
+          "conversion": 0.57
+        },
+        {
+          "channel": "реклама",
+          "conversion": 0.14
+        },
+        {
+          "channel": "соцсети",
+          "conversion": 0.08
+        },
+        {
+          "channel": "реферал",
+          "conversion": null
+        }
+      ]
+    },
+    {
+      "name": "Тест 6",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('реклама', 0, 0), ('письма', 47, 42), ('соцсети', 160, 120);",
+      "expected": [
+        {
+          "channel": "письма",
+          "conversion": 0.89
+        },
+        {
+          "channel": "соцсети",
+          "conversion": 0.75
+        },
+        {
+          "channel": "реклама",
+          "conversion": null
+        }
+      ]
+    },
+    {
+      "name": "Тест 7",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('реферал', 34, 23), ('поиск', 159, 14), ('реклама', 0, 0);",
+      "expected": [
+        {
+          "channel": "реферал",
+          "conversion": 0.68
+        },
+        {
+          "channel": "поиск",
+          "conversion": 0.09
+        },
+        {
+          "channel": "реклама",
+          "conversion": null
+        }
+      ]
+    },
+    {
+      "name": "Тест 8",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('реклама', 21, 2), ('поиск', 45, 15), ('реферал', 0, 0);",
+      "expected": [
+        {
+          "channel": "поиск",
+          "conversion": 0.33
+        },
+        {
+          "channel": "реклама",
+          "conversion": 0.1
+        },
+        {
+          "channel": "реферал",
+          "conversion": null
+        }
+      ]
+    },
+    {
+      "name": "Тест 9",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('реферал', 11, 5), ('поиск', 138, 118), ('соцсети', 0, 0);",
+      "expected": [
+        {
+          "channel": "поиск",
+          "conversion": 0.86
+        },
+        {
+          "channel": "реферал",
+          "conversion": 0.45
+        },
+        {
+          "channel": "соцсети",
+          "conversion": null
+        }
+      ]
+    },
+    {
+      "name": "Тест 10",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('реклама', 0, 0), ('письма', 62, 29), ('соцсети', 135, 71), ('поиск', 177, 41), ('реферал', 18, 16);",
+      "expected": [
+        {
+          "channel": "реферал",
+          "conversion": 0.89
+        },
+        {
+          "channel": "соцсети",
+          "conversion": 0.53
+        },
+        {
+          "channel": "письма",
+          "conversion": 0.47
+        },
+        {
+          "channel": "поиск",
+          "conversion": 0.23
+        },
+        {
+          "channel": "реклама",
+          "conversion": null
+        }
+      ]
+    },
+    {
+      "name": "Тест 11",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('письма', 131, 47), ('поиск', 34, 28), ('соцсети', 0, 0);",
+      "expected": [
+        {
+          "channel": "поиск",
+          "conversion": 0.82
+        },
+        {
+          "channel": "письма",
+          "conversion": 0.36
+        },
+        {
+          "channel": "соцсети",
+          "conversion": null
+        }
+      ]
+    },
+    {
+      "name": "Тест 12",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('поиск', 12, 5), ('соцсети', 0, 0), ('реферал', 133, 70);",
+      "expected": [
+        {
+          "channel": "реферал",
+          "conversion": 0.53
+        },
+        {
+          "channel": "поиск",
+          "conversion": 0.42
+        },
+        {
+          "channel": "соцсети",
+          "conversion": null
+        }
+      ]
+    },
+    {
+      "name": "Тест 13",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('соцсети', 180, 37), ('поиск', 0, 0), ('реклама', 67, 23), ('реферал', 43, 4), ('письма', 146, 54);",
+      "expected": [
+        {
+          "channel": "письма",
+          "conversion": 0.37
+        },
+        {
+          "channel": "реклама",
+          "conversion": 0.34
+        },
+        {
+          "channel": "соцсети",
+          "conversion": 0.21
+        },
+        {
+          "channel": "реферал",
+          "conversion": 0.09
+        },
+        {
+          "channel": "поиск",
+          "conversion": null
+        }
+      ]
+    },
+    {
+      "name": "Тест 14",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('реферал', 0, 0), ('письма', 178, 115), ('реклама', 87, 59), ('соцсети', 185, 101);",
+      "expected": [
+        {
+          "channel": "реклама",
+          "conversion": 0.68
+        },
+        {
+          "channel": "письма",
+          "conversion": 0.65
+        },
+        {
+          "channel": "соцсети",
+          "conversion": 0.55
+        },
+        {
+          "channel": "реферал",
+          "conversion": null
+        }
+      ]
+    },
+    {
+      "name": "Тест 15",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('реферал', 0, 0), ('реклама', 14, 0), ('письма', 184, 37);",
+      "expected": [
+        {
+          "channel": "письма",
+          "conversion": 0.2
+        },
+        {
+          "channel": "реклама",
+          "conversion": 0.0
+        },
+        {
+          "channel": "реферал",
+          "conversion": null
+        }
+      ]
+    },
+    {
+      "name": "Тест 16",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('поиск', 124, 0), ('реферал', 0, 0), ('соцсети', 114, 109), ('реклама', 178, 66);",
+      "expected": [
+        {
+          "channel": "соцсети",
+          "conversion": 0.96
+        },
+        {
+          "channel": "реклама",
+          "conversion": 0.37
+        },
+        {
+          "channel": "поиск",
+          "conversion": 0.0
+        },
+        {
+          "channel": "реферал",
+          "conversion": null
+        }
+      ]
+    },
+    {
+      "name": "Тест 17",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('поиск', 190, 180), ('письма', 0, 0), ('соцсети', 148, 71), ('реклама', 38, 1);",
+      "expected": [
+        {
+          "channel": "поиск",
+          "conversion": 0.95
+        },
+        {
+          "channel": "соцсети",
+          "conversion": 0.48
+        },
+        {
+          "channel": "реклама",
+          "conversion": 0.03
+        },
+        {
+          "channel": "письма",
+          "conversion": null
+        }
+      ]
+    },
+    {
+      "name": "Тест 18",
+      "seed": "INSERT INTO funnels (channel, visits, signups) VALUES ('реклама', 60, 60), ('реферал', 0, 0), ('письма', 135, 126), ('поиск', 56, 30);",
+      "expected": [
+        {
+          "channel": "реклама",
+          "conversion": 1.0
+        },
+        {
+          "channel": "письма",
+          "conversion": 0.93
+        },
+        {
+          "channel": "поиск",
+          "conversion": 0.54
+        },
+        {
+          "channel": "реферал",
+          "conversion": null
+        }
+      ]
     }
   ]
 }
