@@ -454,6 +454,44 @@ function trimOutput(output = '') {
   return `${Buffer.from(output).subarray(0, MAX_OUTPUT_BYTES).toString('utf8')}\n...output truncated...`;
 }
 
+function buildGoProgram(userCode: string) {
+  const normalizedCode = userCode.replace(/^\uFEFF/, '').trimStart();
+
+  if (/^package\s+\w+/m.test(normalizedCode)) {
+    return normalizedCode;
+  }
+
+  return `package main\n\n${normalizedCode}`;
+}
+
+function formatGoFailure(stdout: string, stderr: string, exitCode: number | null) {
+  const combinedOutput = trimOutput([stderr, stdout].filter(Boolean).join('\n'));
+
+  if (!combinedOutput) {
+    return `Go-проверка завершилась с кодом ${exitCode ?? 'unknown'}`;
+  }
+
+  if (/redeclared in this block/.test(combinedOutput)) {
+    return [
+      'Go-код не скомпилировался: функция объявлена больше одного раза.',
+      'Оставьте в редакторе один вариант решения и запустите проверку снова.',
+      '',
+      combinedOutput,
+    ].join('\n');
+  }
+
+  if (/expected 'package', found/.test(combinedOutput)) {
+    return [
+      'Go-код не скомпилировался: файл должен начинаться с package main.',
+      'Можно оставить только функцию решения — сервер сам добавит package main.',
+      '',
+      combinedOutput,
+    ].join('\n');
+  }
+
+  return combinedOutput;
+}
+
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : 'Unknown runner error';
 }
@@ -640,7 +678,7 @@ async function executeGoHotJob(job: CodeRunJob, workerId: number): Promise<CodeR
   const runner = await ensureHotGoRunner(workerId);
   const jobDir = path.join(runner.baseDir, job.id);
   await mkdir(jobDir, { recursive: true });
-  await writeFile(path.join(jobDir, goRuntime.fileName), job.payload.code);
+  await writeFile(path.join(jobDir, goRuntime.fileName), buildGoProgram(job.payload.code));
   await writeFile(path.join(jobDir, 'main_test.go'), job.payload.tests);
 
   const timeoutSeconds = Math.ceil((goRuntime.timeoutMs ?? TIMEOUT_MS) / 1000);
@@ -681,8 +719,8 @@ async function executeGoHotJob(job: CodeRunJob, workerId: number): Promise<CodeR
       return {
         error:
           failedCase?.message ||
-          trimOutput(result.stderr || `Процесс завершился с кодом ${result.exitCode}`),
-        output: testSummary ? '' : trimOutput(result.stdout),
+          formatGoFailure(result.stdout, result.stderr, result.exitCode),
+        output: testSummary ? '' : '',
         success: false,
         testSummary,
       };
