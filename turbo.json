@@ -36,7 +36,8 @@
     "CODE_RUNNER_GO_MEMORY_LIMIT",
     "CODE_RUNNER_GO_TIMEOUT_MS",
     "NEXT_PUBLIC_SENTRY_DSN",
-    "SENTRY_TEST_TOKEN"
+    "SENTRY_TEST_TOKEN",
+    "ALTCHA_HMAC_KEY"
   ],
   "globalDependencies": [".env", ".env.*"],
   "tasks": {

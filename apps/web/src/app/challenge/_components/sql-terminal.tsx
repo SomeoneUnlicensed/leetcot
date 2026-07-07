@@ -1,6 +1,7 @@
 'use client';
 
 import initSqlJs, { type SqlJsStatic } from 'sql.js';
+import { useAltchaPayload } from '@repo/monaco/altcha';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Confetti } from '~/components/confetti';
 import { saveSubmission } from '../[slug]/submissions/[[...catchAll]]/save-submission.action';
@@ -31,8 +32,6 @@ interface SqliteDatabase {
 }
 
 interface SqlTestConfig {
-  expected?: Record<string, unknown>[];
-  expectedQuery?: string;
   expectedType?: 'select' | 'state';
   schema?: string;
   seed?: string;
@@ -86,6 +85,7 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
   const [isSuccess, setIsSuccess] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
+  const { getPayload: getCaptchaPayload, widgetRef: captchaWidgetRef } = useAltchaPayload();
 
   // Cats states: 'error' | 'idle' | 'success' | 'typing'
   const [catState, setCatState] = useState<'error' | 'idle' | 'success' | 'typing'>('idle');
@@ -284,10 +284,19 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
         return;
       }
 
+      const captcha = await getCaptchaPayload();
+
+      if (!captcha) {
+        throw new Error(
+          'Не удалось пройти проверку антибот-защиты. Обновите страницу и попробуйте снова.',
+        );
+      }
+
       const enqueueRes = await fetch('/api/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          captcha,
           challengeId: challenge.id,
           code: lastRun.query,
           language: 'sql',
@@ -497,6 +506,16 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950 font-sans text-zinc-300 shadow-2xl shadow-black/30">
+      <altcha-widget
+        ref={captchaWidgetRef}
+        challenge="/api/captcha"
+        auto="onload"
+        display="invisible"
+        hidefooter
+        hidelogo
+        name="altcha"
+        style={{ display: 'none' }}
+      />
       {showConfetti ? <Confetti /> : null}
 
       {/* Terminal Header */}

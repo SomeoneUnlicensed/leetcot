@@ -6,6 +6,12 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "web", "run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "web-alt-port",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "web", "exec", "dotenv", "-e", "../../.env", "--", "next", "dev", "-p", "3010"],
+      "port": 3010
     }
   ]
 }

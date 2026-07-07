@@ -4,6 +4,7 @@
   "private": true,
   "exports": {
     ".": "./src/index.tsx",
+    "./altcha": "./src/altcha.tsx",
     "./code-editor": "./src/code-editor.tsx",
     "./settings-store": "./src/settings-store.ts",
     "./vim-mode": "./src/vim-mode.tsx",
@@ -16,6 +17,9 @@
     "*": {
       "*": [
         "./src/index.tsx"
+      ],
+      "altcha": [
+        "./src/altcha.tsx"
       ],
       "code-editor": [
         "./src/code-editor.tsx"
@@ -53,6 +57,7 @@
     "@monaco-editor/react": "^4.7.0",
     "@repo/ui": "workspace:^",
     "@typescript/ata": "^0.9.4",
+    "altcha": "^3.1.0",
     "clsx": "^2.0.0",
     "lodash": "^4.17.21",
     "lz-string": "^1.5.0",
