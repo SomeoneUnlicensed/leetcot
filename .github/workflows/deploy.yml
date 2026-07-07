@@ -40,7 +40,20 @@ jobs:
           DOCKER_BUILDKIT: "1"
         run: |
           IMAGE="${IMAGE_REPOSITORY}:${GITHUB_SHA}"
+          get_env() {
+            grep -m1 "^$1=" ./.env | cut -d= -f2-
+          }
+          export SENTRY_AUTH_TOKEN="$(get_env SENTRY_AUTH_TOKEN)"
+          NEXT_PUBLIC_SENTRY_DSN="$(get_env NEXT_PUBLIC_SENTRY_DSN)"
+          SENTRY_ORG="$(get_env SENTRY_ORG)"
+          SENTRY_PROJECT="$(get_env SENTRY_PROJECT)"
+
           docker build \
+            --secret id=sentry_auth_token,env=SENTRY_AUTH_TOKEN \
+            --build-arg NEXT_PUBLIC_SENTRY_DSN="$NEXT_PUBLIC_SENTRY_DSN" \
+            --build-arg NEXT_PUBLIC_APP_VERSION="${GITHUB_SHA::8}" \
+            --build-arg SENTRY_ORG="$SENTRY_ORG" \
+            --build-arg SENTRY_PROJECT="$SENTRY_PROJECT" \
             -t "$IMAGE" \
             -t "${IMAGE_REPOSITORY}:latest" \
             .
