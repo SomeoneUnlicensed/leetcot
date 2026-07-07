@@ -40,7 +40,7 @@ ENV SENTRY_ORG=$SENTRY_ORG
 ENV SENTRY_PROJECT=$SENTRY_PROJECT
 RUN --mount=type=secret,id=sentry_auth_token \
     SENTRY_AUTH_TOKEN="$(cat /run/secrets/sentry_auth_token 2>/dev/null || true)" \
-    npx turbo run build --concurrency=1
+    npx turbo run build --concurrency=2
 
 RUN find /app/node_modules -name "*.map" -delete && \
     find /app/node_modules -name "*.d.ts" -delete && \
