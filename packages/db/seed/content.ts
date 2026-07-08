@@ -59,6 +59,9 @@ const trackChallengeSlugs: Record<string, string[]> = {
     'python-fish-merge-intervals',
     'python-fish-stock-trade',
     'python-fish-valid-anagram',
+    'python-fish-key-maze',
+    'python-fish-min-crates',
+    'python-fish-ration-plans',
   ],
   'sql-cat-fishing': [
     'sql-cat-intro',

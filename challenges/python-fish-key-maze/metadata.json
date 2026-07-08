@@ -1,0 +1,12 @@
+{
+  "id": "python-fish-key-maze",
+  "label": "Ключи от кладовой (Key Maze)",
+  "description": "Найди кратчайший путь по лабиринту с ключами и дверями.",
+  "difficulty": "ultra",
+  "language": "python",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python"
+  ]
+}

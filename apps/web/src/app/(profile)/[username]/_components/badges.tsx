@@ -31,6 +31,16 @@ export const SlugToBadgeIcon: Record<BadgeInfo['slug'], FC<{ className?: string 
       <Github className="h-8 w-8 text-white" />
     </div>
   ),
+  'all-ultra': ({ className }) => (
+    <div
+      className={cn(
+        'relative flex h-16 w-16 items-center justify-center rounded-full border-2 border-amber-300/60 bg-gradient-to-br from-amber-400 via-rose-500 to-fuchsia-700 shadow-md shadow-rose-900/30 duration-300 hover:scale-105 hover:shadow-rose-700/40',
+        className,
+      )}
+    >
+      <Sparkles className="h-8 w-8 text-white" />
+    </div>
+  ),
 };
 
 export function Badges(props: { data: BadgeInfo[] }) {

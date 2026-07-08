@@ -1,0 +1,12 @@
+{
+  "id": "python-fish-ration-plans",
+  "label": "Планы ночного пайка (Subset Sum)",
+  "description": "Посчитай, сколько наборов мисок дают ровно нужный вес.",
+  "difficulty": "ultra",
+  "language": "python",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "python-fish-min-crates",
+  "label": "Ящики для тунца (Bitmask DP)",
+  "description": "Упакуй весь улов в минимальное число ящиков.",
+  "difficulty": "ultra",
+  "language": "python",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python"
+  ]
+}

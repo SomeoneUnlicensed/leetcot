@@ -21,6 +21,50 @@ const QUEUE_VERIFIED_LANGUAGES: ChallengeRouteData['challenge']['language'][] = 
   'PYTHON',
   'GO',
 ];
+const ALL_ULTRA_BADGE_SLUG = 'all-ultra';
+
+async function awardAllUltraBadgeIfEarned(userId: string) {
+  const ultraChallenges = await prisma.challenge.findMany({
+    where: {
+      difficulty: 'ULTRA',
+      isInfoOnly: false,
+      status: 'ACTIVE',
+    },
+    select: { id: true },
+  });
+
+  if (ultraChallenges.length === 0) {
+    return;
+  }
+
+  const solvedUltraChallenges = await prisma.submission.findMany({
+    where: {
+      userId,
+      isSuccessful: true,
+      challengeId: { in: ultraChallenges.map((challenge) => challenge.id) },
+    },
+    distinct: ['challengeId'],
+    select: { challengeId: true },
+  });
+
+  if (solvedUltraChallenges.length !== ultraChallenges.length) {
+    return;
+  }
+
+  await prisma.userBadge.upsert({
+    where: {
+      userId_badgeSlug: {
+        userId,
+        badgeSlug: ALL_ULTRA_BADGE_SLUG,
+      },
+    },
+    update: {},
+    create: {
+      userId,
+      badgeSlug: ALL_ULTRA_BADGE_SLUG,
+    },
+  });
+}
 
 interface Args {
   challenge: ChallengeRouteData['challenge'];
@@ -83,5 +127,10 @@ export async function saveSubmission({
   revalidateTag(createCacheKeyForSolutions(challenge.slug));
   revalidateTag(createInProgressSubmissionCacheKey(userId));
   revalidateTag(createCompletedSubmissionCacheKey(userId));
+
+  if (verifiedIsSuccessful) {
+    await awardAllUltraBadgeIfEarned(userId);
+  }
+
   return submission;
 }
