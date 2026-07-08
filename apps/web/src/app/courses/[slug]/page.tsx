@@ -110,8 +110,8 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
       EASY: 'Легко',
       MEDIUM: 'Средне',
       HARD: 'Сложно',
-      EXTREME: 'Очень сложно',
-      ULTRA: 'Ультра сложно',
+      EXTREME: 'Экстрим',
+      ULTRA: 'Ультра',
     };
     const difficultyClasses: Record<string, string> = {
       EASY: 'border-emerald-300/30 bg-emerald-300/10 text-emerald-100',

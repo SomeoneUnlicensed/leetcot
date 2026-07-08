@@ -37,8 +37,8 @@ const difficultyLabels: Record<Difficulty, string> = {
   EASY: 'Лёгкая',
   MEDIUM: 'Средняя',
   HARD: 'Сложная',
-  EXTREME: 'Очень сложно',
-  ULTRA: 'Ультра сложно',
+  EXTREME: 'Экстрим',
+  ULTRA: 'Ультра',
   EVENT: 'Событие',
 };
 

@@ -39,7 +39,7 @@ const chartConfig = {
     color: 'hsl(var(--chart-5))',
   },
   ULTRA: {
-    label: 'Ультра сложно',
+    label: 'Ультра',
     color: '#e879f9',
   },
 } satisfies ChartConfig;
