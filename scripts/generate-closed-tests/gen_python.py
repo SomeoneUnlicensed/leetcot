@@ -41,6 +41,7 @@ GENERATOR_SRC = {generator_src!r}
 ENTRY_POINT = {entry_point!r}
 RESULT_ORDER_INSENSITIVE = {result_order_insensitive!r}
 NUM_CASES = {num_cases!r}
+FIXED_CASES = {fixed_cases!r}
 
 SOL_NS = {{}}
 exec(SOLUTION_SRC, SOL_NS)
@@ -69,7 +70,7 @@ def run_callable(obj, args):
     return obj(*args)
 
 
-def normalize(value):
+def normalize(value, depth=0):
     if hasattr(value, 'next'):
         result = []
         seen = 0
@@ -81,26 +82,29 @@ def normalize(value):
     if hasattr(value, 'left') or hasattr(value, 'right'):
         return [
             getattr(value, 'val', None),
-            normalize(getattr(value, 'left', None)),
-            normalize(getattr(value, 'right', None)),
+            normalize(getattr(value, 'left', None), depth + 1),
+            normalize(getattr(value, 'right', None), depth + 1),
         ]
     if isinstance(value, (list, tuple)):
-        items = [normalize(item) for item in value]
-        if RESULT_ORDER_INSENSITIVE:
+        items = [normalize(item, depth + 1) for item in value]
+        if RESULT_ORDER_INSENSITIVE and depth == 0:
             try:
                 return sorted(items, key=repr)
             except TypeError:
                 return items
         return items
     if isinstance(value, dict):
-        return {{key: normalize(value[key]) for key in value}}
+        return {{key: normalize(value[key], depth + 1) for key in value}}
     return value
 
 
 cases = []
 for i in range(1, NUM_CASES + 1):
-    random.seed(i)
-    args = generate_case()
+    if i <= len(FIXED_CASES):
+        args = tuple(FIXED_CASES[i - 1])
+    else:
+        random.seed(i)
+        args = generate_case()
     if not isinstance(args, tuple):
         args = (args,)
     actual = run_callable(solution_fn, copy.deepcopy(args))
@@ -146,6 +150,7 @@ def main() -> None:
             old_oracle_config_path.rename(test_config_path)
 
         result_order_insensitive = bool(extra_config.get("resultOrderInsensitive", False))
+        fixed_cases = extra_config.get("fixedCases", [])
 
         worker_script = WORKER_TEMPLATE.format(
             solution_src=solution_src,
@@ -153,6 +158,7 @@ def main() -> None:
             entry_point=entry_point,
             result_order_insensitive=result_order_insensitive,
             num_cases=NUM_CASES,
+            fixed_cases=fixed_cases,
         )
 
         proc = subprocess.run(
@@ -180,10 +186,12 @@ def main() -> None:
             "seedGenerator": generator_src,
             "cases": cases,
             **({"resultOrderInsensitive": True} if result_order_insensitive else {}),
+            **({"fixedCases": fixed_cases} if fixed_cases else {}),
         }
 
         new_tests = f"{visible_prefix}\n\n{MARKER}\n# {json.dumps(config, ensure_ascii=False)}\n"
-        tests_path.write_text(new_tests, encoding="utf-8", newline="\n")
+        with tests_path.open("w", encoding="utf-8", newline="\n") as handle:
+            handle.write(new_tests)
         print(f"OK  {challenge_dir.name}  ({len(cases)} cases)")
 
     if failures:

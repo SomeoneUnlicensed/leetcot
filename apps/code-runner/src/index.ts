@@ -114,6 +114,7 @@ interface PythonClosedTestCase {
 interface PythonClosedTestConfig {
   entryPoint: string;
   cases: PythonClosedTestCase[];
+  fixedCases?: unknown[][];
   seedGenerator: string;
   // Some problems explicitly allow the result list in any order (e.g. two_fish may
   // return either index first) — set via challenges/*/test-config.json.
@@ -158,6 +159,7 @@ import copy
 import json
 import random
 import sys
+import traceback
 
 USER_NS = {}
 exec(${JSON.stringify(userCode)}, USER_NS)
@@ -166,13 +168,19 @@ GEN_NS = {}
 exec(${JSON.stringify(config.seedGenerator)}, GEN_NS)
 
 ENTRY_POINT = ${JSON.stringify(config.entryPoint)}
-RESULT_ORDER_INSENSITIVE = ${config.resultOrderInsensitive ? 'True' : 'False'}
+RESULT_ORDER_INSENSITIVE = ${config.resultOrderInsensitive || config.entryPoint === 'toy_permutations' ? 'True' : 'False'}
+FIXED_CASES = json.loads(${JSON.stringify(JSON.stringify(config.fixedCases ?? []))})
 CASES = json.loads(${JSON.stringify(JSON.stringify(config.cases))})
 TOTAL = len(CASES)
 
 def short_repr(value):
     text = repr(value)
     return text if len(text) <= 220 else text[:217] + '...'
+
+def input_repr(args):
+    if len(args) == 1:
+        return short_repr(args[0])
+    return short_repr(args)
 
 def shape_repr(value):
     if isinstance(value, list):
@@ -208,7 +216,7 @@ if generate_case is None or TOTAL == 0:
         failed_case('Настройка проверки', 'Проверка задачи временно настроена неверно. Мы уже знаем, где чинить.')
     ])
 
-def normalize(value):
+def normalize(value, depth=0):
     if hasattr(value, 'next'):
         result = []
         seen = 0
@@ -220,19 +228,19 @@ def normalize(value):
     if hasattr(value, 'left') or hasattr(value, 'right'):
         return [
             getattr(value, 'val', None),
-            normalize(getattr(value, 'left', None)),
-            normalize(getattr(value, 'right', None)),
+            normalize(getattr(value, 'left', None), depth + 1),
+            normalize(getattr(value, 'right', None), depth + 1),
         ]
     if isinstance(value, (list, tuple)):
-        items = [normalize(item) for item in value]
-        if RESULT_ORDER_INSENSITIVE:
+        items = [normalize(item, depth + 1) for item in value]
+        if RESULT_ORDER_INSENSITIVE and depth == 0:
             try:
                 return sorted(items, key=repr)
             except TypeError:
                 return items
         return items
     if isinstance(value, dict):
-        return {key: normalize(value[key]) for key in value}
+        return {key: normalize(value[key], depth + 1) for key in value}
     return value
 
 def run_callable(obj, args):
@@ -254,8 +262,11 @@ def run_callable(obj, args):
 
 for index, case in enumerate(CASES):
     case_name = case['name']
-    random.seed(case['seed'])
-    args = generate_case()
+    if index < len(FIXED_CASES):
+        args = tuple(FIXED_CASES[index])
+    else:
+        random.seed(case['seed'])
+        args = generate_case()
     if not isinstance(args, tuple):
         args = (args,)
     user_args = copy.deepcopy(args)
@@ -263,17 +274,23 @@ for index, case in enumerate(CASES):
     try:
         actual = run_callable(user_fn, user_args)
     except Exception as exc:
+        details = traceback.format_exc(limit=4).strip()
         finish(False, index, [
-            failed_case(case_name, f'Решение упало на тесте: {exc}')
+            failed_case(case_name, 'Решение упало на тесте. '
+                f'Вход: {input_repr(args)}. '
+                f'Ошибка Python: {exc}. '
+                f'Traceback: {details}')
         ])
 
     normalized_actual = normalize(actual)
-    if normalized_actual != case['expected']:
+    normalized_expected = normalize(case['expected'])
+    if normalized_actual != normalized_expected:
         finish(False, index, [
             failed_case(
                 case_name,
                 'Ответ отличается от эталона. '
-                f'Ожидаемый формат: {shape_repr(case["expected"])}, '
+                f'Вход: {input_repr(args)}. '
+                f'Ожидаемый формат: {shape_repr(normalized_expected)}, '
                 f'получено: {shape_repr(normalized_actual)}. '
                 f'Ваш результат: {short_repr(normalized_actual)}'
             )

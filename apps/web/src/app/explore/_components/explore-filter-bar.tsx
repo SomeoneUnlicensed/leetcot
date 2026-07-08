@@ -88,8 +88,8 @@ export function ExploreFilterBar() {
             <SelectItem value="EASY">Легко</SelectItem>
             <SelectItem value="MEDIUM">Средне</SelectItem>
             <SelectItem value="HARD">Сложно</SelectItem>
-            <SelectItem value="EXTREME">Экстрим</SelectItem>
-            <SelectItem value="ULTRA">Ультра</SelectItem>
+            <SelectItem value="EXTREME">Очень сложно</SelectItem>
+            <SelectItem value="ULTRA">Ультра сложно</SelectItem>
           </SelectContent>
         </Select>
         <Select

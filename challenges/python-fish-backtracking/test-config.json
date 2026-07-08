@@ -1,0 +1,10 @@
+{
+  "resultOrderInsensitive": true,
+  "fixedCases": [
+    [[1, 2, 3]],
+    [[]],
+    [[1]],
+    [[0, 1]],
+    [["a", "b", "c"]]
+  ]
+}

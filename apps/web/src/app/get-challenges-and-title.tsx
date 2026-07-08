@@ -25,11 +25,11 @@ export const SORT_KEYS = [
     value: 'hard',
   },
   {
-    label: 'Экстрим',
+    label: 'Очень сложно',
     value: 'extreme',
   },
   {
-    label: 'Ультра',
+    label: 'Ультра сложно',
     value: 'ultra',
   },
 ] as const;

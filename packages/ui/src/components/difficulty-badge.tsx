@@ -24,8 +24,8 @@ const LABELS_BY_DIFFICULTY = {
   EASY: 'Легко',
   MEDIUM: 'Средне',
   HARD: 'Сложно',
-  EXTREME: 'Экстрим',
-  ULTRA: 'Ультра',
+  EXTREME: 'Очень сложно',
+  ULTRA: 'Ультра сложно',
   EVENT: 'Событие',
 };
 

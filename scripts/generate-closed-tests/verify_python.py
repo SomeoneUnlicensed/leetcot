@@ -31,6 +31,7 @@ exec({seed_generator!r}, GEN_NS)
 
 ENTRY_POINT = {entry_point!r}
 RESULT_ORDER_INSENSITIVE = {result_order_insensitive!r}
+FIXED_CASES = json.loads({fixed_cases_json!r})
 CASES = json.loads({cases_json!r})
 TOTAL = len(CASES)
 
@@ -53,7 +54,7 @@ if user_fn is None:
 if generate_case is None or TOTAL == 0:
     finish(False, 0, [failed_case('setup', 'bad config')])
 
-def normalize(value):
+def normalize(value, depth=0):
     if hasattr(value, 'next'):
         result = []
         seen = 0
@@ -63,17 +64,17 @@ def normalize(value):
             seen += 1
         return result
     if hasattr(value, 'left') or hasattr(value, 'right'):
-        return [getattr(value, 'val', None), normalize(getattr(value, 'left', None)), normalize(getattr(value, 'right', None))]
+        return [getattr(value, 'val', None), normalize(getattr(value, 'left', None), depth + 1), normalize(getattr(value, 'right', None), depth + 1)]
     if isinstance(value, (list, tuple)):
-        items = [normalize(item) for item in value]
-        if RESULT_ORDER_INSENSITIVE:
+        items = [normalize(item, depth + 1) for item in value]
+        if RESULT_ORDER_INSENSITIVE and depth == 0:
             try:
                 return sorted(items, key=repr)
             except TypeError:
                 return items
         return items
     if isinstance(value, dict):
-        return {{key: normalize(value[key]) for key in value}}
+        return {{key: normalize(value[key], depth + 1) for key in value}}
     return value
 
 def run_callable(obj, args):
@@ -94,8 +95,11 @@ def run_callable(obj, args):
     return obj(*args)
 
 for index, case in enumerate(CASES):
-    random.seed(case['seed'])
-    args = generate_case()
+    if index < len(FIXED_CASES):
+        args = tuple(FIXED_CASES[index])
+    else:
+        random.seed(case['seed'])
+        args = generate_case()
     if not isinstance(args, tuple):
         args = (args,)
     user_args = copy.deepcopy(args)
@@ -104,8 +108,9 @@ for index, case in enumerate(CASES):
     except Exception as exc:
         finish(False, index, [failed_case(case['name'], f'crashed: {{exc}}')])
     normalized_actual = normalize(actual)
-    if normalized_actual != case['expected']:
-        finish(False, index, [failed_case(case['name'], f'expected {{short_repr(case["expected"])}}, got {{short_repr(normalized_actual)}}')])
+    normalized_expected = normalize(case['expected'])
+    if normalized_actual != normalized_expected:
+        finish(False, index, [failed_case(case['name'], f'expected {{short_repr(normalized_expected)}}, got {{short_repr(normalized_actual)}}')])
 
 finish(True, TOTAL)
 """
@@ -134,7 +139,11 @@ def main() -> None:
             user_code=user_code,
             seed_generator=config["seedGenerator"],
             entry_point=config["entryPoint"],
-            result_order_insensitive=bool(config.get("resultOrderInsensitive", False)),
+            result_order_insensitive=bool(
+                config.get("resultOrderInsensitive", False)
+                or config["entryPoint"] == "toy_permutations"
+            ),
+            fixed_cases_json=json.dumps(config.get("fixedCases", []), ensure_ascii=False),
             cases_json=json.dumps(config["cases"], ensure_ascii=False),
         )
 
