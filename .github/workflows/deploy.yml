@@ -138,6 +138,11 @@ jobs:
           POD=$(kubectl -n production get pod -l app=leetcot-app -o jsonpath='{.items[0].metadata.name}')
           kubectl -n production exec "$POD" -- pnpm --filter @repo/db exec prisma migrate deploy
 
+      - name: Sync challenge content
+        run: |
+          POD=$(kubectl -n production get pod -l app=leetcot-app -o jsonpath='{.items[0].metadata.name}')
+          kubectl -n production exec "$POD" -- pnpm --filter @repo/db exec tsx ./seed/content.ts
+
       - name: Sync challenge tests
         run: |
           POD=$(kubectl -n production get pod -l app=leetcot-app -o jsonpath='{.items[0].metadata.name}')
