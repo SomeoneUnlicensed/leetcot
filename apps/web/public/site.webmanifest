@@ -1,10 +1,21 @@
 {
   "name": "ЛитКот",
   "short_name": "ЛитКот",
-  "description": "Прокачивай навыки программирования вместе с котиками",
+  "description": "Решайте интересные задачи по Python, SQL и Go, которые не хочется бросать на середине.",
+  "lang": "ru",
+  "dir": "ltr",
   "start_url": "/",
   "scope": "/",
+  "id": "https://leetcot.ru/",
+  "orientation": "any",
+  "categories": ["education", "developer", "productivity"],
   "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
     {
       "src": "/favicon-16x16.png",
       "sizes": "16x16",

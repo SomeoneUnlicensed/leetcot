@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { prisma } from '@repo/db';
 import type { Challenge } from '@repo/db/types';
 
-const URL = 'https://leetcot.ru';
+import { SITE_URL } from './metadata';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let allChallenges: Challenge[] = [];
@@ -17,28 +17,52 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     {
-      url: `${URL}/`,
+      url: `${SITE_URL}/`,
       lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 1,
     },
     {
-      url: `${URL}/explore`,
+      url: `${SITE_URL}/explore`,
       lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
     },
     {
-      url: `${URL}/tracks`,
+      url: `${SITE_URL}/algorithms`,
       lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
     },
     {
-      url: `${URL}/tos`,
+      url: `${SITE_URL}/sql-fishing`,
       lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
     },
     {
-      url: `${URL}/privacy`,
+      url: `${SITE_URL}/courses/golang-start`,
       lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/tos`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.2,
+    },
+    {
+      url: `${SITE_URL}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.2,
     },
     ...allChallenges.map((challenge) => ({
-      url: `${URL}/challenges/${challenge.slug}`,
+      url: `${SITE_URL}/challenge/${challenge.slug}`,
       lastModified: new Date(challenge.updatedAt),
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
     })),
   ];
 }

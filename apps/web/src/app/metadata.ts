@@ -4,9 +4,32 @@ import { challengeParam, userParam } from '@repo/og-utils';
 export const OG_URL =
   process.env.NODE_ENV !== 'production' ? 'http://localhost:4200' : 'https://og.leetcot.ru';
 
-export const tagline = 'Прокачивай навыки программирования вместе с котиками';
+export const SITE_URL = 'https://leetcot.ru';
+export const tagline =
+  'Решайте интересные задачи по Python, SQL и Go, которые не хочется бросать на середине.';
 export const baseMetadata: Metadata = {
-  metadataBase: new URL(OG_URL),
+  metadataBase: new URL(SITE_URL),
+  applicationName: 'ЛитКот',
+  authors: [{ name: 'ЛитКот', url: SITE_URL }],
+  creator: 'ЛитКот',
+  publisher: 'ЛитКот',
+  category: 'education',
+  keywords: [
+    'ЛитКот',
+    'задачи по программированию',
+    'Python задачи',
+    'SQL задачи',
+    'Go задачи',
+    'алгоритмы',
+    'подготовка к собеседованию',
+    'программирование на русском',
+  ],
+  referrer: 'origin-when-cross-origin',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   title: {
     default: 'ЛитКот',
     template: '%s | ЛитКот',
@@ -16,18 +39,20 @@ export const baseMetadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: 'https://leetcot.ru',
+    canonical: SITE_URL,
   },
   description: tagline,
   openGraph: {
     title: 'ЛитКот',
     description: tagline,
+    url: SITE_URL,
     siteName: 'ЛитКот',
     images: [
       {
         url: `${OG_URL}/api/default`,
         width: 1920,
         height: 1080,
+        alt: 'ЛитКот — задачи по программированию с котиками',
       },
     ],
     locale: 'ru-RU',
@@ -35,12 +60,14 @@ export const baseMetadata: Metadata = {
   },
   twitter: {
     title: 'ЛитКот',
+    description: tagline,
     card: 'summary_large_image',
     images: [
       {
         url: `${OG_URL}/api/default`,
         width: 1920,
         height: 1080,
+        alt: 'ЛитКот — задачи по программированию с котиками',
       },
     ],
   },
