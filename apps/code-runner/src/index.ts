@@ -174,6 +174,17 @@ def short_repr(value):
     text = repr(value)
     return text if len(text) <= 220 else text[:217] + '...'
 
+def shape_repr(value):
+    if isinstance(value, list):
+        if value and isinstance(value[0], list):
+            return f'список из {len(value)} списков'
+        return f'список длиной {len(value)}'
+    if isinstance(value, tuple):
+        return f'кортеж длиной {len(value)}'
+    if isinstance(value, dict):
+        return f'словарь с {len(value)} ключами'
+    return type(value).__name__
+
 def finish(success, passed, cases=None):
     print(json.dumps({
         'passed': passed,
@@ -261,7 +272,10 @@ for index, case in enumerate(CASES):
         finish(False, index, [
             failed_case(
                 case_name,
-                f'Ожидалось {short_repr(case["expected"])}, получено {short_repr(normalized_actual)}'
+                'Ответ отличается от эталона. '
+                f'Ожидаемый формат: {shape_repr(case["expected"])}, '
+                f'получено: {shape_repr(normalized_actual)}. '
+                f'Ваш результат: {short_repr(normalized_actual)}'
             )
         ])
 
@@ -338,6 +352,13 @@ def failed_case(name, message):
 def short_repr(value):
     text = repr(value)
     return text if len(text) <= 220 else text[:217] + '...'
+
+def shape_repr(value):
+    if isinstance(value, list):
+        return f'{len(value)} строк'
+    if isinstance(value, dict):
+        return f'строка с {len(value)} колонками'
+    return type(value).__name__
 
 def _num(value):
     if isinstance(value, bool):
@@ -426,7 +447,10 @@ for index, case in enumerate(CASES):
         finish(False, index, [
             failed_case(
                 case_name,
-                f'Ожидалось {short_repr(expected_rows)}, получено {short_repr(actual_rows)}'
+                'Результат запроса отличается от эталона. '
+                f'Ожидаемый формат: {shape_repr(expected_rows)}, '
+                f'получено: {shape_repr(actual_rows)}. '
+                f'Ваш результат: {short_repr(actual_rows)}'
             )
         ])
 

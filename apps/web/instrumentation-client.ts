@@ -7,8 +7,9 @@ Sentry.init({
   dsn,
   enabled: Boolean(dsn) && process.env.NODE_ENV === 'production',
   environment: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+  integrations: [Sentry.replayIntegration()],
   replaysOnErrorSampleRate: 1.0,
-  replaysSessionSampleRate: 0,
+  replaysSessionSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
   tracePropagationTargets: ['localhost:3000', 'leetcot.ru', /^\//],
   tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
 });
