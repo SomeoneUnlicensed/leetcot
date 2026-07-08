@@ -3,6 +3,7 @@ import { Footsies } from '~/components/footsies';
 import { SITE_URL, buildMetaForDefault, tagline } from './metadata';
 import { Features } from './_components/features';
 import { Hero } from './_components/hero';
+import { PartnerCta } from './_components/partner-cta';
 
 export function generateMetadata(): Metadata {
   return buildMetaForDefault({
@@ -43,6 +44,7 @@ export default function Index() {
       />
       <Hero />
       <Features />
+      <PartnerCta />
       <Footsies />
     </>
   );

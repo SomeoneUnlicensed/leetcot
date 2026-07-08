@@ -466,6 +466,10 @@ function trimOutput(output = '') {
   return `${Buffer.from(output).subarray(0, MAX_OUTPUT_BYTES).toString('utf8')}\n...output truncated...`;
 }
 
+function stripAnsi(output = '') {
+  return output.replace(/\x1b\[[0-9;]*m/g, '');
+}
+
 function buildGoProgram(userCode: string) {
   const normalizedCode = userCode.replace(/^\uFEFF/, '').trimStart();
 
@@ -477,10 +481,14 @@ function buildGoProgram(userCode: string) {
 }
 
 function formatGoFailure(stdout: string, stderr: string, exitCode: number | null) {
-  const combinedOutput = trimOutput([stderr, stdout].filter(Boolean).join('\n'));
+  const combinedOutput = stripAnsi(trimOutput([stderr, stdout].filter(Boolean).join('\n'))).trim();
 
   if (!combinedOutput) {
-    return `Go-проверка завершилась с кодом ${exitCode ?? 'unknown'}`;
+    return [
+      'Go-код не скомпилировался.',
+      'Компилятор не вернул подробный текст ошибки. Проверьте, что в решении есть нужная функция, скобки закрыты, а типы аргументов и результата совпадают с условием.',
+      `Код завершения: ${exitCode ?? 'unknown'}.`,
+    ].join('\n');
   }
 
   if (combinedOutput.includes('redeclared in this block')) {
@@ -504,10 +512,26 @@ function formatGoFailure(stdout: string, stderr: string, exitCode: number | null
   const compileMessages = combinedOutput
     .split('\n')
     .map((line) => line.trim())
-    .filter((line) => /^(\.\/)?main\.go:\d+:\d+:/.test(line));
+    .filter((line) => /(?:^|\s)(?:\.\/)?[\w.-]+\.go:\d+:\d+:\s+.+/.test(line));
 
   if (compileMessages.length > 0) {
-    return ['Go-код не скомпилировался:', ...compileMessages.slice(0, 8)].join('\n');
+    return [
+      'Go-код не скомпилировался. Компилятор нашёл такие ошибки:',
+      ...compileMessages.slice(0, 8),
+    ].join('\n');
+  }
+
+  if (
+    combinedOutput.includes('[setup failed]') ||
+    combinedOutput.includes('build failed') ||
+    combinedOutput.includes('FAIL')
+  ) {
+    return [
+      'Go-код не скомпилировался или тестовый пакет не собрался.',
+      'Ниже сырой вывод Go, по нему обычно видно строку и причину ошибки:',
+      '',
+      combinedOutput,
+    ].join('\n');
   }
 
   const failedTestName = /--- FAIL:\s+([^\s(]+)/.exec(combinedOutput)?.[1];

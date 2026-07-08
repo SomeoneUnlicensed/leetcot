@@ -50,6 +50,12 @@ jobs:
           pnpm --filter @repo/code-runner typecheck
           pnpm --filter @repo/monaco typecheck
 
+      - name: Verify closed test banks
+        run: |
+          python scripts/generate-closed-tests/verify_python.py
+          python scripts/generate-closed-tests/verify_sql.py
+          python scripts/generate-closed-tests/verify_go.py
+
   build:
     needs: quality
     runs-on: ubuntu-latest
