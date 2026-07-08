@@ -1,6 +1,7 @@
 import { prisma } from '@repo/db';
 import { SolutionDetails } from '../_components/solution-detail';
 import { auth } from '~/server/auth';
+import { buildMetaForDefault } from '~/app/metadata';
 import { getSolutionIdRouteData } from './getSolutionIdRouteData';
 
 interface ChallengeSolutionProps {
@@ -46,8 +47,8 @@ export async function generateMetadata(props: ChallengeSolutionProps) {
     },
   });
 
-  return {
-    title: `${solution.title}, solution to ${solution.challenge?.name} | ЛитКот`,
-    description: `View this solution to ${solution.challenge?.name} on ЛитКот.`,
-  };
+  return buildMetaForDefault({
+    title: `${solution.title} — решение задачи ${solution.challenge?.name}`,
+    description: `Разбор и код решения задачи ${solution.challenge?.name} на ЛитКоте.`,
+  });
 }

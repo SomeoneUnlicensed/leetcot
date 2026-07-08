@@ -3,12 +3,15 @@ import Link from 'next/link';
 import { ArrowUpRight, BadgeInfo, FileCode, Info } from '@repo/ui/icons';
 import { Button } from '@repo/ui/components/button';
 import { Footsies } from '~/components/footsies';
+import { buildMetaForDefault } from '../metadata';
 
-export const metadata: Metadata = {
-  title: 'Как мы проверяем код | ЛитКот',
-  description:
-    'Как ЛитКот запускает решения на Python, SQL и Go: формат ответа, ограничения песочницы и частые ошибки.',
-};
+export function generateMetadata(): Metadata {
+  return buildMetaForDefault({
+    title: 'Как мы проверяем код',
+    description:
+      'Как ЛитКот запускает решения на Python, SQL и Go: формат ответа, ограничения песочницы и частые ошибки.',
+  });
+}
 
 const languages = [
   {

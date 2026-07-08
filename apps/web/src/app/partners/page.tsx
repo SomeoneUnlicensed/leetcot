@@ -13,12 +13,15 @@ import {
 } from '@repo/ui/icons';
 import { Button } from '@repo/ui/components/button';
 import { Footsies } from '~/components/footsies';
+import { buildMetaForDefault } from '../metadata';
 
-export const metadata: Metadata = {
-  title: 'Партнёрам | ЛитКот',
-  description:
-    'Leetcot — платформа для coding challenges, технических отборов и учебных треков под бренд партнёра.',
-};
+export function generateMetadata(): Metadata {
+  return buildMetaForDefault({
+    title: 'Партнёрам',
+    description:
+      'ЛитКот для партнеров: coding challenges, технические отборы, учебные треки и white-label практика под бренд партнера.',
+  });
+}
 
 const stack = [
   'Python-алгоритмы',

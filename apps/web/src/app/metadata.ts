@@ -7,6 +7,8 @@ export const OG_URL =
 export const SITE_URL = 'https://leetcot.ru';
 export const tagline =
   'Решайте интересные задачи по Python, SQL и Go, которые не хочется бросать на середине.';
+export const siteTitle = 'ЛитКот — задачи по программированию, которые хочется дорешать';
+
 export const baseMetadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   applicationName: 'ЛитКот',
@@ -31,7 +33,7 @@ export const baseMetadata: Metadata = {
     telephone: false,
   },
   title: {
-    default: 'ЛитКот',
+    default: siteTitle,
     template: '%s | ЛитКот',
   },
   robots: {
@@ -43,7 +45,7 @@ export const baseMetadata: Metadata = {
   },
   description: tagline,
   openGraph: {
-    title: 'ЛитКот',
+    title: siteTitle,
     description: tagline,
     url: SITE_URL,
     siteName: 'ЛитКот',
@@ -59,7 +61,7 @@ export const baseMetadata: Metadata = {
     type: 'website',
   },
   twitter: {
-    title: 'ЛитКот',
+    title: siteTitle,
     description: tagline,
     card: 'summary_large_image',
     images: [
@@ -87,6 +89,11 @@ export const baseMetadata: Metadata = {
     'msapplication-config': '/browserconfig.xml',
     'yandex-tableau-widget': 'logo=/yandex-tableau.png, color=#09090b',
   },
+};
+
+const withSiteSuffix = (title?: string) => {
+  if (!title) return siteTitle;
+  return title.includes('ЛитКот') ? title : `${title} | ЛитКот`;
 };
 
 // TODO: infer from ZOD
@@ -178,22 +185,29 @@ const buildMeta = ({
   description?: string;
   title?: string;
 }): Metadata => {
-  baseMetadata.openGraph!.images = ogImageUrl;
-  baseMetadata.twitter!.images = ogImageUrl;
+  const pageTitle = withSiteSuffix(title);
+  const pageDescription = description ?? tagline;
 
-  if (description) {
-    baseMetadata.description = description;
-    baseMetadata.twitter!.description = description;
-    baseMetadata.openGraph!.description = description;
-  }
-
-  if (title) {
-    baseMetadata.title = title;
-    baseMetadata.twitter!.title = title;
-    baseMetadata.openGraph!.title = title;
-  }
-
-  return baseMetadata;
+  return {
+    ...baseMetadata,
+    title: { absolute: pageTitle },
+    description: pageDescription,
+    alternates: {
+      ...baseMetadata.alternates,
+    },
+    openGraph: {
+      ...baseMetadata.openGraph,
+      title: pageTitle,
+      description: pageDescription,
+      images: ogImageUrl,
+    },
+    twitter: {
+      ...baseMetadata.twitter,
+      title: pageTitle,
+      description: pageDescription,
+      images: ogImageUrl,
+    },
+  };
 };
 
 export default baseMetadata;

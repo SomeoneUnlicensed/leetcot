@@ -1,4 +1,5 @@
 import { auth } from '~/server/auth';
+import { buildMetaForDefault } from '~/app/metadata';
 
 import { TrackDetail } from '../_components/track-details';
 import { getTrackDetails } from '../_components/track.action';
@@ -19,14 +20,14 @@ export async function generateMetadata({ params }: { params: Params }) {
   const track = await getTrackDetails(slug);
 
   if (!track) {
-    return {
-      title: 'Track | ЛитКот',
-      description: 'View the details of this track on ЛитКот.',
-    };
+    return buildMetaForDefault({
+      title: 'Трек не найден',
+      description: 'Такой трек обучения на ЛитКоте не найден.',
+    });
   }
 
-  return {
-    title: `${track.name} Track | ЛитКот`,
-    description: `View the details of the ${track.name} track on ЛитКот. ${track.description}`,
-  };
+  return buildMetaForDefault({
+    title: `${track.name} — трек обучения`,
+    description: `${track.description} Практикуйтесь по шагам и сохраняйте прогресс на ЛитКоте.`,
+  });
 }

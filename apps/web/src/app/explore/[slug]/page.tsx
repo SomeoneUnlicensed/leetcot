@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense, use } from 'react';
+import { buildMetaForDefault } from '~/app/metadata';
 import { ExploreSlug } from '../_components/explore-slug';
 import { ExploreSlugSkeleton } from '../_components/explore-slug-skeleton';
 
@@ -7,9 +8,12 @@ export const dynamic = 'force-dynamic';
 
 type Params = Promise<{ slug: string }>;
 
-export const metadata: Metadata = {
-  title: 'Задачи | ЛитКот',
-};
+export function generateMetadata(): Metadata {
+  return buildMetaForDefault({
+    title: 'Каталог задач',
+    description: 'Подборка задач ЛитКота по языку, сложности или теме.',
+  });
+}
 
 // accepts both difficulty & tags as slug.
 // ex: `/explore/easy`, `explore/popular`

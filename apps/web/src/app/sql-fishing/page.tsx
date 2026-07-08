@@ -3,11 +3,15 @@ import Link from 'next/link';
 import { ArrowUpRight, Code, Play, Sparkles } from '@repo/ui/icons';
 import { Button } from '@repo/ui/components/button';
 import { Footsies } from '~/components/footsies';
+import { buildMetaForDefault } from '../metadata';
 
-export const metadata: Metadata = {
-  title: 'SQL-рыбалка | ЛитКот',
-  description: 'SQL-тренажер ЛитКота: SELECT, JOIN, группировки и изменения данных на задачах.',
-};
+export function generateMetadata(): Metadata {
+  return buildMetaForDefault({
+    title: 'SQL-рыбалка',
+    description:
+      'SQL-тренажер ЛитКота: SELECT, JOIN, группировки и изменения данных на коротких задачах с таблицами.',
+  });
+}
 
 const rows = [
   ['Барсик', 'лосось', '16'],

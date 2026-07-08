@@ -1,7 +1,17 @@
+import type { Metadata } from 'next';
 import { Button } from '@repo/ui/components/button';
 import { ArrowUpRight, Compass, Layers, Network, Play, Zap } from '@repo/ui/icons';
 import Link from 'next/link';
 import { Footsies } from '~/components/footsies';
+import { buildMetaForDefault } from '../metadata';
+
+export function generateMetadata(): Metadata {
+  return buildMetaForDefault({
+    title: 'Алгоритмы на Python',
+    description:
+      'Практикуйте алгоритмы на Python: строки, массивы, словари, графы и динамику на задачах ЛитКота с быстрой проверкой.',
+  });
+}
 
 const topics = [
   ['Списки и строки', 'Разбор частых приёмов: два указателя, окна, частоты и аккуратные обходы.'],
