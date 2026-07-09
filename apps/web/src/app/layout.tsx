@@ -14,8 +14,8 @@ export const metadata = baseMetadata;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html suppressHydrationWarning lang="ru" className={`dark ${delaGothic.variable}`}>
-      <body className="flex flex-col bg-zinc-950 font-sans text-white">
+    <html suppressHydrationWarning lang="ru" className={delaGothic.variable}>
+      <body className="flex flex-col bg-background font-sans text-foreground">
         <Providers>
           <PromoBlock variant="banner" text="ИНФОРМАЦИЯ (ГЛОБАЛЬНЫЙ БАННЕР)" />
           <Navigation />

@@ -23,6 +23,7 @@ import { getNotificationCount } from './navigation.actions';
 import { NotificationLink } from './notification-link';
 import { SignOutLink } from './signout-link';
 import { SkipToCodeEditor } from './skip-to-code-editor';
+import { ThemeToggle } from '~/components/theme-toggle';
 
 export function getAdminUrl() {
   return process.env.NEXT_PUBLIC_ADMIN_URL || '/panel';
@@ -119,6 +120,7 @@ export async function Navigation() {
               <Suspense>
                 <Search />
               </Suspense>
+              <ThemeToggle />
               {session ? <NotificationLink notificationCount={notificationCount} /> : null}
               {featureFlags?.enableLogin ? (
                 <LoginButton

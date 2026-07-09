@@ -34,7 +34,6 @@ export function Providers({ children }: ProvidersProps) {
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          forcedTheme="dark"
           disableTransitionOnChange
         >
           <FeatureFlagProvider>
