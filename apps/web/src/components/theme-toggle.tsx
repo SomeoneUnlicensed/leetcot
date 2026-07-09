@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@repo/ui/components/button';
 import { Moon, Sun } from '@repo/ui/icons';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
@@ -12,23 +13,25 @@ export function ThemeToggle() {
     setMounted(true);
   }, []);
 
-  const buttonClass =
-    'rounded-full border border-border bg-muted p-1.5 shadow-sm transition-colors duration-200 hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring';
+  const isDark = mounted && resolvedTheme === 'dark';
 
   if (!mounted) {
     return (
-      <button aria-label="theme button" className={buttonClass}>
+      <Button variant="outline" size="icon" aria-label="theme button" disabled>
         <div className="h-5 w-5" />
-      </button>
+      </Button>
     );
   }
 
-  const isDark = resolvedTheme === 'dark';
-  const toggle = () => setTheme(isDark ? 'light' : 'dark');
-
   return (
-    <button onClick={toggle} aria-label="theme button" className={buttonClass}>
+    <Button
+      variant="outline"
+      size="icon"
+      aria-label="theme button"
+      aria-pressed={isDark}
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+    >
       {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-    </button>
+    </Button>
   );
 }
