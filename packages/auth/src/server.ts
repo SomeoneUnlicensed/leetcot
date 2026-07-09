@@ -78,6 +78,13 @@ export const baseNextAuthConfig: Omit<NextAuthConfig, 'providers'> = {
       return true;
     },
     jwt: async ({ token, user, account, profile }) => {
+      if (token.id) {
+        const u = await prisma.user.findUnique({
+          where: { id: token.id },
+          select: { status: true },
+        });
+        if (!u || u.status === 'BANNED') return null;
+      }
       if (user) {
         if (account?.provider === 'arlist') {
           const arlistProfile = profile as unknown as { picture?: string; name?: string };
