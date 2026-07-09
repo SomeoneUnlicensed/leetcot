@@ -84,7 +84,8 @@ export async function Navigation() {
   return (
     <header className="w-full">
       <NavWrapper>
-        <div className="relative flex w-full items-center justify-between overflow-hidden rounded-[1.75rem] border border-white/[0.13] bg-white/[0.055] px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),inset_0_-1px_0_rgba(255,255,255,0.06),0_18px_46px_rgba(0,0,0,0.24)] before:pointer-events-none before:absolute before:inset-x-8 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/55 before:to-transparent after:pointer-events-none after:absolute after:-left-24 after:-top-20 after:h-36 after:w-72 after:rounded-full after:bg-pink-300/10 after:blur-3xl">
+        <div className="litkot-liquid-header relative flex w-full items-center justify-between overflow-hidden rounded-[1.35rem] border border-white/[0.1] bg-white/[0.042] px-2.5 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(255,255,255,0.045),0_12px_34px_rgba(0,0,0,0.18)] before:pointer-events-none before:absolute before:inset-x-10 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/45 before:to-transparent after:pointer-events-none after:absolute after:-left-24 after:-top-20 after:h-32 after:w-64 after:rounded-full after:bg-pink-300/[0.075] after:blur-3xl">
+          <div className="litkot-liquid-stripes pointer-events-none absolute inset-0 opacity-35" />
           <div className="relative z-10 flex min-w-0 items-center gap-3">
             <SkipToCodeEditor />
             <Link
@@ -100,7 +101,7 @@ export async function Navigation() {
               </pre>
 
               <div
-                className="whitespace-nowrap text-lg leading-5 text-white drop-shadow-[0_1px_16px_rgba(255,255,255,0.16)] transition duration-300 group-hover:text-pink-50 sm:text-xl"
+                className="whitespace-nowrap text-lg leading-5 text-white drop-shadow-[0_1px_12px_rgba(255,255,255,0.12)] transition duration-300 group-hover:text-pink-50 sm:text-xl"
                 style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
               >
                 ЛитКот{' '}
@@ -109,7 +110,7 @@ export async function Navigation() {
                 </span>
               </div>
             </Link>
-            <div className="hidden items-center rounded-full border border-white/[0.08] bg-black/[0.12] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl md:flex md:gap-1">
+            <div className="hidden items-center rounded-full border border-white/[0.07] bg-black/[0.09] p-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.065)] backdrop-blur-xl md:flex md:gap-1">
               {NavLinks}
             </div>
           </div>

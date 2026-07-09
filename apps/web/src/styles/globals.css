@@ -860,3 +860,93 @@ body.mobile-nav-active {
 .animate-fade-in-overlay {
   animation: fadeInOverlay 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+.litkot-liquid-header::before {
+  animation: litkot-liquid-lines 9s ease-in-out infinite alternate;
+}
+
+.litkot-liquid-header::after {
+  animation: litkot-liquid-glow 12s ease-in-out infinite alternate;
+}
+
+.litkot-liquid-stripes {
+  background-image:
+    linear-gradient(112deg, transparent 0%, rgba(255, 255, 255, 0.1) 18%, transparent 36%),
+    linear-gradient(72deg, transparent 0%, rgba(244, 114, 182, 0.08) 22%, transparent 46%);
+  background-size:
+    260px 100%,
+    360px 100%;
+  animation: litkot-liquid-stripes 14s ease-in-out infinite;
+}
+
+.litkot-login-glint::after {
+  animation: litkot-login-glint 5.6s ease-in-out infinite;
+}
+
+@keyframes litkot-liquid-lines {
+  0% {
+    transform: translateX(-9%) scaleX(0.82);
+    opacity: 0.36;
+  }
+  50% {
+    opacity: 0.58;
+  }
+  100% {
+    transform: translateX(9%) scaleX(1.04);
+    opacity: 0.42;
+  }
+}
+
+@keyframes litkot-liquid-glow {
+  0% {
+    transform: translate3d(-8%, -6%, 0) scale(0.92);
+    opacity: 0.58;
+  }
+  100% {
+    transform: translate3d(44%, 12%, 0) scale(1.12);
+    opacity: 0.34;
+  }
+}
+
+@keyframes litkot-liquid-stripes {
+  0% {
+    background-position:
+      -220px 0,
+      160px 0;
+    opacity: 0.34;
+  }
+  48% {
+    opacity: 0.52;
+  }
+  100% {
+    background-position:
+      calc(100% + 160px) 0,
+      -220px 0;
+    opacity: 0.3;
+  }
+}
+
+@keyframes litkot-login-glint {
+  0%,
+  58% {
+    transform: translateX(-180%) skewX(-18deg);
+    opacity: 0;
+  }
+  68% {
+    opacity: 0.46;
+  }
+  82%,
+  100% {
+    transform: translateX(240%) skewX(-18deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .litkot-liquid-header::before,
+  .litkot-liquid-header::after,
+  .litkot-liquid-stripes,
+  .litkot-login-glint::after {
+    animation: none;
+  }
+}

@@ -53,7 +53,7 @@ export function MobileNav({ children }: MobileNavProps) {
           key={open ? 'open' : 'close'}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className={`fixed inset-x-0 top-[4.5rem] z-30 flex h-[calc(100vh-4.5rem)] w-full flex-1 snap-y flex-col gap-5 justify-self-center border-b border-white/10 bg-zinc-950 p-4 shadow-2xl md:mt-0 md:hidden md:pb-0 ${
+          className={`fixed inset-x-0 top-16 z-30 flex h-[calc(100vh-4rem)] w-full flex-1 snap-y flex-col gap-5 justify-self-center border-b border-white/10 bg-zinc-950 p-4 shadow-2xl md:mt-0 md:hidden md:pb-0 ${
             open ? 'block' : 'hidden'
           }`}
         >
