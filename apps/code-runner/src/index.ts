@@ -772,7 +772,7 @@ async function executeGoHotJob(job: CodeRunJob, workerId: number): Promise<CodeR
     if (result.timedOut || result.exitCode === 137) {
       hotGoRunners.delete(workerId);
       return {
-        error: `ТАЙМАУТ: Код выполнялся дольше ${timeoutSeconds} секунд. Возможно бесконечный цикл или очень медленное выполнение.`,
+        error: `ТАЙМАУТ: код не завершился за ${timeoutSeconds} секунд. Частая причина — цикл, в котором границы, индексы или счётчики не меняются. Проверьте, что на каждой итерации цикл приближается к завершению.`,
         output: trimOutput(result.stdout),
         success: false,
       };
@@ -844,7 +844,7 @@ async function executePythonHotJob(job: CodeRunJob, workerId: number): Promise<C
     if (result.timedOut || result.exitCode === 137) {
       hotPythonRunners.delete(workerId);
       return {
-        error: `ТАЙМАУТ: Код выполнялся дольше ${timeoutSeconds} секунд. Возможно бесконечный цикл или очень медленное выполнение.`,
+        error: `ТАЙМАУТ: код не завершился за ${timeoutSeconds} секунд. Частая причина — цикл, в котором границы, индексы или счётчики не меняются. Проверьте, что на каждой итерации цикл приближается к завершению.`,
         output: trimOutput(result.stdout),
         success: false,
       };

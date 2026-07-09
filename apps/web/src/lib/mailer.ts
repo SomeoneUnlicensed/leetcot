@@ -13,14 +13,35 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (char) => {
+    switch (char) {
+      case '&':
+        return '&amp;';
+      case '<':
+        return '&lt;';
+      case '>':
+        return '&gt;';
+      case '"':
+        return '&quot;';
+      case "'":
+        return '&#39;';
+      default:
+        return char;
+    }
+  });
+}
+
 const brandHeader = `
   <div class="brand">
-    <img class="brand-logo" src="https://arlist.ru/mail-logo.png" alt="Арлист Тех" />
+    <div class="brand-mark">арлист тех</div>
     <div class="product">ЛитКот</div>
   </div>
 `;
 
 export async function sendArlistLinkedEmail(to: string, name: string) {
+  const safeName = escapeHtml(name);
+
   await transporter.sendMail({
     from: process.env.EMAIL_FROM ?? 'noreply@arlist.ru',
     to,
@@ -34,7 +55,7 @@ export async function sendArlistLinkedEmail(to: string, name: string) {
           body { font-family: -apple-system, sans-serif; background: #09090b; color: #fafafa; margin: 0; padding: 0; }
           .container { max-width: 480px; margin: 40px auto; padding: 40px; background: #18181b; border-radius: 16px; border: 1px solid #27272a; }
           .brand { margin-bottom: 20px; }
-          .brand-logo { display: block; width: 162px; height: auto; margin-bottom: 14px; }
+          .brand-mark { margin-bottom: 14px; color: #fafafa; font-family: Arial Black, Arial, sans-serif; font-size: 22px; font-weight: 900; letter-spacing: 0; line-height: 1; text-transform: lowercase; }
           .product { font-size: 22px; font-weight: 900; color: #fafafa; }
           .greeting { font-size: 16px; color: #a1a1aa; margin-bottom: 24px; }
           .box { background: #09090b; border: 1px solid #ec489940; border-radius: 12px; padding: 20px; margin: 24px 0; font-size: 14px; color: #fafafa; }
@@ -44,7 +65,7 @@ export async function sendArlistLinkedEmail(to: string, name: string) {
       <body>
         <div class="container">
           ${brandHeader}
-          <div class="greeting">Привет, ${name}!</div>
+          <div class="greeting">Привет, ${safeName}!</div>
           <div class="box">
             Твой аккаунт ЛитКот теперь привязан к <strong>Arlist ID</strong>. С этого момента входи на сайт только через кнопку «Войти с Arlist ID» — вход по email и паролю для этого аккаунта больше не доступен.
           </div>
@@ -57,6 +78,9 @@ export async function sendArlistLinkedEmail(to: string, name: string) {
 }
 
 export async function sendVerificationEmail(to: string, code: string, name: string) {
+  const safeCode = escapeHtml(code);
+  const safeName = escapeHtml(name);
+
   await transporter.sendMail({
     from: process.env.EMAIL_FROM ?? 'noreply@arlist.ru',
     to,
@@ -70,7 +94,7 @@ export async function sendVerificationEmail(to: string, code: string, name: stri
           body { font-family: -apple-system, sans-serif; background: #09090b; color: #fafafa; margin: 0; padding: 0; }
           .container { max-width: 480px; margin: 40px auto; padding: 40px; background: #18181b; border-radius: 16px; border: 1px solid #27272a; }
           .brand { margin-bottom: 20px; }
-          .brand-logo { display: block; width: 162px; height: auto; margin-bottom: 14px; }
+          .brand-mark { margin-bottom: 14px; color: #fafafa; font-family: Arial Black, Arial, sans-serif; font-size: 22px; font-weight: 900; letter-spacing: 0; line-height: 1; text-transform: lowercase; }
           .product { font-size: 22px; font-weight: 900; color: #fafafa; }
           .greeting { font-size: 16px; color: #a1a1aa; margin-bottom: 32px; }
           .code-box { background: #09090b; border: 1px solid #ec489940; border-radius: 12px; padding: 24px; text-align: center; margin: 24px 0; }
@@ -82,9 +106,9 @@ export async function sendVerificationEmail(to: string, code: string, name: stri
       <body>
         <div class="container">
           ${brandHeader}
-          <div class="greeting">Привет, ${name}! Вот твой код для завершения регистрации:</div>
+          <div class="greeting">Привет, ${safeName}! Вот твой код для завершения регистрации:</div>
           <div class="code-box">
-            <div class="code">${code}</div>
+            <div class="code">${safeCode}</div>
             <div class="hint">Код действителен 15 минут</div>
           </div>
           <div class="footer">Если ты не регистрировался — просто проигнорируй это письмо.</div>

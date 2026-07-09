@@ -102,7 +102,10 @@ export async function POST(req: Request) {
     console.error('Execution enqueue error:', err);
 
     return NextResponse.json(
-      { success: false, error: `Ошибка очереди проверки: ${err.message}` },
+      {
+        success: false,
+        error: 'Сервер проверки временно не ответил. Попробуйте ещё раз через минуту.',
+      },
       { status: 500 },
     );
   }

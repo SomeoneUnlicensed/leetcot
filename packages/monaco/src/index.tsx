@@ -87,6 +87,19 @@ function formatUserCheckError(errorStr: string) {
   return cleaned || 'Код не прошел проверку. Проверьте решение и запустите еще раз.';
 }
 
+async function readJsonResponse<T extends { error?: string; success?: boolean }>(
+  response: Response,
+  fallbackError: string,
+): Promise<T> {
+  const contentType = response.headers.get('content-type') ?? '';
+
+  if (!contentType.includes('application/json')) {
+    return { error: fallbackError, success: false } as T;
+  }
+
+  return response.json().catch(() => ({ error: fallbackError, success: false }) as T);
+}
+
 // million-ignore
 export function CodePanel(props: CodePanelProps) {
   const router = useRouter();
@@ -212,7 +225,12 @@ export function CodePanel(props: CodePanelProps) {
               language: normalizedLanguage,
             }),
           });
-          const data = await res.json();
+          const data = await readJsonResponse<{
+            error?: string;
+            jobId?: string;
+            output?: string;
+            success: boolean;
+          }>(res, 'Сервер проверки временно не ответил. Попробуйте ещё раз через минуту.');
 
           if (!data.success) {
             formattedErrors.push(data.error || 'Ошибка выполнения');
@@ -220,7 +238,7 @@ export function CodePanel(props: CodePanelProps) {
               formattedErrors.push(`[ВЫВОД КОНСОЛИ]\n${data.output}`);
             }
           } else if (data.jobId) {
-            queueJobId = data.jobId as string;
+            queueJobId = data.jobId;
 
             let result:
               | {
@@ -240,7 +258,16 @@ export function CodePanel(props: CodePanelProps) {
 
             for (let attempt = 0; attempt < 90; attempt += 1) {
               const statusRes = await fetch(`/api/execute?jobId=${queueJobId}`);
-              const statusData = await statusRes.json();
+              const statusData = await readJsonResponse<{
+                error?: string;
+                position?: number;
+                result?: typeof result & { executionTimeMs?: number };
+                status?: string;
+                success: boolean;
+              }>(
+                statusRes,
+                'Не удалось получить результат проверки. Попробуйте ещё раз через минуту.',
+              );
 
               if (!statusData.success) {
                 formattedErrors.push(statusData.error || 'Ошибка получения результата проверки');
@@ -248,11 +275,13 @@ export function CodePanel(props: CodePanelProps) {
               }
 
               if (attempt === 0 && statusData.status === 'queued') {
+                const position = statusData.position ?? 1;
+
                 toast({
                   title: 'Проверка в очереди',
                   description:
-                    statusData.position > 1
-                      ? `Минутку, перед вами проверок: ${statusData.position - 1}.`
+                    position > 1
+                      ? `Минутку, перед вами проверок: ${position - 1}.`
                       : 'Минутку, сервер проверки уже взял ваше решение.',
                 });
               }
@@ -260,7 +289,7 @@ export function CodePanel(props: CodePanelProps) {
               if (statusData.status === 'success' || statusData.status === 'failure') {
                 result = statusData.result;
                 if (statusData.result?.executionTimeMs != null) {
-                  setExecutionTimeMs(statusData.result.executionTimeMs as number);
+                  setExecutionTimeMs(statusData.result.executionTimeMs);
                 }
                 break;
               }
@@ -286,7 +315,9 @@ export function CodePanel(props: CodePanelProps) {
           }
         } catch (fetchErr: any) {
           if (fetchErr?.message !== 'ALTCHA_UNAVAILABLE') {
-            formattedErrors.push(`Ошибка соединения с песочницей: ${fetchErr.message}`);
+            formattedErrors.push(
+              'Сервер проверки временно не ответил. Попробуйте ещё раз через минуту.',
+            );
           }
         }
       } else {
@@ -322,7 +353,7 @@ export function CodePanel(props: CodePanelProps) {
       }
     } catch (e) {
       console.error(e);
-      setCheckingErrors([(e as Error)?.message || 'Произошла непредвиденная ошибка при проверке']);
+      setCheckingErrors(['Произошла непредвиденная ошибка при проверке. Попробуйте ещё раз.']);
       setCheckingState('failure');
       toast({
         variant: 'destructive',
