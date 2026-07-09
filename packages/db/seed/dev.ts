@@ -54,6 +54,12 @@ async function main() {
       create: { role: 'TEACHER' },
     });
 
+    const recruiterRole = await prisma.role.upsert({
+      where: { role: 'RECRUITER' },
+      update: {},
+      create: { role: 'RECRUITER' },
+    });
+
     // 2. Создание админа
     const adminUser = await prisma.user.upsert({
       where: { id: ADMIN_USER_ID },

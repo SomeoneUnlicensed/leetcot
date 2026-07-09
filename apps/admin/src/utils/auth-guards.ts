@@ -8,3 +8,23 @@ export const assertAdmin = (session: Session | null) => {
     throw new Error('You are not authorized to perform this action.');
   }
 };
+
+export const assertAdminOrChampionshipManager = (session: Session | null) => {
+  const roles = session?.user?.role ?? [];
+  const isAdmin = roles.includes(RoleTypes.ADMIN);
+  const isChampManager = roles.includes(RoleTypes.CHAMPIONSHIP_MANAGER);
+
+  if (!isAdmin && !isChampManager) {
+    throw new Error('You are not authorized to perform this action.');
+  }
+};
+
+export const assertAdminOrRecruiter = (session: Session | null) => {
+  const roles = session?.user?.role ?? [];
+  const isAdmin = roles.includes(RoleTypes.ADMIN);
+  const isRecruiter = roles.includes(RoleTypes.RECRUITER);
+
+  if (!isAdmin && !isRecruiter) {
+    throw new Error('You are not authorized to perform this action.');
+  }
+};
