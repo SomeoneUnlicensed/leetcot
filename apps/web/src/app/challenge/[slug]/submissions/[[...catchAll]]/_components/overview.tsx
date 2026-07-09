@@ -17,6 +17,14 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@repo/ui/components/tooltip';
 import { ShareUrl } from '~/components/share-url';
 
+function formatCodeExecutionTime(ms: number) {
+  if (ms <= 0) {
+    return '< 1 мс';
+  }
+
+  return ms >= 1000 ? `${(ms / 1000).toFixed(2)} с` : `${ms} мс`;
+}
+
 interface SubmissionOverviewProps {
   submissionId: string;
   userId: string;
@@ -102,9 +110,7 @@ export function SubmissionOverview({ submissionId, userId }: SubmissionOverviewP
                     <circle cx="12" cy="12" r="10" />
                     <polyline points="12 6 12 12 16 14" />
                   </svg>
-                  {submission.executionTimeMs >= 1000
-                    ? `${(submission.executionTimeMs / 1000).toFixed(2)} с`
-                    : `${submission.executionTimeMs} мс`}
+                  Код: {formatCodeExecutionTime(submission.executionTimeMs)}
                 </span>
               ) : null}
             </div>

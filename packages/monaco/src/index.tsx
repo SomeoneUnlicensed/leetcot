@@ -55,6 +55,7 @@ interface CodeRunCaseResult {
 
 interface CodeRunTestSummary {
   cases?: CodeRunCaseResult[];
+  codeTimeMs?: number;
   passed: number;
   total: number;
 }
@@ -85,6 +86,14 @@ function formatUserCheckError(errorStr: string) {
     );
 
   return cleaned || 'Код не прошел проверку. Проверьте решение и запустите еще раз.';
+}
+
+function formatCodeExecutionTime(ms: number) {
+  if (ms <= 0) {
+    return '< 1 мс';
+  }
+
+  return ms >= 1000 ? `${(ms / 1000).toFixed(2)} с` : `${ms} мс`;
 }
 
 async function readJsonResponse<T extends { error?: string; success?: boolean }>(
@@ -561,9 +570,7 @@ export function CodePanel(props: CodePanelProps) {
                     </svg>
                     Код отработал за{' '}
                     <span className="font-bold">
-                      {executionTimeMs >= 1000
-                        ? `${(executionTimeMs / 1000).toFixed(2)} с`
-                        : `${executionTimeMs} мс`}
+                      {formatCodeExecutionTime(executionTimeMs)}
                     </span>
                   </span>
                 )}

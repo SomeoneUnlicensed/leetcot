@@ -113,13 +113,16 @@ export async function saveSubmission({
     verifiedIsSuccessful = Boolean(isSuccessful);
   }
 
+  const normalizedExecutionTimeMs =
+    verifiedExecutionTimeMs == null ? null : Math.max(0, Math.round(verifiedExecutionTimeMs));
+
   const submission = await prisma.submission.create({
     data: {
       challengeId: challenge.id,
       userId,
       code,
       isSuccessful: verifiedIsSuccessful,
-      ...(verifiedExecutionTimeMs != null ? { executionTimeMs: verifiedExecutionTimeMs } : {}),
+      ...(normalizedExecutionTimeMs != null ? { executionTimeMs: normalizedExecutionTimeMs } : {}),
     },
   });
 

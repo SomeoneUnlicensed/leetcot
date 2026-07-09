@@ -18,6 +18,7 @@ export interface CodeRunCaseResult {
 
 export interface CodeRunTestSummary {
   cases?: CodeRunCaseResult[];
+  codeTimeMs?: number;
   passed: number;
   total: number;
 }

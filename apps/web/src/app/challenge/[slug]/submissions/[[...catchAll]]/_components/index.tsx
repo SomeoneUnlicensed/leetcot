@@ -10,6 +10,14 @@ import { getRelativeTimeStrict } from '~/utils/relativeTime';
 import type { ChallengeSubmissions } from '../page';
 import { useParams } from 'next/navigation';
 
+function formatCodeExecutionTime(ms: number) {
+  if (ms <= 0) {
+    return '< 1 мс';
+  }
+
+  return ms >= 1000 ? `${(ms / 1000).toFixed(2)} с` : `${ms} мс`;
+}
+
 interface SubmissionsProps {
   submissions: ChallengeSubmissions;
 }
@@ -100,7 +108,7 @@ function SubmissionRow({ submission }: { submission: Submission }) {
         <div className="text-muted-foreground flex items-center gap-3">
           {submission.isSuccessful && execTime != null ? (
             <span className="font-mono text-xs">
-              {execTime >= 1000 ? `${(execTime / 1000).toFixed(2)} с` : `${execTime} мс`}
+              Код: {formatCodeExecutionTime(execTime)}
             </span>
           ) : null}
           <div className="flex items-center gap-1.5">

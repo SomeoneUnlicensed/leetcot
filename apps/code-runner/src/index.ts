@@ -159,6 +159,7 @@ import copy
 import json
 import random
 import sys
+import time
 import traceback
 
 USER_NS = {}
@@ -172,6 +173,7 @@ RESULT_ORDER_INSENSITIVE = ${config.resultOrderInsensitive || config.entryPoint 
 FIXED_CASES = json.loads(${JSON.stringify(JSON.stringify(config.fixedCases ?? []))})
 CASES = json.loads(${JSON.stringify(JSON.stringify(config.cases))})
 TOTAL = len(CASES)
+CODE_TIME_SEC = 0.0
 
 def short_repr(value):
     text = repr(value)
@@ -198,6 +200,7 @@ def finish(success, passed, cases=None):
         'passed': passed,
         'total': TOTAL,
         'cases': cases or [],
+        'codeTimeMs': round(CODE_TIME_SEC * 1000),
     }, ensure_ascii=False))
     sys.exit(0 if success else 1)
 
@@ -272,8 +275,11 @@ for index, case in enumerate(CASES):
     user_args = copy.deepcopy(args)
 
     try:
+        code_started_at = time.perf_counter()
         actual = run_callable(user_fn, user_args)
+        CODE_TIME_SEC += time.perf_counter() - code_started_at
     except Exception as exc:
+        CODE_TIME_SEC += time.perf_counter() - code_started_at
         details = traceback.format_exc(limit=4).strip()
         finish(False, index, [
             failed_case(case_name, 'Решение упало на тесте. '
@@ -320,6 +326,7 @@ function parseTestSummary(output: string): CodeRunTestSummary | undefined {
     ) {
       return {
         cases: Array.isArray(parsed.cases) ? parsed.cases : [],
+        codeTimeMs: typeof parsed.codeTimeMs === 'number' ? parsed.codeTimeMs : undefined,
         passed: parsed.passed,
         total: parsed.total,
       };
@@ -868,7 +875,7 @@ async function executePythonHotJob(job: CodeRunJob, workerId: number): Promise<C
 
     return {
       error: '',
-      executionTimeMs,
+      executionTimeMs: testSummary?.codeTimeMs ?? executionTimeMs,
       output: testSummary ? '' : trimOutput(result.stdout),
       success: true,
       testSummary,
