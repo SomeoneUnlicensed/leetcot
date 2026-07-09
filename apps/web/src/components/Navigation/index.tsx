@@ -65,7 +65,7 @@ export async function Navigation() {
             {isAdminOrMod ? (
               <a
                 href={getAdminUrl()}
-                className="rounded-full px-3 py-2 text-sm font-semibold text-muted-foreground transition duration-200 hover:bg-white/[0.08] hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground rounded-full px-3 py-2 text-sm font-semibold transition duration-200 hover:bg-white/[0.08]"
               >
                 Админ
               </a>
@@ -84,15 +84,14 @@ export async function Navigation() {
   return (
     <header className="w-full">
       <NavWrapper>
-        <div className="litkot-liquid-header relative flex w-full items-center justify-between overflow-hidden rounded-[1.35rem] border border-white/[0.1] bg-white/[0.042] px-2.5 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(255,255,255,0.045),0_12px_34px_rgba(0,0,0,0.18)] before:pointer-events-none before:absolute before:inset-x-10 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/45 before:to-transparent after:pointer-events-none after:absolute after:-left-24 after:-top-20 after:h-32 after:w-64 after:rounded-full after:bg-pink-300/[0.075] after:blur-3xl">
-          <div className="litkot-liquid-stripes pointer-events-none absolute inset-0 opacity-35" />
+        <div className="relative flex w-full items-center justify-between overflow-hidden rounded-[1.35rem] border border-white/[0.1] bg-white/[0.045] px-2.5 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.16),inset_0_-1px_0_rgba(255,255,255,0.04),0_12px_34px_rgba(0,0,0,0.18)] before:pointer-events-none before:absolute before:inset-x-10 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/35 before:to-transparent after:pointer-events-none after:absolute after:-right-16 after:-top-24 after:h-40 after:w-72 after:rounded-full after:bg-pink-300/[0.045] after:blur-3xl">
           <div className="relative z-10 flex min-w-0 items-center gap-3">
             <SkipToCodeEditor />
             <Link
-              className="group flex min-w-0 items-center gap-2 rounded-full px-1.5 py-1 transition duration-300 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300"
+              className="group flex min-w-0 items-center gap-2 rounded-full px-1.5 py-1 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300"
               href="/"
             >
-              <pre className="hidden text-[9px] font-bold leading-[10px] text-pink-500 drop-shadow-[0_0_14px_rgba(236,72,153,0.38)] transition duration-300 group-hover:scale-105 group-hover:text-pink-300 sm:block">
+              <pre className="hidden text-[9px] font-bold leading-[10px] text-pink-500 drop-shadow-[0_0_14px_rgba(236,72,153,0.38)] transition-colors duration-200 group-hover:text-pink-300 sm:block">
                 {`
  /\\_/\\
 ( o.o )
@@ -154,14 +153,14 @@ function LoginButton({
       <DropdownMenuTrigger asChild>
         <button
           aria-label="profile button"
-          className="hidden rounded-full border border-white/10 bg-white/[0.04] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition duration-200 hover:-translate-y-0.5 hover:border-pink-300/30 hover:bg-pink-400/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 md:block"
+          className="hidden rounded-full border border-white/10 bg-white/[0.04] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-colors duration-200 hover:border-pink-300/30 hover:bg-pink-400/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 md:block"
         >
           <UserAvatar src={session.user.image ?? ''} username={session.user.name ?? ''} />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="mt-2 w-60 rounded-2xl border border-white/10 bg-background/[0.92] p-1.5 shadow-2xl backdrop-blur-xl"
+        className="bg-background/[0.92] mt-2 w-60 rounded-2xl border border-white/10 p-1.5 shadow-2xl backdrop-blur-xl"
       >
         <Link className="block" href={`/@${session.user.name}`}>
           <DropdownMenuItem className="focus:bg-accent rounded-xl p-2.5 duration-200 focus:outline-none dark:hover:bg-white/[0.08]">

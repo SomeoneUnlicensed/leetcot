@@ -591,7 +591,15 @@ function getErrorMessage(error: unknown) {
 
 async function ensureRuntimeImage(runtime: LanguageRuntime) {
   if (readyRuntimeImages.has(runtime.image)) {
-    return;
+    try {
+      await execAsync(`docker image inspect "${runtime.image}"`);
+      return;
+    } catch {
+      readyRuntimeImages.delete(runtime.image);
+      console.warn(
+        `${runtime.label} runtime image ${runtime.image} disappeared; pulling it again.`,
+      );
+    }
   }
 
   try {
@@ -605,6 +613,34 @@ async function ensureRuntimeImage(runtime: LanguageRuntime) {
   await execAsync(`docker pull "${runtime.image}"`, { timeout: RUNTIME_PULL_TIMEOUT_MS });
   await execAsync(`docker image inspect "${runtime.image}"`);
   readyRuntimeImages.add(runtime.image);
+}
+
+function isMissingDockerImageError(error: unknown) {
+  const message = getErrorMessage(error);
+
+  return (
+    message.includes('No such image') ||
+    message.includes('Unable to find image') ||
+    message.includes('manifest unknown')
+  );
+}
+
+async function runHotContainer(runtime: LanguageRuntime, containerName: string, command: string) {
+  try {
+    await execAsync(command);
+  } catch (error) {
+    if (!isMissingDockerImageError(error)) {
+      throw error;
+    }
+
+    console.warn(
+      `${runtime.label} runtime image ${runtime.image} vanished before container start; pulling and retrying.`,
+    );
+    readyRuntimeImages.delete(runtime.image);
+    await ensureRuntimeImage(runtime);
+    await forceRemoveContainer(containerName);
+    await execAsync(command);
+  }
 }
 
 async function forceRemoveContainer(containerName: string) {
@@ -648,9 +684,7 @@ async function cleanupOwnedSandboxContainers() {
     );
   }
 
-  await Promise.all(
-    runners.map((runner) => rm(runner.baseDir, { force: true, recursive: true })),
-  );
+  await Promise.all(runners.map((runner) => rm(runner.baseDir, { force: true, recursive: true })));
 }
 
 function installShutdownCleanup() {
@@ -692,43 +726,42 @@ async function ensureHotGoRunner(workerId: number) {
   await forceRemoveContainer(containerName);
 
   const normalizedBaseDir = baseDir.replace(/\\/g, '/');
-  await execAsync(
-    [
-      'docker',
-      'run',
-      '-d',
-      '--init',
-      '--name',
-      `"${containerName}"`,
-      '--label',
-      'litkot.runner=hot',
-      '--label',
-      `litkot.runner.instance=${RUNNER_INSTANCE_ID}`,
-      '--pull',
-      'never',
-      '--network',
-      'none',
-      '--cap-drop',
-      'ALL',
-      '--security-opt',
-      'no-new-privileges',
-      '-m',
-      goRuntime.memoryLimit ?? MEMORY_LIMIT,
-      '--cpus',
-      goRuntime.cpuLimit ?? CPU_LIMIT,
-      '--pids-limit',
-      '128',
-      '-v',
-      `"${normalizedBaseDir}:/work"`,
-      ...(goRuntime.cacheVolumes ?? []).flatMap((volume) => ['-v', volume]),
-      '-w',
-      '/work',
-      goRuntime.image,
-      'sh',
-      '-c',
-      '"sleep infinity"',
-    ].join(' '),
-  );
+  const startCommand = [
+    'docker',
+    'run',
+    '-d',
+    '--init',
+    '--name',
+    `"${containerName}"`,
+    '--label',
+    'litkot.runner=hot',
+    '--label',
+    `litkot.runner.instance=${RUNNER_INSTANCE_ID}`,
+    '--pull',
+    'never',
+    '--network',
+    'none',
+    '--cap-drop',
+    'ALL',
+    '--security-opt',
+    'no-new-privileges',
+    '-m',
+    goRuntime.memoryLimit ?? MEMORY_LIMIT,
+    '--cpus',
+    goRuntime.cpuLimit ?? CPU_LIMIT,
+    '--pids-limit',
+    '128',
+    '-v',
+    `"${normalizedBaseDir}:/work"`,
+    ...(goRuntime.cacheVolumes ?? []).flatMap((volume) => ['-v', volume]),
+    '-w',
+    '/work',
+    goRuntime.image,
+    'sh',
+    '-c',
+    '"sleep infinity"',
+  ].join(' ');
+  await runHotContainer(goRuntime, containerName, startCommand);
 
   const runner = { baseDir, containerName };
   hotGoRunners.set(workerId, runner);
@@ -756,42 +789,41 @@ async function ensureHotPythonRunner(workerId: number) {
   await forceRemoveContainer(containerName);
 
   const normalizedBaseDir = baseDir.replace(/\\/g, '/');
-  await execAsync(
-    [
-      'docker',
-      'run',
-      '-d',
-      '--init',
-      '--name',
-      `"${containerName}"`,
-      '--label',
-      'litkot.runner=hot',
-      '--label',
-      `litkot.runner.instance=${RUNNER_INSTANCE_ID}`,
-      '--pull',
-      'never',
-      '--network',
-      'none',
-      '--cap-drop',
-      'ALL',
-      '--security-opt',
-      'no-new-privileges',
-      '-m',
-      pythonRuntime.memoryLimit ?? MEMORY_LIMIT,
-      '--cpus',
-      pythonRuntime.cpuLimit ?? CPU_LIMIT,
-      '--pids-limit',
-      '128',
-      '-v',
-      `"${normalizedBaseDir}:/work"`,
-      '-w',
-      '/work',
-      pythonRuntime.image,
-      'sh',
-      '-c',
-      '"sleep infinity"',
-    ].join(' '),
-  );
+  const startCommand = [
+    'docker',
+    'run',
+    '-d',
+    '--init',
+    '--name',
+    `"${containerName}"`,
+    '--label',
+    'litkot.runner=hot',
+    '--label',
+    `litkot.runner.instance=${RUNNER_INSTANCE_ID}`,
+    '--pull',
+    'never',
+    '--network',
+    'none',
+    '--cap-drop',
+    'ALL',
+    '--security-opt',
+    'no-new-privileges',
+    '-m',
+    pythonRuntime.memoryLimit ?? MEMORY_LIMIT,
+    '--cpus',
+    pythonRuntime.cpuLimit ?? CPU_LIMIT,
+    '--pids-limit',
+    '128',
+    '-v',
+    `"${normalizedBaseDir}:/work"`,
+    '-w',
+    '/work',
+    pythonRuntime.image,
+    'sh',
+    '-c',
+    '"sleep infinity"',
+  ].join(' ');
+  await runHotContainer(pythonRuntime, containerName, startCommand);
 
   const runner = { baseDir, containerName };
   hotPythonRunners.set(workerId, runner);
@@ -842,8 +874,7 @@ async function executeGoHotJob(job: CodeRunJob, workerId: number): Promise<CodeR
 
       return {
         error:
-          failedCase?.message ||
-          formatGoFailure(result.stdout, result.stderr, result.exitCode),
+          failedCase?.message || formatGoFailure(result.stdout, result.stderr, result.exitCode),
         output: testSummary ? '' : '',
         success: false,
         testSummary,
