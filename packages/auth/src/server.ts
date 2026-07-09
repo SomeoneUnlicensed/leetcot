@@ -71,6 +71,12 @@ export const baseNextAuthConfig: Omit<NextAuthConfig, 'providers'> = {
     },
   },
   callbacks: {
+    signIn: async ({ user }) => {
+      if (!user.id) return true;
+      const u = await prisma.user.findUnique({ where: { id: user.id }, select: { status: true } });
+      if (u?.status === 'BANNED') return false;
+      return true;
+    },
     jwt: async ({ token, user, account, profile }) => {
       if (user) {
         if (account?.provider === 'arlist') {
@@ -129,6 +135,8 @@ export const createCredentialsProvider = () => {
       // If the user has linked an Arlist account, block password login
       const hasArlist = user.accounts.some((a) => a.provider === 'arlist');
       if (hasArlist) throw new ArlistRequiredError();
+
+      if (user.status === 'BANNED') return null;
 
       if (!user.password) return null;
 
