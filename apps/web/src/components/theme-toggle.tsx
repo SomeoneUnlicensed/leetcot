@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 
 export function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
@@ -17,17 +17,18 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <button aria-label="theme toggle" className={buttonClass}>
+      <button aria-label="theme button" className={buttonClass}>
         <div className="h-5 w-5" />
       </button>
     );
   }
 
-  const toggle = () => setTheme(theme === 'dark' ? 'light' : 'dark');
+  const isDark = resolvedTheme === 'dark';
+  const toggle = () => setTheme(isDark ? 'light' : 'dark');
 
   return (
-    <button onClick={toggle} aria-label="theme toggle" className={buttonClass}>
-      {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+    <button onClick={toggle} aria-label="theme button" className={buttonClass}>
+      {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
     </button>
   );
 }
