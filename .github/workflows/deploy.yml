@@ -129,7 +129,7 @@ jobs:
             CODE_RUNNER_MAX_QUEUE_DEPTH="${CODE_RUNNER_MAX_QUEUE_DEPTH}"
           kubectl -n production set env deploy/leetcot-app \
             SMTP_HOST="${SMTP_HOST}"
-          kubectl -n production set image deploy/leetcot-app app="$IMAGE"
+          kubectl -n production set image deploy/leetcot-app wait-for-deps="$IMAGE" app="$IMAGE"
           kubectl -n production set image deploy/leetcot-code-runner code-runner="$IMAGE"
 
           if ! kubectl -n production rollout status deploy/leetcot-app --timeout=300s; then
