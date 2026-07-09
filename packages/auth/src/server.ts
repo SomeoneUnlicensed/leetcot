@@ -26,11 +26,11 @@ declare module 'next-auth' {
   }
 }
 
-type LitkotJwtToken = {
+interface LitkotJwtToken {
   arlistJustLinked?: boolean;
   id?: string;
   roles?: RoleTypes[];
-};
+}
 
 export const baseNextAuthConfig: Omit<NextAuthConfig, 'providers'> = {
   trustHost: true,
@@ -71,7 +71,30 @@ export const baseNextAuthConfig: Omit<NextAuthConfig, 'providers'> = {
     },
   },
   callbacks: {
+    signIn: async ({ user }) => {
+      if (!user.id && !user.email) return true;
+
+      const existingUser = await prisma.user.findFirst({
+        where: user.id ? { id: user.id } : { email: user.email ?? '' },
+        select: { status: true },
+      });
+
+      return existingUser?.status !== 'BANNED';
+    },
     jwt: async ({ token, user, account, profile }) => {
+      const litkotToken = token as LitkotJwtToken;
+
+      if (!user && litkotToken.id) {
+        const existingUser = await prisma.user.findUnique({
+          where: { id: litkotToken.id },
+          select: { status: true },
+        });
+
+        if (!existingUser || existingUser.status === 'BANNED') {
+          return null;
+        }
+      }
+
       if (user) {
         if (account?.provider === 'arlist') {
           const arlistProfile = profile as unknown as { picture?: string; name?: string };
@@ -125,6 +148,7 @@ export const createCredentialsProvider = () => {
       });
 
       if (!user) return null;
+      if (user.status === 'BANNED') return null;
 
       // If the user has linked an Arlist account, block password login
       const hasArlist = user.accounts.some((a) => a.provider === 'arlist');

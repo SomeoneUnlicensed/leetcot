@@ -136,8 +136,7 @@ export async function unbanUser(userId: string) {
   const session = await auth();
   assertAdmin(session);
 
-  revalidatePath('/dashboard/users');
-  return prisma.$transaction([
+  await prisma.$transaction([
     prisma.challenge.updateMany({
       where: {
         userId,
@@ -146,15 +145,26 @@ export async function unbanUser(userId: string) {
         status: 'ACTIVE',
       },
     }),
+    prisma.comment.updateMany({
+      where: {
+        userId,
+      },
+      data: {
+        visible: true,
+      },
+    }),
     prisma.user.update({
       where: {
         id: userId,
       },
       data: {
         status: 'ACTIVE',
+        banReason: null,
       },
     }),
   ]);
+
+  revalidatePath('/dashboard/users');
 }
 
 export async function updateUserRoles(userId: string, roles: string[]) {
