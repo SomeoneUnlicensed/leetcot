@@ -44,7 +44,7 @@ export function NavWrapper({ children }: { children: React.ReactNode }) {
 
   return (
     <nav
-      className={`sticky top-0 z-40 flex h-16 items-center border-b border-white/10 bg-background/[0.82] text-sm font-medium shadow-[0_1px_0_rgba(255,255,255,0.04),0_16px_40px_rgba(0,0,0,0.22)] backdrop-blur-xl supports-[backdrop-filter]:bg-background/[0.72] ${
+      className={`sticky top-0 z-40 flex h-[4.5rem] items-center border-b border-white/10 bg-background/[0.62] text-sm font-medium shadow-[0_1px_0_rgba(255,255,255,0.05),0_22px_48px_rgba(0,0,0,0.24)] backdrop-blur-2xl supports-[backdrop-filter]:bg-background/[0.46] ${
         pathname?.startsWith('/challenge') ? 'px-4' : 'container'
       }`}
     >

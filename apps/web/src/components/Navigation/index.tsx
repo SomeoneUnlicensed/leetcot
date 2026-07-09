@@ -84,14 +84,14 @@ export async function Navigation() {
   return (
     <header className="w-full">
       <NavWrapper>
-        <div className="flex w-full items-center justify-between">
-          <div className="relative flex min-w-0 items-center gap-3">
+        <div className="relative flex w-full items-center justify-between overflow-hidden rounded-[1.75rem] border border-white/[0.13] bg-white/[0.055] px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),inset_0_-1px_0_rgba(255,255,255,0.06),0_18px_46px_rgba(0,0,0,0.24)] before:pointer-events-none before:absolute before:inset-x-8 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/55 before:to-transparent after:pointer-events-none after:absolute after:-left-24 after:-top-20 after:h-36 after:w-72 after:rounded-full after:bg-pink-300/10 after:blur-3xl">
+          <div className="relative z-10 flex min-w-0 items-center gap-3">
             <SkipToCodeEditor />
             <Link
-              className="group flex min-w-0 items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.03] px-2.5 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition duration-200 hover:border-pink-400/25 hover:bg-pink-400/[0.08] focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300"
+              className="group flex min-w-0 items-center gap-2 rounded-full px-1.5 py-1 transition duration-300 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300"
               href="/"
             >
-              <pre className="hidden text-[9px] font-bold leading-[10px] text-pink-500 transition-colors duration-200 group-hover:text-pink-400 sm:block">
+              <pre className="hidden text-[9px] font-bold leading-[10px] text-pink-500 drop-shadow-[0_0_14px_rgba(236,72,153,0.38)] transition duration-300 group-hover:scale-105 group-hover:text-pink-300 sm:block">
                 {`
  /\\_/\\
 ( o.o )
@@ -100,21 +100,21 @@ export async function Navigation() {
               </pre>
 
               <div
-                className="whitespace-nowrap text-lg leading-5 text-white sm:text-xl"
+                className="whitespace-nowrap text-lg leading-5 text-white drop-shadow-[0_1px_16px_rgba(255,255,255,0.16)] transition duration-300 group-hover:text-pink-50 sm:text-xl"
                 style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
               >
                 ЛитКот{' '}
-                <span className="rounded-full border border-pink-400/20 bg-pink-400/10 px-1.5 py-0.5 align-top font-sans text-[10px] font-black uppercase tracking-wide text-pink-200/80">
+                <span className="align-top font-sans text-[10px] font-black uppercase tracking-wide text-pink-200/75 transition duration-300 group-hover:text-pink-100">
                   БЕТА
                 </span>
               </div>
             </Link>
-            <div className="hidden items-center rounded-full border border-white/[0.08] bg-white/[0.03] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] md:flex md:gap-1">
+            <div className="hidden items-center rounded-full border border-white/[0.08] bg-black/[0.12] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl md:flex md:gap-1">
               {NavLinks}
             </div>
           </div>
 
-          <div className="flex">
+          <div className="relative z-10 flex">
             <div className="flex items-center justify-end gap-2">
               <Suspense>
                 <Search />
