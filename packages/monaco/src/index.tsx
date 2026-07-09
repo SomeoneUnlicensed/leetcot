@@ -242,7 +242,11 @@ export function CodePanel(props: CodePanelProps) {
           }>(res, 'Сервер проверки временно не ответил. Попробуйте ещё раз через минуту.');
 
           if (!data.success) {
-            formattedErrors.push(data.error || 'Ошибка выполнения');
+            formattedErrors.push(
+              res.status === 401
+                ? 'Войдите, пожалуйста, чтобы проверить код.'
+                : data.error || 'Ошибка выполнения',
+            );
             if (data.output) {
               formattedErrors.push(`[ВЫВОД КОНСОЛИ]\n${data.output}`);
             }
@@ -569,9 +573,7 @@ export function CodePanel(props: CodePanelProps) {
                       <polyline points="12 6 12 12 16 14" />
                     </svg>
                     Код отработал за{' '}
-                    <span className="font-bold">
-                      {formatCodeExecutionTime(executionTimeMs)}
-                    </span>
+                    <span className="font-bold">{formatCodeExecutionTime(executionTimeMs)}</span>
                   </span>
                 )}
               </div>

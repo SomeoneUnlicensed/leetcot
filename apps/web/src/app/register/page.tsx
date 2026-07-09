@@ -128,6 +128,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [pendingPassword, setPendingPassword] = useState('');
   const [otp, setOtp] = useState('');
   const [resendCooldown, setResendCooldown] = useState(0);
 
@@ -160,6 +161,7 @@ export default function RegisterPage() {
 
       setEmail(emailVal);
       setName(nameVal);
+      setPendingPassword(passwordVal);
       setStep('verify');
       setResendCooldown(60);
     } catch (err: unknown) {
@@ -171,6 +173,11 @@ export default function RegisterPage() {
 
   // ── Step 2: verify code ──
   const handleVerify = async () => {
+    if (!email) {
+      setError('Сначала зарегистрируйся или войди, пожалуйста.');
+      setStep('form');
+      return;
+    }
     if (otp.replace(/\s/g, '').length < 6) {
       setError('Введи все 6 цифр кода');
       return;
@@ -197,12 +204,17 @@ export default function RegisterPage() {
   // ── Resend ──
   const handleResend = async () => {
     if (resendCooldown > 0) return;
+    if (!email || !name || !pendingPassword) {
+      setError('Сначала зарегистрируйся или войди, пожалуйста.');
+      setStep('form');
+      return;
+    }
     setError(null);
     try {
       await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password: '__resend__', name }),
+        body: JSON.stringify({ email, password: pendingPassword, name }),
       });
       setResendCooldown(60);
       setOtp('');

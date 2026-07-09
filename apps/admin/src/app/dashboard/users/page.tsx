@@ -1,18 +1,13 @@
 import { auth } from '~/server/auth';
-import { DataTable } from '@repo/ui/components/data-table';
 import { assertAdmin } from '~/utils/auth-guards';
-import { getUsers } from './_actions';
-import { columns } from './_components/columns';
+import { getUsers, getUserStats } from './_actions';
+import { UsersAdminPanel } from './_components/users-admin-panel';
 
 export default async function UsersPage() {
   const session = await auth();
   assertAdmin(session);
 
-  const users = await getUsers();
+  const [users, stats] = await Promise.all([getUsers(), getUserStats()]);
 
-  return (
-    <div>
-      <DataTable data={users} columns={columns} />
-    </div>
-  );
+  return <UsersAdminPanel users={users} stats={stats} />;
 }
