@@ -111,6 +111,9 @@ jobs:
       GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Pull image into k3s containerd
         run: |
           IMAGE="${IMAGE_REPOSITORY}:${GITHUB_SHA}"
