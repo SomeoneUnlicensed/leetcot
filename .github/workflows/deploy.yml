@@ -123,6 +123,8 @@ jobs:
           docker image rm "$IMAGE" || true
           docker image prune -af
           docker builder prune -af
+          docker pull python:3.11-alpine
+          docker pull golang:1.24-alpine
           docker logout ghcr.io
 
       - name: Restart deployment (rolling update)
