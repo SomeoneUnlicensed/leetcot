@@ -4,7 +4,7 @@ import * as React from 'react';
 import type { Language } from '@repo/db/types';
 import { searchChallenges, type SearchedChallenge } from '~/app/explore/_components/explore.action';
 
-export type SearchLanguage = 'ALL' | 'PYTHON' | 'SQL' | 'GO';
+export type SearchLanguage = 'ALL' | 'GO' | 'PYTHON' | 'SQL';
 
 interface SearchContextType {
   language: SearchLanguage;

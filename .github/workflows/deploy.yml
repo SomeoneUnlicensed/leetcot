@@ -107,6 +107,7 @@ jobs:
       CODE_RUNNER_TIMEOUT_MS: "12000"
       CODE_RUNNER_GO_TIMEOUT_MS: "12000"
       CODE_RUNNER_MAX_QUEUE_DEPTH: "50"
+      SMTP_HOST: "192.168.0.183"
       GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
@@ -126,6 +127,8 @@ jobs:
             CODE_RUNNER_TIMEOUT_MS="${CODE_RUNNER_TIMEOUT_MS}" \
             CODE_RUNNER_GO_TIMEOUT_MS="${CODE_RUNNER_GO_TIMEOUT_MS}" \
             CODE_RUNNER_MAX_QUEUE_DEPTH="${CODE_RUNNER_MAX_QUEUE_DEPTH}"
+          kubectl -n production set env deploy/leetcot-app \
+            SMTP_HOST="${SMTP_HOST}"
           kubectl -n production set image deploy/leetcot-app app="$IMAGE"
           kubectl -n production set image deploy/leetcot-code-runner code-runner="$IMAGE"
 

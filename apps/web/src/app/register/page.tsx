@@ -107,6 +107,17 @@ function Divider() {
   );
 }
 
+async function readApiError(res: Response, fallback: string) {
+  const contentType = res.headers.get('content-type') ?? '';
+
+  if (contentType.includes('application/json')) {
+    const data = (await res.json().catch(() => null)) as { error?: string } | null;
+    return data?.error || fallback;
+  }
+
+  return fallback;
+}
+
 // ──────────────────────────────────────────
 // Main page
 // ──────────────────────────────────────────
@@ -143,8 +154,9 @@ export default function RegisterPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: emailVal, password: passwordVal, name: nameVal }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Что-то пошло не так');
+      if (!res.ok) {
+        throw new Error(await readApiError(res, 'Не удалось отправить код. Попробуй еще раз.'));
+      }
 
       setEmail(emailVal);
       setName(nameVal);
@@ -171,8 +183,9 @@ export default function RegisterPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code: otp.replace(/\s/g, '') }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Неверный код');
+      if (!res.ok) {
+        throw new Error(await readApiError(res, 'Неверный код'));
+      }
       router.push('/login?registered=true');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Неверный код');
