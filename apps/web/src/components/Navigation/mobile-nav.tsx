@@ -40,7 +40,7 @@ export function MobileNav({ children }: MobileNavProps) {
           {/* Hamburger Icon */}
           <button
             className={cn(
-              'hamburger rounded-lg p-4 duration-300 focus:outline-none ',
+              'hamburger rounded-full border border-white/10 bg-white/[0.04] p-3 duration-300 hover:bg-white/[0.08] focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300',
               open ? 'is-active' : '',
             )}
             onClick={() => setOpen((prev) => !prev)}
@@ -53,7 +53,7 @@ export function MobileNav({ children }: MobileNavProps) {
           key={open ? 'open' : 'close'}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className={`bg-background/80 left-0 top-[55px] z-10 flex h-full w-full flex-1 snap-y flex-col gap-5 justify-self-center border-b p-3 backdrop-blur-md md:mt-0 md:hidden md:pb-0 ${
+          className={`left-0 top-16 z-30 flex h-[calc(100vh-4rem)] w-full flex-1 snap-y flex-col gap-5 justify-self-center border-b border-white/10 bg-zinc-950 p-4 shadow-2xl md:mt-0 md:hidden md:pb-0 ${
             open ? 'absolute block w-full' : 'hidden'
           }`}
         >

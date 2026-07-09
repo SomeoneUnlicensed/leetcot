@@ -14,7 +14,7 @@ export function LoginLink({ className }: { className?: string }) {
   return (
     <Link
       className={clsx(
-        'focus:bg-accent w-20 rounded-md border border-transparent bg-transparent p-2 text-black duration-300 hover:border-black/30 hover:bg-black/10 focus:outline-none dark:text-white dark:hover:border-white/30 dark:hover:bg-white/10',
+        'group inline-flex min-h-10 items-center justify-center rounded-full border border-pink-400/35 bg-pink-500 px-4 py-2 text-sm font-bold text-white shadow-[0_10px_28px_rgba(236,72,153,0.24)] transition duration-200 hover:-translate-y-0.5 hover:bg-pink-400 hover:shadow-[0_16px_34px_rgba(236,72,153,0.34)] focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         className,
       )}
       href={{
@@ -24,9 +24,9 @@ export function LoginLink({ className }: { className?: string }) {
         },
       }}
     >
-      <div className="flex items-center space-x-2">
-        <LogIn className="h-5 w-5" />
-        <span className="dark:text-white">Вход</span>
+      <div className="flex items-center gap-2">
+        <LogIn className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+        <span>Вход</span>
       </div>
     </Link>
   );
