@@ -24,12 +24,25 @@ function getPositiveInteger(value: string | undefined, fallback: number) {
   return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : fallback;
 }
 
+function sanitizeDockerNamePart(value: string) {
+  return (
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9_.-]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 48) || 'runner'
+  );
+}
+
 const CONCURRENCY = getPositiveInteger(process.env.CODE_RUNNER_CONCURRENCY, 2);
 const TIMEOUT_MS = getPositiveInteger(process.env.CODE_RUNNER_TIMEOUT_MS, 10_000);
 const MAX_OUTPUT_BYTES = getPositiveInteger(process.env.CODE_RUNNER_MAX_OUTPUT_BYTES, 16_000);
 const RUNTIME_PULL_TIMEOUT_MS = getPositiveInteger(
   process.env.CODE_RUNNER_RUNTIME_PULL_TIMEOUT_MS,
   600_000,
+);
+const RUNNER_INSTANCE_ID = sanitizeDockerNamePart(
+  process.env.RUNNER_INSTANCE_ID || process.env.HOSTNAME || os.hostname() || `local-${process.pid}`,
 );
 
 interface DockerRunResult {
@@ -604,10 +617,11 @@ async function cleanupSandbox(containerName: string, tmpDir: string) {
 }
 
 async function cleanupStaleSandboxContainers() {
+  const instanceLabel = `litkot.runner.instance=${RUNNER_INSTANCE_ID}`;
   const staleQueries = [
-    'docker ps -aq --filter "name=^/litkot-run-" --filter "label=litkot.runner=code-runner"',
-    'docker ps -aq --filter "name=^/litkot-hot-go-" --filter "label=litkot.runner=hot"',
-    'docker ps -aq --filter "name=^/litkot-hot-python-" --filter "label=litkot.runner=hot"',
+    `docker ps -aq --filter "name=^/litkot-run-${RUNNER_INSTANCE_ID}-" --filter "label=litkot.runner=code-runner" --filter "label=${instanceLabel}"`,
+    `docker ps -aq --filter "name=^/litkot-hot-go-${RUNNER_INSTANCE_ID}-" --filter "label=litkot.runner=hot" --filter "label=${instanceLabel}"`,
+    `docker ps -aq --filter "name=^/litkot-hot-python-${RUNNER_INSTANCE_ID}-" --filter "label=litkot.runner=hot" --filter "label=${instanceLabel}"`,
   ];
   const stdout = (
     await Promise.all(staleQueries.map((query) => execAsync(query).catch(() => ({ stdout: '' }))))
@@ -624,6 +638,39 @@ async function cleanupStaleSandboxContainers() {
   console.log(`Removed ${containerIds.length} stale sandbox container(s)`);
 }
 
+async function cleanupOwnedSandboxContainers() {
+  const runners = [...hotGoRunners.values(), ...hotPythonRunners.values()];
+  const containerNames = runners.map((runner) => runner.containerName);
+
+  if (containerNames.length > 0) {
+    await execAsync(`docker rm -f ${containerNames.map((name) => `"${name}"`).join(' ')}`).catch(
+      () => undefined,
+    );
+  }
+
+  await Promise.all(
+    runners.map((runner) => rm(runner.baseDir, { force: true, recursive: true })),
+  );
+}
+
+function installShutdownCleanup() {
+  let cleanupStarted = false;
+  const shutdown = (signal: NodeJS.Signals) => {
+    if (cleanupStarted) {
+      return;
+    }
+
+    cleanupStarted = true;
+    console.log(`Received ${signal}; cleaning sandbox containers for ${RUNNER_INSTANCE_ID}`);
+    void cleanupOwnedSandboxContainers().finally(() => {
+      process.exit(0);
+    });
+  };
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
+}
+
 async function ensureHotGoRunner(workerId: number) {
   const existing = hotGoRunners.get(workerId);
   if (existing) {
@@ -638,8 +685,8 @@ async function ensureHotGoRunner(workerId: number) {
 
   await ensureRuntimeImage(goRuntime);
 
-  const containerName = `litkot-hot-go-${workerId}`;
-  const baseDir = path.join(os.tmpdir(), 'litkot-hot-go', String(workerId));
+  const containerName = `litkot-hot-go-${RUNNER_INSTANCE_ID}-${workerId}`;
+  const baseDir = path.join(os.tmpdir(), 'litkot-hot-go', RUNNER_INSTANCE_ID, String(workerId));
   await rm(baseDir, { force: true, recursive: true });
   await mkdir(baseDir, { recursive: true });
   await forceRemoveContainer(containerName);
@@ -655,6 +702,8 @@ async function ensureHotGoRunner(workerId: number) {
       `"${containerName}"`,
       '--label',
       'litkot.runner=hot',
+      '--label',
+      `litkot.runner.instance=${RUNNER_INSTANCE_ID}`,
       '--pull',
       'never',
       '--network',
@@ -700,8 +749,8 @@ async function ensureHotPythonRunner(workerId: number) {
 
   await ensureRuntimeImage(pythonRuntime);
 
-  const containerName = `litkot-hot-python-${workerId}`;
-  const baseDir = path.join(os.tmpdir(), 'litkot-hot-python', String(workerId));
+  const containerName = `litkot-hot-python-${RUNNER_INSTANCE_ID}-${workerId}`;
+  const baseDir = path.join(os.tmpdir(), 'litkot-hot-python', RUNNER_INSTANCE_ID, String(workerId));
   await rm(baseDir, { force: true, recursive: true });
   await mkdir(baseDir, { recursive: true });
   await forceRemoveContainer(containerName);
@@ -717,6 +766,8 @@ async function ensureHotPythonRunner(workerId: number) {
       `"${containerName}"`,
       '--label',
       'litkot.runner=hot',
+      '--label',
+      `litkot.runner.instance=${RUNNER_INSTANCE_ID}`,
       '--pull',
       'never',
       '--network',
@@ -1121,6 +1172,7 @@ async function worker(workerId: number) {
 }
 
 async function main() {
+  installShutdownCleanup();
   await cleanupStaleSandboxContainers();
   await warmRuntimeImages();
   await warmGoBuildCache();

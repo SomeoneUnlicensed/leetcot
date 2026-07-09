@@ -1,0 +1,33 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: leetcot-code-runner-redis-queue
+  namespace: production
+spec:
+  scaleTargetRef:
+    name: leetcot-code-runner
+  minReplicaCount: 1
+  maxReplicaCount: 3
+  advanced:
+    restoreToOriginalReplicaCount: false
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleUp:
+          stabilizationWindowSeconds: 30
+          policies:
+            - type: Pods
+              value: 1
+              periodSeconds: 30
+        scaleDown:
+          stabilizationWindowSeconds: 180
+          policies:
+            - type: Pods
+              value: 1
+              periodSeconds: 60
+  triggers:
+    - type: redis
+      metadata:
+        address: redis.production.svc.cluster.local:6379
+        databaseIndex: "0"
+        listName: code-runner:queue
+        listLength: "4"

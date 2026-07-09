@@ -103,7 +103,7 @@ jobs:
     env:
       IMAGE_REPOSITORY: ghcr.io/someoneunlicensed/leetcot
       KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-      CODE_RUNNER_CONCURRENCY: "5"
+      CODE_RUNNER_CONCURRENCY: "2"
       CODE_RUNNER_TIMEOUT_MS: "12000"
       CODE_RUNNER_GO_TIMEOUT_MS: "12000"
       CODE_RUNNER_MAX_QUEUE_DEPTH: "50"
@@ -130,10 +130,15 @@ jobs:
             CODE_RUNNER_TIMEOUT_MS="${CODE_RUNNER_TIMEOUT_MS}" \
             CODE_RUNNER_GO_TIMEOUT_MS="${CODE_RUNNER_GO_TIMEOUT_MS}" \
             CODE_RUNNER_MAX_QUEUE_DEPTH="${CODE_RUNNER_MAX_QUEUE_DEPTH}"
+          kubectl -n production set resources deploy/leetcot-code-runner \
+            --containers=code-runner \
+            --requests=cpu=250m,memory=256Mi,ephemeral-storage=512Mi \
+            --limits=cpu=1,memory=512Mi,ephemeral-storage=2Gi
           kubectl -n production set env deploy/leetcot-app \
             SMTP_HOST="${SMTP_HOST}"
           kubectl -n production set image deploy/leetcot-app wait-for-deps="$IMAGE" app="$IMAGE"
           kubectl -n production set image deploy/leetcot-code-runner code-runner="$IMAGE"
+          kubectl apply -f infra/k8s/production/code-runner-autoscaling.yaml
 
           if ! kubectl -n production rollout status deploy/leetcot-app --timeout=300s; then
             kubectl -n production rollout undo deploy/leetcot-app
