@@ -36,7 +36,6 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
     },
     select: {
       id: true,
-      bio: true,
       name: true,
       image: true,
       roles: true,
@@ -126,20 +125,6 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
                 </Link>
               ))}
             </div>
-            {user.bio === '' && isOwnProfile ? (
-              <div className="flex flex-col justify-center">
-                <h1 className="text-center">
-                  Вы еще не добавили описание профиля — расскажите о себе!
-                </h1>
-                <Button asChild variant="link" className="text-center" size="sm">
-                  <Link href={`/@${encodeURIComponent(username)}/edit`}>Обновить описание</Link>
-                </Button>
-              </div>
-            ) : (
-              <div className="max-w-[60ch]">
-                <p className="text-center tracking-tighter ">{user.bio}</p>
-              </div>
-            )}
           </div>
         </div>
         <div>
@@ -197,18 +182,6 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
                 </div>
               </div>
             </div>
-            {user.bio === '' && isOwnProfile ? (
-              <div className="p-4">
-                <h1>Вы еще не добавили описание профиля — расскажите о себе!</h1>
-                <Button asChild variant="link" className="px-0 " size="sm">
-                  <Link href={`/@${encodeURIComponent(username)}/edit`}>Обновить описание</Link>
-                </Button>
-              </div>
-            ) : (
-              <div className="max-w-[60ch]">
-                <p className="leading-7 tracking-tight">{user.bio}</p>
-              </div>
-            )}
           </div>
 
           <div className="h-fit max-w-[50%] items-center">

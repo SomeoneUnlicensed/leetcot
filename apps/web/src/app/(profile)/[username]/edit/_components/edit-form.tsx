@@ -4,15 +4,12 @@ import { Button } from '@repo/ui/components/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@repo/ui/components/form';
-import { Separator } from '@repo/ui/components/separator';
 import { Input } from '@repo/ui/components/input';
-import { Textarea } from '@repo/ui/components/textarea';
 import { useFieldArray, useForm } from 'react-hook-form';
 import Link from 'next/link';
 import { cn } from '@repo/ui/cn';
@@ -24,7 +21,6 @@ export function EditForm(props: {
   className?: string;
   user: {
     id: string;
-    bio: string;
     userLinks: { url: string }[];
   };
 }) {
@@ -55,6 +51,7 @@ export function EditForm(props: {
     } catch {
       toast({
         title: 'Не удалось обновить профиль',
+        description: 'Проверьте, что ссылки ведут на разрешённые код-хостинги.',
         variant: 'destructive',
       });
     }
@@ -66,37 +63,32 @@ export function EditForm(props: {
         onSubmit={form.handleSubmit(onSubmit)}
         className={cn('flex max-w-sm flex-col lg:max-w-full', props.className)}
       >
-        <FormField
-          control={form.control}
-          name="bio"
-          render={({ field }) => (
-            <FormItem className="flex max-w-sm flex-col lg:max-w-full lg:flex-row lg:items-center lg:justify-between ">
-              <FormLabel className="w-32">О себе</FormLabel>
-              <div className="max-w-sm grow space-y-2 lg:mx-auto lg:max-w-md">
-                <FormControl>
-                  <Textarea {...field} placeholder="Расскажите немного о себе" rows={4} />
-                </FormControl>
-                <FormDescription>{form.getValues().bio.length} / 256 символов</FormDescription>
-                <FormMessage />
-              </div>
-            </FormItem>
-          )}
-        />
-
-        <Separator />
-        <FormItem className="flex max-w-sm flex-col lg:max-w-full lg:flex-row lg:items-center lg:justify-between ">
-          <FormLabel className="w-32">Ссылки</FormLabel>
+        <FormItem className="flex max-w-sm flex-col lg:max-w-full lg:flex-row lg:items-start lg:justify-between">
+          <div className="w-32 space-y-1">
+            <FormLabel>Ссылки</FormLabel>
+            <p className="text-muted-foreground text-xs">
+              GitHub, GitLab, GitVerse, Bitbucket или Codeberg.
+            </p>
+          </div>
           <div className="max-w-sm grow space-y-2 lg:mx-auto lg:max-w-md">
             {userLinksField.fields.map((field, i) => (
               <div key={i}>
-                <FormControl>
-                  <Input
-                    {...form.register(`userLinks.${i}.url`)}
-                    defaultValue={field.url}
-                    placeholder="https://"
-                  />
-                </FormControl>
-                <FormMessage>{form.formState.errors.userLinks?.[i]?.url?.message}</FormMessage>
+                <FormField
+                  control={form.control}
+                  name={`userLinks.${i}.url`}
+                  render={({ field: linkField }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          {...linkField}
+                          placeholder="https://github.com/username"
+                          inputMode="url"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
             ))}
           </div>

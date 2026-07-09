@@ -13,7 +13,6 @@ export default async function EditPage(props: { params: Promise<{ username: stri
     },
     select: {
       id: true,
-      bio: true,
       userLinks: {
         orderBy: {
           url: 'desc',

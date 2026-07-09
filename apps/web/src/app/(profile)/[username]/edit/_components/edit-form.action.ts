@@ -16,21 +16,22 @@ export async function updateProfile(profileData: EditFormSchema) {
   if (!session?.user?.id) return { error: 'unauthorized' };
 
   // 2. test schema validation with zod
-  EditFormSchema.parse(profileData);
-
-  // 3. Update the user bio field in the db
-  const user = await prisma.user.update({
+  const parsedProfile = EditFormSchema.parse(profileData);
+  const user = await prisma.user.findUniqueOrThrow({
     where: { id: session.user.id },
-    data: { bio: profileData.bio },
+    select: { name: true },
   });
 
   // Create an array of user links to create
-  const userLinksToCreate = profileData.userLinks.map((link) => ({
-    url: link.url,
-    user: {
-      connect: { id: session.user?.id },
-    },
-  }));
+  const userLinksToCreate = parsedProfile.userLinks
+    .map((link) => link.url.trim())
+    .filter((url) => url !== '')
+    .map((url) => ({
+      url,
+      user: {
+        connect: { id: session.user?.id },
+      },
+    }));
 
   try {
     await prisma.$transaction([
