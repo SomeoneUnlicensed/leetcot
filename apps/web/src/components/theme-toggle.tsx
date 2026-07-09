@@ -12,12 +12,12 @@ export function ThemeToggle() {
     setMounted(true);
   }, []);
 
+  const buttonClass =
+    'rounded-full border border-border bg-muted p-1.5 shadow-sm transition-colors duration-200 hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring';
+
   if (!mounted) {
     return (
-      <button
-        aria-label="theme toggle"
-        className="rounded-full border border-white/10 bg-white/[0.04] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
-      >
+      <button aria-label="theme toggle" className={buttonClass}>
         <div className="h-5 w-5" />
       </button>
     );
@@ -26,16 +26,8 @@ export function ThemeToggle() {
   const toggle = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
   return (
-    <button
-      onClick={toggle}
-      aria-label="theme toggle"
-      className="rounded-full border border-white/10 bg-white/[0.04] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-colors duration-200 hover:border-pink-300/30 hover:bg-pink-400/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300"
-    >
-      {theme === 'dark' ? (
-        <Sun className="h-5 w-5" />
-      ) : (
-        <Moon className="h-5 w-5" />
-      )}
+    <button onClick={toggle} aria-label="theme toggle" className={buttonClass}>
+      {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
     </button>
   );
 }
