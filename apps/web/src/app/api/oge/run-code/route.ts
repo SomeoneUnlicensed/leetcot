@@ -3,7 +3,6 @@ import {
   getCodeRunJobView,
   normalizeLanguage,
 } from '@repo/code-runner';
-import { prisma } from '@repo/db';
 import { verifySolution } from 'altcha-lib/v1';
 import { NextResponse } from 'next/server';
 import { getAltchaHmacKey } from '~/server/altcha';
@@ -41,23 +40,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: `Язык ${language} не поддерживается.` });
     }
 
-    // Ищем или создаём задачу-заглушку для запуска кода без тестов
-    const ogeRunner = await prisma.challenge.findFirst({
-      where: { slug: 'oge-python-runner' },
-    });
-
-    if (!ogeRunner) {
-      return NextResponse.json(
-        { success: false, error: 'Runner challenge not found. Run db:seed:all first.' },
-        { status: 500 },
-      );
-    }
-
     const job = await enqueueCodeRun({
       code,
       language: normalizedLanguage,
       tests: '', // без тестов — только вывод программы
-      challengeId: ogeRunner.id,
+      challengeId: 0, // заглушка — валидация не нужна
       userId: session.user.id,
     });
 

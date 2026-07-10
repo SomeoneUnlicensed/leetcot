@@ -161,6 +161,10 @@ model User {
 
   championships ChampionshipParticipant[]
   userBadges    UserBadge[]
+  /// OGE-информатика: попытки заданий
+  ogeTaskAttempts OgeTaskAttempt[]
+  /// OGE-информатика: прогресс по модулям
+  ogeProgress     OgeProgress[]
 }
 
 model VerificationToken {
@@ -498,6 +502,12 @@ model Track {
   enrolledUsers   User[]
   courseId        Int?
   course          Course?          @relation(fields: [courseId], references: [id])
+  /// OGE-информатика: уроки модуля
+  ogeLessons      OgeLesson[]
+  /// OGE-информатика: задания модуля
+  ogeTasks        OgeTask[]
+  /// OGE-информатика: прогресс пользователей
+  ogeProgress     OgeProgress[]
 
   @@index([courseId])
 }
@@ -793,4 +803,83 @@ model UserBadge {
   @@unique([userId, badgeSlug])
   @@index([userId])
   @@index([badgeSlug])
+}
+
+/// OGE-информатика: модель урока
+model OgeLesson {
+  id      Int    @id @default(autoincrement())
+  trackId Int
+  track   Track  @relation(fields: [trackId], references: [id])
+  order   Int
+  title   String
+  slug    String
+  content String @db.Text
+  /// Продолжительность в минутах
+  duration Int?
+
+  @@unique([trackId, slug])
+  @@index([trackId])
+  @@index([trackId, order])
+}
+
+/// OGE-информатика: модель задания
+model OgeTask {
+  id      Int    @id @default(autoincrement())
+  trackId Int
+  track   Track  @relation(fields: [trackId], references: [id])
+  order   Int
+  /// Номер вопроса в КИМ (1-16)
+  examQuestionNumber Int?
+  difficulty         String        @default("BASIC")
+  title              String?
+  prompt             String        @db.Text
+  /// Данные задания (схемы, таблицы) в JSON
+  taskData           Json?
+  correctAnswer      String        @db.Text
+  solution           String        @db.Text
+  type               QuestionType?
+  status             String        @default("ACTIVE")
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  attempts           OgeTaskAttempt[]
+
+  @@unique([trackId, order])
+  @@index([trackId])
+  @@index([trackId, order])
+  @@index([examQuestionNumber])
+}
+
+/// OGE-информатика: попытка ответа на задание
+model OgeTaskAttempt {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  taskId    Int
+  task      OgeTask  @relation(fields: [taskId], references: [id])
+  answer    String   @db.Text
+  isCorrect Boolean  @default(false)
+  score     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([taskId])
+  @@index([userId, taskId])
+}
+
+/// OGE-информатика: прогресс пользователя по модулю
+model OgeProgress {
+  id               Int   @id @default(autoincrement())
+  userId           String
+  user             User  @relation(fields: [userId], references: [id])
+  trackId          Int
+  track            Track @relation(fields: [trackId], references: [id])
+  completedLessons Int   @default(0)
+  totalLessons     Int   @default(0)
+  completedTasks   Int   @default(0)
+  totalTasks       Int   @default(0)
+  accuracy         Float @default(0.0)
+
+  @@unique([userId, trackId])
+  @@index([userId])
+  @@index([trackId])
 }
