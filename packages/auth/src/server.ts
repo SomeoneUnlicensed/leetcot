@@ -87,10 +87,18 @@ export const baseNextAuthConfig: Omit<NextAuthConfig, 'providers'> = {
       if (!user && litkotToken.id) {
         const existingUser = await prisma.user.findUnique({
           where: { id: litkotToken.id },
-          select: { status: true },
+          select: { sessionsInvalidatedAt: true, status: true },
         });
 
         if (!existingUser || existingUser.status === 'BANNED') {
+          return null;
+        }
+
+        const issuedAtMs = typeof token.iat === 'number' ? token.iat * 1000 : 0;
+        if (
+          existingUser.sessionsInvalidatedAt &&
+          issuedAtMs < existingUser.sessionsInvalidatedAt.getTime()
+        ) {
           return null;
         }
       }

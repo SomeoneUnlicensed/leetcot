@@ -127,8 +127,9 @@ model User {
   /// this is the twitter URL that shows up on the profile page
   userLinks UserLink[]
 
-  status    UserStatus @default(ACTIVE)
-  banReason String?    @db.Text
+  status                UserStatus @default(ACTIVE)
+  banReason             String?    @db.Text
+  sessionsInvalidatedAt DateTime?
 
   arlistLinkedNotifiedAt DateTime?
 

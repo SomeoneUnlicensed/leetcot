@@ -10,6 +10,7 @@ import {
   banUser,
   deleteUnverifiedUsers,
   deleteUser,
+  unbanUser,
   updateUserPassword,
   updateUserProfile,
   updateUserRoles,
@@ -136,7 +137,18 @@ function UserRow({ user }: { user: BannedUsers[0] }) {
               Подтвердить
             </Button>
           ) : null}
-          {user.status === 'BANNED' ? null : (
+          {user.status === 'BANNED' ? (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={async () => {
+                if (!window.confirm(`Разбанить ${user.email}?`)) return;
+                await unbanUser(user.id);
+              }}
+            >
+              Разбан
+            </Button>
+          ) : (
             <Button
               size="sm"
               variant="destructive"

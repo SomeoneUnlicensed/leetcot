@@ -83,6 +83,7 @@ export async function banUser(userId: string, reportId?: number | null, banReaso
       data: {
         status: 'BANNED',
         banReason,
+        sessionsInvalidatedAt: new Date(),
       },
     }),
     prisma.challenge.updateMany({
