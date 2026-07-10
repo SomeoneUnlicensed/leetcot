@@ -102,6 +102,164 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
 
   const totalChallenges = course.tracks.reduce((acc, t) => acc + t._count.trackChallenges, 0);
 
+  if (course.slug === 'oge-informatika-2026' || course.slug === 'oge-informatika-2027') {
+    const year = course.slug === 'oge-informatika-2027' ? '2027' : '2026';
+    const ogeModules = course.tracks.map((track) => {
+      const lessonCount = track.trackChallenges.length;
+      return { ...track, lessonCount };
+    });
+
+    const totalModules = ogeModules.length;
+
+    return (
+      <>
+        <main className="overflow-hidden bg-gradient-to-b from-[#0f0c1a] to-[#1a1528] text-white">
+          <div className="from-[#ec4899]/10 pointer-events-none fixed inset-x-0 top-0 -z-10 h-48 bg-gradient-to-b to-transparent" />
+          <div className="pointer-events-none fixed bottom-0 right-0 -z-10 h-[40rem] w-[50rem] rounded-l-full bg-[#8ef0de]/5 blur-3xl" />
+
+          <section className="relative isolate border-b border-white/10 px-4">
+            <div className="container relative grid min-h-[calc(100svh-3.5rem)] gap-10 py-20 md:grid-cols-[minmax(0,0.62fr)_minmax(280px,0.38fr)] md:items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-2xl border border-[#ff8ecb]/30 bg-[#211827]/80 px-4 py-2 text-sm font-black text-[#ffaad8] shadow-2xl shadow-pink-950/10">
+                  ОГЭ {year} · подготовка
+                </div>
+                <h1
+                  className="mt-7 max-w-4xl text-balance text-4xl leading-[1.14] tracking-normal sm:text-5xl md:text-6xl lg:text-[4.05rem] xl:text-[4.45rem]"
+                  style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+                >
+                  ОГЭ по информатике {year}
+                </h1>
+                <p className="mt-6 max-w-2xl text-base font-semibold leading-7 text-[#d8d4df]/80 sm:text-lg">
+                  {year === '2027'
+                    ? 'Расширенный курс подготовки: 4 раздела кодификатора, банк из 15–20 заданий на каждый номер КИМ, интерактивный тренажёр исполнителя «Робот», генераторы вариаций для систем счисления и логики, интеграция с code-runner для Python. ФИПИ 2027 — структура экзамена уточняется.'
+                    : 'Полный курс подготовки: теория по кодификатору ФИПИ, банк заданий по всем номерам КИМ, тренажёр программирования на Python и пробные варианты с автоматической проверкой. 4 раздела, 16 заданий, максимум — 21 балл.'}
+                </p>
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <Link
+                    href={ogeModules[0] ? `/oge/modules/${ogeModules[0].slug}` : '#'}
+                    className="inline-flex h-12 items-center justify-center rounded-2xl bg-gradient-to-r from-[#ff8ecb] to-[#8ef0de] px-8 text-base font-black text-black transition hover:opacity-90"
+                  >
+                    Начать обучение
+                  </Link>
+                </div>
+              </div>
+
+              <div className="rounded-[1.75rem] border border-[#8ef0de]/25 bg-[#1b1722]/85 p-5 shadow-2xl shadow-black/30">
+                <div className="ml-auto w-fit select-none font-mono text-sm font-black leading-5 text-[#ff8ecb]/55">
+                  {`  _____   ____ _____ `}
+                  <br />
+                  {` /  _  \\ /  _ \\\\__  \\`}
+                  <br />
+                  {` |  |  ||  |_> / __ \\_`}
+                  <br />
+                  {` |  |  ||   __(____  _|`}
+                  <br />
+                  {` |  |__/ |  |       \\ \\`}
+                  <br />
+                  {` \\______/|__|   |___/_/`}
+                </div>
+                <div className="mt-7 grid gap-3">
+                  {[
+                    [`${totalModules}`, 'модулей курса'],
+                    ['16', 'заданий КИМ'],
+                    ['21', 'первичный балл'],
+                    ['150', 'минут на экзамене'],
+                  ].map(([value, label]) => (
+                    <div
+                      key={label}
+                      className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3"
+                    >
+                      <div className="font-mono text-2xl font-black text-[#8ef0de]">{value}</div>
+                      <div className="mt-1 text-sm font-semibold text-[#d8d4df]/70">{label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="border-b border-white/10 px-4 py-16">
+            <div className="container">
+              <p className="mb-3 text-center font-mono text-xs font-semibold uppercase tracking-[0.2em] text-[#8ef0de]">
+                программа
+              </p>
+              <h2
+                className="mx-auto max-w-3xl text-center text-3xl leading-tight md:text-4xl"
+                style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+              >
+                Четыре раздела кодификатора — от теории до практики
+              </h2>
+              <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {[
+                  [
+                    'Цифровая грамотность',
+                    'Файловая система, IP-адресация, поиск информации. Задания 7, 11, 12.',
+                  ],
+                  [
+                    'Теоретические основы',
+                    'Системы счисления, кодирование, логика, количество информации. 6 заданий.',
+                  ],
+                  [
+                    'Алгоритмы и программирование',
+                    'Алгоритмы, исполнители, Python, Робот. Задания 5, 6, 15, 16.',
+                  ],
+                  [
+                    'Информационные технологии',
+                    'Текст, таблицы, презентации, базы данных. Задания 9, 13, 14.',
+                  ],
+                ].map(([title, text]) => (
+                  <div
+                    className="rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-6 transition hover:border-[#8ef0de]/35 hover:bg-white/[0.055]"
+                    key={title}
+                  >
+                    <h3 className="text-xl font-black">{title}</h3>
+                    <p className="mt-3 font-semibold leading-7 text-[#d8d4df]/65">{text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="px-4 py-16">
+            <div className="container">
+              <p className="mb-3 text-center font-mono text-xs font-semibold uppercase tracking-[0.2em] text-[#8ef0de]">
+                модули
+              </p>
+              <h2
+                className="text-center text-3xl leading-tight md:text-4xl"
+                style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+              >
+                {totalModules} модулей для подготовки
+              </h2>
+              <div className="mt-10 grid gap-4 lg:grid-cols-2">
+                {ogeModules.map((mod, i) => (
+                  <Link
+                    key={mod.slug}
+                    href={`/oge/modules/${mod.slug}`}
+                    className="group rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-5 transition hover:border-[#8ef0de]/35 hover:bg-white/[0.055]"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-mono text-sm font-semibold text-[#8ef0de]">
+                          {String(i + 1).padStart(2, '0')}
+                        </p>
+                        <h3 className="mt-3 text-2xl font-black text-white">{mod.name}</h3>
+                      </div>
+                    </div>
+                    <p className="mt-4 font-semibold leading-7 text-[#d8d4df]/65">
+                      {mod.description}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        </main>
+        <Footsies />
+      </>
+    );
+  }
+
   if (course.slug === 'golang-start') {
     const goChallenges = course.tracks.flatMap((track) =>
       track.trackChallenges.map((item) => item.challenge),
