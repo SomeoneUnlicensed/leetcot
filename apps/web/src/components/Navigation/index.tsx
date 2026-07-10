@@ -84,7 +84,7 @@ export async function Navigation() {
   return (
     <header className="w-full">
       <NavWrapper>
-        <div className="relative flex w-full items-center justify-between overflow-hidden rounded-[1.35rem] border border-white/[0.1] bg-white/[0.045] px-2.5 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.16),inset_0_-1px_0_rgba(255,255,255,0.04),0_12px_34px_rgba(0,0,0,0.18)] before:pointer-events-none before:absolute before:inset-x-10 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/35 before:to-transparent after:pointer-events-none after:absolute after:-right-16 after:-top-24 after:h-40 after:w-72 after:rounded-full after:bg-pink-300/[0.045] after:blur-3xl">
+        <div className="relative flex w-full items-center justify-between overflow-hidden rounded-[1.35rem] border border-white/[0.1] bg-white/[0.045] px-2.5 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.09),0_12px_34px_rgba(0,0,0,0.18)]">
           <div className="relative z-10 flex min-w-0 items-center gap-3">
             <SkipToCodeEditor />
             <Link
