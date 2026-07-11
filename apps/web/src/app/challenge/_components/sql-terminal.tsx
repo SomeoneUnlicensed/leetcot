@@ -92,7 +92,7 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
 
   const dbRef = useRef<SqliteDatabase | null>(null);
   const sqlModuleRef = useRef<SqlJsStatic | null>(null);
-  const terminalEndRef = useRef<HTMLDivElement>(null);
+  const historyScrollRef = useRef<HTMLDivElement>(null);
   const isSuccessRef = useRef(isSuccess);
   isSuccessRef.current = isSuccess;
 
@@ -191,9 +191,15 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
     };
   }, [challenge.slug, testConfig.schema, testConfig.seed]);
 
-  // Scroll to bottom of terminal
+  // Keep result scrolling inside the terminal. `scrollIntoView()` would also
+  // move the whole challenge page when the component mounts near the viewport edge.
   useEffect(() => {
-    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (history.length === 0) return;
+
+    historyScrollRef.current?.scrollTo({
+      top: historyScrollRef.current.scrollHeight,
+      behavior: 'smooth',
+    });
   }, [history]);
 
   // Reset database state
@@ -568,7 +574,7 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
       </div>
 
       {/* Terminal Body */}
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 text-sm">
+      <div ref={historyScrollRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 text-sm">
         {/* Welcome */}
         {!isLoaded ? (
           <div className="flex items-center gap-2 text-xs text-zinc-500">
@@ -651,8 +657,6 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
             )}
           </div>
         ))}
-
-        <div ref={terminalEndRef} />
       </div>
 
       {/* Input Area */}
@@ -681,7 +685,6 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
               className="min-h-32 w-full resize-y rounded-lg border border-zinc-800 bg-zinc-900/55 px-3 py-2 font-mono text-[13px] leading-6 text-emerald-50 caret-emerald-300 outline-none placeholder:text-zinc-600 focus:border-emerald-700 focus:ring-1 focus:ring-emerald-800"
               placeholder={'SELECT name\nFROM cats\nWHERE fish_count > 3;'}
               rows={5}
-              autoFocus
               autoCapitalize="off"
               autoCorrect="off"
               spellCheck={false}
