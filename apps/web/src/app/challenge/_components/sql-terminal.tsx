@@ -372,29 +372,33 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      const val = inputVal.trim();
-      setInputVal('');
-      if (!val) return;
+  const submitEditor = () => {
+    const val = inputVal.trim();
+    if (!val) return;
 
-      if (val.toLowerCase() === '.reset') {
-        handleReset();
-      } else if (val.toLowerCase() === '.check') {
-        void handleCheck();
-      } else if (val.toLowerCase() === '.schema') {
-        showSchema();
-      } else {
-        executeQuery(val);
-      }
-    } else if (e.key === 'ArrowUp') {
+    if (val.toLowerCase() === '.reset') {
+      handleReset();
+    } else if (val.toLowerCase() === '.check') {
+      void handleCheck();
+    } else if (val.toLowerCase() === '.schema') {
+      showSchema();
+    } else {
+      executeQuery(val);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      submitEditor();
+    } else if (e.key === 'ArrowUp' && e.altKey) {
       e.preventDefault();
       if (commandHistory.length > 0 && historyIndex < commandHistory.length - 1) {
         const nextIdx = historyIndex + 1;
         setHistoryIndex(nextIdx);
         setInputVal(commandHistory[nextIdx] ?? '');
       }
-    } else if (e.key === 'ArrowDown') {
+    } else if (e.key === 'ArrowDown' && e.altKey) {
       e.preventDefault();
       if (historyIndex > 0) {
         const nextIdx = historyIndex - 1;
@@ -556,10 +560,9 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
           </span>
         ) : (
           <>
-            Данные живут только в этой вкладке. Команды{' '}
-            <span className="font-mono text-emerald-300">.schema</span>,{' '}
-            <span className="font-mono text-emerald-300">.check</span> и{' '}
-            <span className="font-mono text-emerald-300">.reset</span> помогут не потеряться.
+            Пишите обычный SQL в несколько строк. Запуск —{' '}
+            <span className="font-mono text-emerald-300">Ctrl + Enter</span> (на Mac —{' '}
+            <span className="font-mono text-emerald-300">⌘ + Enter</span>).
           </>
         )}
       </div>
@@ -574,12 +577,8 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
           </div>
         ) : (
           <div className="rounded-lg border border-zinc-800/70 bg-zinc-900/55 px-3 py-2 font-sans text-xs leading-relaxed text-zinc-500">
-            <span className="text-zinc-300">База готова.</span> Команды:{' '}
-            <span className="font-mono text-zinc-300">.schema</span>
-            {', '}
-            <span className="font-mono text-zinc-300">.check</span>
-            {', '}
-            <span className="font-mono text-zinc-300">.reset</span>
+            <span className="text-zinc-300">База готова.</span> Посмотрите схему, напишите запрос и
+            выполните его. После успешного запуска нажмите «Проверить».
           </div>
         )}
 
@@ -658,11 +657,11 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
 
       {/* Input Area */}
       <div className="shrink-0 border-t border-zinc-800 bg-zinc-950/90">
-        {/* Prompt line */}
-        <div className="flex items-center gap-2 border-b border-zinc-800/70 bg-black/20 px-4 py-3">
-          <span className="shrink-0 select-none font-mono text-sm font-bold text-emerald-400">
-            sql&gt;
-          </span>
+        <div className="border-b border-zinc-800/70 bg-black/20 px-4 py-3">
+          <div className="mb-2 flex items-center justify-between gap-3 text-xs text-zinc-500">
+            <span>SQL-запрос</span>
+            <span className="font-mono">Ctrl + Enter — выполнить</span>
+          </div>
           {!isLoaded ? (
             <span className="font-sans text-sm italic text-zinc-600">Загрузка движка...</span>
           ) : isExpired ? (
@@ -674,14 +673,17 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
               Задача выполнена. Можно идти дальше.
             </span>
           ) : (
-            <input
-              type="text"
+            <textarea
+              aria-label="SQL-запрос"
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="min-w-0 flex-1 border-none bg-transparent p-0 font-mono text-[13px] leading-6 text-emerald-50 caret-emerald-300 outline-none placeholder:font-mono placeholder:text-zinc-700 focus:ring-0"
-              placeholder="SELECT name FROM cats WHERE fish_count > 3;"
+              className="min-h-32 w-full resize-y rounded-lg border border-zinc-800 bg-zinc-900/55 px-3 py-2 font-mono text-[13px] leading-6 text-emerald-50 caret-emerald-300 outline-none placeholder:text-zinc-600 focus:border-emerald-700 focus:ring-1 focus:ring-emerald-800"
+              placeholder={'SELECT name\nFROM cats\nWHERE fish_count > 3;'}
+              rows={5}
               autoFocus
+              autoCapitalize="off"
+              autoCorrect="off"
               spellCheck={false}
             />
           )}
@@ -694,6 +696,14 @@ export function SqlTerminal({ challenge, nextChallengeSlug, trackSlug }: SqlTerm
 
           {/* Action Buttons */}
           <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <button
+              onClick={submitEditor}
+              disabled={!isLoaded || isExpired || isSuccess || !inputVal.trim()}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-700/80 bg-emerald-950/40 px-3 py-1.5 font-sans text-xs font-semibold text-emerald-300 transition-all hover:bg-emerald-900/50 disabled:cursor-not-allowed disabled:opacity-30"
+            >
+              Выполнить
+              <span className="font-mono text-[10px] text-emerald-500">Ctrl↵</span>
+            </button>
             <button
               onClick={showSchema}
               disabled={!isLoaded || isExpired || isSuccess}
