@@ -1,0 +1,12 @@
+# Видимый smoke-тест. Скрытая проверка ниже использует банк закрытых тестов и скрыта от клиента.
+import sys
+
+ENTRY_POINT = "is_positive"
+if globals().get(ENTRY_POINT) is None:
+    print(f'Функция или класс {ENTRY_POINT} не найдены', file=sys.stderr)
+    sys.exit(1)
+
+print('visible smoke OK')
+
+# ---LEETCOT-HIDDEN-TESTS---
+# {"entryPoint": "is_positive", "seedGenerator": "import random\n\n\ndef generate_case():\n    return (random.randint(-100, 100),)\n", "cases": [{"name": "Тест 1", "seed": 1, "expected": false}, {"name": "Тест 2", "seed": 2, "expected": false}, {"name": "Тест 3", "seed": 3, "expected": false}, {"name": "Тест 4", "seed": 4, "expected": false}, {"name": "Тест 5", "seed": 5, "expected": true}, {"name": "Тест 6", "seed": 6, "expected": true}, {"name": "Тест 7", "seed": 7, "expected": false}, {"name": "Тест 8", "seed": 8, "expected": false}, {"name": "Тест 9", "seed": 9, "expected": true}, {"name": "Тест 10", "seed": 10, "expected": true}, {"name": "Тест 11", "seed": 11, "expected": true}, {"name": "Тест 12", "seed": 12, "expected": true}, {"name": "Тест 13", "seed": 13, "expected": false}, {"name": "Тест 14", "seed": 14, "expected": false}, {"name": "Тест 15", "seed": 15, "expected": false}, {"name": "Тест 16", "seed": 16, "expected": false}, {"name": "Тест 17", "seed": 17, "expected": true}, {"name": "Тест 18", "seed": 18, "expected": false}, {"name": "Тест 19", "seed": 19, "expected": true}, {"name": "Тест 20", "seed": 20, "expected": true}, {"name": "Тест 21", "seed": 21, "expected": false}, {"name": "Тест 22", "seed": 22, "expected": false}, {"name": "Тест 23", "seed": 23, "expected": true}, {"name": "Тест 24", "seed": 24, "expected": true}, {"name": "Тест 25", "seed": 25, "expected": false}, {"name": "Тест 26", "seed": 26, "expected": true}, {"name": "Тест 27", "seed": 27, "expected": true}, {"name": "Тест 28", "seed": 28, "expected": false}, {"name": "Тест 29", "seed": 29, "expected": true}, {"name": "Тест 30", "seed": 30, "expected": true}, {"name": "Тест 31", "seed": 31, "expected": false}, {"name": "Тест 32", "seed": 32, "expected": false}, {"name": "Тест 33", "seed": 33, "expected": true}, {"name": "Тест 34", "seed": 34, "expected": true}, {"name": "Тест 35", "seed": 35, "expected": true}, {"name": "Тест 36", "seed": 36, "expected": false}, {"name": "Тест 37", "seed": 37, "expected": true}, {"name": "Тест 38", "seed": 38, "expected": true}, {"name": "Тест 39", "seed": 39, "expected": false}, {"name": "Тест 40", "seed": 40, "expected": true}]}

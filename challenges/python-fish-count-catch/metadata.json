@@ -1,0 +1,18 @@
+{
+  "id": "python-fish-count-catch",
+  "label": "Сколько рыбок?",
+  "description": "Посчитай количество элементов в списке.",
+  "difficulty": "beginner",
+  "language": "python",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
+}

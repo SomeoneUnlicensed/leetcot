@@ -1,0 +1,18 @@
+{
+  "id": "python-fish-double-catch",
+  "label": "Двойной улов",
+  "description": "Удвой число — верни результат умножения на 2.",
+  "difficulty": "beginner",
+  "language": "python",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "python-fish-sorted-catch",
+  "label": "Рыбки по порядку",
+  "description": "Отсортируй список чисел по возрастанию.",
+  "difficulty": "beginner",
+  "language": "python",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
+}

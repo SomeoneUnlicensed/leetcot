@@ -1,0 +1,18 @@
+{
+  "id": "python-fish-sign-catch",
+  "label": "Знак улова",
+  "description": "Определи знак числа: положительное, отрицательное или ноль.",
+  "difficulty": "beginner",
+  "language": "python",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
+}

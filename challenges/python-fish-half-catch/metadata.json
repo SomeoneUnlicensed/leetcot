@@ -1,0 +1,18 @@
+{
+  "id": "python-fish-half-catch",
+  "label": "Половина улова",
+  "description": "Подели число пополам и верни результат.",
+  "difficulty": "beginner",
+  "language": "python",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
+}
