@@ -1,0 +1,18 @@
+{
+  "id": "python-fish-square-catch",
+  "label": "Рыбка в квадрате",
+  "description": "Возведи число в квадрат и верни результат.",
+  "difficulty": "beginner",
+  "language": "python",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
+}

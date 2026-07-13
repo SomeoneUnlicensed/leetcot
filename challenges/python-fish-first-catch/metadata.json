@@ -1,0 +1,18 @@
+{
+  "id": "python-fish-first-catch",
+  "label": "Первая рыбка",
+  "description": "Верни первый элемент списка.",
+  "difficulty": "beginner",
+  "language": "python",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
+}

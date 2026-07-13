@@ -1,0 +1,18 @@
+{
+  "id": "python-fish-max-catch",
+  "label": "Самая большая рыба",
+  "description": "Найди самое большое число в списке.",
+  "difficulty": "beginner",
+  "language": "python",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
+}

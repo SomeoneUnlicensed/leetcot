@@ -1,0 +1,18 @@
+{
+  "id": "python-fish-abs-catch",
+  "label": "Абсолютный улов",
+  "description": "Найди модуль числа — сделай его неотрицательным.",
+  "difficulty": "beginner",
+  "language": "python",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
+}

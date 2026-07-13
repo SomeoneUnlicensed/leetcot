@@ -1,0 +1,18 @@
+{
+  "id": "python-fish-hello-cat",
+  "label": "Привет, кот!",
+  "description": "Научись возвращать строку — верни приветствие.",
+  "difficulty": "beginner",
+  "language": "python",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
+}

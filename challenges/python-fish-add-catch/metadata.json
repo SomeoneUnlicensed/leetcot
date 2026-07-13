@@ -1,0 +1,18 @@
+{
+  "id": "python-fish-add-catch",
+  "label": "Рыбная сумма",
+  "description": "Сложи два числа и верни результат.",
+  "difficulty": "beginner",
+  "language": "python",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
+}

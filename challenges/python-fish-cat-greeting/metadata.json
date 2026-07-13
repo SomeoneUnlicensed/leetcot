@@ -1,0 +1,18 @@
+{
+  "id": "python-fish-cat-greeting",
+  "label": "Приветствие кота",
+  "description": "Верни приветствие с именем кота.",
+  "difficulty": "beginner",
+  "language": "python",
+  "author": "ЛитКот",
+  "practiceType": "code",
+  "supportedLanguages": [
+    "python",
+    "typescript",
+    "javascript",
+    "cpp",
+    "java",
+    "go",
+    "rust"
+  ]
+}
