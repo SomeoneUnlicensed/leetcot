@@ -723,7 +723,7 @@ export function CodePanel(props: CodePanelProps) {
             </>
           )}
 
-          <div className="absolute bottom-5 left-0 right-0 flex select-none flex-wrap items-center justify-center gap-x-2 gap-y-1 px-4 text-center text-[10px] font-bold uppercase tracking-wider text-zinc-500/80 sm:text-[11px]">
+          <div className="mt-auto flex w-full select-none flex-wrap items-center justify-center gap-x-2 gap-y-1 px-4 pt-6 text-center text-[10px] font-bold uppercase tracking-wider text-zinc-500/80 sm:text-[11px]">
             <img
               src="/arlist-logo.svg"
               alt="Arlist Logo"

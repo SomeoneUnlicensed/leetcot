@@ -8,6 +8,7 @@ import {
 } from '@repo/ui/components/dropdown-menu';
 import { UserAvatar } from '@repo/ui/components/user-avatar';
 import { Award, ExternalLink, Play, Settings, Settings2, User } from '@repo/ui/icons';
+import Image from 'next/image';
 import Link from 'next/link';
 import { RoleTypes } from '@repo/db/types';
 import { Suspense } from 'react';
@@ -88,7 +89,7 @@ export async function Navigation() {
           <div className="relative z-10 flex min-w-0 items-center gap-3">
             <SkipToCodeEditor />
             <Link
-              className="group flex min-w-0 items-center gap-2 rounded-full px-1.5 py-1 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300"
+              className="group flex shrink-0 items-center gap-2 rounded-full px-1.5 py-1 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300"
               href="/"
             >
               <pre className="hidden text-[9px] font-bold leading-[10px] text-pink-500 drop-shadow-[0_0_14px_rgba(236,72,153,0.38)] transition-colors duration-200 group-hover:text-pink-300 sm:block">
@@ -116,6 +117,22 @@ export async function Navigation() {
 
           <div className="relative z-10 flex">
             <div className="flex items-center justify-end gap-2">
+              <a
+                href="https://rayfund.ru/donate/?utm_source=leetcot"
+                target="_blank"
+                rel="noreferrer"
+                className="hidden shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-white/[0.07] bg-black/[0.09] px-3 py-1.5 text-xs font-bold text-[#ffa249] transition-colors duration-200 hover:border-[#ffa249]/30 hover:bg-[#ffa249]/10 2xl:flex"
+              >
+                <Image
+                  src="/ray-fund-logo.svg"
+                  alt=""
+                  width={22}
+                  height={13}
+                  aria-hidden
+                  className="shrink-0"
+                />
+                помощь животным
+              </a>
               <Suspense>
                 <Search />
               </Suspense>

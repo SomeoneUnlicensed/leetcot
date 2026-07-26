@@ -24,12 +24,29 @@ export function Footsies() {
             </span>
           </a>
         </div>
-        <Link
-          href="/partners"
-          className="bg-gradient-to-r from-pink-500 to-fuchsia-600 bg-clip-text font-bold text-transparent outline-none ring-0 transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-0"
-        >
-          Партнёрам
-        </Link>
+        <div className="flex items-center gap-4">
+          <a
+            href="https://rayfund.ru/donate/?utm_source=leetcot"
+            target="_blank"
+            rel="noreferrer"
+            className="flex shrink-0 items-center gap-2 whitespace-nowrap transition-opacity hover:opacity-80"
+          >
+            <Image
+              src="/ray-fund-logo.svg"
+              alt="Фонд РЭЙ"
+              width={44}
+              height={25}
+              className="shrink-0"
+            />
+            <span className="font-bold text-[#ffa249]">помощь животным</span>
+          </a>
+          <Link
+            href="/partners"
+            className="bg-gradient-to-r from-pink-500 to-fuchsia-600 bg-clip-text font-bold text-transparent outline-none ring-0 transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-0"
+          >
+            Партнёрам
+          </Link>
+        </div>
       </div>
       <div className="container flex flex-col justify-between gap-2 text-zinc-500 md:flex-row md:items-end">
         <span>

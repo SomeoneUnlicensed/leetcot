@@ -4,6 +4,7 @@ import { CheckCircle2, Plus, Share, X, XCircle } from '@repo/ui/icons';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
+import { RayFundNote } from '~/components/ray-fund-note';
 import { getRelativeTimeStrict } from '~/utils/relativeTime';
 import { getChallengeSubmissionById } from '../getChallengeSubmissions';
 import { Suggestions } from './suggestions';
@@ -57,6 +58,10 @@ export function SubmissionOverview({ submissionId, userId }: SubmissionOverviewP
   );
 
   const track = searchParams.get('slug');
+
+  const showRayFundNote =
+    submission?.isSuccessful &&
+    Array.from(submissionId).reduce((sum, ch) => sum + ch.charCodeAt(0), 0) % 5 === 0;
 
   if (!submission) {
     return (
@@ -124,6 +129,11 @@ export function SubmissionOverview({ submissionId, userId }: SubmissionOverviewP
             </Link>
           </div>
         </div>
+        {showRayFundNote ? (
+          <div className="mb-3 px-3">
+            <RayFundNote text="Решили задачу — помогите решить ещё одну. Поддержите бездомных котов и собак вместе с фондом «РЭЙ»." />
+          </div>
+        ) : null}
         {showSuggestions ? (
           <div className="flex w-full items-start">
             <Suggestions track={track} challengeId={submission.challengeId} />

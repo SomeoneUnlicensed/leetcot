@@ -23,6 +23,7 @@ import { type ChallengeRouteData } from '~/app/challenge/[slug]/getChallengeRout
 import { ReportDialog } from '~/components/ReportDialog';
 import { ShareUrl } from '~/components/share-url';
 import { PromoBlock } from '~/components/promo-block';
+import { RayFundNote } from '~/components/ray-fund-note';
 import { getRelativeTimeStrict } from '~/utils/relativeTime';
 import { addOrRemoveBookmark } from '../bookmark.action';
 import { UserBadge } from '../comments/enhanced-user-badge';
@@ -191,6 +192,14 @@ export function Description({ challenge }: DescriptionProps) {
       <div className="prose-invert prose-h3:text-xl mt-6 leading-7">
         <Markdown>{challenge.description}</Markdown>
       </div>
+
+      {challenge.id % 5 === 0 ? (
+        <RayFundNote
+          variant="banner"
+          className="mt-6"
+          text="ЛитКот помогает учиться программировать, а фонд «РЭЙ» помогает настоящим котам и собакам. Присоединяйтесь."
+        />
+      ) : null}
 
       <PromoBlock
         variant="in-feed"

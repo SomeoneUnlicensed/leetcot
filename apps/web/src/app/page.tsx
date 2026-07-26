@@ -4,6 +4,7 @@ import { SITE_URL, buildMetaForDefault, tagline } from './metadata';
 import { Features } from './_components/features';
 import { Hero } from './_components/hero';
 import { PartnerCta } from './_components/partner-cta';
+import { RayFundCta } from './_components/ray-fund-cta';
 
 export function generateMetadata(): Metadata {
   return buildMetaForDefault({
@@ -43,6 +44,7 @@ export default function Index() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <Hero />
+      <RayFundCta />
       <Features />
       <PartnerCta />
       <Footsies />
