@@ -48,6 +48,7 @@ export async function Navigation() {
       <NavLink title="Алгоритмы" href="/algorithms" />
       <NavLink title="SQL-рыбалка" href="/sql-fishing" />
       <NavLink title="Go" href="/courses/golang-start" />
+      <NavLink title="ОГЭ 2027" href="/courses/oge-informatika-2027" />
       {isTeacher ? <NavLink title="Панель учителя" href="/teacher/exams" /> : null}
     </>
   );
