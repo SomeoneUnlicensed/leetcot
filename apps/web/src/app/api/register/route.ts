@@ -49,6 +49,12 @@ export async function POST(req: Request) {
             identifier: { startsWith: `${PENDING_REGISTRATION_PREFIX}${normalizedEmail}:` },
           },
         }),
+        // Notification.toUserId/fromUserId are required (non-cascading) relations to
+        // User, so an unverified account that already picked up a notification (e.g.
+        // a mention before finishing signup) blocked this delete with Prisma P2014.
+        prisma.notification.deleteMany({
+          where: { OR: [{ toUserId: existingUser.id }, { fromUserId: existingUser.id }] },
+        }),
         prisma.user.delete({ where: { id: existingUser.id } }),
       ]);
     } else {
