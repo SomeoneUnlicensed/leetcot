@@ -48,6 +48,40 @@ services:
       redis:
         condition: service_started
 
+  # Only this proxy touches the real host docker.sock. It exposes a
+  # narrowed-down Docker API (container create/start/exec/remove, image
+  # pull/inspect) over a plain TCP port reachable only from other services
+  # on this compose network — no swarm, secrets, configs, plugins, networks,
+  # volumes, or system-level access, unlike a raw socket mount.
+  docker-proxy:
+    image: tecnativa/docker-socket-proxy:latest
+    restart: always
+    environment:
+      - CONTAINERS=1
+      - IMAGES=1
+      - POST=1
+      - EXEC=1
+      - INFO=1
+      - PING=1
+      - VERSION=1
+      - NETWORKS=0
+      - VOLUMES=0
+      - SERVICES=0
+      - TASKS=0
+      - NODES=0
+      - SWARM=0
+      - SECRETS=0
+      - CONFIGS=0
+      - PLUGINS=0
+      - SYSTEM=0
+      - DISTRIBUTION=0
+      - SESSION=0
+      - BUILD=0
+      - COMMIT=0
+      - AUTH=0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
   runtime-images:
     image: docker:27-cli
     restart: 'no'
@@ -58,15 +92,17 @@ services:
         docker pull python:3.11-alpine
         docker pull node:20-alpine
         docker pull golang:1.24-alpine
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_HOST=tcp://docker-proxy:2375
+    depends_on:
+      docker-proxy:
+        condition: service_started
 
   code-runner:
     image: ${LEETCOT_IMAGE:-ghcr.io/someoneunlicensed/leetcot:latest}
     restart: always
     entrypoint: ['pnpm', '--filter', 'code-runner', 'start']
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - /tmp:/tmp
     env_file:
       - .env
@@ -74,6 +110,7 @@ services:
       - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-dev}@db:5432/leetcot?schema=public
       - REDIS_URL=redis://redis:6379
       - NODE_ENV=${NODE_ENV:-production}
+      - DOCKER_HOST=tcp://docker-proxy:2375
       - CODE_RUNNER_CONCURRENCY=${CODE_RUNNER_CONCURRENCY:-2}
       - CODE_RUNNER_TIMEOUT_MS=${CODE_RUNNER_TIMEOUT_MS:-10000}
       - CODE_RUNNER_MEMORY_LIMIT=${CODE_RUNNER_MEMORY_LIMIT:-128m}
@@ -82,6 +119,8 @@ services:
     depends_on:
       runtime-images:
         condition: service_completed_successfully
+      docker-proxy:
+        condition: service_started
       redis:
         condition: service_started
 
