@@ -111,8 +111,17 @@ const runtimes = {
 } satisfies Record<CodeRunPayload['language'], LanguageRuntime>;
 
 const readyRuntimeImages = new Set<string>();
-const hotGoRunners = new Map<number, { baseDir: string; containerName: string }>();
-const hotPythonRunners = new Map<number, { baseDir: string; containerName: string }>();
+type HotRunner = { baseDir: string; containerName: string; jobCount: number };
+const hotGoRunners = new Map<number, HotRunner>();
+const hotPythonRunners = new Map<number, HotRunner>();
+
+// A submission that forks or daemonizes a background process isn't caught by
+// the per-job `timeout -s KILL`, which only bounds the exec'd foreground
+// process — such a process could otherwise linger in a hot container and
+// later see the next job's files on the shared /work mount. Recycling the
+// container after a bounded number of jobs (same teardown path already used
+// on the timeout branch below) caps how long that exposure window can last.
+const HOT_RUNNER_JOB_RECYCLE_LIMIT = 30;
 
 // Must match packages/db/seed/data/challenge-ingest.ts's PYTHON_HIDDEN_TESTS_MARKER and
 // apps/web's getChallengeRouteData sanitizePythonTestsForClient.
@@ -763,7 +772,7 @@ async function ensureHotGoRunner(workerId: number) {
   ].join(' ');
   await runHotContainer(goRuntime, containerName, startCommand);
 
-  const runner = { baseDir, containerName };
+  const runner = { baseDir, containerName, jobCount: 0 };
   hotGoRunners.set(workerId, runner);
   return runner;
 }
@@ -825,7 +834,7 @@ async function ensureHotPythonRunner(workerId: number) {
   ].join(' ');
   await runHotContainer(pythonRuntime, containerName, startCommand);
 
-  const runner = { baseDir, containerName };
+  const runner = { baseDir, containerName, jobCount: 0 };
   hotPythonRunners.set(workerId, runner);
   return runner;
 }
@@ -892,6 +901,10 @@ async function executeGoHotJob(job: CodeRunJob, workerId: number): Promise<CodeR
     };
   } finally {
     await rm(jobDir, { force: true, recursive: true });
+    runner.jobCount += 1;
+    if (runner.jobCount >= HOT_RUNNER_JOB_RECYCLE_LIMIT && hotGoRunners.get(workerId) === runner) {
+      hotGoRunners.delete(workerId);
+    }
   }
 }
 
@@ -964,6 +977,13 @@ async function executePythonHotJob(job: CodeRunJob, workerId: number): Promise<C
     };
   } finally {
     await rm(jobDir, { force: true, recursive: true });
+    runner.jobCount += 1;
+    if (
+      runner.jobCount >= HOT_RUNNER_JOB_RECYCLE_LIMIT &&
+      hotPythonRunners.get(workerId) === runner
+    ) {
+      hotPythonRunners.delete(workerId);
+    }
   }
 }
 

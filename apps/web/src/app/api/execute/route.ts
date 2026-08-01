@@ -9,6 +9,7 @@ import { verifySolution } from 'altcha-lib/v1';
 import { NextResponse } from 'next/server';
 import { getAltchaHmacKey } from '~/server/altcha';
 import { auth } from '~/server/auth';
+import { rateLimit } from '~/utils/rateLimit';
 
 const MAX_QUEUE_DEPTH = Number(process.env.CODE_RUNNER_MAX_QUEUE_DEPTH ?? 20);
 
@@ -18,6 +19,16 @@ export async function POST(req: Request) {
 
     if (!session?.user) {
       return NextResponse.json({ success: false, error: 'Не авторизован.' }, { status: 401 });
+    }
+
+    if (rateLimit(session.user.id)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Слишком много запусков подряд. Попробуйте ещё раз через некоторое время.',
+        },
+        { status: 429 },
+      );
     }
 
     const { code, challengeId, language, captcha } = (await req.json()) as {
