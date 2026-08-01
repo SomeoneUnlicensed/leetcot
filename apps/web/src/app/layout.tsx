@@ -24,6 +24,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main className="flex-1">{children}</main>
           <Toaster />
         </Providers>
+        <a
+          href="/api/__trap"
+          rel="nofollow"
+          aria-hidden="true"
+          tabIndex={-1}
+          style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, overflow: 'hidden' }}
+        >
+          system diagnostics
+        </a>
         <Analytics />
         <SpeedInsights />
       </body>
