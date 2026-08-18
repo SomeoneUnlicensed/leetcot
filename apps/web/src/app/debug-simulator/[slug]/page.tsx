@@ -45,7 +45,7 @@ export default async function DebugTaskPage({ params }: PageProps) {
           ← Все задачи
         </Link>
 
-        <div className="border-border rounded-2xl border bg-white p-8 shadow-sm">
+        <div className="border-border rounded-2xl border bg-white p-6 shadow-sm sm:p-8">
           <div className="mb-3 flex flex-wrap items-center gap-3">
             <DifficultyBadge difficulty={task.difficulty} />
             <span className="text-sm font-bold text-[#131722]/50">{task.points} pts</span>
@@ -53,27 +53,24 @@ export default async function DebugTaskPage({ params }: PageProps) {
 
           <h1 className="text-2xl font-bold text-[#131722] sm:text-3xl">{task.title}</h1>
 
-          <div className="prose mt-5 max-w-none text-[#131722]/75">
+          <div className="prose mt-4 max-w-none text-sm text-[#131722]/75">
             <Markdown>{task.instructions}</Markdown>
           </div>
 
-          {!task.dockerImage ? (
-            <div className="mt-6 rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900">
+          {task.dockerImage ? (
+            <div className="mt-5">
+              <TaskTerminal taskSlug={task.slug} />
+            </div>
+          ) : (
+            <div className="mt-5 rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900">
               Адрес и доступ к вашему серверу для этой задачи выдаются организаторами отдельно
               (на месте или в личном кабинете команды).
             </div>
-          ) : null}
-        </div>
+          )}
 
-        {task.dockerImage ? (
-          <div className="mt-4">
-            <TaskTerminal taskSlug={task.slug} />
+          <div className="border-border mt-5 border-t pt-5">
+            <FlagForm slug={task.slug} points={task.points} initiallySolved={Boolean(solvedSubmission)} />
           </div>
-        ) : null}
-
-        <div className="border-border mt-4 rounded-2xl border bg-white p-6 shadow-sm">
-          <p className="mb-3 text-sm font-semibold text-[#131722]/60">Флаг</p>
-          <FlagForm slug={task.slug} points={task.points} initiallySolved={Boolean(solvedSubmission)} />
         </div>
       </section>
     </main>

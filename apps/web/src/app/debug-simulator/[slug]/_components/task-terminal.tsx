@@ -143,7 +143,7 @@ export function TaskTerminal({ taskSlug }: { taskSlug: string }) {
   const isRunning = status === 'running' || status === 'starting';
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[#252b3b] shadow-[0_12px_32px_-12px_rgba(11,15,25,0.5)]">
+    <div className="overflow-hidden rounded-xl border border-[#252b3b]">
       <WindowChrome
         label={`${taskSlug} — sh`}
         live={status === 'running'}
@@ -153,30 +153,26 @@ export function TaskTerminal({ taskSlug }: { taskSlug: string }) {
       {isRunning ? (
         <div className="relative bg-[#0b0f19]">
           {status === 'starting' ? (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#0b0f19]">
-              <Loader2 className="h-6 w-6 animate-spin text-[#00A0FF]" />
-              <span className="text-sm font-medium text-white/50">Разворачиваем сервер...</span>
+            <div className="absolute inset-0 z-10 flex items-center justify-center gap-2 bg-[#0b0f19]">
+              <Loader2 className="h-4 w-4 animate-spin text-[#00A0FF]" />
+              <span className="text-sm text-white/50">Разворачиваем сервер...</span>
             </div>
           ) : null}
-          <div ref={containerRef} className="h-[420px] w-full px-3 py-3" />
+          <div ref={containerRef} className="h-[280px] w-full px-3 py-2" />
         </div>
       ) : (
-        <div className="flex h-[420px] flex-col items-center justify-center gap-4 bg-[#0b0f19] px-6 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/[0.06]">
-            <TerminalIcon className="h-5 w-5 text-white/40" />
+        <div className="flex items-center justify-between gap-4 bg-[#0b0f19] px-5 py-4">
+          <div className="flex items-center gap-3">
+            <TerminalIcon className="h-4 w-4 shrink-0 text-white/30" />
+            <p className="text-sm text-white/50">Окружение не запущено</p>
           </div>
-          <div>
-            <p className="font-medium text-white/80">Окружение ещё не запущено</p>
-            <p className="mt-1 max-w-xs text-sm text-white/40">
-              Поднимем для вас изолированный сервер и дадим прямой доступ к терминалу.
-            </p>
-          </div>
-          {error ? <p className="text-sm text-red-400">{error}</p> : null}
+          {error ? <p className="text-xs text-red-400">{error}</p> : null}
           <Button
             onClick={start}
-            className="rounded-xl bg-[#00A0FF] px-5 font-bold text-white hover:bg-[#0090e6]"
+            size="sm"
+            className="h-8 shrink-0 rounded-lg bg-[#00A0FF] px-3 text-xs font-bold text-white hover:bg-[#0090e6]"
           >
-            Запустить окружение
+            Запустить
           </Button>
         </div>
       )}

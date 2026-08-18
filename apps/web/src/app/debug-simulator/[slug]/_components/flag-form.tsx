@@ -50,32 +50,34 @@ export function FlagForm({ slug, points, initiallySolved }: FlagFormProps) {
 
   if (solved) {
     return (
-      <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-700">
-        Задача решена! Начислено {points} очков.
+      <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+        <span className="font-semibold">Решено</span>
+        <span className="text-emerald-600/70">+{points} очков</span>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row">
+    <div className="flex flex-col gap-1.5">
+      <form onSubmit={handleSubmit} className="flex gap-2">
         <Input
           value={flag}
           onChange={(e) => setFlag(e.target.value)}
           placeholder="LENTA{...}"
-          className="border-border"
+          className="border-border h-9 text-sm"
           autoComplete="off"
           spellCheck={false}
         />
         <Button
           type="submit"
           disabled={loading}
-          className="shrink-0 bg-[#00A0FF] font-bold text-white hover:bg-[#0090e6]"
+          size="sm"
+          className="h-9 shrink-0 bg-[#00A0FF] px-4 text-sm font-bold text-white hover:bg-[#0090e6]"
         >
-          {loading ? 'Проверяем...' : 'Отправить флаг'}
+          {loading ? '...' : 'Отправить'}
         </Button>
       </form>
-      {error ? <p className="text-sm text-red-500">{error}</p> : null}
+      {error ? <p className="text-xs text-red-500">{error}</p> : null}
     </div>
   );
 }
