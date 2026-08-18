@@ -29,6 +29,8 @@
     "db:sync-tests": "dotenv -e ../../.env tsx ./seed/sync-tests.ts",
     "db:prod:seed": "dotenv -e ../../.env tsx ./temp/populate-aot-challenges.ts && dotenv -e ../../.env tsx ./seed/prod.ts",
     "db:leaderboard:seed": "dotenv -e ../../.env tsx ./seed/leaderboard.ts",
+    "db:seed:debug-simulator": "dotenv -e ../../.env tsx ./seed/debug-simulator.ts",
+    "db:seed:event-invites": "dotenv -e ../../.env tsx ./seed/event-invites.ts",
     "db:aot:seed": "dotenv -e ../../.env tsx ./temp/aot-2024-ingest.ts",
     "db:studio": "dotenv -e ../../.env prisma studio",
     "format": "prettier . --check --cache --cache-location=\"node_modules/.cache/prettiercache\"",

@@ -40,7 +40,10 @@
     "CODE_RUNNER_GO_TIMEOUT_MS",
     "NEXT_PUBLIC_SENTRY_DSN",
     "SENTRY_TEST_TOKEN",
-    "ALTCHA_HMAC_KEY"
+    "ALTCHA_HMAC_KEY",
+    "DEBUG_TASK_FLAGS",
+    "EVENT_INVITE_EMAILS",
+    "EVENT_INVITES_FILE"
   ],
   "globalDependencies": [".env", ".env.*"],
   "tasks": {

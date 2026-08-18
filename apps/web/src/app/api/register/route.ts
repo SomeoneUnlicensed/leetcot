@@ -1,4 +1,4 @@
-import { prisma } from '@repo/db';
+import { LENTA_CHAMPIONSHIP_SLUG, prisma } from '@repo/db';
 import bcrypt from 'bcryptjs';
 import { NextResponse } from 'next/server';
 import { sendVerificationEmail } from '~/lib/mailer';
@@ -27,6 +27,25 @@ export async function POST(req: Request) {
 
     if (String(password).length < 3) {
       return NextResponse.json({ error: 'Пароль слишком короткий.' }, { status: 400 });
+    }
+
+    // This fork is invite-only: registration is limited to emails the organizers
+    // pre-registered for the event (see EventInvite / packages/db/seed for how to add them).
+    const invite = await prisma.eventInvite.findFirst({
+      where: {
+        email: normalizedEmail,
+        championship: { slug: LENTA_CHAMPIONSHIP_SLUG },
+      },
+    });
+
+    if (!invite) {
+      return NextResponse.json(
+        {
+          error:
+            'Этот email не найден в списке предрегистрации. Обратитесь к организаторам мероприятия.',
+        },
+        { status: 403 },
+      );
     }
 
     await prisma.verificationToken.deleteMany({

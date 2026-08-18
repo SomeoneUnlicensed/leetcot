@@ -44,11 +44,8 @@ export async function Navigation() {
   );
   const TopSectionLinks = (
     <>
-      <NavLink title="Задачки" href="/explore" />
-      <NavLink title="Алгоритмы" href="/algorithms" />
-      <NavLink title="SQL-рыбалка" href="/sql-fishing" />
-      <NavLink title="Go" href="/courses/golang-start" />
-      {isTeacher ? <NavLink title="Панель учителя" href="/teacher/exams" /> : null}
+      <NavLink title="Дебаг-Симулятор" href="/debug-simulator" />
+      <NavLink title="Лидерборд" href="/leaderboard" />
     </>
   );
 

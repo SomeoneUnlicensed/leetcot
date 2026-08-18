@@ -1,4 +1,4 @@
-import { prisma } from '@repo/db';
+import { LENTA_CHAMPIONSHIP_SLUG, prisma } from '@repo/db';
 import { NextResponse } from 'next/server';
 
 const PENDING_REGISTRATION_PREFIX = 'register:';
@@ -88,6 +88,14 @@ export async function POST(req: Request) {
       }),
       prisma.verificationToken.deleteMany({
         where: { identifier: { startsWith: `${PENDING_REGISTRATION_PREFIX}${normalizedEmail}:` } },
+      }),
+      prisma.eventInvite.updateMany({
+        where: {
+          email: normalizedEmail,
+          championship: { slug: LENTA_CHAMPIONSHIP_SLUG },
+          usedAt: null,
+        },
+        data: { usedAt: new Date() },
       }),
     ]);
 

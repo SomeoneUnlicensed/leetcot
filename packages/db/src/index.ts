@@ -14,3 +14,5 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 export * from '@prisma/client';
 export { hashPassword } from './password';
+export { hashFlag, verifyFlag } from './flag';
+export { LENTA_CHAMPIONSHIP_SLUG } from './debug-simulator';

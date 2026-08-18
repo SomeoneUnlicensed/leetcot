@@ -160,8 +160,9 @@ model User {
   createdExams ExamSession[] @relation("exam_student")
   teacherExams Exam[]        @relation("exam_teacher")
 
-  championships ChampionshipParticipant[]
-  userBadges    UserBadge[]
+  championships    ChampionshipParticipant[]
+  userBadges       UserBadge[]
+  debugSubmissions DebugSubmission[]
 }
 
 model VerificationToken {
@@ -758,6 +759,67 @@ model Championship {
   endDate      DateTime
   challenges   ChampionshipChallenge[]
   participants ChampionshipParticipant[]
+  debugTasks   DebugTask[]
+  eventInvites EventInvite[]
+}
+
+enum DebugTaskCategory {
+  RECON
+  ACCESS
+  NETWORK
+  WEB
+  CLOUD
+  CRYPTO
+  INCIDENT_RESPONSE
+}
+
+model DebugTask {
+  id             String            @id @default(uuid())
+  championship   Championship      @relation(fields: [championshipId], references: [id])
+  championshipId String
+  slug           String            @unique
+  title          String
+  category       DebugTaskCategory
+  /// Task briefing shown to the participant (markdown). Connection details (host/creds)
+  /// are handed out separately per team by infra, not stored here.
+  instructions   String            @db.Text
+  difficulty     Difficulty
+  points         Int               @default(10)
+  sortOrder      Int               @default(0)
+  flagHash       String
+  isActive       Boolean           @default(true)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  submissions DebugSubmission[]
+
+  @@index([championshipId])
+}
+
+model DebugSubmission {
+  id        String    @id @default(uuid())
+  task      DebugTask @relation(fields: [taskId], references: [id])
+  taskId    String
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  isCorrect Boolean
+  createdAt DateTime  @default(now())
+
+  @@index([taskId])
+  @@index([userId])
+  @@index([taskId, userId, isCorrect])
+}
+
+model EventInvite {
+  id             String       @id @default(uuid())
+  championship   Championship @relation(fields: [championshipId], references: [id])
+  championshipId String
+  email          String
+  usedAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@unique([championshipId, email])
+  @@index([championshipId])
 }
 
 model ChampionshipParticipant {
@@ -769,6 +831,7 @@ model ChampionshipParticipant {
   score          Int          @default(0)
   joinedAt       DateTime     @default(now())
 
+  @@unique([championshipId, userId])
   @@index([championshipId])
   @@index([userId])
 }
