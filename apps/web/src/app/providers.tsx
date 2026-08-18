@@ -7,7 +7,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ThemeProvider } from 'next-themes';
 import React, { Suspense } from 'react';
 import { Toolbar } from '~/components/toolbar';
-import { ArlistLinkedModal } from './arlist-linked-modal';
 import { FeatureFlagProvider } from './feature-flag-provider';
 
 interface ProvidersProps {
@@ -43,7 +42,6 @@ export function Providers({ children }: ProvidersProps) {
           <Suspense>
             <Toolbar />
           </Suspense>
-          <ArlistLinkedModal />
         </ThemeProvider>
       </SessionProvider>
     </QueryClientProvider>

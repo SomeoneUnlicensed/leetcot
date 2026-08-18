@@ -1,7 +1,3 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="100%" height="100%">
-  <g font-family="Consolas, Monaco, 'Courier New', monospace" font-weight="900" font-size="16" text-anchor="middle" fill="#ff2a75">
-    <text x="32" y="22">/\_/\</text>
-    <text x="32" y="39">( o.o )</text>
-    <text x="32" y="54">&gt; ^ &lt;</text>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <path fill="#00A0FF" d="M16 2a14 14 0 1 0 0 28 14 14 0 0 0 0-28Zm0 6a8 8 0 1 1 0 16 8 8 0 0 1 0-16Z"/>
 </svg>
