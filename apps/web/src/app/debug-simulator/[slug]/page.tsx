@@ -57,20 +57,23 @@ export default async function DebugTaskPage({ params }: PageProps) {
             <Markdown>{task.instructions}</Markdown>
           </div>
 
-          {task.dockerImage ? (
-            <div className="mt-6">
-              <TaskTerminal taskSlug={task.slug} />
-            </div>
-          ) : (
+          {!task.dockerImage ? (
             <div className="mt-6 rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900">
               Адрес и доступ к вашему серверу для этой задачи выдаются организаторами отдельно
               (на месте или в личном кабинете команды).
             </div>
-          )}
+          ) : null}
+        </div>
 
-          <div className="mt-6">
-            <FlagForm slug={task.slug} points={task.points} initiallySolved={Boolean(solvedSubmission)} />
+        {task.dockerImage ? (
+          <div className="mt-4">
+            <TaskTerminal taskSlug={task.slug} />
           </div>
+        ) : null}
+
+        <div className="border-border mt-4 rounded-2xl border bg-white p-6 shadow-sm">
+          <p className="mb-3 text-sm font-semibold text-[#131722]/60">Флаг</p>
+          <FlagForm slug={task.slug} points={task.points} initiallySolved={Boolean(solvedSubmission)} />
         </div>
       </section>
     </main>
