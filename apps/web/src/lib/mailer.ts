@@ -34,8 +34,7 @@ function escapeHtml(value: string) {
 
 const brandHeader = `
   <div class="brand">
-    <div class="brand-mark">арлист тех</div>
-    <div class="product">ЛитКот</div>
+    <div class="product">lentatech</div>
   </div>
 `;
 
@@ -82,25 +81,24 @@ export async function sendVerificationEmail(to: string, code: string, name: stri
   const safeName = escapeHtml(name);
 
   await transporter.sendMail({
-    from: process.env.EMAIL_FROM ?? 'noreply@arlist.ru',
+    from: process.env.EMAIL_FROM ?? 'noreply@leetcot.ru',
     to,
-    subject: '🐱 Код подтверждения ЛитКот',
+    subject: 'Код подтверждения — Дебаг-Симулятор',
     html: `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8" />
         <style>
-          body { font-family: -apple-system, sans-serif; background: #09090b; color: #fafafa; margin: 0; padding: 0; }
-          .container { max-width: 480px; margin: 40px auto; padding: 40px; background: #18181b; border-radius: 16px; border: 1px solid #27272a; }
+          body { font-family: -apple-system, sans-serif; background: #F5F9FF; color: #131722; margin: 0; padding: 0; }
+          .container { max-width: 480px; margin: 40px auto; padding: 40px; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; }
           .brand { margin-bottom: 20px; }
-          .brand-mark { margin-bottom: 14px; color: #fafafa; font-family: Arial Black, Arial, sans-serif; font-size: 22px; font-weight: 900; letter-spacing: 0; line-height: 1; text-transform: lowercase; }
-          .product { font-size: 22px; font-weight: 900; color: #fafafa; }
-          .greeting { font-size: 16px; color: #a1a1aa; margin-bottom: 32px; }
-          .code-box { background: #09090b; border: 1px solid #ec489940; border-radius: 12px; padding: 24px; text-align: center; margin: 24px 0; }
-          .code { font-size: 40px; font-weight: 900; letter-spacing: 12px; color: #ec4899; font-family: monospace; }
-          .hint { font-size: 13px; color: #71717a; margin-top: 8px; }
-          .footer { font-size: 12px; color: #52525b; margin-top: 32px; text-align: center; }
+          .product { font-size: 22px; font-weight: 900; color: #00A0FF; }
+          .greeting { font-size: 16px; color: #131722; margin-bottom: 32px; }
+          .code-box { background: #F5F9FF; border: 1px solid #00A0FF40; border-radius: 12px; padding: 24px; text-align: center; margin: 24px 0; }
+          .code { font-size: 40px; font-weight: 900; letter-spacing: 12px; color: #00A0FF; font-family: monospace; }
+          .hint { font-size: 13px; color: #64748b; margin-top: 8px; }
+          .footer { font-size: 12px; color: #94a3b8; margin-top: 32px; text-align: center; }
         </style>
       </head>
       <body>

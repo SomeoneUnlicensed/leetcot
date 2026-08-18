@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { signIn } from '@repo/auth/react';
+import Image from 'next/image';
 import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
 import { Label } from '@repo/ui/components/label';
@@ -55,54 +55,9 @@ function OtpInput({ value, onChange }: { value: string; onChange: (v: string) =>
           onChange={(e) => handleChange(i, e.target.value)}
           onKeyDown={(e) => handleKey(i, e)}
           onPaste={handlePaste}
-          className="h-14 w-11 rounded-xl border border-zinc-700 bg-zinc-800 text-center text-2xl font-bold text-white caret-pink-500 outline-none ring-0 transition-all duration-150 focus:border-pink-500 focus:shadow-[0_0_12px_-2px_#ec4899aa] focus:ring-2 focus:ring-pink-500/30"
+          className="border-border h-14 w-11 rounded-xl border bg-white text-center text-2xl font-bold text-[#131722] caret-[#00A0FF] outline-none ring-0 transition-all duration-150 focus:border-[#00A0FF] focus:ring-2 focus:ring-[#00A0FF]/30"
         />
       ))}
-    </div>
-  );
-}
-
-function ArlistButton() {
-  const [loading, setLoading] = useState(false);
-
-  const handleClick = async () => {
-    setLoading(true);
-    await signIn('arlist', { callbackUrl: '/' });
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={handleClick}
-      disabled={loading}
-      className="group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl bg-black px-5 py-2.5 text-white transition-all disabled:cursor-not-allowed disabled:opacity-50"
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLButtonElement).style.boxShadow =
-          'inset 0 0 0 0.5px rgba(139,92,246,0.5), 0 0 12px -4px rgba(139,92,246,0.3)';
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLButtonElement).style.boxShadow = '';
-      }}
-    >
-      <span
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[13px] text-white"
-        style={{ fontFamily: 'var(--font-dela)' }}
-      >
-        ID
-      </span>
-      <span className="text-[15px] font-semibold">
-        {loading ? 'Переходим на Arlist...' : 'Зарегистрироваться через Arlist ID'}
-      </span>
-    </button>
-  );
-}
-
-function Divider() {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="h-px flex-1 bg-zinc-700" />
-      <span className="text-xs text-zinc-500">или зарегистрируйся с паролем</span>
-      <div className="h-px flex-1 bg-zinc-700" />
     </div>
   );
 }
@@ -224,27 +179,27 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-950 px-4">
-      <div className="w-full max-w-md space-y-6 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8 shadow-2xl backdrop-blur-sm">
+    <div className="flex min-h-screen items-center justify-center bg-white px-4">
+      <div className="border-border w-full max-w-md space-y-6 rounded-2xl border bg-white p-8 shadow-xl">
         {/* Header */}
         <div className="text-center">
-          <pre className="mx-auto mb-4 text-[10px] font-bold leading-3 text-pink-500">
-            {`
- /\\_/\\
-( o.o )
- > ^ <
-`}
-          </pre>
-          <h2 className="text-3xl font-extrabold tracking-tight text-white">
-            {step === 'form' ? 'Регистрация в ЛитКот' : 'Подтверди email'}
+          <Image
+            src="/lentatech-logo-color.png"
+            alt="Lenta tech"
+            width={150}
+            height={30}
+            className="mx-auto mb-6 h-7 w-auto"
+          />
+          <h2 className="text-2xl font-bold text-[#131722]">
+            {step === 'form' ? 'Регистрация' : 'Подтверди email'}
           </h2>
-          <p className="mt-2 text-sm text-zinc-400">
+          <p className="mt-2 text-sm text-[#131722]/60">
             {step === 'form' ? (
-              'Стань частью нашей кошачьей банды'
+              'Только по предрегистрации — email должен быть в списке приглашённых'
             ) : (
               <>
                 Мы отправили 6-значный код на{' '}
-                <span className="font-medium text-pink-400">{email}</span>
+                <span className="font-medium text-[#00A0FF]">{email}</span>
               </>
             )}
           </p>
@@ -252,76 +207,63 @@ export default function RegisterPage() {
 
         {/* ── STEP 1: Form ── */}
         {step === 'form' && (
-          <>
-            {/* Arlist ID — primary */}
-            <div className="flex flex-col gap-2">
-              <ArlistButton />
-              <p className="text-center text-[11px] text-zinc-500">
-                Рекомендуем — мгновенная регистрация через Arlist
-              </p>
+          <form className="flex flex-col gap-4" onSubmit={handleRegister}>
+            <div className="flex flex-col gap-3">
+              <div>
+                <Label htmlFor="name" className="text-[#131722]/70">
+                  Имя
+                </Label>
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  className="border-border mt-1"
+                  placeholder="Как к вам обращаться"
+                />
+              </div>
+              <div>
+                <Label htmlFor="email" className="text-[#131722]/70">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  className="border-border mt-1"
+                  placeholder="you@example.com"
+                />
+              </div>
+              <div>
+                <Label htmlFor="password" className="text-[#131722]/70">
+                  Пароль
+                </Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  className="border-border mt-1"
+                  placeholder="••••••••"
+                />
+              </div>
             </div>
 
-            <Divider />
-
-            {/* Credentials — secondary */}
-            <form className="flex flex-col gap-4" onSubmit={handleRegister}>
-              <div className="flex flex-col gap-3">
-                <div>
-                  <Label htmlFor="name" className="text-zinc-400">
-                    Кошачье имя
-                  </Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required
-                    className="mt-1 border-zinc-700 bg-zinc-800 text-white"
-                    placeholder="Например, Барсик"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email" className="text-zinc-400">
-                    Email
-                  </Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    className="mt-1 border-zinc-700 bg-zinc-800 text-white"
-                    placeholder="meow@example.com"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="password" className="text-zinc-400">
-                    Пароль
-                  </Label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    required
-                    className="mt-1 border-zinc-700 bg-zinc-800 text-white"
-                    placeholder="••••••••"
-                  />
-                </div>
+            {error ? (
+              <div className="rounded-lg border border-red-200 bg-red-50 py-2 text-center text-sm text-red-600">
+                {error}
               </div>
+            ) : null}
 
-              {error ? (
-                <div className="rounded-lg border border-pink-500/20 bg-pink-500/10 py-2 text-center text-sm text-pink-400">
-                  {error}
-                </div>
-              ) : null}
-
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-xl bg-pink-600 py-3 font-bold text-white shadow-[0_0_20px_-5px_#db2777] transition-all duration-300 hover:bg-pink-700"
-              >
-                {loading ? 'Создаём профиль...' : 'Зарегистрироваться'}
-              </Button>
-            </form>
-          </>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-xl bg-[#00A0FF] py-3 font-bold text-white hover:bg-[#0090e6]"
+            >
+              {loading ? 'Создаём аккаунт...' : 'Зарегистрироваться'}
+            </Button>
+          </form>
         )}
 
         {/* ── STEP 2: OTP ── */}
@@ -331,7 +273,7 @@ export default function RegisterPage() {
               <OtpInput value={otp} onChange={setOtp} />
 
               {error ? (
-                <div className="rounded-lg border border-pink-500/20 bg-pink-500/10 py-2 text-center text-sm text-pink-400">
+                <div className="rounded-lg border border-red-200 bg-red-50 py-2 text-center text-sm text-red-600">
                   {error}
                 </div>
               ) : null}
@@ -339,18 +281,18 @@ export default function RegisterPage() {
               <Button
                 onClick={handleVerify}
                 disabled={loading || otp.replace(/\s/g, '').length < 6}
-                className="w-full rounded-xl bg-pink-600 py-3 font-bold text-white shadow-[0_0_20px_-5px_#db2777] transition-all duration-300 hover:bg-pink-700 disabled:opacity-50"
+                className="w-full rounded-xl bg-[#00A0FF] py-3 font-bold text-white hover:bg-[#0090e6] disabled:opacity-50"
               >
                 {loading ? 'Проверяем...' : 'Подтвердить'}
               </Button>
             </div>
 
-            <div className="text-center text-sm text-zinc-500">
+            <div className="text-center text-sm text-[#131722]/50">
               Не получил письмо?{' '}
               <button
                 onClick={handleResend}
                 disabled={resendCooldown > 0}
-                className="font-medium text-pink-500 hover:text-pink-400 disabled:cursor-not-allowed disabled:opacity-50"
+                className="font-medium text-[#00A0FF] hover:text-[#0090e6] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {resendCooldown > 0 ? `Отправить снова (${resendCooldown}с)` : 'Отправить снова'}
               </button>
@@ -360,8 +302,8 @@ export default function RegisterPage() {
 
         {/* Footer link */}
         <div className="text-center text-sm">
-          <span className="text-zinc-400">Уже есть аккаунт? </span>
-          <Link href="/login" className="font-medium text-pink-500 hover:text-pink-400">
+          <span className="text-[#131722]/60">Уже есть аккаунт? </span>
+          <Link href="/login" className="font-medium text-[#00A0FF] hover:text-[#0090e6]">
             Войти
           </Link>
         </div>

@@ -8,7 +8,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '~/server/auth';
 
 export const metadata: Metadata = {
-  title: 'Дебаг-Симулятор — Лента',
+  title: 'Дебаг-Симулятор — Lenta tech',
   description: 'Задачи дебаг-симулятора: живой сервер и 20 практических инцидентов.',
 };
 
@@ -61,34 +61,27 @@ export default async function DebugSimulatorPage() {
   const totalPoints = tasks.reduce((sum, t) => sum + t.points, 0);
 
   return (
-    <main className="min-h-screen bg-zinc-950 px-4 py-10 text-white">
+    <main className="min-h-screen bg-white px-4 py-10 text-[#131722]">
       <section className="mx-auto max-w-5xl">
-        <div className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-900/70 p-8">
-          <pre className="mb-3 text-[10px] font-bold leading-3 text-pink-500">
-            {`
- /\\_/\\
-( o.o )
- > ^ <
-`}
-          </pre>
+        <div className="border-border mb-8 rounded-2xl border bg-[#F5F9FF] p-8">
           <h1
-            className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl"
-            style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+            className="text-3xl tracking-tight text-[#131722] sm:text-4xl"
+            style={{ fontFamily: 'var(--font-brand)', fontWeight: 700 }}
           >
             Дебаг-Симулятор
           </h1>
-          <p className="mt-3 max-w-2xl text-zinc-400">
+          <p className="mt-3 max-w-2xl text-[#131722]/65">
             Каждая задача — реальный сервер и конкретный инцидент: от подбора SSH-пароля до
             восстановления упавшего узла кластера. Найдите флаг и отправьте его ниже.
           </p>
-          <p className="mt-4 text-sm text-zinc-500">
-            Ваш счёт: <span className="font-bold text-pink-400">{participant?.score ?? 0}</span> из{' '}
+          <p className="mt-4 text-sm text-[#131722]/60">
+            Ваш счёт: <span className="font-bold text-[#00A0FF]">{participant?.score ?? 0}</span> из{' '}
             {totalPoints}
           </p>
         </div>
 
         {tasks.length === 0 ? (
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-8 text-center text-zinc-400">
+          <div className="border-border rounded-2xl border bg-white p-8 text-center text-[#131722]/60">
             Задачи ещё не опубликованы. Загляните позже.
           </div>
         ) : (
@@ -98,7 +91,7 @@ export default async function DebugSimulatorPage() {
 
             return (
               <div key={tier} className="mb-8">
-                <h2 className="mb-3 text-lg font-bold text-zinc-300">{TIER_LABELS[tier]}</h2>
+                <h2 className="mb-3 text-lg font-bold text-[#131722]/80">{TIER_LABELS[tier]}</h2>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {tierTasks.map((task) => {
                     const isSolved = solvedTaskIds.has(task.id);
@@ -106,22 +99,22 @@ export default async function DebugSimulatorPage() {
                       <Link
                         key={task.id}
                         href={`/debug-simulator/${task.slug}`}
-                        className="group flex items-center justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 transition-colors duration-200 hover:border-pink-500/40 hover:bg-zinc-900"
+                        className="border-border group flex min-w-0 items-center justify-between gap-3 rounded-xl border bg-white p-4 transition-colors duration-200 hover:border-[#00A0FF]/40 hover:bg-[#F5F9FF]"
                       >
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex min-w-0 items-center gap-2">
                             {isSolved ? (
-                              <CheckCircle className="h-4 w-4 shrink-0 stroke-green-400" />
+                              <CheckCircle className="h-4 w-4 shrink-0 stroke-emerald-500" />
                             ) : (
-                              <Lock className="h-4 w-4 shrink-0 stroke-zinc-600" />
+                              <Lock className="h-4 w-4 shrink-0 stroke-[#131722]/30" />
                             )}
-                            <span className="truncate font-semibold text-white group-hover:text-pink-200">
+                            <span className="min-w-0 truncate font-semibold text-[#131722] group-hover:text-[#003C96]">
                               {task.title}
                             </span>
                           </div>
                         </div>
-                        <div className="flex shrink-0 items-center gap-2">
-                          <span className="text-sm font-bold text-zinc-400">{task.points} pts</span>
+                        <div className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-2">
+                          <span className="text-sm font-bold text-[#131722]/50">{task.points} pts</span>
                           <DifficultyBadge difficulty={task.difficulty} />
                         </div>
                       </Link>
@@ -134,7 +127,7 @@ export default async function DebugSimulatorPage() {
         )}
 
         <div className="mt-8">
-          <Link href="/leaderboard" className="text-sm font-semibold text-pink-400 hover:text-pink-300">
+          <Link href="/leaderboard" className="text-sm font-semibold text-[#00A0FF] hover:text-[#0090e6]">
             Смотреть лидерборд →
           </Link>
         </div>

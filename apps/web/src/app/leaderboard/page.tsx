@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Лидерборд — Дебаг-Симулятор',
-  description: 'Рейтинг участников дебаг-симулятора Ленты.',
+  description: 'Рейтинг участников дебаг-симулятора Lenta tech.',
 };
 
 const MEDALS = ['🥇', '🥈', '🥉'];
@@ -26,22 +26,22 @@ export default async function LeaderboardPage() {
     : [];
 
   return (
-    <main className="min-h-screen bg-zinc-950 px-4 py-10 text-white">
+    <main className="min-h-screen bg-white px-4 py-10 text-[#131722]">
       <section className="mx-auto max-w-2xl">
         <div className="mb-6 flex items-center gap-3">
-          <Trophy className="h-7 w-7 text-amber-400" />
+          <Trophy className="h-7 w-7 text-amber-500" />
           <h1
-            className="text-3xl font-extrabold tracking-tight text-white"
-            style={{ fontFamily: '"Dela Gothic One", sans-serif' }}
+            className="text-3xl tracking-tight text-[#131722]"
+            style={{ fontFamily: 'var(--font-brand)', fontWeight: 700 }}
           >
             Лидерборд
           </h1>
         </div>
 
         {participants.length === 0 ? (
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-8 text-center text-zinc-400">
+          <div className="border-border rounded-2xl border bg-white p-8 text-center text-[#131722]/60">
             Пока никто не набрал очков. Начните с первой задачи в{' '}
-            <Link href="/debug-simulator" className="font-semibold text-pink-400 hover:text-pink-300">
+            <Link href="/debug-simulator" className="font-semibold text-[#00A0FF] hover:text-[#0090e6]">
               дебаг-симуляторе
             </Link>
             .
@@ -51,14 +51,14 @@ export default async function LeaderboardPage() {
             {participants.map((p, i) => (
               <li
                 key={p.id}
-                className="flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900/50 px-4 py-3"
+                className="border-border flex items-center gap-4 rounded-xl border bg-white px-4 py-3 shadow-sm"
               >
-                <span className="w-8 shrink-0 text-center text-lg font-bold text-zinc-500">
+                <span className="w-8 shrink-0 text-center text-lg font-bold text-[#131722]/40">
                   {MEDALS[i] ?? i + 1}
                 </span>
                 <UserAvatar src={p.user.image ?? ''} username={p.user.name} />
-                <span className="min-w-0 flex-1 truncate font-semibold">{p.user.name}</span>
-                <span className="shrink-0 font-bold text-pink-400">{p.score} pts</span>
+                <span className="min-w-0 flex-1 truncate font-semibold text-[#131722]">{p.user.name}</span>
+                <span className="shrink-0 font-bold text-[#00A0FF]">{p.score} pts</span>
               </li>
             ))}
           </ol>

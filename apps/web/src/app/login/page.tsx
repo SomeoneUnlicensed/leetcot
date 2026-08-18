@@ -3,59 +3,11 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { signIn } from '@repo/auth/react';
 import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
 import { Label } from '@repo/ui/components/label';
-
-function ArlistButton({ redirectTo }: { redirectTo?: string }) {
-  const [loading, setLoading] = useState(false);
-
-  const handleClick = async () => {
-    setLoading(true);
-    await signIn('arlist', { callbackUrl: redirectTo ?? '/' });
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={handleClick}
-      disabled={loading}
-      className="group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl bg-black px-5 py-2.5 text-white transition-all disabled:cursor-not-allowed disabled:opacity-50"
-      style={{
-        boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0)',
-      }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLButtonElement).style.boxShadow =
-          'inset 0 0 0 0.5px rgba(139,92,246,0.5), 0 0 12px -4px rgba(139,92,246,0.3)';
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLButtonElement).style.boxShadow =
-          'inset 0 0 0 1px rgba(255,255,255,0)';
-      }}
-    >
-      <span
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[13px] text-white"
-        style={{ fontFamily: 'var(--font-dela)' }}
-      >
-        ID
-      </span>
-      <span className="text-[15px] font-semibold">
-        {loading ? 'Переходим на Arlist...' : 'Войти с Arlist ID'}
-      </span>
-    </button>
-  );
-}
-
-function Divider() {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="h-px flex-1 bg-zinc-700" />
-      <span className="text-xs text-zinc-500">или</span>
-      <div className="h-px flex-1 bg-zinc-700" />
-    </div>
-  );
-}
 
 function LoginForm() {
   const router = useRouter();
@@ -68,13 +20,7 @@ function LoginForm() {
 
   useEffect(() => {
     if (searchParams.get('registered')) {
-      setSuccess(
-        'Привет! Я ЛитКот. Мы очень мяв рады видеть тебя в нашей банде! Твой профиль уже прогрет и готов к приключениям. Давай теперь войдем?',
-      );
-    }
-    const err = searchParams.get('error');
-    if (err === 'ArlistRequired') {
-      setError('Этот аккаунт привязан к Arlist ID. Войди через кнопку выше.');
+      setSuccess('Готово! Теперь можно войти.');
     }
   }, [searchParams]);
 
@@ -96,15 +42,9 @@ function LoginForm() {
       });
 
       if (res?.error) {
-        if (res.error === 'ArlistRequired') {
-          setError('Этот аккаунт привязан к Arlist ID. Войди через кнопку выше.');
-        } else {
-          setError(
-            'Неправильный email или пароль. Кот недоволен. Причиной также может быть что этот аккаунт привязан к Arlist ID. В таком случае войдите пожалуйста через кнопку выше. ',
-          );
-        }
+        setError('Неправильный email или пароль.');
       } else {
-        router.push('/');
+        router.push(redirectTo);
         router.refresh();
       }
     } catch {
@@ -115,36 +55,24 @@ function LoginForm() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-950 px-4">
-      <div className="w-full max-w-md space-y-6 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8 shadow-2xl backdrop-blur-sm">
-        {/* Header */}
+    <div className="flex min-h-screen items-center justify-center bg-white px-4">
+      <div className="border-border w-full max-w-md space-y-6 rounded-2xl border bg-white p-8 shadow-xl">
         <div className="text-center">
-          <pre className="mx-auto mb-4 text-[10px] font-bold leading-3 text-pink-500">
-            {`
- /\\_/\\
-( o.o )
- > ^ <
-`}
-          </pre>
-          <h2 className="text-3xl font-extrabold tracking-tight text-white">Вход в ЛитКот</h2>
-          <p className="mt-2 text-sm text-zinc-400">С возвращением в нашу кошачью банду</p>
+          <Image
+            src="/lentatech-logo-color.png"
+            alt="Lenta tech"
+            width={150}
+            height={30}
+            className="mx-auto mb-6 h-7 w-auto"
+          />
+          <h2 className="text-2xl font-bold text-[#131722]">Вход в Дебаг-Симулятор</h2>
+          <p className="mt-2 text-sm text-[#131722]/60">Только для приглашённых участников</p>
         </div>
 
-        {/* ── Arlist ID — primary ── */}
-        <div className="flex flex-col gap-3">
-          <ArlistButton redirectTo={redirectTo} />
-          <p className="text-center text-[11px] text-zinc-500">
-            Рекомендуем — единый вход через Arlist
-          </p>
-        </div>
-
-        <Divider />
-
-        {/* ── Credentials — secondary ── */}
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div className="flex flex-col gap-3">
             <div>
-              <Label htmlFor="email" className="text-zinc-400">
+              <Label htmlFor="email" className="text-[#131722]/70">
                 Email
               </Label>
               <Input
@@ -152,12 +80,12 @@ function LoginForm() {
                 name="email"
                 type="email"
                 required
-                className="mt-1 border-zinc-700 bg-zinc-800 text-white"
-                placeholder="meow@example.com"
+                className="border-border mt-1"
+                placeholder="you@example.com"
               />
             </div>
             <div>
-              <Label htmlFor="password" className="text-zinc-400">
+              <Label htmlFor="password" className="text-[#131722]/70">
                 Пароль
               </Label>
               <Input
@@ -165,20 +93,20 @@ function LoginForm() {
                 name="password"
                 type="password"
                 required
-                className="mt-1 border-zinc-700 bg-zinc-800 text-white"
+                className="border-border mt-1"
                 placeholder="••••••••"
               />
             </div>
           </div>
 
           {error ? (
-            <div className="rounded-lg border border-pink-500/20 bg-pink-500/10 py-2 text-center text-sm text-pink-400">
+            <div className="rounded-lg border border-red-200 bg-red-50 py-2 text-center text-sm text-red-600">
               {error}
             </div>
           ) : null}
 
           {success ? (
-            <div className="rounded-lg border border-green-500/20 bg-green-500/10 py-2 text-center text-sm text-green-400">
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 py-2 text-center text-sm text-emerald-600">
               {success}
             </div>
           ) : null}
@@ -186,15 +114,15 @@ function LoginForm() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-pink-600 py-3 font-bold text-white shadow-[0_0_20px_-5px_#db2777] transition-all duration-300 hover:bg-pink-700"
+            className="w-full rounded-xl bg-[#00A0FF] py-3 font-bold text-white hover:bg-[#0090e6]"
           >
-            {loading ? 'Заходим...' : 'Войти по паролю'}
+            {loading ? 'Заходим...' : 'Войти'}
           </Button>
         </form>
 
         <div className="text-center text-sm">
-          <span className="text-zinc-400">Нет аккаунта? </span>
-          <Link href="/register" className="font-medium text-pink-500 hover:text-pink-400">
+          <span className="text-[#131722]/60">Нет аккаунта? </span>
+          <Link href="/register" className="font-medium text-[#00A0FF] hover:text-[#0090e6]">
             Зарегистрироваться
           </Link>
         </div>
@@ -207,8 +135,8 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-zinc-950 text-white">
-          Мяу...
+        <div className="flex min-h-screen items-center justify-center bg-white text-[#131722]">
+          Загрузка...
         </div>
       }
     >

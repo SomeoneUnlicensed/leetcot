@@ -1,20 +1,7 @@
 import type { MetadataRoute } from 'next';
-import { prisma } from '@repo/db';
-import type { Challenge } from '@repo/db/types';
-
 import { SITE_URL } from './metadata';
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  let allChallenges: Challenge[] = [];
-  try {
-    allChallenges = await prisma.challenge.findMany();
-  } catch (error) {
-    console.warn(
-      'Warning: Database not available during sitemap build, skipping challenges:',
-      error,
-    );
-  }
-
+export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: `${SITE_URL}/`,
@@ -23,27 +10,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
-      url: `${SITE_URL}/explore`,
+      url: `${SITE_URL}/debug-simulator`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: `${SITE_URL}/algorithms`,
+      url: `${SITE_URL}/leaderboard`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/sql-fishing`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/courses/golang-start`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
+      changeFrequency: 'daily',
       priority: 0.8,
     },
     {
@@ -58,11 +33,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'yearly',
       priority: 0.2,
     },
-    ...allChallenges.map((challenge) => ({
-      url: `${SITE_URL}/challenge/${challenge.slug}`,
-      lastModified: new Date(challenge.updatedAt),
-      changeFrequency: 'weekly' as const,
-      priority: 0.7,
-    })),
   ];
 }

@@ -35,28 +35,28 @@ export default async function DebugTaskPage({ params }: PageProps) {
     : null;
 
   return (
-    <main className="min-h-screen bg-zinc-950 px-4 py-10 text-white">
+    <main className="min-h-screen bg-white px-4 py-10 text-[#131722]">
       <section className="mx-auto max-w-3xl">
         <Link
           href="/debug-simulator"
-          className="mb-4 inline-block text-sm text-zinc-500 hover:text-zinc-300"
+          className="mb-4 inline-block text-sm text-[#131722]/50 hover:text-[#131722]"
         >
           ← Все задачи
         </Link>
 
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-8">
+        <div className="border-border rounded-2xl border bg-white p-8 shadow-sm">
           <div className="mb-3 flex flex-wrap items-center gap-3">
             <DifficultyBadge difficulty={task.difficulty} />
-            <span className="text-sm font-bold text-zinc-400">{task.points} pts</span>
+            <span className="text-sm font-bold text-[#131722]/50">{task.points} pts</span>
           </div>
 
-          <h1 className="text-2xl font-extrabold text-white sm:text-3xl">{task.title}</h1>
+          <h1 className="text-2xl font-bold text-[#131722] sm:text-3xl">{task.title}</h1>
 
-          <div className="prose prose-invert prose-pink mt-5 max-w-none text-zinc-300">
+          <div className="prose mt-5 max-w-none text-[#131722]/75">
             <Markdown>{task.instructions}</Markdown>
           </div>
 
-          <div className="mt-6 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100">
+          <div className="mt-6 rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900">
             Адрес и доступ к вашему серверу для этой задачи выдаются организаторами отдельно
             (на месте или в личном кабинете команды).
           </div>

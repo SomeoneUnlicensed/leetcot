@@ -50,7 +50,7 @@ export function FlagForm({ slug, points, initiallySolved }: FlagFormProps) {
 
   if (solved) {
     return (
-      <div className="rounded-xl border border-green-500/30 bg-green-500/10 p-4 text-sm text-green-300">
+      <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-700">
         Задача решена! Начислено {points} очков.
       </div>
     );
@@ -63,19 +63,19 @@ export function FlagForm({ slug, points, initiallySolved }: FlagFormProps) {
           value={flag}
           onChange={(e) => setFlag(e.target.value)}
           placeholder="LENTA{...}"
-          className="border-zinc-700 bg-zinc-800 text-white"
+          className="border-border"
           autoComplete="off"
           spellCheck={false}
         />
         <Button
           type="submit"
           disabled={loading}
-          className="shrink-0 bg-pink-600 font-bold text-white hover:bg-pink-700"
+          className="shrink-0 bg-[#00A0FF] font-bold text-white hover:bg-[#0090e6]"
         >
           {loading ? 'Проверяем...' : 'Отправить флаг'}
         </Button>
       </form>
-      {error ? <p className="text-sm text-pink-400">{error}</p> : null}
+      {error ? <p className="text-sm text-red-500">{error}</p> : null}
     </div>
   );
 }
