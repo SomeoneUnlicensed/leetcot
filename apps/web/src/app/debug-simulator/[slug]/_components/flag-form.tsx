@@ -50,9 +50,9 @@ export function FlagForm({ slug, points, initiallySolved }: FlagFormProps) {
 
   if (solved) {
     return (
-      <div className="flex items-center gap-2 rounded-lg border border-emerald-400/20 bg-emerald-400/10 px-3 py-2.5 text-sm text-emerald-400">
+      <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-700">
         <span className="font-semibold">Решено</span>
-        <span className="text-emerald-400/70">+{points} очков</span>
+        <span className="text-emerald-600/70">+{points} очков</span>
       </div>
     );
   }
@@ -64,7 +64,7 @@ export function FlagForm({ slug, points, initiallySolved }: FlagFormProps) {
           value={flag}
           onChange={(e) => setFlag(e.target.value)}
           placeholder="LENTA{...}"
-          className="h-10 border-white/10 bg-white/5 text-sm text-white placeholder:text-white/25 focus-visible:ring-[#00A0FF]"
+          className="border-border h-10 text-sm focus-visible:ring-[#00A0FF]"
           autoComplete="off"
           spellCheck={false}
         />
@@ -76,7 +76,7 @@ export function FlagForm({ slug, points, initiallySolved }: FlagFormProps) {
           {loading ? '...' : 'Отправить'}
         </Button>
       </form>
-      {error ? <p className="text-xs text-red-400">{error}</p> : null}
+      {error ? <p className="text-xs text-red-500">{error}</p> : null}
     </div>
   );
 }

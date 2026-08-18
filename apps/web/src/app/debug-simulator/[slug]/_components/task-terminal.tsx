@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 type EnvStatus = 'error' | 'idle' | 'running' | 'starting' | 'stopped';
 
-const WindowChrome = ({
+const TerminalHeader = ({
   label,
   live,
   onStop,
@@ -16,15 +16,13 @@ const WindowChrome = ({
   live: boolean;
   onStop?: () => void;
 }) => (
-  <div className="flex items-center gap-2 bg-[#1b2131] px-4 py-3">
-    <span className="h-3 w-3 rounded-full bg-[#ff5f56]" />
-    <span className="h-3 w-3 rounded-full bg-[#ffbd2e]" />
-    <span className="h-3 w-3 rounded-full bg-[#27c93f]" />
-    <span className="ml-2 truncate font-mono text-xs text-white/40">{label}</span>
+  <div className="flex items-center gap-2.5 border-b border-white/5 bg-[#1a2030] px-5 py-3.5">
+    <TerminalIcon className="h-4 w-4 shrink-0 text-[#00A0FF]" />
+    <span className="truncate font-mono text-xs text-white/50">{label}</span>
     <div className="ml-auto flex items-center gap-3">
       {live ? (
-        <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-400">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+        <span className="flex items-center gap-1.5 text-xs font-medium text-[#00A0FF]">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#00A0FF]" />
           live
         </span>
       ) : null}
@@ -71,7 +69,7 @@ export function TaskTerminal({ taskSlug }: { taskSlug: string }) {
       fontFamily: '"Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace',
       lineHeight: 1.35,
       theme: {
-        background: '#0b0f19',
+        background: '#131722',
         foreground: '#e2e8f0',
         cursor: '#00A0FF',
         selectionBackground: '#00A0FF40',
@@ -144,16 +142,16 @@ export function TaskTerminal({ taskSlug }: { taskSlug: string }) {
 
   return (
     <div className="w-full overflow-hidden border-y border-[#252b3b]">
-      <WindowChrome
+      <TerminalHeader
         label={`${taskSlug} — sh`}
         live={status === 'running'}
         onStop={status === 'running' ? stop : undefined}
       />
 
       {isRunning ? (
-        <div className="relative bg-[#0b0f19]">
+        <div className="relative bg-[#131722]">
           {status === 'starting' ? (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#0b0f19]">
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#131722]">
               <Loader2 className="h-6 w-6 animate-spin text-[#00A0FF]" />
               <span className="text-sm text-white/50">Разворачиваем сервер...</span>
             </div>
@@ -161,7 +159,7 @@ export function TaskTerminal({ taskSlug }: { taskSlug: string }) {
           <div ref={containerRef} className="h-[92vh] min-h-[720px] w-full px-6 py-4" />
         </div>
       ) : (
-        <div className="flex h-[92vh] min-h-[720px] flex-col items-center justify-center gap-4 bg-[#0b0f19] px-6 text-center">
+        <div className="flex h-[92vh] min-h-[720px] flex-col items-center justify-center gap-4 bg-[#131722] px-6 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/5">
             <TerminalIcon className="h-7 w-7 text-white/30" />
           </div>
