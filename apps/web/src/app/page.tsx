@@ -67,7 +67,7 @@ export default async function Index() {
           </h1>
 
           <p className="mt-6 max-w-xl text-base leading-7 text-[#131722]/65 sm:text-lg">
-            {tagline} Регистрация — только по приглашению, которое вам уже прислали организаторы.
+            {tagline} Вход — по коду доступа, который вам уже выдали организаторы.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -75,8 +75,8 @@ export default async function Index() {
               asChild
               className="h-12 rounded-2xl bg-[#00A0FF] px-6 text-base font-bold text-white shadow-lg shadow-[#00A0FF]/25 hover:bg-[#0090e6]"
             >
-              <Link href={session ? '/debug-simulator' : '/register'}>
-                {session ? 'К задачам' : 'Зарегистрироваться'}
+              <Link href={session ? '/debug-simulator' : '/login'}>
+                {session ? 'К задачам' : 'Войти по коду'}
               </Link>
             </Button>
             <Button

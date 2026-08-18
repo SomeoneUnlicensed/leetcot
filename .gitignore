@@ -67,6 +67,3 @@ tunnel-db.ps1
 
 # generated plaintext CTF flags for the debug-simulator, never commit
 packages/db/seed/.debug-flags.local.json
-
-# pre-registration email list for the debug-simulator invite gate, never commit
-packages/db/seed/event-invites.local.json

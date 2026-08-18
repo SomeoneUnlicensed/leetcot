@@ -42,8 +42,7 @@
     "SENTRY_TEST_TOKEN",
     "ALTCHA_HMAC_KEY",
     "DEBUG_TASK_FLAGS",
-    "EVENT_INVITE_EMAILS",
-    "EVENT_INVITES_FILE"
+    "ENVIRONMENT_IDLE_MINUTES"
   ],
   "globalDependencies": [".env", ".env.*"],
   "tasks": {

@@ -122,6 +122,10 @@ model User {
   image         String?
   roles         Role[]
 
+  /// Login code for event participants created by an admin — no self-registration or
+  /// password for these accounts, they sign in with just this code.
+  loginCode String? @unique
+
   /// this is the bio that shows up on the profile page
   bio       String     @default("") @db.VarChar(1000)
   /// this is the twitter URL that shows up on the profile page
@@ -163,6 +167,7 @@ model User {
   championships    ChampionshipParticipant[]
   userBadges       UserBadge[]
   debugSubmissions DebugSubmission[]
+  taskEnvironments TaskEnvironment[]
 }
 
 model VerificationToken {
@@ -760,7 +765,6 @@ model Championship {
   challenges   ChampionshipChallenge[]
   participants ChampionshipParticipant[]
   debugTasks   DebugTask[]
-  eventInvites EventInvite[]
 }
 
 enum DebugTaskCategory {
@@ -780,20 +784,51 @@ model DebugTask {
   slug           String            @unique
   title          String
   category       DebugTaskCategory
-  /// Task briefing shown to the participant (markdown). Connection details (host/creds)
-  /// are handed out separately per team by infra, not stored here.
+  /// Task briefing shown to the participant (markdown).
   instructions   String            @db.Text
   difficulty     Difficulty
   points         Int               @default(10)
   sortOrder      Int               @default(0)
   flagHash       String
   isActive       Boolean           @default(true)
+  /// Docker image that provides this task's live environment (e.g. a weak-SSH target).
+  /// Null means the task has no auto-deployed environment yet.
+  dockerImage    String?
+  /// Plaintext flag injected into the container at start (via env var) so it can
+  /// actually be discovered inside the sandbox. Only set for docker-backed tasks —
+  /// every other task keeps the hash-only property (plaintext never touches the DB).
+  dockerFlagPlain String?
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
 
-  submissions DebugSubmission[]
+  submissions  DebugSubmission[]
+  environments TaskEnvironment[]
 
   @@index([championshipId])
+}
+
+enum TaskEnvironmentStatus {
+  STARTING
+  RUNNING
+  STOPPED
+  FAILED
+}
+
+model TaskEnvironment {
+  id            String                 @id @default(uuid())
+  task          DebugTask              @relation(fields: [taskId], references: [id])
+  taskId        String
+  user          User                   @relation(fields: [userId], references: [id])
+  userId        String
+  containerName String                 @unique
+  status        TaskEnvironmentStatus  @default(STARTING)
+  createdAt     DateTime               @default(now())
+  expiresAt     DateTime
+
+  @@unique([taskId, userId])
+  @@index([taskId])
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model DebugSubmission {
@@ -808,18 +843,6 @@ model DebugSubmission {
   @@index([taskId])
   @@index([userId])
   @@index([taskId, userId, isCorrect])
-}
-
-model EventInvite {
-  id             String       @id @default(uuid())
-  championship   Championship @relation(fields: [championshipId], references: [id])
-  championshipId String
-  email          String
-  usedAt         DateTime?
-  createdAt      DateTime     @default(now())
-
-  @@unique([championshipId, email])
-  @@index([championshipId])
 }
 
 model ChampionshipParticipant {

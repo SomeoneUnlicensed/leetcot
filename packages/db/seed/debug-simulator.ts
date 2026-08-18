@@ -57,6 +57,10 @@ async function main() {
     const flag = resolvedFlags[task.slug] ?? generateFlag(task.slug);
     resolvedFlags[task.slug] = flag;
 
+    // Docker-backed tasks need the plaintext flag injected into the container at
+    // start, so it's stored alongside the hash — every other task stays hash-only.
+    const dockerFlagPlain = task.dockerImage ? flag : null;
+
     await prisma.debugTask.upsert({
       where: { slug: task.slug },
       update: {
@@ -68,6 +72,8 @@ async function main() {
         points: task.points,
         sortOrder: task.sortOrder,
         flagHash: hashFlag(flag),
+        dockerImage: task.dockerImage ?? null,
+        dockerFlagPlain,
       },
       create: {
         championshipId: championship.id,
@@ -79,6 +85,8 @@ async function main() {
         points: task.points,
         sortOrder: task.sortOrder,
         flagHash: hashFlag(flag),
+        dockerImage: task.dockerImage ?? null,
+        dockerFlagPlain,
       },
     });
   }

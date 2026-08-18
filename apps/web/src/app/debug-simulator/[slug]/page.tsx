@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { auth } from '~/server/auth';
 import { FlagForm } from './_components/flag-form';
+import { TaskTerminal } from './_components/task-terminal';
 
 interface PageProps {
   params: { slug: string };
@@ -56,10 +57,16 @@ export default async function DebugTaskPage({ params }: PageProps) {
             <Markdown>{task.instructions}</Markdown>
           </div>
 
-          <div className="mt-6 rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900">
-            Адрес и доступ к вашему серверу для этой задачи выдаются организаторами отдельно
-            (на месте или в личном кабинете команды).
-          </div>
+          {task.dockerImage ? (
+            <div className="mt-6">
+              <TaskTerminal taskSlug={task.slug} />
+            </div>
+          ) : (
+            <div className="mt-6 rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900">
+              Адрес и доступ к вашему серверу для этой задачи выдаются организаторами отдельно
+              (на месте или в личном кабинете команды).
+            </div>
+          )}
 
           <div className="mt-6">
             <FlagForm slug={task.slug} points={task.points} initiallySolved={Boolean(solvedSubmission)} />

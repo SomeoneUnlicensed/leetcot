@@ -16,3 +16,4 @@ export * from '@prisma/client';
 export { hashPassword } from './password';
 export { hashFlag, verifyFlag } from './flag';
 export { LENTA_CHAMPIONSHIP_SLUG } from './debug-simulator';
+export { generateLoginCode } from './login-code';

@@ -53,6 +53,7 @@ COPY --from=builder /app ./
 
 EXPOSE 3000 3001 3003
 
-RUN printf '#!/bin/sh\nset -e\nfor i in $(seq 1 30); do\n  echo "Applying database migrations... attempt $i/30"\n  if pnpm --filter @repo/db exec prisma migrate deploy; then\n    echo "Database migrations applied."\n    break\n  fi\n  if [ "$i" -eq 30 ]; then\n    echo "Database migrations failed after 30 attempts."\n    exit 1\n  fi\n  sleep 2\ndone\necho "Seeding production content..."\npnpm --filter @repo/db db:seed:content\necho "Production content seeded."\necho "Starting LeetCot in production mode..."\npnpm start\n' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["/bin/sh", "/app/entrypoint.sh"]

@@ -176,6 +176,29 @@ export const createCredentialsProvider = () => {
   });
 };
 
+export const createParticipantCodeProvider = () => {
+  return CredentialsProvider({
+    id: 'participant-code',
+    name: 'Код участника',
+    credentials: {
+      code: { label: 'Код доступа', type: 'text' },
+    },
+    async authorize(credentials) {
+      const rawCode = (credentials?.code as string | undefined)?.trim().toUpperCase();
+      if (!rawCode) return null;
+
+      const user = await prisma.user.findUnique({ where: { loginCode: rawCode } });
+      if (!user || user.status === 'BANNED') return null;
+
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      };
+    },
+  });
+};
+
 interface ArlistProfile {
   sub: string;
   email: string;

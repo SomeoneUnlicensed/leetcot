@@ -7,11 +7,11 @@ import {
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
 import { UserAvatar } from '@repo/ui/components/user-avatar';
-import { Settings } from '@repo/ui/icons';
+import { Settings, Users } from '@repo/ui/icons';
 import Image from 'next/image';
 import Link from 'next/link';
 import { auth } from '~/server/auth';
-import { isAdminOrModerator } from '~/utils/auth-guards';
+import { isAdmin as checkIsAdmin, isAdminOrModerator } from '~/utils/auth-guards';
 import { getAllFlags } from '~/utils/feature-flags';
 import { LoginLink } from './login-link';
 import { MobileNav } from './mobile-nav';
@@ -26,6 +26,7 @@ export function getAdminUrl() {
 export async function Navigation() {
   const [session, featureFlags] = await Promise.all([auth(), getAllFlags()]);
   const isAdminOrMod = isAdminOrModerator(session);
+  const isAdmin = checkIsAdmin(session);
 
   const TopSectionLinks = (
     <>
@@ -43,6 +44,7 @@ export async function Navigation() {
         {session?.user ? (
           <>
             <hr className="border-border" />
+            {isAdmin ? <NavLink title="Участники" href="/admin/participants" /> : null}
             {isAdminOrMod ? (
               <a
                 href={getAdminUrl()}
@@ -83,7 +85,7 @@ export async function Navigation() {
 
           <div className="flex items-center gap-2">
             {featureFlags?.enableLogin ? (
-              <LoginButton isAdminOrMod={isAdminOrMod} session={session} />
+              <LoginButton isAdmin={isAdmin} isAdminOrMod={isAdminOrMod} session={session} />
             ) : null}
             <MobileNav>{NavLinks}</MobileNav>
           </div>
@@ -94,9 +96,11 @@ export async function Navigation() {
 }
 
 function LoginButton({
+  isAdmin,
   isAdminOrMod,
   session,
 }: {
+  isAdmin: boolean;
   isAdminOrMod: boolean;
   session: Session | null;
 }) {
@@ -114,6 +118,14 @@ function LoginButton({
         align="end"
         className="mt-2 w-60 rounded-2xl border bg-white p-1.5 shadow-2xl"
       >
+        {isAdmin ? (
+          <Link className="block" href="/admin/participants">
+            <DropdownMenuItem className="focus:bg-accent rounded-xl p-2.5 duration-200 focus:outline-none">
+              <Users className="mr-2 h-4 w-4" />
+              <span>Участники</span>
+            </DropdownMenuItem>
+          </Link>
+        ) : null}
         {isAdminOrMod ? (
           <a className="block" href={getAdminUrl()}>
             <DropdownMenuItem className="focus:bg-accent rounded-xl p-2.5 duration-200 focus:outline-none">

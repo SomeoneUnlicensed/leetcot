@@ -19,6 +19,9 @@ export interface DebugTaskSeed {
   /// Briefing shown to the participant. Real connection details (host/port/creds)
   /// are issued separately per team by infra and are not stored here.
   instructions: string;
+  /// Docker image that auto-deploys this task's live environment. Omit for tasks
+  /// without one yet (participants get the "ask organizers" fallback instead).
+  dockerImage?: string;
 }
 
 const POINTS: Record<'final' | 'light' | 'medium', number> = {
@@ -44,6 +47,7 @@ export const debugTasks: DebugTaskSeed[] = [
     sortOrder: 1,
     instructions:
       'На выданном сервере поднят SSH со слабым паролем у одного из пользователей. Подберите пароль и зайдите на сервер, чтобы найти флаг.',
+    dockerImage: 'lentatech/ssh-bruteforce:latest',
   },
   {
     slug: 'network-scan',
