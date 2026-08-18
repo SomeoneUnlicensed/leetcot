@@ -143,7 +143,7 @@ export function TaskTerminal({ taskSlug }: { taskSlug: string }) {
   const isRunning = status === 'running' || status === 'starting';
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[#252b3b] shadow-[0_12px_32px_-12px_rgba(11,15,25,0.5)]">
+    <div className="w-full overflow-hidden border-y border-[#252b3b]">
       <WindowChrome
         label={`${taskSlug} — sh`}
         live={status === 'running'}
@@ -158,15 +158,15 @@ export function TaskTerminal({ taskSlug }: { taskSlug: string }) {
               <span className="text-sm text-white/50">Разворачиваем сервер...</span>
             </div>
           ) : null}
-          <div ref={containerRef} className="h-[70vh] min-h-[520px] w-full px-4 py-3" />
+          <div ref={containerRef} className="h-[92vh] min-h-[720px] w-full px-6 py-4" />
         </div>
       ) : (
-        <div className="flex min-h-[70vh] flex-col items-center justify-center gap-4 bg-[#0b0f19] px-6 py-16 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/5">
-            <TerminalIcon className="h-6 w-6 text-white/30" />
+        <div className="flex h-[92vh] min-h-[720px] flex-col items-center justify-center gap-4 bg-[#0b0f19] px-6 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/5">
+            <TerminalIcon className="h-7 w-7 text-white/30" />
           </div>
           <div>
-            <p className="text-base font-medium text-white/70">Окружение не запущено</p>
+            <p className="text-lg font-medium text-white/70">Окружение не запущено</p>
             <p className="mt-1 text-sm text-white/40">
               Запустите сервер, чтобы получить реальный интерактивный доступ по shell.
             </p>

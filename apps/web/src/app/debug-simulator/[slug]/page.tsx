@@ -36,8 +36,8 @@ export default async function DebugTaskPage({ params }: PageProps) {
     : null;
 
   return (
-    <main className="min-h-screen bg-white px-4 py-10 text-[#131722]">
-      <section className="mx-auto max-w-6xl">
+    <main className="min-h-screen bg-white text-[#131722]">
+      <div className="mx-auto max-w-6xl px-4 pt-10">
         <Link
           href="/debug-simulator"
           className="mb-4 inline-block text-sm text-[#131722]/50 hover:text-[#131722]"
@@ -61,18 +61,20 @@ export default async function DebugTaskPage({ params }: PageProps) {
             <FlagForm slug={task.slug} points={task.points} initiallySolved={Boolean(solvedSubmission)} />
           </div>
         </div>
+      </div>
 
-        {task.dockerImage ? (
-          <div className="mt-6">
-            <TaskTerminal taskSlug={task.slug} />
-          </div>
-        ) : (
+      {task.dockerImage ? (
+        <div className="mt-6">
+          <TaskTerminal taskSlug={task.slug} />
+        </div>
+      ) : (
+        <div className="mx-auto max-w-6xl px-4 pb-10">
           <div className="mt-6 rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900">
             Адрес и доступ к вашему серверу для этой задачи выдаются организаторами отдельно
             (на месте или в личном кабинете команды).
           </div>
-        )}
-      </section>
+        </div>
+      )}
     </main>
   );
 }
