@@ -36,40 +36,42 @@ export default async function DebugTaskPage({ params }: PageProps) {
     : null;
 
   return (
-    <main className="min-h-screen bg-white text-[#131722]">
-      <div className="mx-auto max-w-6xl px-4 pt-10">
-        <Link
-          href="/debug-simulator"
-          className="mb-4 inline-block text-sm text-[#131722]/50 hover:text-[#131722]"
-        >
-          ← Все задачи
-        </Link>
+    <main className="min-h-screen bg-[#0a0e17]">
+      <div className="border-b border-white/5 bg-[#0d1220]">
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:py-8">
+          <Link
+            href="/debug-simulator"
+            className="mb-5 inline-flex items-center gap-1.5 text-sm text-white/40 transition-colors hover:text-white/70"
+          >
+            ← Все задачи
+          </Link>
 
-        <div className="border-border rounded-2xl border bg-white p-6 shadow-sm sm:p-8">
-          <div className="mb-3 flex flex-wrap items-center gap-3">
-            <DifficultyBadge difficulty={task.difficulty} />
-            <span className="text-sm font-bold text-[#131722]/50">{task.points} pts</span>
-          </div>
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div className="min-w-0 flex-1">
+              <div className="mb-3 flex flex-wrap items-center gap-3">
+                <DifficultyBadge difficulty={task.difficulty} />
+                <span className="text-sm font-bold text-[#00A0FF]">{task.points} pts</span>
+              </div>
 
-          <h1 className="text-2xl font-bold text-[#131722] sm:text-3xl">{task.title}</h1>
+              <h1 className="text-2xl font-bold text-white sm:text-3xl">{task.title}</h1>
 
-          <div className="prose mt-4 max-w-none text-sm text-[#131722]/75">
-            <Markdown>{task.instructions}</Markdown>
-          </div>
+              <div className="prose prose-invert mt-3 max-w-2xl text-sm text-white/50">
+                <Markdown>{task.instructions}</Markdown>
+              </div>
+            </div>
 
-          <div className="border-border mt-5 border-t pt-5">
-            <FlagForm slug={task.slug} points={task.points} initiallySolved={Boolean(solvedSubmission)} />
+            <div className="w-full shrink-0 lg:w-80">
+              <FlagForm slug={task.slug} points={task.points} initiallySolved={Boolean(solvedSubmission)} />
+            </div>
           </div>
         </div>
       </div>
 
       {task.dockerImage ? (
-        <div className="mt-6">
-          <TaskTerminal taskSlug={task.slug} />
-        </div>
+        <TaskTerminal taskSlug={task.slug} />
       ) : (
-        <div className="mx-auto max-w-6xl px-4 pb-10">
-          <div className="mt-6 rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900">
+        <div className="mx-auto max-w-6xl px-4 py-6">
+          <div className="rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-300">
             Адрес и доступ к вашему серверу для этой задачи выдаются организаторами отдельно
             (на месте или в личном кабинете команды).
           </div>
