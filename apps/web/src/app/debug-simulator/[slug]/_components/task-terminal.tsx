@@ -4,6 +4,7 @@ import '@xterm/xterm/css/xterm.css';
 import { Button } from '@repo/ui/components/button';
 import { Loader2, Square, Terminal as TerminalIcon } from '@repo/ui/icons';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { FlagForm } from './flag-form';
 
 type EnvStatus = 'error' | 'idle' | 'running' | 'starting' | 'stopped';
 
@@ -40,7 +41,13 @@ const TerminalHeader = ({
   </div>
 );
 
-export function TaskTerminal({ taskSlug }: { taskSlug: string }) {
+interface TaskTerminalProps {
+  taskSlug: string;
+  points: number;
+  initiallySolved: boolean;
+}
+
+export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminalProps) {
   const [status, setStatus] = useState<EnvStatus>('idle');
   const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -156,10 +163,10 @@ export function TaskTerminal({ taskSlug }: { taskSlug: string }) {
               <span className="text-sm text-white/50">Разворачиваем сервер...</span>
             </div>
           ) : null}
-          <div ref={containerRef} className="h-[92vh] min-h-[720px] w-full px-6 py-4" />
+          <div ref={containerRef} className="h-[80vh] min-h-[600px] w-full px-6 py-4" />
         </div>
       ) : (
-        <div className="flex h-[92vh] min-h-[720px] flex-col items-center justify-center gap-4 bg-[#131722] px-6 text-center">
+        <div className="flex h-[80vh] min-h-[600px] flex-col items-center justify-center gap-4 bg-[#131722] px-6 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/5">
             <TerminalIcon className="h-7 w-7 text-white/30" />
           </div>
@@ -178,6 +185,10 @@ export function TaskTerminal({ taskSlug }: { taskSlug: string }) {
           </Button>
         </div>
       )}
+
+      <div className="border-t border-white/5 bg-[#1a2030] px-5 py-4">
+        <FlagForm slug={taskSlug} points={points} initiallySolved={initiallySolved} variant="dark" />
+      </div>
     </div>
   );
 }

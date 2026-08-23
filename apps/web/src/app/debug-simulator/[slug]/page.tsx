@@ -46,34 +46,33 @@ export default async function DebugTaskPage({ params }: PageProps) {
             ← Все задачи
           </Link>
 
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div className="min-w-0 flex-1">
-              <div className="mb-3 flex flex-wrap items-center gap-3">
-                <DifficultyBadge difficulty={task.difficulty} />
-                <span className="text-sm font-bold text-[#00A0FF]">{task.points} pts</span>
-              </div>
+          <div className="mb-3 flex flex-wrap items-center gap-3">
+            <DifficultyBadge difficulty={task.difficulty} />
+            <span className="text-sm font-bold text-[#00A0FF]">{task.points} pts</span>
+          </div>
 
-              <h1 className="text-2xl font-bold text-[#131722] sm:text-3xl">{task.title}</h1>
+          <h1 className="text-2xl font-bold text-[#131722] sm:text-3xl">{task.title}</h1>
 
-              <div className="prose mt-3 max-w-2xl text-sm text-[#131722]/70">
-                <Markdown>{task.instructions}</Markdown>
-              </div>
-            </div>
-
-            <div className="w-full shrink-0 lg:w-80">
-              <FlagForm slug={task.slug} points={task.points} initiallySolved={Boolean(solvedSubmission)} />
-            </div>
+          <div className="prose mt-3 max-w-2xl text-sm text-[#131722]/70">
+            <Markdown>{task.instructions}</Markdown>
           </div>
         </div>
       </div>
 
       {task.dockerImage ? (
-        <TaskTerminal taskSlug={task.slug} />
+        <TaskTerminal
+          taskSlug={task.slug}
+          points={task.points}
+          initiallySolved={Boolean(solvedSubmission)}
+        />
       ) : (
         <div className="mx-auto max-w-6xl px-4 py-6">
           <div className="rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900">
             Адрес и доступ к вашему серверу для этой задачи выдаются организаторами отдельно
             (на месте или в личном кабинете команды).
+          </div>
+          <div className="mt-4 max-w-md">
+            <FlagForm slug={task.slug} points={task.points} initiallySolved={Boolean(solvedSubmission)} />
           </div>
         </div>
       )}
