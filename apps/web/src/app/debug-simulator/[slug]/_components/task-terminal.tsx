@@ -148,7 +148,7 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
   const isRunning = status === 'running' || status === 'starting';
 
   return (
-    <div className="w-full overflow-hidden border-y border-[#252b3b]">
+    <div className="w-full overflow-hidden border-t-2 border-[#00A0FF] shadow-[0_1px_0_0_#252b3b]">
       <TerminalHeader
         label={`${taskSlug} — sh`}
         live={status === 'running'}
@@ -163,15 +163,15 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
               <span className="text-sm text-white/50">Разворачиваем сервер...</span>
             </div>
           ) : null}
-          <div ref={containerRef} className="h-[80vh] min-h-[600px] w-full px-6 py-4" />
+          <div ref={containerRef} className="h-[62vh] min-h-[460px] w-full px-6 py-4" />
         </div>
       ) : (
-        <div className="flex h-[80vh] min-h-[600px] flex-col items-center justify-center gap-4 bg-[#131722] px-6 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/5">
-            <TerminalIcon className="h-7 w-7 text-white/30" />
+        <div className="flex flex-col items-center justify-center gap-3 bg-[#131722] px-6 py-14 text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/5">
+            <TerminalIcon className="h-6 w-6 text-white/30" />
           </div>
           <div>
-            <p className="text-lg font-medium text-white/70">Окружение не запущено</p>
+            <p className="text-base font-medium text-white/70">Окружение не запущено</p>
             <p className="mt-1 text-sm text-white/40">
               Запустите сервер, чтобы получить реальный интерактивный доступ по shell.
             </p>
@@ -179,7 +179,7 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
           {error ? <p className="text-sm text-red-400">{error}</p> : null}
           <Button
             onClick={start}
-            className="mt-2 rounded-lg bg-[#00A0FF] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#0090e6]"
+            className="mt-1 rounded-lg bg-[#00A0FF] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#0090e6]"
           >
             Запустить окружение
           </Button>
