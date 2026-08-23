@@ -1,6 +1,6 @@
 'use client';
 
-import { Flag } from '@repo/ui/icons';
+import { CornerDownLeft, Loader2 } from '@repo/ui/icons';
 import { cn } from '@repo/ui/cn';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -50,64 +50,77 @@ export function FlagForm({ slug, points, initiallySolved, variant = 'light' }: F
     }
   };
 
-  const mutedText = dark ? 'text-white/30' : 'text-[#131722]/40';
+  // Dark variant renders as a line inside the terminal itself — no card, no border,
+  // no button chrome — so submitting the flag reads as part of the shell session
+  // instead of a separate web form bolted underneath it.
+  if (dark) {
+    if (solved) {
+      return (
+        <div className="flex items-center gap-2 px-6 py-3 font-mono text-sm">
+          <span className="text-emerald-400">flag$</span>
+          <span className="text-emerald-400/80"># решено — +{points} очков</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="px-6 py-3">
+        <form onSubmit={handleSubmit} className="flex items-center gap-2 font-mono text-sm">
+          <span className="shrink-0 text-[#00A0FF]">flag$</span>
+          <input
+            value={flag}
+            onChange={(e) => setFlag(e.target.value)}
+            placeholder="submit LENTA{...}"
+            autoComplete="off"
+            spellCheck={false}
+            className="min-w-0 flex-1 bg-transparent text-white caret-[#00A0FF] outline-none placeholder:text-white/25"
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            aria-label="Отправить флаг"
+            className="shrink-0 text-white/30 transition-colors hover:text-[#00A0FF] disabled:opacity-40"
+          >
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CornerDownLeft className="h-4 w-4" />}
+          </button>
+        </form>
+        {error ? <p className="mt-1.5 font-mono text-xs text-red-400">-- {error}</p> : null}
+      </div>
+    );
+  }
 
   if (solved) {
     return (
-      <div className="flex items-center gap-3">
-        <span className={cn('text-xs font-semibold tracking-wide uppercase', mutedText)}>Флаг</span>
-        <div
-          className={cn(
-            'flex items-center gap-2 rounded-lg border px-3 py-2 text-sm',
-            dark
-              ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-400'
-              : 'border-emerald-200 bg-emerald-50 text-emerald-700',
-          )}
-        >
-          <span className="font-semibold">Решено</span>
-          <span className={dark ? 'text-emerald-400/70' : 'text-emerald-600/70'}>+{points} очков</span>
-        </div>
+      <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-700">
+        <span className="font-semibold">Решено</span>
+        <span className="text-emerald-600/70">+{points} очков</span>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <span className={cn('shrink-0 text-xs font-semibold tracking-wide uppercase', mutedText)}>Флаг</span>
-
-      <form
-        onSubmit={handleSubmit}
-        className={cn(
-          'flex h-10 w-full max-w-sm min-w-0 items-stretch overflow-hidden rounded-lg border transition-colors',
-          dark
-            ? 'border-white/10 bg-white/5 focus-within:border-[#00A0FF]/60'
-            : 'border-border bg-white focus-within:border-[#00A0FF]/60',
-        )}
-      >
-        <span className={cn('flex items-center pl-3', mutedText)}>
-          <Flag className="h-3.5 w-3.5" />
-        </span>
+    <div className="flex flex-col gap-1.5">
+      <form onSubmit={handleSubmit} className="flex items-center gap-2 border-b border-[#131722]/15 pb-1">
         <input
           value={flag}
           onChange={(e) => setFlag(e.target.value)}
           placeholder="LENTA{...}"
           autoComplete="off"
           spellCheck={false}
-          className={cn(
-            'min-w-0 flex-1 bg-transparent px-2.5 font-mono text-sm outline-none',
-            dark ? 'text-white placeholder:text-white/25' : 'text-[#131722] placeholder:text-[#131722]/30',
-          )}
+          className="min-w-0 flex-1 bg-transparent text-sm text-[#131722] outline-none placeholder:text-[#131722]/30"
         />
         <button
           type="submit"
           disabled={loading}
-          className="shrink-0 bg-[#00A0FF] px-4 text-sm font-bold text-white transition-colors hover:bg-[#0090e6] disabled:opacity-60"
+          className={cn(
+            'shrink-0 text-sm font-bold text-[#00A0FF] transition-colors hover:text-[#0090e6]',
+            loading && 'opacity-50',
+          )}
         >
           {loading ? '...' : 'Отправить'}
         </button>
       </form>
-
-      {error ? <span className={cn('text-xs', dark ? 'text-red-400' : 'text-red-500')}>{error}</span> : null}
+      {error ? <p className="text-xs text-red-500">{error}</p> : null}
     </div>
   );
 }

@@ -155,39 +155,41 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
         onStop={status === 'running' ? stop : undefined}
       />
 
-      {isRunning ? (
-        <div className="relative bg-[#0a0e16] bg-[radial-gradient(ellipse_at_top,rgba(0,160,255,0.07),transparent_60%)]">
-          {status === 'starting' ? (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#0a0e16] bg-[radial-gradient(ellipse_at_top,rgba(0,160,255,0.07),transparent_60%)]">
-              <Loader2 className="h-6 w-6 animate-spin text-[#00A0FF]" />
-              <span className="text-sm text-white/50">Разворачиваем сервер...</span>
+      <div className="bg-[#0a0e16] bg-[radial-gradient(ellipse_at_top,rgba(0,160,255,0.07),transparent_60%)]">
+        {isRunning ? (
+          <div className="relative">
+            {status === 'starting' ? (
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#0a0e16]">
+                <Loader2 className="h-6 w-6 animate-spin text-[#00A0FF]" />
+                <span className="text-sm text-white/50">Разворачиваем сервер...</span>
+              </div>
+            ) : null}
+            <div ref={containerRef} className="h-[62vh] min-h-[460px] w-full px-6 py-4" />
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-3 px-6 py-14 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/5">
+              <TerminalIcon className="h-6 w-6 text-white/30" />
             </div>
-          ) : null}
-          <div ref={containerRef} className="h-[62vh] min-h-[460px] w-full px-6 py-4" />
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center gap-3 bg-[#0a0e16] bg-[radial-gradient(ellipse_at_top,rgba(0,160,255,0.07),transparent_60%)] px-6 py-14 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/5">
-            <TerminalIcon className="h-6 w-6 text-white/30" />
+            <div>
+              <p className="text-base font-medium text-white/70">Окружение не запущено</p>
+              <p className="mt-1 text-sm text-white/40">
+                Запустите сервер, чтобы получить реальный интерактивный доступ по shell.
+              </p>
+            </div>
+            {error ? <p className="text-sm text-red-400">{error}</p> : null}
+            <Button
+              onClick={start}
+              className="mt-1 rounded-lg bg-[#00A0FF] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#0090e6]"
+            >
+              Запустить окружение
+            </Button>
           </div>
-          <div>
-            <p className="text-base font-medium text-white/70">Окружение не запущено</p>
-            <p className="mt-1 text-sm text-white/40">
-              Запустите сервер, чтобы получить реальный интерактивный доступ по shell.
-            </p>
-          </div>
-          {error ? <p className="text-sm text-red-400">{error}</p> : null}
-          <Button
-            onClick={start}
-            className="mt-1 rounded-lg bg-[#00A0FF] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#0090e6]"
-          >
-            Запустить окружение
-          </Button>
-        </div>
-      )}
+        )}
 
-      <div className="border-t border-white/5 bg-[#12172a] px-5 py-4">
-        <FlagForm slug={taskSlug} points={points} initiallySolved={initiallySolved} variant="dark" />
+        <div className="border-t border-white/5">
+          <FlagForm slug={taskSlug} points={points} initiallySolved={initiallySolved} variant="dark" />
+        </div>
       </div>
     </div>
   );
