@@ -32,6 +32,31 @@ async function removeContainer(containerName: string) {
   await execFileAsync('docker', ['rm', '-f', containerName]).catch(() => undefined);
 }
 
+// Installed into every environment container via `docker exec` (not baked into the
+// image) so every task — present and future — gets the same real, in-shell
+// `submit <flag>` command for free. It doesn't validate anything itself: it just
+// prints a sentinel line that the browser's terminal client watches for and relays
+// to the authenticated submit API, which does the real verification.
+const SUBMIT_SCRIPT = '#!/bin/sh\nprintf \'===SUBMIT:%s===\\n\' "$1"\n';
+const INSTALL_SUBMIT_CMD = `cat > /usr/local/bin/submit <<'SUBMIT_EOF'\n${SUBMIT_SCRIPT}SUBMIT_EOF\nchmod +x /usr/local/bin/submit`;
+
+async function installSubmitHelper(containerName: string): Promise<void> {
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      await execFileAsync('docker', ['exec', containerName, 'sh', '-c', INSTALL_SUBMIT_CMD]);
+      return;
+    } catch (error) {
+      if (attempt === 3) {
+        console.error(`Failed to install submit helper into ${containerName}:`, error);
+        return;
+      }
+      await new Promise((resolve) => {
+        setTimeout(resolve, 300);
+      });
+    }
+  }
+}
+
 async function runContainer(containerName: string, task: DebugTask & { dockerImage: string }) {
   const args = [
     'run',
@@ -80,6 +105,7 @@ export async function startEnvironment(
   });
 
   if (existing?.status === 'RUNNING' && (await isContainerRunning(existing.containerName))) {
+    await installSubmitHelper(existing.containerName);
     return prisma.taskEnvironment.update({
       where: { id: existing.id },
       data: { expiresAt: new Date(Date.now() + IDLE_MINUTES * 60_000) },
@@ -92,6 +118,7 @@ export async function startEnvironment(
 
   const containerName = newContainerName(userId, task.slug);
   await runContainer(containerName, task);
+  await installSubmitHelper(containerName);
 
   const expiresAt = new Date(Date.now() + IDLE_MINUTES * 60_000);
 

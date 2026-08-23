@@ -1,7 +1,5 @@
 'use client';
 
-import { CornerDownLeft, Loader2 } from '@repo/ui/icons';
-import { cn } from '@repo/ui/cn';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -9,16 +7,14 @@ interface FlagFormProps {
   slug: string;
   points: number;
   initiallySolved: boolean;
-  variant?: 'dark' | 'light';
 }
 
-export function FlagForm({ slug, points, initiallySolved, variant = 'light' }: FlagFormProps) {
+export function FlagForm({ slug, points, initiallySolved }: FlagFormProps) {
   const router = useRouter();
   const [flag, setFlag] = useState('');
   const [loading, setLoading] = useState(false);
   const [solved, setSolved] = useState(initiallySolved);
   const [error, setError] = useState<string | null>(null);
-  const dark = variant === 'dark';
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,45 +46,6 @@ export function FlagForm({ slug, points, initiallySolved, variant = 'light' }: F
     }
   };
 
-  // Dark variant renders as a line inside the terminal itself — no card, no border,
-  // no button chrome — so submitting the flag reads as part of the shell session
-  // instead of a separate web form bolted underneath it.
-  if (dark) {
-    if (solved) {
-      return (
-        <div className="flex items-center gap-2 px-6 py-3 font-mono text-sm">
-          <span className="text-emerald-400">flag$</span>
-          <span className="text-emerald-400/80"># решено — +{points} очков</span>
-        </div>
-      );
-    }
-
-    return (
-      <div className="px-6 py-3">
-        <form onSubmit={handleSubmit} className="flex items-center gap-2 font-mono text-sm">
-          <span className="shrink-0 text-[#00A0FF]">flag$</span>
-          <input
-            value={flag}
-            onChange={(e) => setFlag(e.target.value)}
-            placeholder="submit LENTA{...}"
-            autoComplete="off"
-            spellCheck={false}
-            className="min-w-0 flex-1 bg-transparent text-white caret-[#00A0FF] outline-none placeholder:text-white/25"
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            aria-label="Отправить флаг"
-            className="shrink-0 text-white/30 transition-colors hover:text-[#00A0FF] disabled:opacity-40"
-          >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CornerDownLeft className="h-4 w-4" />}
-          </button>
-        </form>
-        {error ? <p className="mt-1.5 font-mono text-xs text-red-400">-- {error}</p> : null}
-      </div>
-    );
-  }
-
   if (solved) {
     return (
       <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-700">
@@ -112,10 +69,7 @@ export function FlagForm({ slug, points, initiallySolved, variant = 'light' }: F
         <button
           type="submit"
           disabled={loading}
-          className={cn(
-            'shrink-0 text-sm font-bold text-[#00A0FF] transition-colors hover:text-[#0090e6]',
-            loading && 'opacity-50',
-          )}
+          className="shrink-0 text-sm font-bold text-[#00A0FF] transition-colors hover:text-[#0090e6] disabled:opacity-50"
         >
           {loading ? '...' : 'Отправить'}
         </button>

@@ -3,24 +3,33 @@
 import '@xterm/xterm/css/xterm.css';
 import { Button } from '@repo/ui/components/button';
 import { Loader2, Square, Terminal as TerminalIcon } from '@repo/ui/icons';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FlagForm } from './flag-form';
 
 type EnvStatus = 'error' | 'idle' | 'running' | 'starting' | 'stopped';
+
+// Printed by the real `submit` command installed inside every task container (see
+// installSubmitHelper in server/environments.ts). It carries no authority of its own —
+// it's just a marker in the shell's real stdout that this client relays to the
+// authenticated submit API, which does the actual verification.
+const SUBMIT_SENTINEL_RE = /===SUBMIT:([^=\r\n]*)===\r?\n?/;
 
 const TerminalHeader = ({
   label,
   live,
+  solved,
   onStop,
 }: {
   label: string;
   live: boolean;
+  solved: boolean;
   onStop?: () => void;
 }) => (
   <div className="flex items-center gap-2.5 border-b border-white/5 bg-[#12172a] px-5 py-3.5">
     <TerminalIcon className="h-4 w-4 shrink-0 text-[#00A0FF]" />
     <span className="truncate font-mono text-xs text-white/50">{label}</span>
     <div className="ml-auto flex items-center gap-3">
+      {solved ? <span className="text-xs font-semibold text-emerald-400">✓ Решено</span> : null}
       {live ? (
         <span className="flex items-center gap-1.5 text-xs font-medium text-[#00A0FF]">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#00A0FF]" />
@@ -48,8 +57,10 @@ interface TaskTerminalProps {
 }
 
 export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminalProps) {
+  const router = useRouter();
   const [status, setStatus] = useState<EnvStatus>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [solved, setSolved] = useState(initiallySolved);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -61,6 +72,35 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
     termRef.current?.dispose();
     termRef.current = null;
   }, []);
+
+  const submitFlag = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (flag: string, term: any) => {
+      // The result can land well after this call started (route cold-compile, slow
+      // network, the participant typing more real commands in the meantime), so the
+      // cursor may be anywhere by the time we know the answer. Always break to a
+      // fresh line and append — never try to erase/overwrite the current line, since
+      // that could clobber unrelated terminal output that appeared in between.
+      try {
+        const res = await fetch(`/api/debug-tasks/${taskSlug}/submit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ flag }),
+        });
+        const data = await res.json();
+        if (res.ok && data.solved) {
+          term.write(`\r\n\x1b[32m✓ Флаг «${flag}» верный — +${points} очков\x1b[0m\r\n`);
+          setSolved(true);
+          router.refresh();
+        } else {
+          term.write(`\r\n\x1b[31m✗ Флаг «${flag}» неверный${data.error ? `: ${data.error}` : ''}\x1b[0m\r\n`);
+        }
+      } catch {
+        term.write(`\r\n\x1b[31m✗ Не удалось отправить флаг «${flag}».\x1b[0m\r\n`);
+      }
+    },
+    [taskSlug, points, router],
+  );
 
   const connectTerminal = useCallback(async () => {
     const [{ Terminal }, { FitAddon }] = await Promise.all([
@@ -92,12 +132,27 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
     const ws = new WebSocket(`${protocol}://${window.location.host}/ws/terminal?taskSlug=${taskSlug}`);
     wsRef.current = ws;
 
-    ws.onmessage = (event) => term.write(event.data as string);
+    ws.onmessage = (event) => {
+      const chunk = event.data as string;
+      // `submit <flag>` is a real command executed for real by the real shell — it
+      // just happens to print this sentinel to its real stdout, which arrives here
+      // like any other terminal output. We hide the raw sentinel and react to it,
+      // everything else about the shell session is untouched passthrough.
+      const match = SUBMIT_SENTINEL_RE.exec(chunk);
+      if (match) {
+        const rest = chunk.replace(match[0], '');
+        if (rest) term.write(rest);
+        void submitFlag(match[1] ?? '', term);
+        return;
+      }
+      term.write(chunk);
+    };
     ws.onclose = () => {
       term.write('\r\n\x1b[31mСоединение закрыто.\x1b[0m\r\n');
     };
     ws.onopen = () => {
       ws.send(JSON.stringify({ type: 'resize', cols: term.cols, rows: term.rows }));
+      term.write('\x1b[2m# наберите: submit LENTA{...} и нажмите Enter, чтобы отправить флаг\x1b[0m\r\n');
       term.focus();
     };
 
@@ -116,7 +171,7 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
     resizeObserver.observe(containerRef.current);
 
     return () => resizeObserver.disconnect();
-  }, [taskSlug]);
+  }, [taskSlug, submitFlag]);
 
   const start = async () => {
     setStatus('starting');
@@ -152,6 +207,7 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
       <TerminalHeader
         label={`${taskSlug} — sh`}
         live={status === 'running'}
+        solved={solved}
         onStop={status === 'running' ? stop : undefined}
       />
 
@@ -174,7 +230,9 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
             <div>
               <p className="text-base font-medium text-white/70">Окружение не запущено</p>
               <p className="mt-1 text-sm text-white/40">
-                Запустите сервер, чтобы получить реальный интерактивный доступ по shell.
+                Запустите сервер, чтобы получить реальный интерактивный доступ по shell. Флаг
+                отправляется прямо в терминале: наберите{' '}
+                <code className="text-[#00A0FF]">submit LENTA{'{...}'}</code>.
               </p>
             </div>
             {error ? <p className="text-sm text-red-400">{error}</p> : null}
@@ -186,10 +244,6 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
             </Button>
           </div>
         )}
-
-        <div className="border-t border-white/5">
-          <FlagForm slug={taskSlug} points={points} initiallySolved={initiallySolved} variant="dark" />
-        </div>
       </div>
     </div>
   );
