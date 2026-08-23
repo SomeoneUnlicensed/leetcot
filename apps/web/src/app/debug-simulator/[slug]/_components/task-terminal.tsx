@@ -17,7 +17,7 @@ const TerminalHeader = ({
   live: boolean;
   onStop?: () => void;
 }) => (
-  <div className="flex items-center gap-2.5 border-b border-white/5 bg-[#1a2030] px-5 py-3.5">
+  <div className="flex items-center gap-2.5 border-b border-white/5 bg-[#12172a] px-5 py-3.5">
     <TerminalIcon className="h-4 w-4 shrink-0 text-[#00A0FF]" />
     <span className="truncate font-mono text-xs text-white/50">{label}</span>
     <div className="ml-auto flex items-center gap-3">
@@ -76,7 +76,7 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
       fontFamily: '"Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace',
       lineHeight: 1.35,
       theme: {
-        background: '#131722',
+        background: '#0a0e16',
         foreground: '#e2e8f0',
         cursor: '#00A0FF',
         selectionBackground: '#00A0FF40',
@@ -156,9 +156,9 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
       />
 
       {isRunning ? (
-        <div className="relative bg-[#131722]">
+        <div className="relative bg-[#0a0e16] bg-[radial-gradient(ellipse_at_top,rgba(0,160,255,0.07),transparent_60%)]">
           {status === 'starting' ? (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#131722]">
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#0a0e16] bg-[radial-gradient(ellipse_at_top,rgba(0,160,255,0.07),transparent_60%)]">
               <Loader2 className="h-6 w-6 animate-spin text-[#00A0FF]" />
               <span className="text-sm text-white/50">Разворачиваем сервер...</span>
             </div>
@@ -166,7 +166,7 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
           <div ref={containerRef} className="h-[62vh] min-h-[460px] w-full px-6 py-4" />
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center gap-3 bg-[#131722] px-6 py-14 text-center">
+        <div className="flex flex-col items-center justify-center gap-3 bg-[#0a0e16] bg-[radial-gradient(ellipse_at_top,rgba(0,160,255,0.07),transparent_60%)] px-6 py-14 text-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/5">
             <TerminalIcon className="h-6 w-6 text-white/30" />
           </div>
@@ -186,7 +186,7 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
         </div>
       )}
 
-      <div className="border-t border-white/5 bg-[#1a2030] px-5 py-4">
+      <div className="border-t border-white/5 bg-[#12172a] px-5 py-4">
         <FlagForm slug={taskSlug} points={points} initiallySolved={initiallySolved} variant="dark" />
       </div>
     </div>
