@@ -46,6 +46,7 @@ enum RoleTypes {
   CHAMPIONSHIP_MANAGER
   TEACHER
   STUDENT
+  RECRUITER
 }
 
 enum UserStatus {
@@ -160,8 +161,13 @@ model User {
   createdExams ExamSession[] @relation("exam_student")
   teacherExams Exam[]        @relation("exam_teacher")
 
-  championships ChampionshipParticipant[]
-  userBadges    UserBadge[]
+  championships        ChampionshipParticipant[]
+  userBadges           UserBadge[]
+
+  candidateCreatedBy   Candidate[]          @relation("candidate_creator")
+  candidateRecruiter   Candidate[]          @relation("candidate_recruiter")
+  interviewSessions    InterviewSession[]   @relation("session_recruiter")
+  interviewNotes       InterviewNote[]
 }
 
 model VerificationToken {
@@ -263,6 +269,7 @@ model Challenge {
   TrackChallenge TrackChallenge[]
   Notification   Notification[]
   championships  ChampionshipChallenge[]
+  interviewChallenges InterviewChallenge[] @relation("interview_challenges")
 
   @@index([userId])
 }
@@ -728,6 +735,129 @@ model ExamResult {
 
   @@index([examId])
   @@index([sessionId])
+}
+
+/// ─── HR / Interview Mode ──────────────────────────────────────────────────────
+
+enum PipelineStageType {
+  SCREENING
+  TECH_INTERVIEW
+  SYSTEM_DESIGN
+  FINAL_INTERVIEW
+  OFFER
+  REJECTED
+}
+
+enum InterviewSessionStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  EXPIRED
+}
+
+enum CandidateStatus {
+  ACTIVE
+  HIRED
+  REJECTED
+  ARCHIVED
+}
+
+model Candidate {
+  id         String          @id @default(uuid())
+  firstName  String
+  lastName   String
+  email      String          @unique
+  phone      String?
+  cvLink     String?
+  notes      String?         @db.Text
+  status     CandidateStatus @default(ACTIVE)
+  pipelineStage PipelineStageType @default(SCREENING)
+
+  createdBy     User   @relation("candidate_creator", fields: [createdById], references: [id])
+  createdById   String
+  recruiter     User?  @relation("candidate_recruiter", fields: [recruiterId], references: [id])
+  recruiterId   String?
+
+  interviews InterviewSession[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([pipelineStage])
+  @@index([createdById])
+}
+
+model InterviewSession {
+  id        String                    @id @default(uuid())
+  title     String
+  token     String                    @unique
+  status    InterviewSessionStatus    @default(PENDING)
+  duration  Int                       @default(3600) // seconds
+
+  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  candidateId String
+  recruiter   User      @relation("session_recruiter", fields: [recruiterId], references: [id])
+  recruiterId String
+
+  challenges InterviewChallenge[]
+  events     InterviewEvent[]
+  notes      InterviewNote[]
+
+  startedAt   DateTime?
+  submittedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([token])
+  @@index([candidateId])
+  @@index([recruiterId])
+}
+
+model InterviewChallenge {
+  id              String          @id @default(uuid())
+  session         InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId       String
+  challenge       Challenge       @relation("interview_challenges", fields: [challengeId], references: [id])
+  challengeId     Int
+  order           Int
+  code            String          @db.Text
+  isSubmitted     Boolean         @default(false)
+  passedTests     Int             @default(0)
+  totalTests      Int             @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sessionId])
+  @@index([challengeId])
+}
+
+model InterviewNote {
+  id        String          @id @default(uuid())
+  session   InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId String
+  author    User            @relation(fields: [authorId], references: [id])
+  authorId  String
+  content   String          @db.Text
+  rating    Int?            // 1-5
+
+  createdAt DateTime @default(now())
+
+  @@index([sessionId])
+}
+
+model InterviewEvent {
+  id        String          @id @default(uuid())
+  session   InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId String
+  type      String          // CODE_CHANGE, RUN, SUBMIT, TAB_SWITCH
+  payload   Json            // { code?, output?, testResults?, ... }
+  timestamp DateTime        @default(now())
+
+  @@index([sessionId])
+  @@index([timestamp])
 }
 
 model ShortURL {

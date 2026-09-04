@@ -38,6 +38,10 @@ const sidebarNavItems: SidebarNavItem[] = [
     icon: 'award',
     title: 'Награждение',
   },
+  {
+    title: 'HR Рекрутинг',
+    href: '/dashboard/hr',
+  },
 ];
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
