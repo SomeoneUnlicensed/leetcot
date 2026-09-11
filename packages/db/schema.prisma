@@ -786,6 +786,9 @@ model DebugTask {
   category       DebugTaskCategory
   /// Task briefing shown to the participant (markdown).
   instructions   String            @db.Text
+  /// Short in-character mission story shown once, before the participant starts the
+  /// task (markdown). ~1-2 min read. Null falls back to showing no briefing step.
+  narrative      String?           @db.Text
   difficulty     Difficulty
   points         Int               @default(10)
   sortOrder      Int               @default(0)

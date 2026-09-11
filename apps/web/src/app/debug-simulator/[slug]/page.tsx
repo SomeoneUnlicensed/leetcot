@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { auth } from '~/server/auth';
 import { FlagForm } from './_components/flag-form';
+import { TaskBriefing } from './_components/task-briefing';
 import { TaskTerminal } from './_components/task-terminal';
 
 interface PageProps {
@@ -37,7 +38,7 @@ export default async function DebugTaskPage({ params }: PageProps) {
     : null;
   const solved = Boolean(solvedSubmission);
 
-  return (
+  const content = (
     <div className="mx-auto flex max-w-[1800px] flex-col lg:h-[calc(100vh-73px)] lg:flex-row">
       {/* Task panel — objective, brief, status. Scrolls independently of the terminal. */}
       <aside className="border-border w-full shrink-0 border-b lg:h-full lg:w-[420px] lg:overflow-y-auto lg:border-r lg:border-b-0">
@@ -95,4 +96,14 @@ export default async function DebugTaskPage({ params }: PageProps) {
       ) : null}
     </div>
   );
+
+  if (task.narrative) {
+    return (
+      <TaskBriefing title={task.title} difficulty={task.difficulty} points={task.points} narrative={task.narrative}>
+        {content}
+      </TaskBriefing>
+    );
+  }
+
+  return content;
 }

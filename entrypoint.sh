@@ -14,9 +14,9 @@ for i in $(seq 1 30); do
   sleep 2
 done
 
-echo "Seeding production content..."
-pnpm --filter @repo/db db:seed:content
-echo "Production content seeded."
+echo "Seeding debug-simulator content..."
+pnpm --filter @repo/db db:seed:debug-simulator
+echo "Debug-simulator content seeded."
 
 if [ -S /var/run/docker.sock ]; then
   echo "Building debug-simulator task environment images..."
