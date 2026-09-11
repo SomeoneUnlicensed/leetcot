@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
-import { LENTA_CHAMPIONSHIP_SLUG, prisma } from '@repo/db';
+import { prisma } from '@repo/db';
 import { Difficulty } from '@repo/db/types';
 import { DifficultyBadge } from '@repo/ui/components/difficulty-badge';
 import { CheckCircle, Lock } from '@repo/ui/icons';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { auth } from '~/server/auth';
+import { getQueueState } from '~/server/task-queue';
 
 export const metadata: Metadata = {
   title: 'Дебаг-Симулятор — Lenta tech',
@@ -26,40 +27,22 @@ export default async function DebugSimulatorPage() {
     redirect('/login?callbackUrl=/debug-simulator');
   }
 
-  const championship = await prisma.championship.findUnique({
-    where: { slug: LENTA_CHAMPIONSHIP_SLUG },
-    include: {
-      debugTasks: {
-        where: { isActive: true },
-        orderBy: { sortOrder: 'asc' },
-      },
+  const user = await prisma.user.findUnique({ where: { email: session.user.email } });
+  if (!user) {
+    redirect('/login?callbackUrl=/debug-simulator');
+  }
+
+  const { championship, tasks, solvedTaskIds, currentTask } = await getQueueState(user.id);
+
+  const participant = await prisma.championshipParticipant.findUnique({
+    where: {
+      championshipId_userId: { championshipId: championship?.id ?? '', userId: user.id },
     },
   });
 
-  const user = await prisma.user.findUnique({ where: { email: session.user.email } });
-
-  const solvedTaskIds = user
-    ? new Set(
-        (
-          await prisma.debugSubmission.findMany({
-            where: { userId: user.id, isCorrect: true },
-            select: { taskId: true },
-          })
-        ).map((s) => s.taskId),
-      )
-    : new Set<string>();
-
-  const participant = user
-    ? await prisma.championshipParticipant.findUnique({
-        where: {
-          championshipId_userId: { championshipId: championship?.id ?? '', userId: user.id },
-        },
-      })
-    : null;
-
-  const tasks = championship?.debugTasks ?? [];
   const totalPoints = tasks.reduce((sum, t) => sum + t.points, 0);
   const solvedCount = tasks.filter((t) => solvedTaskIds.has(t.id)).length;
+  const allSolved = tasks.length > 0 && solvedCount === tasks.length;
 
   return (
     <main className="min-h-screen bg-white px-4 py-10 text-[#131722]">
@@ -80,7 +63,7 @@ export default async function DebugSimulatorPage() {
             Каждая задача — реальный сервер и конкретный инцидент: от подбора SSH-пароля до
             восстановления упавшего узла кластера. Найдите флаг и отправьте его прямо в терминале.
           </p>
-          <div className="mt-5 flex flex-wrap gap-x-6 gap-y-1 text-sm text-[#131722]/60">
+          <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-[#131722]/60">
             <span>
               Доступно задач: <span className="font-bold text-[#131722]">{tasks.length}</span>
             </span>
@@ -91,54 +74,105 @@ export default async function DebugSimulatorPage() {
               Ваш счёт: <span className="font-bold text-[#00A0FF]">{participant?.score ?? 0}</span> из{' '}
               {totalPoints}
             </span>
+            {!allSolved && currentTask ? (
+              <Link
+                href={`/debug-simulator/${currentTask.slug}`}
+                className="ml-auto rounded-lg bg-[#00A0FF] px-4 py-2 text-sm font-bold text-white hover:bg-[#0090e6]"
+              >
+                Продолжить →
+              </Link>
+            ) : null}
           </div>
         </div>
+
+        {allSolved ? (
+          <div className="border-border mb-8 rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-center">
+            <p className="font-bold text-emerald-700">Все задачи решены! Вы прошли дебаг-симулятор целиком.</p>
+          </div>
+        ) : null}
 
         {tasks.length === 0 ? (
           <div className="border-border rounded-2xl border bg-white p-8 text-center text-[#131722]/60">
             Задачи ещё не опубликованы. Загляните позже.
           </div>
         ) : (
-          TIER_ORDER.map((tier) => {
-            const tierTasks = tasks.filter((t) => t.difficulty === tier);
-            if (tierTasks.length === 0) return null;
-
-            return (
-              <div key={tier} className="mb-8">
-                <h2 className="mb-3 text-lg font-bold text-[#131722]/80">{TIER_LABELS[tier]}</h2>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {tierTasks.map((task) => {
-                    const isSolved = solvedTaskIds.has(task.id);
-                    return (
-                      <Link
-                        key={task.id}
-                        href={`/debug-simulator/${task.slug}`}
-                        className="border-border group flex min-w-0 items-center justify-between gap-3 rounded-xl border bg-white p-4 transition-colors duration-200 hover:border-[#00A0FF]/40 hover:bg-[#F5F9FF]"
-                      >
-                        <div className="min-w-0 flex-1">
-                          <div className="flex min-w-0 items-center gap-2">
-                            {isSolved ? (
-                              <CheckCircle className="h-4 w-4 shrink-0 stroke-emerald-500" />
-                            ) : (
-                              <Lock className="h-4 w-4 shrink-0 stroke-[#131722]/30" />
-                            )}
-                            <span className="min-w-0 truncate font-semibold text-[#131722] group-hover:text-[#003C96]">
-                              {task.title}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-2">
-                          <span className="text-sm font-bold text-[#131722]/50">{task.points} pts</span>
-                          <DifficultyBadge difficulty={task.difficulty} />
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })
+          <p className="mb-5 text-sm text-[#131722]/50">
+            Задачи открываются по очереди — от простых к сложным. Следующая становится доступна сразу
+            после решения текущей.
+          </p>
         )}
+
+        {TIER_ORDER.map((tier) => {
+          const tierTasks = tasks.filter((t) => t.difficulty === tier);
+          if (tierTasks.length === 0) return null;
+
+          return (
+            <div key={tier} className="mb-8">
+              <h2 className="mb-3 text-lg font-bold text-[#131722]/80">{TIER_LABELS[tier]}</h2>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {tierTasks.map((task) => {
+                  const isSolved = solvedTaskIds.has(task.id);
+                  const isCurrent = currentTask?.id === task.id;
+                  const isLocked = !isSolved && !isCurrent;
+
+                  const itemContent = (
+                    <>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex min-w-0 items-center gap-2">
+                          {isSolved ? (
+                            <CheckCircle className="h-4 w-4 shrink-0 stroke-emerald-500" />
+                          ) : (
+                            <Lock className="h-4 w-4 shrink-0 stroke-[#131722]/30" />
+                          )}
+                          <span
+                            className={`min-w-0 truncate font-semibold ${isLocked ? 'text-[#131722]/40' : 'text-[#131722] group-hover:text-[#003C96]'}`}
+                          >
+                            {task.title}
+                          </span>
+                          {isCurrent ? (
+                            <span className="shrink-0 rounded-full bg-[#00A0FF]/10 px-2 py-0.5 text-[11px] font-bold text-[#00A0FF]">
+                              текущая
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-2">
+                        <span className={`text-sm font-bold ${isLocked ? 'text-[#131722]/30' : 'text-[#131722]/50'}`}>
+                          {task.points} pts
+                        </span>
+                        <DifficultyBadge difficulty={task.difficulty} />
+                      </div>
+                    </>
+                  );
+
+                  if (isLocked) {
+                    return (
+                      <div
+                        key={task.id}
+                        className="border-border flex min-w-0 cursor-not-allowed items-center justify-between gap-3 rounded-xl border bg-[#FAFBFC] p-4 opacity-60"
+                        title="Сначала решите текущую задачу"
+                      >
+                        {itemContent}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <Link
+                      key={task.id}
+                      href={`/debug-simulator/${task.slug}`}
+                      className={`group flex min-w-0 items-center justify-between gap-3 rounded-xl border p-4 transition-colors duration-200 hover:border-[#00A0FF]/40 hover:bg-[#F5F9FF] ${
+                        isCurrent ? 'border-[#00A0FF]/50 bg-[#F5F9FF]' : 'border-border bg-white'
+                      }`}
+                    >
+                      {itemContent}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
 
         <div className="mt-8">
           <Link href="/leaderboard" className="text-sm font-semibold text-[#00A0FF] hover:text-[#0090e6]">

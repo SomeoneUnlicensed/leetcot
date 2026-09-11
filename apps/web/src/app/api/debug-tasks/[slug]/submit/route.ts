@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '~/server/auth';
 import { stopEnvironment } from '~/server/environments';
+import { getQueueState } from '~/server/task-queue';
 import { rateLimit } from '~/utils/rateLimit';
 
 const SubmitFlagSchema = z.object({
@@ -53,7 +54,15 @@ export async function POST(
       return NextResponse.json({ solved: true, alreadySolved: true });
     }
 
-    const isCorrect = verifyFlag(parsed.data.flag, task.flagHash);
+    // Each participant's environment carries its own freshly generated flag (see
+    // startEnvironment in server/environments.ts) so flags can't be copy-pasted
+    // between participants on the same task — fall back to the task-wide hash only
+    // for rows created before that existed, or tasks with no environment at all.
+    const env = await prisma.taskEnvironment.findUnique({
+      where: { taskId_userId: { taskId: task.id, userId: user.id } },
+    });
+    const expectedHash = env?.flagHash ?? task.flagHash;
+    const isCorrect = verifyFlag(parsed.data.flag, expectedHash);
 
     await prisma.debugSubmission.create({
       data: { taskId: task.id, userId: user.id, isCorrect },
@@ -73,16 +82,22 @@ export async function POST(
 
     // The task is done — free the container immediately rather than waiting for
     // idle-timeout, so we have headroom for everyone still working during the event.
-    const env = await prisma.taskEnvironment.findUnique({
-      where: { taskId_userId: { taskId: task.id, userId: user.id } },
-    });
     if (env?.status === 'RUNNING') {
       await stopEnvironment(env).catch((error) => {
         console.error(`Failed to stop environment ${env.containerName} after solve:`, error);
       });
     }
 
-    return NextResponse.json({ solved: true, points: task.points, totalScore: participant.score });
+    // Tasks are worked as a queue (easiest first) — hand back what's next so the
+    // client can jump straight there instead of returning to a free-choice catalog.
+    const { currentTask } = await getQueueState(user.id);
+
+    return NextResponse.json({
+      solved: true,
+      points: task.points,
+      totalScore: participant.score,
+      nextTaskSlug: currentTask?.slug ?? null,
+    });
   } catch (error) {
     console.error('Debug task submission error:', error);
     return NextResponse.json({ error: 'Что-то пошло не так.' }, { status: 500 });

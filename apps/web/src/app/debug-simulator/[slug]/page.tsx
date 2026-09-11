@@ -6,6 +6,7 @@ import { Terminal as TerminalIcon } from '@repo/ui/icons';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { auth } from '~/server/auth';
+import { getQueueState } from '~/server/task-queue';
 import { FlagForm } from './_components/flag-form';
 import { TaskBriefing } from './_components/task-briefing';
 import { TaskTerminal } from './_components/task-terminal';
@@ -37,6 +38,18 @@ export default async function DebugTaskPage({ params }: PageProps) {
       })
     : null;
   const solved = Boolean(solvedSubmission);
+
+  // Tasks are worked in order — block jumping ahead by URL to a task that isn't
+  // solved yet and isn't the current one in the queue.
+  if (user && !solved) {
+    const { currentTask } = await getQueueState(user.id);
+    if (currentTask && currentTask.slug !== params.slug) {
+      redirect(`/debug-simulator/${currentTask.slug}`);
+    }
+    if (!currentTask) {
+      redirect('/debug-simulator');
+    }
+  }
 
   const content = (
     <div className="mx-auto flex max-w-[1800px] flex-col lg:h-[calc(100vh-73px)] lg:flex-row">

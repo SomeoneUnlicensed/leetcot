@@ -1,7 +1,7 @@
 import { execFile } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { promisify } from 'node:util';
-import { prisma, type DebugTask, type TaskEnvironment } from '@repo/db';
+import { hashFlag, prisma, type DebugTask, type TaskEnvironment } from '@repo/db';
 
 const execFileAsync = promisify(execFile);
 
@@ -12,6 +12,12 @@ function newContainerName(userId: string, taskSlug: string) {
   const suffix = randomBytes(4).toString('hex');
   const safeSlug = taskSlug.replace(/[^a-z0-9-]/g, '');
   return `lentatech-env-${safeSlug}-${userId.slice(0, 8)}-${suffix}`;
+}
+
+// A fresh flag per container instance, not one shared task-wide value — so two
+// participants working the same task can't just copy-paste each other's answer.
+function generateEnvironmentFlag(taskSlug: string) {
+  return `LENTA{${taskSlug.replace(/-/g, '_')}_${randomBytes(4).toString('hex')}}`;
 }
 
 async function isContainerRunning(containerName: string): Promise<boolean> {
@@ -66,7 +72,7 @@ const EXTRA_CAPS_BY_TASK: Record<string, string[]> = {
   'traffic-sniffing': ['NET_RAW', 'NET_ADMIN'],
 };
 
-async function runContainer(containerName: string, task: DebugTask & { dockerImage: string }) {
+async function runContainer(containerName: string, task: DebugTask & { dockerImage: string }, flagPlain: string) {
   const extraCaps = EXTRA_CAPS_BY_TASK[task.slug] ?? [];
   const args = [
     'run',
@@ -91,7 +97,8 @@ async function runContainer(containerName: string, task: DebugTask & { dockerIma
     '--security-opt',
     'no-new-privileges:true',
     ...extraCaps.flatMap((cap) => ['--cap-add', cap]),
-    ...(task.dockerFlagPlain ? ['-e', `FLAG=${task.dockerFlagPlain}`] : []),
+    '-e',
+    `FLAG=${flagPlain}`,
     task.dockerImage,
   ];
 
@@ -128,15 +135,17 @@ export async function startEnvironment(
   }
 
   const containerName = newContainerName(userId, task.slug);
-  await runContainer(containerName, task);
+  const flagPlain = generateEnvironmentFlag(task.slug);
+  const flagHash = hashFlag(flagPlain);
+  await runContainer(containerName, task, flagPlain);
   await installSubmitHelper(containerName);
 
   const expiresAt = new Date(Date.now() + IDLE_MINUTES * 60_000);
 
   return prisma.taskEnvironment.upsert({
     where: { taskId_userId: { taskId: task.id, userId } },
-    update: { containerName, status: 'RUNNING', createdAt: new Date(), expiresAt },
-    create: { taskId: task.id, userId, containerName, status: 'RUNNING', expiresAt },
+    update: { containerName, status: 'RUNNING', createdAt: new Date(), expiresAt, flagHash },
+    create: { taskId: task.id, userId, containerName, status: 'RUNNING', expiresAt, flagHash },
   });
 }
 

@@ -825,6 +825,12 @@ model TaskEnvironment {
   userId        String
   containerName String                 @unique
   status        TaskEnvironmentStatus  @default(STARTING)
+  /// SHA-256 hash of the flag generated fresh for THIS container instance (not the
+  /// task-wide one) — every participant's environment gets its own flag value, so
+  /// flags can't just be copy-pasted between participants on the same task. Null on
+  /// rows created before this existed; the submit route falls back to the task's
+  /// flagHash in that case.
+  flagHash      String?
   createdAt     DateTime               @default(now())
   expiresAt     DateTime
 

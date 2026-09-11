@@ -95,13 +95,17 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
         const data = await res.json();
         if (res.ok && data.solved) {
           term.write(`\r\n\x1b[32m✓ Флаг «${flag}» верный — +${points} очков\x1b[0m\r\n`);
-          term.write('\x1b[2mОкружение сейчас остановится — задача решена.\x1b[0m\r\n');
+          term.write(
+            data.nextTaskSlug
+              ? '\x1b[2mОкружение сейчас остановится — переходим к следующей задаче...\x1b[0m\r\n'
+              : '\x1b[2mОкружение сейчас остановится — это была последняя задача!\x1b[0m\r\n',
+          );
           setSolved(true);
-          router.refresh();
           justSolvedRef.current = true;
           setTimeout(() => {
             teardownTerminal();
             setStatus('stopped');
+            router.push(data.nextTaskSlug ? `/debug-simulator/${data.nextTaskSlug}` : '/debug-simulator');
           }, 1800);
         } else {
           term.write(`\r\n\x1b[31m✗ Флаг «${flag}» неверный${data.error ? `: ${data.error}` : ''}\x1b[0m\r\n`);
