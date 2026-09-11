@@ -34,8 +34,16 @@ async function resolveUserFromCookie(cookieHeader: string | undefined) {
   return prisma.user.findUnique({ where: { email: session.user.email } });
 }
 
-function attachTerminal(ws: WebSocket, containerName: string) {
-  const shell = pty.spawn('docker', ['exec', '-it', containerName, 'sh', '-l'], {
+// A handful of tasks are specifically about starting from a low-privilege shell
+// (e.g. fixing broken sudo access) — for those, land the participant's terminal
+// as that user instead of the sandbox's normal root default.
+const EXEC_USER_BY_TASK: Record<string, string> = {
+  'restore-sudoers': 'ops',
+};
+
+function attachTerminal(ws: WebSocket, containerName: string, execUser?: string) {
+  const execArgs = ['exec', '-it', ...(execUser ? ['-u', execUser] : []), containerName, 'sh', '-l'];
+  const shell = pty.spawn('docker', execArgs, {
     name: 'xterm-256color',
     cols: 80,
     rows: 24,
@@ -111,7 +119,7 @@ app.prepare().then(() => {
         return;
       }
 
-      attachTerminal(ws, env.containerName);
+      attachTerminal(ws, env.containerName, EXEC_USER_BY_TASK[task.slug]);
     });
   });
 
