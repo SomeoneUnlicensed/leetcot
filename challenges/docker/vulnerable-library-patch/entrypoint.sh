@@ -20,6 +20,7 @@ cat > /app/SECURITY_ADVISORY.md <<'MD'
 MD
 
 (
+  set +e
   while true; do
     sleep 2
     if grep -q '"lodash": *"4\.17\.21"' /app/package-manifest.json 2>/dev/null; then

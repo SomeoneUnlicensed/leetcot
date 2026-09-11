@@ -3,6 +3,7 @@ set -e
 FLAG_VALUE="${FLAG:-MISSING_FLAG}"
 
 (
+  set +e
   while true; do
     sleep 1
     if [ -f /tmp/proof/reverse-shell-confirmed ]; then

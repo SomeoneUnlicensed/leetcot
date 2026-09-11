@@ -53,6 +53,7 @@ PYEOF
 # Watcher: once an iptables rule actually drops the attacker's IP on INPUT, the
 # access log stops growing — confirm it's been quiet for a few seconds, then hand
 # over the flag.
+set +e
 QUIET_FOR=0
 LAST_COUNT=-1
 while true; do

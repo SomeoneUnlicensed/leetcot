@@ -16,6 +16,7 @@ EVIL_PID=$!
 echo "$EVIL_PID" > /var/tmp/.cache/.pid
 
 (
+  set +e
   while true; do
     sleep 2
     if ! kill -0 "$EVIL_PID" 2>/dev/null; then

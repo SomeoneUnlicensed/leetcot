@@ -38,6 +38,7 @@ crond -b -L /var/log/cron.log
 # syntax, ops covered), not by literally invoking `sudo`. Once that's true,
 # unlock the flag for ops to read directly.
 (
+  set +e
   while true; do
     sleep 2
     if visudo -c -f /etc/sudoers >/dev/null 2>&1 && grep -q '^%wheel' /etc/sudoers 2>/dev/null; then

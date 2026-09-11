@@ -7,6 +7,7 @@ mkdir -p "$LOGDIR"
 yes "$(date -u +%FT%TZ) INFO request served ok" | head -c 20000000 > "$LOGDIR/access.log"
 
 (
+  set +e
   while true; do
     sleep 2
     if [ -f "$LOGDIR/access.log.1.gz" ]; then

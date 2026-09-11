@@ -63,6 +63,7 @@ async function installSubmitHelper(containerName: string): Promise<void> {
 // a DB column since so few tasks need it.
 const EXTRA_CAPS_BY_TASK: Record<string, string[]> = {
   'firewall-block-malicious-ip': ['NET_ADMIN', 'NET_RAW'],
+  'traffic-sniffing': ['NET_RAW', 'NET_ADMIN'],
 };
 
 async function runContainer(containerName: string, task: DebugTask & { dockerImage: string }) {
