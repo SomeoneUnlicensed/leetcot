@@ -24,7 +24,7 @@ export function TaskBriefing({ title, difficulty, points, narrative, children }:
     <div className="flex min-h-[calc(100vh-73px)] items-center justify-center bg-[#0a0e16] px-4 py-10">
       <div className="w-full max-w-xl">
         <p className="mb-4 text-center text-xs font-semibold tracking-[0.2em] text-[#00A0FF] uppercase">
-          Брифинг · «Восход Ритейл»
+          Брифинг · «Продукты и Баги»
         </p>
 
         <div className="mb-4 flex items-center justify-center gap-3">

@@ -59,6 +59,7 @@ export default async function DebugSimulatorPage() {
 
   const tasks = championship?.debugTasks ?? [];
   const totalPoints = tasks.reduce((sum, t) => sum + t.points, 0);
+  const solvedCount = tasks.filter((t) => solvedTaskIds.has(t.id)).length;
 
   return (
     <main className="min-h-screen bg-white px-4 py-10 text-[#131722]">
@@ -70,14 +71,27 @@ export default async function DebugSimulatorPage() {
           >
             Дебаг-Симулятор
           </h1>
-          <p className="mt-3 max-w-2xl text-[#131722]/65">
+          <p className="mt-3 max-w-2xl text-[#131722]/70">
+            «Продукты и Баги» — сеть из 200+ магазинов — только что пережила ребрендинг ИТ-отдела:
+            штатная команда безопасности в полном составе уронила свои навыки в шредер во время
+            миграции на новую CRM. Их место на сегодня занимаете вы.
+          </p>
+          <p className="mt-2 max-w-2xl text-[#131722]/65">
             Каждая задача — реальный сервер и конкретный инцидент: от подбора SSH-пароля до
-            восстановления упавшего узла кластера. Найдите флаг и отправьте его ниже.
+            восстановления упавшего узла кластера. Найдите флаг и отправьте его прямо в терминале.
           </p>
-          <p className="mt-4 text-sm text-[#131722]/60">
-            Ваш счёт: <span className="font-bold text-[#00A0FF]">{participant?.score ?? 0}</span> из{' '}
-            {totalPoints}
-          </p>
+          <div className="mt-5 flex flex-wrap gap-x-6 gap-y-1 text-sm text-[#131722]/60">
+            <span>
+              Доступно задач: <span className="font-bold text-[#131722]">{tasks.length}</span>
+            </span>
+            <span>
+              Решено: <span className="font-bold text-[#131722]">{solvedCount}</span>
+            </span>
+            <span>
+              Ваш счёт: <span className="font-bold text-[#00A0FF]">{participant?.score ?? 0}</span> из{' '}
+              {totalPoints}
+            </span>
+          </div>
         </div>
 
         {tasks.length === 0 ? (

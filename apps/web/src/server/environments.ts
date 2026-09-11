@@ -57,7 +57,16 @@ async function installSubmitHelper(containerName: string): Promise<void> {
   }
 }
 
+// A small number of tasks need a real capability beyond the sandbox's normal
+// defaults to make their exercise possible at all (e.g. actually writing an
+// iptables rule inside the container). Kept as an explicit allowlist rather than
+// a DB column since so few tasks need it.
+const EXTRA_CAPS_BY_TASK: Record<string, string[]> = {
+  'firewall-block-malicious-ip': ['NET_ADMIN', 'NET_RAW'],
+};
+
 async function runContainer(containerName: string, task: DebugTask & { dockerImage: string }) {
+  const extraCaps = EXTRA_CAPS_BY_TASK[task.slug] ?? [];
   const args = [
     'run',
     '-d',
@@ -80,6 +89,7 @@ async function runContainer(containerName: string, task: DebugTask & { dockerIma
     '128',
     '--security-opt',
     'no-new-privileges:true',
+    ...extraCaps.flatMap((cap) => ['--cap-add', cap]),
     ...(task.dockerFlagPlain ? ['-e', `FLAG=${task.dockerFlagPlain}`] : []),
     task.dockerImage,
   ];
