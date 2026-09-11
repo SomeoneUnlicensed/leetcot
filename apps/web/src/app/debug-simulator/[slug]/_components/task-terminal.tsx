@@ -203,7 +203,7 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
   const isRunning = status === 'running' || status === 'starting';
 
   return (
-    <div className="w-full overflow-hidden border-t-2 border-[#00A0FF] shadow-[0_1px_0_0_#252b3b]">
+    <div className="flex h-full min-h-[70vh] w-full min-w-0 flex-col overflow-hidden bg-[#0a0e16] bg-[radial-gradient(ellipse_at_top,rgba(0,160,255,0.07),transparent_60%)]">
       <TerminalHeader
         label={`${taskSlug} — sh`}
         live={status === 'running'}
@@ -211,19 +211,19 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
         onStop={status === 'running' ? stop : undefined}
       />
 
-      <div className="bg-[#0a0e16] bg-[radial-gradient(ellipse_at_top,rgba(0,160,255,0.07),transparent_60%)]">
+      <div className="relative min-h-0 min-w-0 flex-1">
         {isRunning ? (
-          <div className="relative">
+          <>
             {status === 'starting' ? (
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#0a0e16]">
                 <Loader2 className="h-6 w-6 animate-spin text-[#00A0FF]" />
                 <span className="text-sm text-white/50">Разворачиваем сервер...</span>
               </div>
             ) : null}
-            <div ref={containerRef} className="h-[62vh] min-h-[460px] w-full px-6 py-4" />
-          </div>
+            <div ref={containerRef} className="h-full w-full px-6 py-4" />
+          </>
         ) : (
-          <div className="flex flex-col items-center justify-center gap-3 px-6 py-14 text-center">
+          <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/5">
               <TerminalIcon className="h-6 w-6 text-white/30" />
             </div>
