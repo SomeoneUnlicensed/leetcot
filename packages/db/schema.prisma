@@ -845,6 +845,11 @@ model DebugSubmission {
   @@index([taskId, userId, isCorrect])
 }
 
+enum EventBlock {
+  BLOCK_1
+  BLOCK_2
+}
+
 model ChampionshipParticipant {
   id             String       @id @default(uuid())
   championshipId String
@@ -853,10 +858,15 @@ model ChampionshipParticipant {
   user           User         @relation(fields: [userId], references: [id])
   score          Int          @default(0)
   joinedAt       DateTime     @default(now())
+  /// Which of the event's time blocks this participant was registered into (Lenta
+  /// fork only) — lets the leaderboard show a fresh ranking per block instead of
+  /// mixing two different audiences together.
+  eventBlock     EventBlock?
 
   @@unique([championshipId, userId])
   @@index([championshipId])
   @@index([userId])
+  @@index([eventBlock])
 }
 
 model ChampionshipChallenge {

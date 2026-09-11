@@ -29,6 +29,7 @@ export async function GET(): Promise<NextResponse> {
       name: p.user.name,
       code: p.user.loginCode,
       score: p.score,
+      eventBlock: p.eventBlock,
       createdAt: p.user.createdAt,
     })),
   });
@@ -36,6 +37,7 @@ export async function GET(): Promise<NextResponse> {
 
 const CreateParticipantsSchema = z.object({
   names: z.array(z.string().trim().min(1).max(80)).min(1).max(500),
+  eventBlock: z.enum(['BLOCK_1', 'BLOCK_2']).nullable().optional(),
 });
 
 export async function POST(req: Request): Promise<NextResponse> {
@@ -86,7 +88,12 @@ export async function POST(req: Request): Promise<NextResponse> {
     });
 
     await prisma.championshipParticipant.create({
-      data: { championshipId: championship.id, userId: user.id, score: 0 },
+      data: {
+        championshipId: championship.id,
+        userId: user.id,
+        score: 0,
+        eventBlock: parsed.data.eventBlock ?? null,
+      },
     });
 
     created.push({ name, code });

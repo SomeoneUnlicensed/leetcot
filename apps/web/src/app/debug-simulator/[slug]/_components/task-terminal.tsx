@@ -65,6 +65,11 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
   const wsRef = useRef<WebSocket | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const termRef = useRef<any>(null);
+  // The server kills the container the instant a solve is confirmed (to free
+  // capacity for everyone else still working), which drops this socket — set
+  // right before we know that's coming so the close handler doesn't also print
+  // an alarming "connection closed" message on top of our own goodbye.
+  const justSolvedRef = useRef(false);
 
   const teardownTerminal = useCallback(() => {
     wsRef.current?.close();
@@ -90,8 +95,14 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
         const data = await res.json();
         if (res.ok && data.solved) {
           term.write(`\r\n\x1b[32m✓ Флаг «${flag}» верный — +${points} очков\x1b[0m\r\n`);
+          term.write('\x1b[2mОкружение сейчас остановится — задача решена.\x1b[0m\r\n');
           setSolved(true);
           router.refresh();
+          justSolvedRef.current = true;
+          setTimeout(() => {
+            teardownTerminal();
+            setStatus('stopped');
+          }, 1800);
         } else {
           term.write(`\r\n\x1b[31m✗ Флаг «${flag}» неверный${data.error ? `: ${data.error}` : ''}\x1b[0m\r\n`);
         }
@@ -99,7 +110,7 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
         term.write(`\r\n\x1b[31m✗ Не удалось отправить флаг «${flag}».\x1b[0m\r\n`);
       }
     },
-    [taskSlug, points, router],
+    [taskSlug, points, router, teardownTerminal],
   );
 
   const connectTerminal = useCallback(async () => {
@@ -110,6 +121,7 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
 
     if (!containerRef.current) return;
 
+    justSolvedRef.current = false;
     const term = new Terminal({
       cursorBlink: true,
       fontSize: 14,
@@ -148,7 +160,16 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
       term.write(chunk);
     };
     ws.onclose = () => {
-      term.write('\r\n\x1b[31mСоединение закрыто.\x1b[0m\r\n');
+      // The server can kill the container (and thus this socket) the instant a
+      // submit resolves as correct, which can reach the client before — or
+      // interleaved with — the HTTP response for that same submit. Give the
+      // success path a beat to land and flip justSolvedRef before deciding this
+      // was actually an unexpected disconnect worth flagging.
+      setTimeout(() => {
+        if (!justSolvedRef.current) {
+          term.write('\r\n\x1b[31mСоединение закрыто.\x1b[0m\r\n');
+        }
+      }, 800);
     };
     ws.onopen = () => {
       ws.send(JSON.stringify({ type: 'resize', cols: term.cols, rows: term.rows }));

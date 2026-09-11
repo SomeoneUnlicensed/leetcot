@@ -4,6 +4,8 @@ import { Button } from '@repo/ui/components/button';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+type EventBlock = 'BLOCK_1' | 'BLOCK_2';
+
 interface CreatedParticipant {
   name: string;
   code: string;
@@ -12,6 +14,7 @@ interface CreatedParticipant {
 export function CreateParticipantsForm() {
   const router = useRouter();
   const [namesText, setNamesText] = useState('');
+  const [eventBlock, setEventBlock] = useState<EventBlock>('BLOCK_1');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [created, setCreated] = useState<CreatedParticipant[] | null>(null);
@@ -31,7 +34,7 @@ export function CreateParticipantsForm() {
       const res = await fetch('/api/admin/participants', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ names }),
+        body: JSON.stringify({ names, eventBlock }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -53,6 +56,24 @@ export function CreateParticipantsForm() {
   return (
     <div className="flex flex-col gap-4">
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <span className="text-sm font-semibold text-[#131722]/70">Блок мероприятия</span>
+        <div className="flex gap-2">
+          {(['BLOCK_1', 'BLOCK_2'] as const).map((block) => (
+            <button
+              key={block}
+              type="button"
+              onClick={() => setEventBlock(block)}
+              className={`rounded-lg border px-4 py-2 text-sm font-semibold transition-colors ${
+                eventBlock === block
+                  ? 'border-[#00A0FF] bg-[#00A0FF]/10 text-[#00A0FF]'
+                  : 'border-border text-[#131722]/60 hover:text-[#131722]'
+              }`}
+            >
+              {block === 'BLOCK_1' ? 'Блок 1 (12:40–13:20)' : 'Блок 2 (17:45–19:00)'}
+            </button>
+          ))}
+        </div>
+
         <label htmlFor="names" className="text-sm font-semibold text-[#131722]/70">
           Имена участников (по одному на строку)
         </label>

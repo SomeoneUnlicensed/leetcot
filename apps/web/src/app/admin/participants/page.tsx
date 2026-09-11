@@ -50,6 +50,7 @@ export default async function AdminParticipantsPage() {
               <tr>
                 <th className="px-4 py-2 font-semibold">Имя</th>
                 <th className="px-4 py-2 font-semibold">Код</th>
+                <th className="px-4 py-2 font-semibold">Блок</th>
                 <th className="px-4 py-2 font-semibold">Очки</th>
               </tr>
             </thead>
@@ -60,12 +61,15 @@ export default async function AdminParticipantsPage() {
                   <td className="px-4 py-2 font-mono font-bold text-[#00A0FF]">
                     {p.user.loginCode}
                   </td>
+                  <td className="px-4 py-2 text-[#131722]/60">
+                    {p.eventBlock === 'BLOCK_1' ? 'Блок 1' : p.eventBlock === 'BLOCK_2' ? 'Блок 2' : '—'}
+                  </td>
                   <td className="px-4 py-2">{p.score}</td>
                 </tr>
               ))}
               {participants.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-4 py-6 text-center text-[#131722]/50">
+                  <td colSpan={4} className="px-4 py-6 text-center text-[#131722]/50">
                     Участников пока нет.
                   </td>
                 </tr>

@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '~/server/auth';
+import { stopEnvironment } from '~/server/environments';
 import { rateLimit } from '~/utils/rateLimit';
 
 const SubmitFlagSchema = z.object({
@@ -69,6 +70,17 @@ export async function POST(
       update: { score: { increment: task.points } },
       create: { championshipId: task.championshipId, userId: user.id, score: task.points },
     });
+
+    // The task is done — free the container immediately rather than waiting for
+    // idle-timeout, so we have headroom for everyone still working during the event.
+    const env = await prisma.taskEnvironment.findUnique({
+      where: { taskId_userId: { taskId: task.id, userId: user.id } },
+    });
+    if (env?.status === 'RUNNING') {
+      await stopEnvironment(env).catch((error) => {
+        console.error(`Failed to stop environment ${env.containerName} after solve:`, error);
+      });
+    }
 
     return NextResponse.json({ solved: true, points: task.points, totalScore: participant.score });
   } catch (error) {
