@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { prisma } from '@repo/db';
 import { DifficultyBadge } from '@repo/ui/components/difficulty-badge';
 import { Markdown } from '@repo/ui/components/markdown';
-import { Terminal as TerminalIcon } from '@repo/ui/icons';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { auth } from '~/server/auth';
@@ -77,20 +76,14 @@ export default async function DebugTaskPage({ params }: PageProps) {
             <Markdown>{task.instructions}</Markdown>
           </div>
 
-          <div className="mt-6 border-t border-[#131722]/10 pt-6">
-            {solved ? (
+          {solved ? (
+            <div className="mt-6 border-t border-[#131722]/10 pt-6">
               <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-700">
                 <span className="font-semibold">Решено</span>
                 <span className="text-emerald-600/70">+{task.points} очков</span>
               </div>
-            ) : task.dockerImage ? (
-              <p className="flex items-start gap-2 text-xs text-[#131722]/45">
-                <TerminalIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                Флаг отправляется прямо в терминале: наберите{' '}
-                <code className="text-[#00A0FF]">submit LENTA{'{...}'}</code> и нажмите Enter.
-              </p>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
 
           {!task.dockerImage ? (
             <div className="mt-6 space-y-4">
