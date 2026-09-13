@@ -2,19 +2,32 @@ import { prisma } from '@repo/db';
 import { NextResponse } from 'next/server';
 import { auth } from '~/server/auth';
 import { startEnvironment, stopEnvironment } from '~/server/environments';
+import { isParticipantLocked } from '~/server/task-queue';
 import { rateLimit } from '~/utils/rateLimit';
 
-async function getUserAndTask(slug: string) {
+type GetUserAndTaskResult =
+  | { error: 'locked' | 'not-found' | 'unauthorized' }
+  | { user: NonNullable<Awaited<ReturnType<typeof prisma.user.findUnique>>>; task: NonNullable<Awaited<ReturnType<typeof prisma.debugTask.findUnique>>> };
+
+async function getUserAndTask(slug: string): Promise<GetUserAndTaskResult> {
   const session = await auth();
-  if (!session?.user?.email) return { error: 'unauthorized' as const };
+  if (!session?.user?.email) return { error: 'unauthorized' };
 
   const user = await prisma.user.findUnique({ where: { email: session.user.email } });
-  if (!user) return { error: 'unauthorized' as const };
+  if (!user) return { error: 'unauthorized' };
+  if (await isParticipantLocked(user.id)) return { error: 'locked' };
 
   const task = await prisma.debugTask.findUnique({ where: { slug } });
-  if (!task?.isActive) return { error: 'not-found' as const };
+  if (!task?.isActive) return { error: 'not-found' };
 
   return { user, task };
+}
+
+function errorResponse(error: 'locked' | 'not-found' | 'unauthorized'): NextResponse {
+  if (error === 'locked') {
+    return NextResponse.json({ error: 'Организаторы завершили этот блок.' }, { status: 403 });
+  }
+  return NextResponse.json({ error: 'Не найдено.' }, { status: error === 'unauthorized' ? 401 : 404 });
 }
 
 export async function POST(
@@ -28,10 +41,7 @@ export async function POST(
 
   const result = await getUserAndTask(params.slug);
   if ('error' in result) {
-    return NextResponse.json(
-      { error: 'Не найдено.' },
-      { status: result.error === 'unauthorized' ? 401 : 404 },
-    );
+    return errorResponse(result.error);
   }
   const { user, task } = result;
 
@@ -57,10 +67,7 @@ export async function DELETE(
 ): Promise<NextResponse> {
   const result = await getUserAndTask(params.slug);
   if ('error' in result) {
-    return NextResponse.json(
-      { error: 'Не найдено.' },
-      { status: result.error === 'unauthorized' ? 401 : 404 },
-    );
+    return errorResponse(result.error);
   }
   const { user, task } = result;
 
@@ -80,10 +87,7 @@ export async function GET(
 ): Promise<NextResponse> {
   const result = await getUserAndTask(params.slug);
   if ('error' in result) {
-    return NextResponse.json(
-      { error: 'Не найдено.' },
-      { status: result.error === 'unauthorized' ? 401 : 404 },
-    );
+    return errorResponse(result.error);
   }
   const { user, task } = result;
 

@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '~/server/auth';
 import { stopEnvironment } from '~/server/environments';
-import { getQueueState } from '~/server/task-queue';
+import { getQueueState, isParticipantLocked } from '~/server/task-queue';
 import { rateLimit } from '~/utils/rateLimit';
 
 const SubmitFlagSchema = z.object({
@@ -35,6 +35,9 @@ export async function POST(
     const user = await prisma.user.findUnique({ where: { email: session.user.email } });
     if (!user) {
       return NextResponse.json({ error: 'Котик не найден.' }, { status: 404 });
+    }
+    if (await isParticipantLocked(user.id)) {
+      return NextResponse.json({ error: 'Организаторы завершили этот блок.' }, { status: 403 });
     }
 
     const parsed = SubmitFlagSchema.safeParse(await req.json());

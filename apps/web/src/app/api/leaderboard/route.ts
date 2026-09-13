@@ -18,6 +18,7 @@ export async function GET(req: Request): Promise<NextResponse> {
   const participants = await prisma.championshipParticipant.findMany({
     where: {
       championshipId: championship.id,
+      archived: false,
       ...(eventBlock ? { eventBlock: eventBlock as 'BLOCK_1' | 'BLOCK_2' } : {}),
     },
     orderBy: [{ score: 'desc' }, { joinedAt: 'asc' }],

@@ -29,7 +29,7 @@ export default async function LeaderboardPage({ searchParams }: PageProps) {
 
   const participants = championship
     ? await prisma.championshipParticipant.findMany({
-        where: { championshipId: championship.id, ...(block ? { eventBlock: block } : {}) },
+        where: { championshipId: championship.id, archived: false, ...(block ? { eventBlock: block } : {}) },
         orderBy: [{ score: 'desc' }, { joinedAt: 'asc' }],
         include: { user: { select: { name: true, image: true } } },
         take: 100,

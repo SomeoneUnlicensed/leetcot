@@ -4,7 +4,7 @@ import GitHubProvider from 'next-auth/providers/github';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { CredentialsSignin } from 'next-auth';
 import type { OAuthConfig } from 'next-auth/providers';
-import { prisma } from '@repo/db';
+import { LENTA_CHAMPIONSHIP_SLUG, normalizeParticipantName, prisma } from '@repo/db';
 import type { NextAuthConfig } from 'next-auth';
 import bcrypt from 'bcryptjs';
 
@@ -189,6 +189,43 @@ export const createParticipantCodeProvider = () => {
 
       const user = await prisma.user.findUnique({ where: { loginCode: rawCode } });
       if (!user || user.status === 'BANNED') return null;
+
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      };
+    },
+  });
+};
+
+export const createParticipantLoginProvider = () => {
+  return CredentialsProvider({
+    id: 'participant-login',
+    name: 'Участник',
+    credentials: {
+      name: { label: 'ФИО', type: 'text' },
+      password: { label: 'Пароль', type: 'password' },
+    },
+    async authorize(credentials) {
+      const rawName = (credentials?.name as string | undefined) ?? '';
+      const password = (credentials?.password as string | undefined) ?? '';
+      const name = normalizeParticipantName(rawName);
+      if (!name || !password) return null;
+
+      const user = await prisma.user.findFirst({
+        where: {
+          name: { equals: name, mode: 'insensitive' },
+          championships: {
+            some: { archived: false, championship: { slug: LENTA_CHAMPIONSHIP_SLUG } },
+          },
+        },
+      });
+      if (!user || user.status === 'BANNED') return null;
+      if (!user.password) return null;
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) return null;
 
       return {
         id: user.id,

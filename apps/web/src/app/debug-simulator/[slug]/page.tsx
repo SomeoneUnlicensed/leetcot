@@ -6,7 +6,7 @@ import { Terminal as TerminalIcon } from '@repo/ui/icons';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { auth } from '~/server/auth';
-import { getQueueState } from '~/server/task-queue';
+import { getQueueState, isParticipantLocked } from '~/server/task-queue';
 import { FlagForm } from './_components/flag-form';
 import { TaskBriefing } from './_components/task-briefing';
 import { TaskTerminal } from './_components/task-terminal';
@@ -32,6 +32,9 @@ export default async function DebugTaskPage({ params }: PageProps) {
   }
 
   const user = await prisma.user.findUnique({ where: { email: session.user.email } });
+  if (user && (await isParticipantLocked(user.id))) {
+    redirect('/login?locked=1');
+  }
   const solvedSubmission = user
     ? await prisma.debugSubmission.findFirst({
         where: { taskId: task.id, userId: user.id, isCorrect: true },

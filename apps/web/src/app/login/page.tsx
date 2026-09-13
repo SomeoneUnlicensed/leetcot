@@ -8,22 +8,42 @@ import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
 import { Label } from '@repo/ui/components/label';
 
-function CodeLoginForm({ redirectTo }: { redirectTo: string }) {
+function ParticipantAuthForm({ redirectTo }: { redirectTo: string }) {
   const router = useRouter();
-  const [code, setCode] = useState('');
+  const [mode, setMode] = useState<'login' | 'register'>('register');
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!code.trim() || loading) return;
+    if (!name.trim() || !password || loading) return;
     setLoading(true);
     setError(null);
 
     try {
-      const res = await signIn('participant-code', { code, redirect: false });
+      if (mode === 'register') {
+        const res = await fetch('/api/participants/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.error ?? 'Не удалось зарегистрироваться.');
+          setLoading(false);
+          return;
+        }
+      }
+
+      const res = await signIn('participant-login', { name, password, redirect: false });
       if (res?.error) {
-        setError('Код не найден. Проверь и попробуй ещё раз.');
+        setError(
+          mode === 'register'
+            ? 'Зарегистрировались, но не удалось войти. Попробуйте войти вручную.'
+            : 'Неверные ФИО или пароль.',
+        );
       } else {
         router.push(redirectTo);
         router.refresh();
@@ -37,21 +57,69 @@ function CodeLoginForm({ redirectTo }: { redirectTo: string }) {
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            setMode('register');
+            setError(null);
+          }}
+          className={`flex-1 rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors ${
+            mode === 'register'
+              ? 'border-[#00A0FF] bg-[#00A0FF]/10 text-[#00A0FF]'
+              : 'border-border text-[#131722]/50'
+          }`}
+        >
+          Впервые здесь
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setMode('login');
+            setError(null);
+          }}
+          className={`flex-1 rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors ${
+            mode === 'login'
+              ? 'border-[#00A0FF] bg-[#00A0FF]/10 text-[#00A0FF]'
+              : 'border-border text-[#131722]/50'
+          }`}
+        >
+          Уже регистрировался
+        </button>
+      </div>
+
       <div>
-        <Label htmlFor="code" className="text-[#131722]/70">
-          Код доступа
+        <Label htmlFor="name" className="text-[#131722]/70">
+          ФИО
         </Label>
         <Input
-          id="code"
-          name="code"
+          id="name"
+          name="name"
           type="text"
           required
           autoFocus
-          autoComplete="off"
-          value={code}
-          onChange={(e) => setCode(e.target.value.toUpperCase())}
-          className="border-border mt-1 text-center text-lg font-bold tracking-[0.3em]"
-          placeholder="XXXXXXXX"
+          autoComplete="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="border-border mt-1"
+          placeholder="Иван Иванов"
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="password" className="text-[#131722]/70">
+          Пароль
+        </Label>
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          required
+          autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="border-border mt-1"
+          placeholder={mode === 'register' ? 'Придумайте пароль (от 6 символов)' : 'Ваш пароль'}
         />
       </div>
 
@@ -66,7 +134,7 @@ function CodeLoginForm({ redirectTo }: { redirectTo: string }) {
         disabled={loading}
         className="w-full rounded-xl bg-[#00A0FF] py-3 font-bold text-white hover:bg-[#0090e6]"
       >
-        {loading ? 'Заходим...' : 'Войти'}
+        {loading ? 'Секунду...' : mode === 'register' ? 'Зарегистрироваться и начать' : 'Войти'}
       </Button>
     </form>
   );
@@ -128,6 +196,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const [showAdmin, setShowAdmin] = useState(false);
   const redirectTo = searchParams.get('callbackUrl') ?? '/debug-simulator';
+  const locked = searchParams.get('locked') === '1';
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white px-4">
@@ -141,12 +210,16 @@ function LoginForm() {
             className="mx-auto mb-6 h-7 w-auto"
           />
           <h2 className="text-2xl font-bold text-[#131722]">Вход в Дебаг-Симулятор</h2>
-          <p className="mt-2 text-sm text-[#131722]/60">
-            Введи код доступа, который тебе выдали организаторы
-          </p>
+          <p className="mt-2 text-sm text-[#131722]/60">Введи ФИО и придумай пароль, чтобы начать</p>
         </div>
 
-        <CodeLoginForm redirectTo={redirectTo} />
+        {locked ? (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-center text-sm text-amber-800">
+            Организаторы завершили этот блок. Спасибо за участие!
+          </div>
+        ) : null}
+
+        <ParticipantAuthForm redirectTo={redirectTo} />
 
         <div className="text-center text-sm">
           <button

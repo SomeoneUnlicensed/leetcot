@@ -1,6 +1,11 @@
 import NextAuth from '@repo/auth/next-auth';
 
-import { baseNextAuthConfig, createCredentialsProvider, createParticipantCodeProvider } from '@repo/auth/server';
+import {
+  baseNextAuthConfig,
+  createCredentialsProvider,
+  createParticipantCodeProvider,
+  createParticipantLoginProvider,
+} from '@repo/auth/server';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -20,7 +25,7 @@ export const authOptions: any = {
       },
     },
   },
-  providers: [createParticipantCodeProvider(), createCredentialsProvider()],
+  providers: [createParticipantCodeProvider(), createParticipantLoginProvider(), createCredentialsProvider()],
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

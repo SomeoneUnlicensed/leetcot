@@ -3,6 +3,7 @@ import { LENTA_CHAMPIONSHIP_SLUG, prisma } from '@repo/db';
 import { redirect } from 'next/navigation';
 import { auth } from '~/server/auth';
 import { isAdmin } from '~/utils/auth-guards';
+import { BlockControls } from './_components/block-controls';
 import { CreateParticipantsForm } from './_components/create-participants-form';
 
 export const metadata: Metadata = {
@@ -25,7 +26,7 @@ export default async function AdminParticipantsPage() {
   const participants = championship
     ? await prisma.championshipParticipant.findMany({
         where: { championshipId: championship.id },
-        orderBy: { joinedAt: 'desc' },
+        orderBy: [{ archived: 'asc' }, { joinedAt: 'desc' }],
         include: { user: { select: { name: true, loginCode: true } } },
       })
     : [];
@@ -41,8 +42,18 @@ export default async function AdminParticipantsPage() {
         </h1>
 
         <div className="border-border mb-8 rounded-2xl border bg-white p-6 shadow-sm">
-          <CreateParticipantsForm />
+          <h2 className="mb-4 text-lg font-bold text-[#131722]">Управление блоками</h2>
+          <BlockControls initialActiveBlock={championship?.activeRegistrationBlock ?? null} />
         </div>
+
+        <details className="border-border mb-8 rounded-2xl border bg-white p-6 shadow-sm">
+          <summary className="cursor-pointer text-sm font-semibold text-[#131722]/70">
+            Ручное добавление по коду (резервный способ, участники обычно регистрируются сами)
+          </summary>
+          <div className="mt-4">
+            <CreateParticipantsForm />
+          </div>
+        </details>
 
         <div className="border-border overflow-hidden rounded-2xl border">
           <table className="w-full text-left text-sm">
@@ -52,24 +63,28 @@ export default async function AdminParticipantsPage() {
                 <th className="px-4 py-2 font-semibold">Код</th>
                 <th className="px-4 py-2 font-semibold">Блок</th>
                 <th className="px-4 py-2 font-semibold">Очки</th>
+                <th className="px-4 py-2 font-semibold">Статус</th>
               </tr>
             </thead>
             <tbody>
               {participants.map((p) => (
-                <tr key={p.id} className="border-border border-t">
+                <tr key={p.id} className={`border-border border-t ${p.archived ? 'opacity-40' : ''}`}>
                   <td className="px-4 py-2">{p.user.name}</td>
                   <td className="px-4 py-2 font-mono font-bold text-[#00A0FF]">
-                    {p.user.loginCode}
+                    {p.user.loginCode ?? '—'}
                   </td>
                   <td className="px-4 py-2 text-[#131722]/60">
                     {p.eventBlock === 'BLOCK_1' ? 'Блок 1' : p.eventBlock === 'BLOCK_2' ? 'Блок 2' : '—'}
                   </td>
                   <td className="px-4 py-2">{p.score}</td>
+                  <td className="px-4 py-2 text-[#131722]/60">
+                    {p.archived ? 'В архиве' : 'Активен'}
+                  </td>
                 </tr>
               ))}
               {participants.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-4 py-6 text-center text-[#131722]/50">
+                  <td colSpan={5} className="px-4 py-6 text-center text-[#131722]/50">
                     Участников пока нет.
                   </td>
                 </tr>

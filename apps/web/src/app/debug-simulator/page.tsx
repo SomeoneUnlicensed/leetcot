@@ -6,7 +6,7 @@ import { CheckCircle, Lock } from '@repo/ui/icons';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { auth } from '~/server/auth';
-import { getQueueState } from '~/server/task-queue';
+import { getQueueState, isParticipantLocked } from '~/server/task-queue';
 
 export const metadata: Metadata = {
   title: 'Дебаг-Симулятор — Lenta tech',
@@ -30,6 +30,9 @@ export default async function DebugSimulatorPage() {
   const user = await prisma.user.findUnique({ where: { email: session.user.email } });
   if (!user) {
     redirect('/login?callbackUrl=/debug-simulator');
+  }
+  if (await isParticipantLocked(user.id)) {
+    redirect('/login?locked=1');
   }
 
   const { championship, tasks, solvedTaskIds, currentTask } = await getQueueState(user.id);

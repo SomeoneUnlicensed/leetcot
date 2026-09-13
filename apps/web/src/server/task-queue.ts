@@ -32,3 +32,22 @@ export async function getQueueState(userId: string) {
 
   return { championship, tasks, solvedTaskIds, currentTask };
 }
+
+/**
+ * Checked directly (not via the session cookie — see the schema comment on
+ * ChampionshipParticipant.lockedAt for why) on every participant-facing page and API
+ * route. True once the organizer has kicked this participant's block or archived it.
+ */
+export async function isParticipantLocked(userId: string): Promise<boolean> {
+  const championship = await prisma.championship.findUnique({
+    where: { slug: LENTA_CHAMPIONSHIP_SLUG },
+  });
+  if (!championship) return false;
+
+  const participant = await prisma.championshipParticipant.findUnique({
+    where: { championshipId_userId: { championshipId: championship.id, userId } },
+  });
+  if (!participant) return false;
+
+  return participant.archived || Boolean(participant.lockedAt);
+}

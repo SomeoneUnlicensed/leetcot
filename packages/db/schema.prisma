@@ -762,6 +762,10 @@ model Championship {
   status       String                    @default("DRAFT") // DRAFT, ACTIVE, PAST
   startDate    DateTime
   endDate      DateTime
+  /// Which event block self-registration currently assigns new participants to
+  /// (Lenta fork only). Null means self-registration is closed — set by the
+  /// organizer from the admin panel at the start/end of each block.
+  activeRegistrationBlock EventBlock?
   challenges   ChampionshipChallenge[]
   participants ChampionshipParticipant[]
   debugTasks   DebugTask[]
@@ -871,6 +875,17 @@ model ChampionshipParticipant {
   /// fork only) — lets the leaderboard show a fresh ranking per block instead of
   /// mixing two different audiences together.
   eventBlock     EventBlock?
+  /// Set when the organizer archives a finished block (Lenta fork only). Archived
+  /// participants are hidden from the leaderboard, can no longer log in, and their
+  /// name is freed up for reuse by the next block's self-registration.
+  archived       Boolean      @default(false)
+  /// Set when the organizer "kicks" this block's sessions once time is up (Lenta fork
+  /// only). Unlike archiving this doesn't touch the leaderboard — it's checked
+  /// directly on every participant-facing page/route, independent of whatever the
+  /// browser's session cookie still claims (session tokens keep working across a
+  /// resign that happens on nearly every request, so relying on that alone to force
+  /// a disconnect isn't reliable).
+  lockedAt       DateTime?
 
   @@unique([championshipId, userId])
   @@index([championshipId])
