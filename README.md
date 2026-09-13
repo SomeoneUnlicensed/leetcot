@@ -125,3 +125,37 @@ pnpm db:seed
 pnpm dev
 ```
 
+## Продакшен-деплой (форк «Дебаг-Симулятор» / Лента tech)
+
+Эта ветка — самостоятельный однохостовый деплой через `docker-compose.yaml`,
+**не связанный** с `.github/workflows/deploy.yml` (тот пайплайн катит основной
+продукт leetcot.ru в общий k3s-кластер по релизу и не знает про
+debug-simulator — не запускайте его для этой ветки, иначе контент
+мероприятия попадёт не туда).
+
+На сервере:
+
+```sh
+git clone <repo> && cd leetcot
+git checkout claude/feed-platform-fork-wk0tu0
+cp .env.example .env   # заполните POSTGRES_PASSWORD, NEXTAUTH_SECRET,
+                        # AUTH_URL/NEXTAUTH_URL (реальный домен), ALTCHA_HMAC_KEY
+docker compose up -d --build
+```
+
+`--build` обязателен хотя бы один раз: `app`/`code-runner` по умолчанию
+ссылаются на образ из GHCR основного продукта, а `build:` в
+`docker-compose.yaml` указывает собрать его из этого же чекаута вместо
+скачивания чужого образа.
+
+При старте контейнера `app` (`entrypoint.sh`) автоматически:
+
+1. накатывает миграции (`prisma migrate deploy`, с ретраями, пока БД поднимается);
+2. сидирует чемпионат и 20 задач debug-simulator;
+3. билдит все 20 docker-образов задач из `challenges/docker/*/` (нужен
+   смонтированный `/var/run/docker.sock` — уже прописан в compose);
+4. запускает само приложение.
+
+Ручного шага сидирования/сборки образов не требуется — если контейнер
+поднялся и открывается `https://<домен>/login`, значит всё сработало.
+

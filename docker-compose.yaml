@@ -29,6 +29,8 @@ services:
 
   app:
     image: ${LEETCOT_IMAGE:-ghcr.io/someoneunlicensed/leetcot:latest}
+    build:
+      context: .
     ports:
       - 3002:3000
       - 3001:3001
@@ -42,8 +44,8 @@ services:
       - REDIS_URL=redis://redis:6379
       - NODE_ENV=${NODE_ENV:-production}
       - CODE_RUNNER_MAX_QUEUE_DEPTH=${CODE_RUNNER_MAX_QUEUE_DEPTH:-20}
-      - AUTH_URL=${AUTH_URL:-https://leetcot.ru}
-      - NEXTAUTH_URL=${NEXTAUTH_URL:-https://leetcot.ru}
+      - AUTH_URL=${AUTH_URL:-https://lenta.leetcot.ru}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-https://lenta.leetcot.ru}
     depends_on:
       db:
         condition: service_healthy
@@ -65,6 +67,8 @@ services:
 
   code-runner:
     image: ${LEETCOT_IMAGE:-ghcr.io/someoneunlicensed/leetcot:latest}
+    build:
+      context: .
     restart: always
     entrypoint: ['pnpm', '--filter', 'code-runner', 'start']
     volumes:
