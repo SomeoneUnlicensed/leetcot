@@ -1,0 +1,101 @@
+name: Deploy Debug Simulator (Lenta tech)
+
+# Отдельный пайплайн для форка «Дебаг-Симулятор» — не связан с deploy.yml
+# (тот катит основной продукт leetcot.ru в общий k3s-кластер). Этот деплоит
+# ветку claude/feed-platform-fork-wk0tu0 на отдельный однохостовый сервер
+# мероприятия через docker-compose по SSH.
+#
+# Только ручной запуск: Actions → Deploy Debug Simulator (Lenta tech) → Run workflow.
+#
+# Нужные repo secrets (Settings → Secrets and variables → Actions):
+#   DEBUG_SIMULATOR_SSH_HOST        — хост/IP сервера
+#   DEBUG_SIMULATOR_SSH_USER        — SSH-пользователь
+#   DEBUG_SIMULATOR_SSH_KEY         — приватный SSH-ключ (без пароля)
+#   DEBUG_SIMULATOR_SSH_PORT        — порт SSH (необязательно, по умолчанию 22)
+#   DEBUG_SIMULATOR_DEPLOY_PATH     — путь к чекауту репозитория на сервере
+#                                      (там уже должны быть docker-compose.yaml
+#                                      и заполненный .env — см. README)
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: debug-simulator-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_REPOSITORY: ghcr.io/someoneunlicensed/leetcot
+      IMAGE_TAG: debug-simulator
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: claude/feed-platform-fork-wk0tu0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push app image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE_REPOSITORY }}:${{ env.IMAGE_TAG }}
+            ${{ env.IMAGE_REPOSITORY }}:${{ env.IMAGE_TAG }}-${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_APP_VERSION=${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_REPOSITORY: ghcr.io/someoneunlicensed/leetcot
+      IMAGE_TAG: debug-simulator
+
+    steps:
+      - name: Pull new image and restart on the event server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEBUG_SIMULATOR_SSH_HOST }}
+          username: ${{ secrets.DEBUG_SIMULATOR_SSH_USER }}
+          key: ${{ secrets.DEBUG_SIMULATOR_SSH_KEY }}
+          port: ${{ secrets.DEBUG_SIMULATOR_SSH_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -e
+            cd "${{ secrets.DEBUG_SIMULATOR_DEPLOY_PATH }}"
+
+            git fetch origin claude/feed-platform-fork-wk0tu0
+            git checkout claude/feed-platform-fork-wk0tu0
+            git reset --hard origin/claude/feed-platform-fork-wk0tu0
+
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+            export LEETCOT_IMAGE="${{ env.IMAGE_REPOSITORY }}:${{ env.IMAGE_TAG }}"
+            docker compose pull app code-runner
+            docker compose up -d
+
+            docker image prune -f
+            docker logout ghcr.io
+
+            echo "Deployed ${{ env.IMAGE_REPOSITORY }}:${{ env.IMAGE_TAG }} (${{ github.sha }})"

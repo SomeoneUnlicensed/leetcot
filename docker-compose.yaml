@@ -28,7 +28,7 @@ services:
       - 6380:6379
 
   app:
-    image: ${LEETCOT_IMAGE:-ghcr.io/someoneunlicensed/leetcot:latest}
+    image: ${LEETCOT_IMAGE:-ghcr.io/someoneunlicensed/leetcot:debug-simulator}
     build:
       context: .
     ports:
@@ -66,7 +66,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   code-runner:
-    image: ${LEETCOT_IMAGE:-ghcr.io/someoneunlicensed/leetcot:latest}
+    image: ${LEETCOT_IMAGE:-ghcr.io/someoneunlicensed/leetcot:debug-simulator}
     build:
       context: .
     restart: always

@@ -143,10 +143,11 @@ cp .env.example .env   # заполните POSTGRES_PASSWORD, NEXTAUTH_SECRET,
 docker compose up -d --build
 ```
 
-`--build` обязателен хотя бы один раз: `app`/`code-runner` по умолчанию
-ссылаются на образ из GHCR основного продукта, а `build:` в
-`docker-compose.yaml` указывает собрать его из этого же чекаута вместо
-скачивания чужого образа.
+`--build` обязателен при первом запуске: `docker-compose.yaml` собирает
+`app`/`code-runner` из этого чекаута (`build: context: .`). Если образ ещё
+не собран и не задан `LEETCOT_IMAGE`, дефолтный тег —
+`ghcr.io/someoneunlicensed/leetcot:debug-simulator` — это **отдельный тег
+этого форка**, никак не пересекается с `:latest` основного продукта.
 
 При старте контейнера `app` (`entrypoint.sh`) автоматически:
 
@@ -158,4 +159,30 @@ docker compose up -d --build
 
 Ручного шага сидирования/сборки образов не требуется — если контейнер
 поднялся и открывается `https://<домен>/login`, значит всё сработало.
+
+### Обновление через CI (`.github/workflows/deploy-debug-simulator.yml`)
+
+После первого ручного бутстрапа выше — дальнейшие обновления катятся через
+отдельный CI-пайплайн (тоже не связан с `deploy.yml` основного продукта):
+GitHub Actions собирает образ, пушит его в GHCR под тегом
+`ghcr.io/someoneunlicensed/leetcot:debug-simulator`, затем по SSH заходит на
+сервер, обновляет чекаут и перезапускает `docker compose` с этим образом.
+
+Запуск — **только вручную**: вкладка Actions → «Deploy Debug Simulator
+(Lenta tech)» → Run workflow.
+
+Нужно один раз задать secrets репозитория (Settings → Secrets and variables
+→ Actions):
+
+| Secret | Значение |
+| --- | --- |
+| `DEBUG_SIMULATOR_SSH_HOST` | хост/IP сервера мероприятия |
+| `DEBUG_SIMULATOR_SSH_USER` | SSH-пользователь для деплоя |
+| `DEBUG_SIMULATOR_SSH_KEY` | приватный SSH-ключ (без пароля) |
+| `DEBUG_SIMULATOR_SSH_PORT` | порт SSH (необязательно, по умолчанию 22) |
+| `DEBUG_SIMULATOR_DEPLOY_PATH` | путь к чекауту репозитория на сервере (там уже должны быть `docker-compose.yaml` и заполненный `.env` из бутстрапа выше) |
+
+Сервер должен быть залогинен под тем же SSH-пользователем на GHCR или иметь
+доступ на `docker pull` из GHCR — воркфлоу логинится сам через
+`GITHUB_TOKEN` на шаге деплоя, отдельно настраивать не нужно.
 
