@@ -139,7 +139,7 @@ debug-simulator — не запускайте его для этой ветки,
 git clone <repo> && cd leetcot
 git checkout claude/feed-platform-fork-wk0tu0
 cp .env.example .env   # заполните POSTGRES_PASSWORD, NEXTAUTH_SECRET,
-                        # AUTH_URL/NEXTAUTH_URL (реальный домен), ALTCHA_HMAC_KEY
+                        # AUTH_URL/NEXTAUTH_URL (реальный домен)
 docker compose up -d --build
 ```
 

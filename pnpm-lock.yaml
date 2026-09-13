@@ -379,12 +379,6 @@ importers:
       '@xterm/xterm':
         specifier: ^5.5.0
         version: 5.5.0
-      altcha:
-        specifier: ^3.1.0
-        version: 3.1.0
-      altcha-lib:
-        specifier: ^2.2.0
-        version: 2.2.0
       bad-words:
         specifier: ^3.0.4
         version: 3.0.4
@@ -4924,51 +4918,6 @@ packages:
 
   ajv@8.17.1:
     resolution: {integrity: sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g==}
-
-  altcha-lib@2.2.0:
-    resolution: {integrity: sha512-O4+q6+JECTRgse9NVDsAJ8PwWhYpb+iAlT3wVcZ/BMGv2wkumAGWK3GE5FGbgzI7K5CJLDoNBKuQBUQui+62Ig==}
-    hasBin: true
-    peerDependencies:
-      '@fastify/cookie': ^11.0.0
-      '@fastify/cors': ^11.0.0
-      '@fastify/formbody': ^8.0.0
-      '@nestjs/common': ^10.0.0 || ^11.0.0
-      '@nestjs/core': ^10.0.0 || ^11.0.0
-      '@nestjs/platform-express': ^10.0.0 || ^11.0.0
-      '@sveltejs/kit': ^2.0.0
-      cookie-parser: ^1.0.0
-      cors: ^2.0.0
-      express: ^4.0.0 || ^5.0.0
-      fastify: ^5.0.0
-      h3: ^2.0.0
-      hono: ^4.0.0
-    peerDependenciesMeta:
-      '@fastify/cookie':
-        optional: true
-      '@fastify/cors':
-        optional: true
-      '@fastify/formbody':
-        optional: true
-      '@nestjs/common':
-        optional: true
-      '@nestjs/core':
-        optional: true
-      '@nestjs/platform-express':
-        optional: true
-      '@sveltejs/kit':
-        optional: true
-      cookie-parser:
-        optional: true
-      cors:
-        optional: true
-      express:
-        optional: true
-      fastify:
-        optional: true
-      h3:
-        optional: true
-      hono:
-        optional: true
 
   altcha@3.1.0:
     resolution: {integrity: sha512-rzz+F1xGG55X1LWylHZyabf9V4+5qAZeqd0+mo+8HdFsCqPC4YfUyjQ7lcbW/GVXy1XSnKsPMFkBuhmTymZuWw==}
@@ -14111,8 +14060,6 @@ snapshots:
       fast-uri: 3.0.6
       json-schema-traverse: 1.0.0
       require-from-string: 2.0.2
-
-  altcha-lib@2.2.0: {}
 
   altcha@3.1.0:
     dependencies:
