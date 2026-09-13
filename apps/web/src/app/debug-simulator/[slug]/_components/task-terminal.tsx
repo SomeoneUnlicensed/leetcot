@@ -2,11 +2,22 @@
 
 import '@xterm/xterm/css/xterm.css';
 import { Button } from '@repo/ui/components/button';
-import { Loader2, Square, Terminal as TerminalIcon } from '@repo/ui/icons';
+import {
+  Loader2,
+  Minus,
+  Plus,
+  RotateCcw,
+  Square,
+  Terminal as TerminalIcon,
+  Trash2,
+} from '@repo/ui/icons';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-type EnvStatus = 'error' | 'idle' | 'running' | 'starting' | 'stopped';
+type EnvStatus = 'disconnected' | 'error' | 'idle' | 'running' | 'starting' | 'stopped';
+
+const MIN_FONT_SIZE = 11;
+const MAX_FONT_SIZE = 22;
 
 // Printed by the real `submit` command installed inside every task container (see
 // installSubmitHelper in server/environments.ts). It carries no authority of its own —
@@ -14,33 +25,80 @@ type EnvStatus = 'error' | 'idle' | 'running' | 'starting' | 'stopped';
 // authenticated submit API, which does the actual verification.
 const SUBMIT_SENTINEL_RE = /===SUBMIT:([^=\r\n]*)===\r?\n?/;
 
+const HeaderIconButton = ({
+  onClick,
+  label,
+  children,
+}: {
+  onClick: () => void;
+  label: string;
+  children: React.ReactNode;
+}) => (
+  <button
+    onClick={onClick}
+    aria-label={label}
+    title={label}
+    className="flex items-center justify-center rounded-md p-1.5 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+  >
+    {children}
+  </button>
+);
+
 const TerminalHeader = ({
   label,
   live,
   solved,
   onStop,
+  onZoomIn,
+  onZoomOut,
+  onClear,
+  onReconnect,
 }: {
   label: string;
   live: boolean;
   solved: boolean;
   onStop?: () => void;
+  onZoomIn?: () => void;
+  onZoomOut?: () => void;
+  onClear?: () => void;
+  onReconnect?: () => void;
 }) => (
   <div className="flex items-center gap-2.5 border-b border-white/5 bg-[#12172a] px-5 py-3.5">
     <TerminalIcon className="h-4 w-4 shrink-0 text-[#00A0FF]" />
     <span className="truncate font-mono text-xs text-white/50">{label}</span>
-    <div className="ml-auto flex items-center gap-3">
-      {solved ? <span className="text-xs font-semibold text-emerald-400">✓ Решено</span> : null}
+    <div className="ml-auto flex items-center gap-1">
+      {solved ? <span className="mr-2 text-xs font-semibold text-emerald-400">✓ Решено</span> : null}
       {live ? (
-        <span className="flex items-center gap-1.5 text-xs font-medium text-[#00A0FF]">
+        <span className="mr-2 flex items-center gap-1.5 text-xs font-medium text-[#00A0FF]">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#00A0FF]" />
           live
         </span>
+      ) : null}
+      {onZoomOut ? (
+        <HeaderIconButton onClick={onZoomOut} label="Уменьшить шрифт">
+          <Minus className="h-3.5 w-3.5" />
+        </HeaderIconButton>
+      ) : null}
+      {onZoomIn ? (
+        <HeaderIconButton onClick={onZoomIn} label="Увеличить шрифт">
+          <Plus className="h-3.5 w-3.5" />
+        </HeaderIconButton>
+      ) : null}
+      {onClear ? (
+        <HeaderIconButton onClick={onClear} label="Очистить экран">
+          <Trash2 className="h-3.5 w-3.5" />
+        </HeaderIconButton>
+      ) : null}
+      {onReconnect ? (
+        <HeaderIconButton onClick={onReconnect} label="Переподключиться">
+          <RotateCcw className="h-3.5 w-3.5" />
+        </HeaderIconButton>
       ) : null}
       {onStop ? (
         <button
           onClick={onStop}
           aria-label="Остановить окружение"
-          className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+          className="ml-1 flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-white/50 transition-colors hover:bg-white/10 hover:text-white"
         >
           <Square className="h-3 w-3" />
           Стоп
@@ -65,17 +123,52 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
   const wsRef = useRef<WebSocket | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const termRef = useRef<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const fitAddonRef = useRef<any>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const fontSizeRef = useRef(14);
   // The server kills the container the instant a solve is confirmed (to free
   // capacity for everyone else still working), which drops this socket — set
   // right before we know that's coming so the close handler doesn't also print
   // an alarming "connection closed" message on top of our own goodbye.
   const justSolvedRef = useRef(false);
 
+  const sendResize = useCallback(() => {
+    const term = termRef.current;
+    const ws = wsRef.current;
+    if (!term || !ws || ws.readyState !== WebSocket.OPEN) return;
+    ws.send(JSON.stringify({ type: 'resize', cols: term.cols, rows: term.rows }));
+  }, []);
+
   const teardownTerminal = useCallback(() => {
+    resizeObserverRef.current?.disconnect();
+    resizeObserverRef.current = null;
     wsRef.current?.close();
     wsRef.current = null;
     termRef.current?.dispose();
     termRef.current = null;
+    fitAddonRef.current = null;
+    if (containerRef.current) containerRef.current.oncontextmenu = null;
+  }, []);
+
+  const zoom = useCallback(
+    (delta: number) => {
+      const term = termRef.current;
+      const fitAddon = fitAddonRef.current;
+      if (!term || !fitAddon) return;
+      const nextSize = Math.min(MAX_FONT_SIZE, Math.max(MIN_FONT_SIZE, fontSizeRef.current + delta));
+      if (nextSize === fontSizeRef.current) return;
+      fontSizeRef.current = nextSize;
+      term.options.fontSize = nextSize;
+      fitAddon.fit();
+      sendResize();
+    },
+    [sendResize],
+  );
+
+  const clearScreen = useCallback(() => {
+    termRef.current?.clear();
+    termRef.current?.focus();
   }, []);
 
   const submitFlag = useCallback(
@@ -118,9 +211,10 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
   );
 
   const connectTerminal = useCallback(async () => {
-    const [{ Terminal }, { FitAddon }] = await Promise.all([
+    const [{ Terminal }, { FitAddon }, { WebLinksAddon }] = await Promise.all([
       import('@xterm/xterm'),
       import('@xterm/addon-fit'),
+      import('@xterm/addon-web-links'),
     ]);
 
     if (!containerRef.current) return;
@@ -128,9 +222,10 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
     justSolvedRef.current = false;
     const term = new Terminal({
       cursorBlink: true,
-      fontSize: 14,
+      fontSize: fontSizeRef.current,
       fontFamily: '"Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace',
       lineHeight: 1.35,
+      scrollback: 8000,
       theme: {
         background: '#0a0e16',
         foreground: '#e2e8f0',
@@ -140,9 +235,33 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
     });
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
+    term.loadAddon(new WebLinksAddon());
     term.open(containerRef.current);
     fitAddon.fit();
     termRef.current = term;
+    fitAddonRef.current = fitAddon;
+
+    // Ctrl/Cmd+C is reserved for SIGINT in a real shell, so copy/paste get their own
+    // shortcuts here — Ctrl+Shift+C/V, matching most terminal apps (Windows Terminal,
+    // GNOME Terminal, etc.), plus a plain right-click paste for anyone who doesn't know
+    // the shortcut.
+    term.attachCustomKeyEventHandler((event: KeyboardEvent) => {
+      if (event.type !== 'keydown') return true;
+      const mod = event.ctrlKey || event.metaKey;
+      if (mod && event.shiftKey && event.key.toLowerCase() === 'c') {
+        const selection = term.getSelection();
+        if (selection) void navigator.clipboard.writeText(selection).catch(() => undefined);
+        return false;
+      }
+      if (mod && event.shiftKey && event.key.toLowerCase() === 'v') {
+        void navigator.clipboard
+          .readText()
+          .then((text) => term.paste(text))
+          .catch(() => undefined);
+        return false;
+      }
+      return true;
+    });
 
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const ws = new WebSocket(`${protocol}://${window.location.host}/ws/terminal?taskSlug=${taskSlug}`);
@@ -172,12 +291,16 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
       setTimeout(() => {
         if (!justSolvedRef.current) {
           term.write('\r\n\x1b[31mСоединение закрыто.\x1b[0m\r\n');
+          setStatus('disconnected');
         }
       }, 800);
     };
     ws.onopen = () => {
       ws.send(JSON.stringify({ type: 'resize', cols: term.cols, rows: term.rows }));
       term.write('\x1b[2m# наберите: submit LENTA{...} и нажмите Enter, чтобы отправить флаг\x1b[0m\r\n');
+      term.write(
+        '\x1b[2m# копировать/вставить: Ctrl+Shift+C / Ctrl+Shift+V, или вставка правой кнопкой мыши\x1b[0m\r\n',
+      );
       term.focus();
     };
 
@@ -187,6 +310,18 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
       }
     });
 
+    // Right-click pastes clipboard content directly — the standard convention in most
+    // terminal apps, and far more discoverable than the Ctrl+Shift+V shortcut above.
+    // A plain property assignment (not addEventListener) so reconnecting doesn't stack
+    // up duplicate handlers on this same, reused container element.
+    containerRef.current.oncontextmenu = (event) => {
+      event.preventDefault();
+      void navigator.clipboard
+        .readText()
+        .then((text) => term.paste(text))
+        .catch(() => undefined);
+    };
+
     const resizeObserver = new ResizeObserver(() => {
       fitAddon.fit();
       if (ws.readyState === WebSocket.OPEN) {
@@ -194,8 +329,7 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
       }
     });
     resizeObserver.observe(containerRef.current);
-
-    return () => resizeObserver.disconnect();
+    resizeObserverRef.current = resizeObserver;
   }, [taskSlug, submitFlag]);
 
   const start = async () => {
@@ -223,17 +357,26 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
     setStatus('stopped');
   };
 
+  const reconnect = async () => {
+    teardownTerminal();
+    await start();
+  };
+
   useEffect(() => teardownTerminal, [teardownTerminal]);
 
-  const isRunning = status === 'running' || status === 'starting';
+  const isRunning = status === 'running' || status === 'starting' || status === 'disconnected';
 
   return (
-    <div className="flex h-full min-h-[70vh] w-full min-w-0 flex-col overflow-hidden bg-[#0a0e16] bg-[radial-gradient(ellipse_at_top,rgba(0,160,255,0.07),transparent_60%)]">
+    <div className="debug-terminal flex h-full min-h-[70vh] w-full min-w-0 flex-col overflow-hidden bg-[#0a0e16] bg-[radial-gradient(ellipse_at_top,rgba(0,160,255,0.07),transparent_60%)]">
       <TerminalHeader
         label={`${taskSlug} — sh`}
         live={status === 'running'}
         solved={solved}
         onStop={status === 'running' ? stop : undefined}
+        onZoomIn={status === 'running' ? () => zoom(1) : undefined}
+        onZoomOut={status === 'running' ? () => zoom(-1) : undefined}
+        onClear={status === 'running' ? clearScreen : undefined}
+        onReconnect={status === 'disconnected' ? reconnect : undefined}
       />
 
       <div className="relative min-h-0 min-w-0 flex-1">
@@ -243,6 +386,18 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#0a0e16]">
                 <Loader2 className="h-6 w-6 animate-spin text-[#00A0FF]" />
                 <span className="text-sm text-white/50">Разворачиваем сервер...</span>
+              </div>
+            ) : null}
+            {status === 'disconnected' ? (
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#0a0e16]/90 backdrop-blur-sm">
+                <span className="text-sm text-white/60">Соединение потеряно</span>
+                <Button
+                  onClick={reconnect}
+                  className="rounded-lg bg-[#00A0FF] px-5 py-2 text-sm font-bold text-white hover:bg-[#0090e6]"
+                >
+                  <RotateCcw className="mr-1.5 h-4 w-4" />
+                  Переподключиться
+                </Button>
               </div>
             ) : null}
             <div ref={containerRef} className="h-full w-full px-6 py-4" />

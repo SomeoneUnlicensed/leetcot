@@ -66,6 +66,7 @@ export {
   MessageCircle,
   MessagesSquare,
   Minimize2,
+  Minus,
   Moon,
   MoreHorizontal,
   Network,
