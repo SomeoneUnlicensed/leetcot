@@ -63,7 +63,10 @@ export function BlockControls({ initialActiveBlock }: BlockControlsProps) {
         body: JSON.stringify({ block }),
       });
       const data = await res.json();
-      if (res.ok) setMessage(`Сессии сброшены: ${data.kicked} участник(ов).`);
+      if (res.ok)
+        setMessage(
+          `Сессии сброшены: ${data.kicked} участник(ов), остановлено окружений: ${data.environmentsStopped}.`,
+        );
     } finally {
       setLoading(null);
     }

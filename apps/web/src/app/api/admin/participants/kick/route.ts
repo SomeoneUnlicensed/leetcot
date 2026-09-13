@@ -2,6 +2,7 @@ import { LENTA_CHAMPIONSHIP_SLUG, prisma } from '@repo/db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '~/server/auth';
+import { stopEnvironment } from '~/server/environments';
 import { isAdmin } from '~/utils/auth-guards';
 
 const KickSchema = z.object({
@@ -50,5 +51,19 @@ export async function POST(req: Request): Promise<NextResponse> {
     data: { sessionsInvalidatedAt: now },
   });
 
-  return NextResponse.json({ kicked: participants.length });
+  // Locking a participant out of the page doesn't touch their Docker container —
+  // without this they'd sit running (using up the host's CPU/RAM budget) until the
+  // idle reaper eventually catches them, up to ENVIRONMENT_IDLE_MINUTES later.
+  const runningEnvs = await prisma.taskEnvironment.findMany({
+    where: { userId: { in: participants.map((p) => p.userId) }, status: 'RUNNING' },
+  });
+  await Promise.all(
+    runningEnvs.map((env) =>
+      stopEnvironment(env).catch((error) => {
+        console.error(`Failed to stop environment ${env.containerName} on kick:`, error);
+      }),
+    ),
+  );
+
+  return NextResponse.json({ kicked: participants.length, environmentsStopped: runningEnvs.length });
 }
