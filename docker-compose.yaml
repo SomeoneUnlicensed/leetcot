@@ -25,16 +25,16 @@ services:
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
-      - 6380:6379
+      - 127.0.0.1:6380:6379
 
   app:
     image: ${LEETCOT_IMAGE:-ghcr.io/someoneunlicensed/leetcot:debug-simulator}
     build:
       context: .
     ports:
-      - 3002:3000
-      - 3001:3001
-      - 3003:3003
+      - 127.0.0.1:3002:3000
+      - 127.0.0.1:3001:3001
+      - 127.0.0.1:3003:3003
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     env_file:

@@ -1,5 +1,5 @@
 FROM node:24-alpine AS base
-RUN apk add --no-cache openssl docker-cli && \
+RUN apk add --no-cache openssl docker-cli python3 make g++ linux-headers && \
     npm install -g pnpm@10.11.0 dotenv-cli
 WORKDIR /app
 

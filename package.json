@@ -74,6 +74,7 @@
       "@sentry/cli",
       "@vercel/speed-insights",
       "esbuild",
+      "node-pty",
       "sharp",
       "unrs-resolver"
     ]
