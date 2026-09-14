@@ -133,40 +133,11 @@ pnpm dev
 debug-simulator — не запускайте его для этой ветки, иначе контент
 мероприятия попадёт не туда).
 
-На сервере:
+### Деплой через CI (`.github/workflows/deploy-debug-simulator.yml`)
 
-```sh
-git clone <repo> && cd leetcot
-git checkout claude/feed-platform-fork-wk0tu0
-cp .env.example .env   # заполните POSTGRES_PASSWORD, NEXTAUTH_SECRET,
-                        # AUTH_URL/NEXTAUTH_URL (реальный домен)
-docker compose up -d --build
-```
-
-`--build` обязателен при первом запуске: `docker-compose.yaml` собирает
-`app`/`code-runner` из этого чекаута (`build: context: .`). Если образ ещё
-не собран и не задан `LEETCOT_IMAGE`, дефолтный тег —
-`ghcr.io/someoneunlicensed/leetcot:debug-simulator` — это **отдельный тег
-этого форка**, никак не пересекается с `:latest` основного продукта.
-
-При старте контейнера `app` (`entrypoint.sh`) автоматически:
-
-1. накатывает миграции (`prisma migrate deploy`, с ретраями, пока БД поднимается);
-2. сидирует чемпионат и 20 задач debug-simulator;
-3. билдит все 20 docker-образов задач из `challenges/docker/*/` (нужен
-   смонтированный `/var/run/docker.sock` — уже прописан в compose);
-4. запускает само приложение.
-
-Ручного шага сидирования/сборки образов не требуется — если контейнер
-поднялся и открывается `https://<домен>/login`, значит всё сработало.
-
-### Обновление через CI (`.github/workflows/deploy-debug-simulator.yml`)
-
-После первого ручного бутстрапа выше — дальнейшие обновления катятся через
-отдельный CI-пайплайн (тоже не связан с `deploy.yml` основного продукта):
-GitHub Actions собирает образ, пушит его в GHCR под тегом
-`ghcr.io/someoneunlicensed/leetcot:debug-simulator`, затем по SSH заходит на
-сервер, обновляет чекаут и перезапускает `docker compose` с этим образом.
+Основной способ — полностью самодостаточный CI-пайплайн, включая **самый
+первый** деплой на чистый сервер (git на сервере не нужен вообще — ни для
+бутстрапа, ни для обновлений).
 
 Запуск — **только вручную**: вкладка Actions → «Deploy Debug Simulator
 (Lenta tech)» → Run workflow.
@@ -180,9 +151,45 @@ GitHub Actions собирает образ, пушит его в GHCR под т�
 | `DEBUG_SIMULATOR_SSH_USER` | SSH-пользователь для деплоя |
 | `DEBUG_SIMULATOR_SSH_KEY` | приватный SSH-ключ (без пароля) |
 | `DEBUG_SIMULATOR_SSH_PORT` | порт SSH (необязательно, по умолчанию 22) |
-| `DEBUG_SIMULATOR_DEPLOY_PATH` | путь к чекауту репозитория на сервере (там уже должны быть `docker-compose.yaml` и заполненный `.env` из бутстрапа выше) |
+| `DEBUG_SIMULATOR_DEPLOY_PATH` | папка на сервере под деплой (например `/home/ubuntu/leetcot`) — создаётся автоматически при первом запуске |
 
-Сервер должен быть залогинен под тем же SSH-пользователем на GHCR или иметь
-доступ на `docker pull` из GHCR — воркфлоу логинится сам через
-`GITHUB_TOKEN` на шаге деплоя, отдельно настраивать не нужно.
+Дальше воркфлоу сам, на каждом запуске:
+
+1. собирает образ и пушит в GHCR под тегом
+   `ghcr.io/someoneunlicensed/leetcot:debug-simulator` — **отдельный тег
+   этого форка**, никак не пересекается с `:latest` основного продукта;
+2. создаёт папку деплоя на сервере, если её ещё нет;
+3. докладывает `docker-compose.yaml` и `pgadmin/servers.json` по SCP;
+4. если на сервере ещё нет `.env` — генерирует боевые `POSTGRES_PASSWORD` и
+   `NEXTAUTH_SECRET` (`openssl rand`) и сохраняет туда; при повторных
+   запусках существующий `.env` не трогает, чтобы не разлогинить всех сменой
+   `NEXTAUTH_SECRET`;
+5. логинится на GHCR, `docker compose pull` + `docker compose up -d`;
+6. ждёт (до 10 минут — на первом запуске ещё собираются 20 образов задач) и
+   проверяет, что `/login` реально отвечает; если нет — печатает логи `app` и
+   падает.
+
+При старте контейнера `app` (`entrypoint.sh`) отдельно, уже внутри
+контейнера, автоматически: накатывает миграции (`prisma migrate deploy`,
+с ретраями), сидирует чемпионат и 20 задач debug-simulator, билдит все 20
+docker-образов задач из `challenges/docker/*/` (нужен смонтированный
+`/var/run/docker.sock` — уже прописан в compose). Отдельно сидировать или
+собирать образы руками не нужно.
+
+### Ручной бутстрап (запасной вариант)
+
+Если по какой-то причине CI недоступен (например, у сервера нет доступа из
+интернета к раннерам GitHub) — то же самое можно сделать руками прямо на
+сервере:
+
+```sh
+git clone <repo> && cd leetcot
+git checkout claude/feed-platform-fork-wk0tu0
+cp .env.example .env   # заполните POSTGRES_PASSWORD, NEXTAUTH_SECRET,
+                        # AUTH_URL/NEXTAUTH_URL (реальный домен)
+docker compose up -d --build
+```
+
+`--build` обязателен при первом запуске: `docker-compose.yaml` собирает
+`app`/`code-runner` из этого чекаута (`build: context: .`).
 

@@ -12,9 +12,17 @@ name: Deploy Debug Simulator (Lenta tech)
 #   DEBUG_SIMULATOR_SSH_USER        — SSH-пользователь
 #   DEBUG_SIMULATOR_SSH_KEY         — приватный SSH-ключ (без пароля)
 #   DEBUG_SIMULATOR_SSH_PORT        — порт SSH (необязательно, по умолчанию 22)
-#   DEBUG_SIMULATOR_DEPLOY_PATH     — путь к чекауту репозитория на сервере
-#                                      (там уже должны быть docker-compose.yaml
-#                                      и заполненный .env — см. README)
+#   DEBUG_SIMULATOR_DEPLOY_PATH     — папка на сервере под деплой (создаётся
+#                                      сама при первом запуске, git туда не
+#                                      нужен — воркфлоу сам докладывает
+#                                      docker-compose.yaml и поднимает стек)
+#
+# Полностью самодостаточен: первый же запуск на чистом сервере создаёт папку,
+# кладёт docker-compose.yaml, генерирует .env с боевыми секретами (если его
+# там ещё нет — при повторных запусках существующий .env не трогается, чтобы
+# не разлогинить всех участников сменой NEXTAUTH_SECRET) и поднимает стек.
+# Собирать репозиторий на сервере не нужно — образ уже собран и запушен в GHCR
+# на шаге build.
 
 on:
   workflow_dispatch:
@@ -73,7 +81,33 @@ jobs:
       IMAGE_TAG: debug-simulator
 
     steps:
-      - name: Pull new image and restart on the event server
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: claude/feed-platform-fork-wk0tu0
+
+      - name: Ensure deploy folder exists on the server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEBUG_SIMULATOR_SSH_HOST }}
+          username: ${{ secrets.DEBUG_SIMULATOR_SSH_USER }}
+          key: ${{ secrets.DEBUG_SIMULATOR_SSH_KEY }}
+          port: ${{ secrets.DEBUG_SIMULATOR_SSH_PORT || 22 }}
+          script_stop: true
+          script: mkdir -p "${{ secrets.DEBUG_SIMULATOR_DEPLOY_PATH }}/pgadmin"
+
+      - name: Copy docker-compose.yaml + pgadmin config to the server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEBUG_SIMULATOR_SSH_HOST }}
+          username: ${{ secrets.DEBUG_SIMULATOR_SSH_USER }}
+          key: ${{ secrets.DEBUG_SIMULATOR_SSH_KEY }}
+          port: ${{ secrets.DEBUG_SIMULATOR_SSH_PORT || 22 }}
+          source: 'docker-compose.yaml,pgadmin/servers.json'
+          target: ${{ secrets.DEBUG_SIMULATOR_DEPLOY_PATH }}
+          strip_components: 0
+
+      - name: Bootstrap .env (first run only), pull image, restart
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.DEBUG_SIMULATOR_SSH_HOST }}
@@ -85,17 +119,47 @@ jobs:
             set -e
             cd "${{ secrets.DEBUG_SIMULATOR_DEPLOY_PATH }}"
 
-            git fetch origin claude/feed-platform-fork-wk0tu0
-            git checkout claude/feed-platform-fork-wk0tu0
-            git reset --hard origin/claude/feed-platform-fork-wk0tu0
+            if [ ! -f .env ]; then
+              echo "No .env found — bootstrapping fresh production secrets."
+              {
+                echo "POSTGRES_PASSWORD=$(openssl rand -hex 16)"
+                echo "NEXTAUTH_SECRET=$(openssl rand -base64 32)"
+              } > .env
+              chmod 600 .env
+            fi
 
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
             export LEETCOT_IMAGE="${{ env.IMAGE_REPOSITORY }}:${{ env.IMAGE_TAG }}"
-            docker compose pull app code-runner
+            docker compose pull app code-runner db redis
             docker compose up -d
 
             docker image prune -f
             docker logout ghcr.io
 
             echo "Deployed ${{ env.IMAGE_REPOSITORY }}:${{ env.IMAGE_TAG }} (${{ github.sha }})"
+
+      - name: Health-check the deployed app
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEBUG_SIMULATOR_SSH_HOST }}
+          username: ${{ secrets.DEBUG_SIMULATOR_SSH_USER }}
+          key: ${{ secrets.DEBUG_SIMULATOR_SSH_KEY }}
+          port: ${{ secrets.DEBUG_SIMULATOR_SSH_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -e
+            cd "${{ secrets.DEBUG_SIMULATOR_DEPLOY_PATH }}"
+            # entrypoint.sh runs migrate deploy + seed + challenge-image builds on
+            # every app container start, before it actually starts listening — give
+            # it real time (image builds especially) rather than failing fast.
+            for i in $(seq 1 60); do
+              if curl -fsS -o /dev/null "http://127.0.0.1:3002/login"; then
+                echo "App is up and responding on :3002/login"
+                exit 0
+              fi
+              sleep 10
+            done
+            echo "App did not become healthy in time — dumping recent logs:"
+            docker compose logs --tail=200 app
+            exit 1
