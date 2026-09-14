@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Button } from '@repo/ui/components/button';
-import { Shield, Trophy } from '@repo/ui/icons';
+import { Trophy } from '@repo/ui/icons';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Footsies } from '~/components/footsies';
@@ -53,11 +53,6 @@ export default async function Index() {
             className="mb-8 h-9 w-auto sm:h-10"
             priority
           />
-
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#00A0FF]/25 bg-[#00A0FF]/[0.06] px-4 py-2 text-sm font-bold text-[#003C96]">
-            <Shield className="h-4 w-4" />
-            только для приглашённых участников
-          </div>
 
           <h1
             className="max-w-3xl text-balance text-4xl leading-[1.14] tracking-tight text-[#131722] sm:text-5xl"
