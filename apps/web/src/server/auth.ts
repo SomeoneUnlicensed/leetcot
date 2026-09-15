@@ -43,7 +43,8 @@ export const authOptions: any = {
   providers,
   callbacks: {
     ...baseNextAuthConfig.callbacks,
-    signIn: async (params: Parameters<NonNullable<typeof baseNextAuthConfig.callbacks.signIn>>[0]) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    signIn: async (params: any) => {
       if (params.account?.provider === 'github') {
         const login = (params.profile as { login?: string } | undefined)?.login;
         if (!login || !ALLOWED_GITHUB_LOGINS.includes(login)) {
