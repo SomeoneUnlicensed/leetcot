@@ -19,10 +19,10 @@ const providers = [
   createParticipantCodeProvider(),
   createParticipantLoginProvider(),
   createCredentialsProvider(),
+  ...(process.env.GITHUB_ID && process.env.GITHUB_SECRET
+    ? [createGitHubProvider(process.env.GITHUB_ID, process.env.GITHUB_SECRET)]
+    : []),
 ];
-if (process.env.GITHUB_ID && process.env.GITHUB_SECRET) {
-  providers.push(createGitHubProvider(process.env.GITHUB_ID, process.env.GITHUB_SECRET));
-}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const authOptions: any = {
