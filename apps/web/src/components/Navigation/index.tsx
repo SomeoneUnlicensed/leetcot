@@ -7,11 +7,11 @@ import {
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
 import { UserAvatar } from '@repo/ui/components/user-avatar';
-import { Settings, Users } from '@repo/ui/icons';
+import { Users } from '@repo/ui/icons';
 import Image from 'next/image';
 import Link from 'next/link';
 import { auth } from '~/server/auth';
-import { isAdmin as checkIsAdmin, isAdminOrModerator } from '~/utils/auth-guards';
+import { isAdmin as checkIsAdmin } from '~/utils/auth-guards';
 import { getAllFlags } from '~/utils/feature-flags';
 import { LoginLink } from './login-link';
 import { MobileNav } from './mobile-nav';
@@ -19,13 +19,8 @@ import { NavLink } from './nav-link';
 import { NavWrapper } from './nav-wrapper';
 import { SignOutLink } from './signout-link';
 
-export function getAdminUrl() {
-  return process.env.NEXT_PUBLIC_ADMIN_URL || '/panel';
-}
-
 export async function Navigation() {
   const [session, featureFlags] = await Promise.all([auth(), getAllFlags()]);
-  const isAdminOrMod = isAdminOrModerator(session);
   const isAdmin = checkIsAdmin(session);
 
   const TopSectionLinks = (
@@ -45,14 +40,6 @@ export async function Navigation() {
           <>
             <hr className="border-border" />
             {isAdmin ? <NavLink title="Участники" href="/admin/participants" /> : null}
-            {isAdminOrMod ? (
-              <a
-                href={getAdminUrl()}
-                className="text-muted-foreground hover:text-foreground rounded-full px-3 py-2 text-sm font-semibold transition duration-200 hover:bg-black/[0.04]"
-              >
-                Админ
-              </a>
-            ) : null}
             <SignOutLink className="px-0" />
           </>
         ) : (
@@ -85,7 +72,7 @@ export async function Navigation() {
 
           <div className="flex items-center gap-2">
             {featureFlags?.enableLogin ? (
-              <LoginButton isAdmin={isAdmin} isAdminOrMod={isAdminOrMod} session={session} />
+              <LoginButton isAdmin={isAdmin} session={session} />
             ) : null}
             <MobileNav>{NavLinks}</MobileNav>
           </div>
@@ -97,11 +84,9 @@ export async function Navigation() {
 
 function LoginButton({
   isAdmin,
-  isAdminOrMod,
   session,
 }: {
   isAdmin: boolean;
-  isAdminOrMod: boolean;
   session: Session | null;
 }) {
   return session?.user ? (
@@ -126,15 +111,7 @@ function LoginButton({
             </DropdownMenuItem>
           </Link>
         ) : null}
-        {isAdminOrMod ? (
-          <a className="block" href={getAdminUrl()}>
-            <DropdownMenuItem className="focus:bg-accent rounded-xl p-2.5 duration-200 focus:outline-none">
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Админ</span>
-            </DropdownMenuItem>
-          </a>
-        ) : null}
-        {isAdminOrMod ? <DropdownMenuSeparator /> : null}
+        {isAdmin ? <DropdownMenuSeparator /> : null}
         <SignOutLink className="w-full rounded-xl" />
       </DropdownMenuContent>
     </DropdownMenu>
