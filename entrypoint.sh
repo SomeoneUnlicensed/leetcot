@@ -23,6 +23,10 @@ if [ -S /var/run/docker.sock ]; then
   for dir in /app/challenges/docker/*/; do
     [ -d "$dir" ] || continue
     slug="$(basename "$dir")"
+    if docker image inspect "lentatech/$slug:latest" >/dev/null 2>&1; then
+      echo "lentatech/$slug:latest already built, skipping (remove the image manually to force a rebuild)."
+      continue
+    fi
     echo "Building lentatech/$slug:latest"
     docker build -t "lentatech/$slug:latest" "$dir" || echo "WARNING: failed to build $slug, skipping."
   done
