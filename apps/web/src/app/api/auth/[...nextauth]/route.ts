@@ -12,7 +12,7 @@ export const GET = async (req: Request) => {
     url.searchParams.delete('iss');
     req = new Request(url, req);
   }
-  return handlers.GET(req);
+  return await handlers.GET(req);
 };
 
 export const POST = handlers.POST;
