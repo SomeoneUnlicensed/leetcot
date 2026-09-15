@@ -279,6 +279,11 @@ export const createGitHubProvider = (clientId: string, clientSecret: string) => 
   return GitHubProvider({
     clientId,
     clientSecret,
+    // GitHub now returns an "iss" parameter in the OAuth callback, but this
+    // provider has no OIDC issuer configured, so @auth/core falls back to a
+    // placeholder ("https://authjs.dev") when validating it, always mismatching
+    // and throwing CallbackRouteError. Setting the real issuer fixes the check.
+    issuer: 'https://github.com',
     profile: (p) => ({
       id: p.id.toString(),
       name: p.login,
