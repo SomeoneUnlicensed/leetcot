@@ -25,6 +25,7 @@
     "GH_REPO_NAME",
     "GITHUB_ID",
     "GITHUB_SECRET",
+        "ADMIN_GITHUB_LOGINS",
     "PORT",
     "CODE_RUNNER_CONCURRENCY",
     "CODE_RUNNER_TIMEOUT_MS",
@@ -60,6 +61,7 @@
         "GH_TOKEN",
         "GITHUB_ID",
         "GITHUB_SECRET",
+        "ADMIN_GITHUB_LOGINS",
         "UPLOADTHING_SECRET",
         "UPLOADTHING_APP_ID",
         "EDGE_CONFIG",
@@ -150,6 +152,7 @@
         "DATABASE_URL",
         "GITHUB_ID",
         "GITHUB_SECRET",
+        "ADMIN_GITHUB_LOGINS",
         "NEXTAUTH_SECRET",
         "NEXTAUTH_URL"
       ]
@@ -161,6 +164,7 @@
         "DATABASE_URL",
         "GITHUB_ID",
         "GITHUB_SECRET",
+        "ADMIN_GITHUB_LOGINS",
         "NEXTAUTH_SECRET",
         "NEXTAUTH_URL"
       ]
