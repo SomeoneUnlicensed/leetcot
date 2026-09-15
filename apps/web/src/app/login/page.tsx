@@ -141,62 +141,15 @@ function ParticipantAuthForm({ redirectTo }: { redirectTo: string }) {
 }
 
 function AdminLoginForm() {
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-
-    try {
-      const res = await signIn('credentials', { email, password, redirect: false });
-      if (res?.error) {
-        setError('Неправильный email или пароль.');
-      } else {
-        router.push('/debug-simulator');
-        router.refresh();
-      }
-    } catch {
-      setError('Что-то пошло не так. Попробуй ещё раз.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
-      <Input name="email" type="email" required className="border-border" placeholder="Email" />
-      <Input
-        name="password"
-        type="password"
-        required
-        className="border-border"
-        placeholder="Пароль"
-      />
-      {error ? <p className="text-center text-sm text-red-500">{error}</p> : null}
-      <Button
-        type="submit"
-        disabled={loading}
-        variant="outline"
-        className="border-border w-full rounded-xl"
-      >
-        {loading ? 'Заходим...' : 'Войти как организатор'}
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        className="border-border w-full rounded-xl"
-        onClick={() => signIn('github', { callbackUrl: '/panel' })}
-      >
-        Войти через GitHub
-      </Button>
-    </form>
+    <Button
+      type="button"
+      variant="outline"
+      className="border-border w-full rounded-xl"
+      onClick={() => signIn('github', { callbackUrl: '/panel' })}
+    >
+      Войти через GitHub
+    </Button>
   );
 }
 

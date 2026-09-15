@@ -2,7 +2,6 @@ import NextAuth from '@repo/auth/next-auth';
 
 import {
   baseNextAuthConfig,
-  createCredentialsProvider,
   createGitHubProvider,
   createParticipantCodeProvider,
   createParticipantLoginProvider,
@@ -18,7 +17,6 @@ const ALLOWED_GITHUB_LOGINS = (process.env.ADMIN_GITHUB_LOGINS || '')
 const providers = [
   createParticipantCodeProvider(),
   createParticipantLoginProvider(),
-  createCredentialsProvider(),
   ...(process.env.GITHUB_ID && process.env.GITHUB_SECRET
     ? [createGitHubProvider(process.env.GITHUB_ID, process.env.GITHUB_SECRET)]
     : []),
