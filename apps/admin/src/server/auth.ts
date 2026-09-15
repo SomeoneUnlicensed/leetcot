@@ -1,18 +1,8 @@
 import NextAuth, { type NextAuthConfig } from '@repo/auth/next-auth';
 
-import { baseNextAuthConfig, createCredentialsProvider, createGitHubProvider } from '@repo/auth/server';
+import { baseNextAuthConfig, createCredentialsProvider } from '@repo/auth/server';
 
 const isProd = process.env.NODE_ENV === 'production';
-
-const ALLOWED_GITHUB_LOGINS = (process.env.ADMIN_GITHUB_LOGINS || '')
-  .split(',')
-  .map((s) => s.trim())
-  .filter(Boolean);
-
-const providers = [createCredentialsProvider()];
-if (process.env.GITHUB_ID && process.env.GITHUB_SECRET) {
-  providers.push(createGitHubProvider(process.env.GITHUB_ID, process.env.GITHUB_SECRET));
-}
 
 export const authOptions: NextAuthConfig = {
   ...baseNextAuthConfig,
@@ -29,20 +19,7 @@ export const authOptions: NextAuthConfig = {
       },
     },
   },
-  providers,
-  callbacks: {
-    ...baseNextAuthConfig.callbacks,
-    signIn: async (params) => {
-      if (params.account?.provider === 'github') {
-        const login = (params.profile as { login?: string } | undefined)?.login;
-        if (!login || !ALLOWED_GITHUB_LOGINS.includes(login)) {
-          return false;
-        }
-      }
-      const base = baseNextAuthConfig.callbacks?.signIn;
-      return base ? base(params) : true;
-    },
-  },
+  providers: [createCredentialsProvider()],
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

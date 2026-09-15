@@ -188,6 +188,14 @@ function AdminLoginForm() {
       >
         {loading ? 'Заходим...' : 'Войти как организатор'}
       </Button>
+      <Button
+        type="button"
+        variant="outline"
+        className="border-border w-full rounded-xl"
+        onClick={() => signIn('github', { callbackUrl: '/panel' })}
+      >
+        Войти через GitHub
+      </Button>
     </form>
   );
 }

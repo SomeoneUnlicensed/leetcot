@@ -3,11 +3,26 @@ import NextAuth from '@repo/auth/next-auth';
 import {
   baseNextAuthConfig,
   createCredentialsProvider,
+  createGitHubProvider,
   createParticipantCodeProvider,
   createParticipantLoginProvider,
 } from '@repo/auth/server';
 
 const isProd = process.env.NODE_ENV === 'production';
+
+const ALLOWED_GITHUB_LOGINS = (process.env.ADMIN_GITHUB_LOGINS || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+const providers = [
+  createParticipantCodeProvider(),
+  createParticipantLoginProvider(),
+  createCredentialsProvider(),
+];
+if (process.env.GITHUB_ID && process.env.GITHUB_SECRET) {
+  providers.push(createGitHubProvider(process.env.GITHUB_ID, process.env.GITHUB_SECRET));
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const authOptions: any = {
@@ -25,7 +40,20 @@ export const authOptions: any = {
       },
     },
   },
-  providers: [createParticipantCodeProvider(), createParticipantLoginProvider(), createCredentialsProvider()],
+  providers,
+  callbacks: {
+    ...baseNextAuthConfig.callbacks,
+    signIn: async (params: Parameters<NonNullable<typeof baseNextAuthConfig.callbacks.signIn>>[0]) => {
+      if (params.account?.provider === 'github') {
+        const login = (params.profile as { login?: string } | undefined)?.login;
+        if (!login || !ALLOWED_GITHUB_LOGINS.includes(login)) {
+          return false;
+        }
+      }
+      const base = baseNextAuthConfig.callbacks?.signIn;
+      return base ? base(params) : true;
+    },
+  },
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
