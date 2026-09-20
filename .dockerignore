@@ -9,3 +9,8 @@
 npm-debug.log
 yarn-error.log
 pnpm-debug.log
+.deploy
+.github
+docker-compose.yaml
+scripts/deploy
+infra/nginx
