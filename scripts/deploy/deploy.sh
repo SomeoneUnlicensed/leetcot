@@ -234,7 +234,7 @@ cmd_deploy() {
   done
 
   exec 9> "$STATE_DIR/lock"
-  flock -n 9 || die "another deploy is already running"
+  flock -w 90 9 || die "another deploy is already running"
 
   if (( pull )); then
     log "fast-forwarding to origin"
@@ -292,7 +292,7 @@ cmd_deploy() {
 
 cmd_rollback() {
   exec 9> "$STATE_DIR/lock"
-  flock -n 9 || die "another deploy is already running"
+  flock -w 90 9 || die "another deploy is already running"
 
   local cur_port cur prev image legacy=0 old_name
   cur_port="$(active_port)"
