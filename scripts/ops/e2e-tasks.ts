@@ -108,7 +108,12 @@ async function main() {
       }
 
       // 3. read the flag the way the task delivers it, and check the submit route would accept it
-      const found = flagsIn(c.read ? await sh(env.containerName, c.read) : await sh(env.containerName, DISK_SCAN));
+      let found: string[] = [];
+      for (let attempt = 0; attempt < 8; attempt++) {
+        found = flagsIn(c.read ? await sh(env.containerName, c.read) : await sh(env.containerName, DISK_SCAN));
+        if (found.length > 0 || !c.read) break;
+        await sleep(2000); // services that only start listening a few seconds after boot
+      }
       const accepted = found.some((f) => hashFlag(f) === env.flagHash);
       if (!accepted) problems.push(`no accepted flag found (candidates: ${found.length})`);
     } finally {
