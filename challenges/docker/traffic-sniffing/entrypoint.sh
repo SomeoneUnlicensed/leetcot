@@ -1,9 +1,17 @@
 #!/bin/sh
 set -e
+# The app hands the flag over as a one-shot file so it never sits in the container environment,
+# where every participant shell would see it as $FLAG and in /proc/*/environ. $FLAG stays as a
+# fallback for older callers.
+if [ -r /.lenta-flag ]; then
+  FLAG="$(cat /.lenta-flag)"
+  rm -f /.lenta-flag
+fi
 FLAG_VALUE="${FLAG:-MISSING_FLAG}"
+unset FLAG
 
 # Toy "inventory-sync" server: accepts a connection, sends back an ack. All plaintext.
-python3 - "$FLAG_VALUE" <<'PYEOF' &
+python3 - <<'PYEOF' &
 import socket, sys, threading
 
 def handle(conn):
@@ -27,10 +35,11 @@ sleep 1
 # The client: reports "warehouse stock levels" to the sync server every few
 # seconds, plaintext, including an internal auth token that never should have
 # left a TLS tunnel.
-( while true; do
-    python3 - "$FLAG_VALUE" <<'PYEOF'
+cat > /opt/inventory-client.py <<'PYEOF'
 import socket, sys
-flag = sys.argv[1]
+# The flag arrives on stdin - never on argv or in the environment, where any process listing
+# would show it. It is only ever visible on the wire, which is the point of the exercise.
+flag = sys.stdin.read().strip()
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
     s.connect(("127.0.0.1", 8090))
@@ -42,6 +51,9 @@ except OSError:
 finally:
     s.close()
 PYEOF
+
+( while true; do
+    printf '%s' "$FLAG_VALUE" | python3 /opt/inventory-client.py
     sleep 4
   done ) &
 

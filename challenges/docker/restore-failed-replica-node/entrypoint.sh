@@ -1,6 +1,14 @@
 #!/bin/sh
 set -e
+# The app hands the flag over as a one-shot file so it never sits in the container environment,
+# where every participant shell would see it as $FLAG and in /proc/*/environ. $FLAG stays as a
+# fallback for older callers.
+if [ -r /.lenta-flag ]; then
+  FLAG="$(cat /.lenta-flag)"
+  rm -f /.lenta-flag
+fi
 FLAG_VALUE="${FLAG:-MISSING_FLAG}"
+unset FLAG
 
 redis-server --port 6379 --bind 0.0.0.0 --protected-mode no --save '' --appendonly no &
 redis-server --port 6380 --bind 0.0.0.0 --protected-mode no --save '' --appendonly no --replicaof 127.0.0.1 9999 &

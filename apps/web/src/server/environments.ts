@@ -1,5 +1,8 @@
 import { execFile } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { promisify } from 'node:util';
 import { hashFlag, prisma, type DebugTask, type TaskEnvironment } from '@repo/db';
 
@@ -72,11 +75,27 @@ const EXTRA_CAPS_BY_TASK: Record<string, string[]> = {
   'traffic-sniffing': ['NET_RAW', 'NET_ADMIN'],
 };
 
+// Where the entrypoints of the task images expect to find the flag. Handed over as a file, not
+// `-e FLAG=...`: an environment variable is visible to every participant shell as $FLAG and in
+// /proc/*/environ, which would give the flag away before the task is solved. The entrypoint
+// reads the file once and deletes it.
+const FLAG_HANDOFF_PATH = '/.lenta-flag';
+
+async function provisionFlag(containerName: string, flagPlain: string) {
+  const dir = await mkdtemp(path.join(tmpdir(), 'lenta-flag-'));
+  try {
+    const file = path.join(dir, 'flag');
+    await writeFile(file, flagPlain, { mode: 0o600 });
+    await execFileAsync('docker', ['cp', file, `${containerName}:${FLAG_HANDOFF_PATH}`]);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+}
+
 async function runContainer(containerName: string, task: DebugTask & { dockerImage: string }, flagPlain: string) {
   const extraCaps = EXTRA_CAPS_BY_TASK[task.slug] ?? [];
-  const args = [
-    'run',
-    '-d',
+  const createArgs = [
+    'create',
     '--name',
     containerName,
     '--label',
@@ -97,19 +116,25 @@ async function runContainer(containerName: string, task: DebugTask & { dockerIma
     '--security-opt',
     'no-new-privileges:true',
     ...extraCaps.flatMap((cap) => ['--cap-add', cap]),
-    '-e',
-    `FLAG=${flagPlain}`,
     task.dockerImage,
   ];
 
   try {
-    await execFileAsync('docker', args);
+    await execFileAsync('docker', createArgs);
   } catch (error) {
     // Most likely the image just isn't pulled locally yet — pull once and retry.
     await execFileAsync('docker', ['pull', task.dockerImage]);
-    await execFileAsync('docker', args).catch(() => {
+    await execFileAsync('docker', createArgs).catch(() => {
       throw error;
     });
+  }
+
+  try {
+    await provisionFlag(containerName, flagPlain);
+    await execFileAsync('docker', ['start', containerName]);
+  } catch (error) {
+    await removeContainer(containerName);
+    throw error;
   }
 }
 

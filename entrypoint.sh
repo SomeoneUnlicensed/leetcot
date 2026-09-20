@@ -19,16 +19,19 @@ pnpm --filter @repo/db db:seed:debug-simulator
 echo "Debug-simulator content seeded."
 
 if [ -S /var/run/docker.sock ]; then
-  echo "Building debug-simulator task environment images..."
+  echo "Checking debug-simulator task environment images..."
   for dir in /app/challenges/docker/*/; do
     [ -d "$dir" ] || continue
     slug="$(basename "$dir")"
-    if docker image inspect "lentatech/$slug:latest" >/dev/null 2>&1; then
-      echo "lentatech/$slug:latest already built, skipping (remove the image manually to force a rebuild)."
+    # Rebuild only when the task's sources changed: the image carries a hash of them as a label.
+    src_hash="$(cd "$dir" && find . -type f | sort | xargs sha256sum | sha256sum | cut -c1-16)"
+    built_hash="$(docker image inspect -f '{{index .Config.Labels "lentatech.src-hash"}}' "lentatech/$slug:latest" 2>/dev/null || true)"
+    if [ "$built_hash" = "$src_hash" ]; then
+      echo "lentatech/$slug:latest is up to date, skipping."
       continue
     fi
-    echo "Building lentatech/$slug:latest"
-    docker build -t "lentatech/$slug:latest" "$dir" || echo "WARNING: failed to build $slug, skipping."
+    echo "Building lentatech/$slug:latest (sources changed)"
+    docker build --label "lentatech.src-hash=$src_hash" -t "lentatech/$slug:latest" "$dir" || echo "WARNING: failed to build $slug, skipping."
   done
 else
   echo "No docker.sock mounted, skipping debug-simulator environment image builds."

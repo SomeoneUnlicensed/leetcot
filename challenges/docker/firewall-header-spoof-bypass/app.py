@@ -2,7 +2,19 @@ import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 ALLOWED_PREFIX = "10.0."
-FLAG = os.environ.get("FLAG", "MISSING_FLAG")
+def _load_flag():
+    # The task runner hands the flag over as a one-shot file so it never sits in the container
+    # environment (visible to every shell as $FLAG and in /proc/*/environ).
+    try:
+        with open("/.lenta-flag") as f:
+            flag = f.read().strip()
+        os.remove("/.lenta-flag")
+        return flag
+    except OSError:
+        return os.environ.pop("FLAG", "MISSING_FLAG")
+
+
+FLAG = _load_flag()
 
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):

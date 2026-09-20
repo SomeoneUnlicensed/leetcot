@@ -2,7 +2,19 @@ import json
 import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-FLAG = os.environ.get("FLAG", "MISSING_FLAG")
+def _load_flag():
+    # The task runner hands the flag over as a one-shot file so it never sits in the container
+    # environment (visible to every shell as $FLAG and in /proc/*/environ).
+    try:
+        with open("/.lenta-flag") as f:
+            flag = f.read().strip()
+        os.remove("/.lenta-flag")
+        return flag
+    except OSError:
+        return os.environ.pop("FLAG", "MISSING_FLAG")
+
+
+FLAG = _load_flag()
 CONTAINER_ID = "a1b2c3d4e5f6"
 
 LIST_RESPONSE = [
