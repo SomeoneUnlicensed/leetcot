@@ -245,7 +245,7 @@ cmd_deploy() {
     die "working tree has uncommitted changes (commit them, or pass --allow-dirty)"
   fi
 
-  local sha image cur_port cur new legacy=0 old_name
+  local sha image cur_port cur new legacy=0 legacy_id old_name
   sha="$(git rev-parse --short=10 HEAD)"
   image="$IMAGE_REPO:$sha"
   dk volume create "$FLAGS_VOLUME" >/dev/null
@@ -259,9 +259,14 @@ cmd_deploy() {
     if [ "$new" = blue ]; then
       die "legacy container $LEGACY_CONTAINER still holds :$BLUE_PORT; wait for its drain to finish (see $STATE_DIR/drain.log)"
     fi
-    # keep the old image reachable for rollbacks even though the compat tag is about to move
-    dk tag "$(dk inspect -f '{{.Image}}' "$LEGACY_CONTAINER")" "$IMAGE_REPO:legacy"
-    set_image blue "$IMAGE_REPO:legacy"
+    # Best effort: keep the old image reachable for rollbacks. The container's image reference may
+    # no longer resolve (its tag has moved on); the previous code is always rebuildable from git,
+    # and the container itself stays around for the whole drain window.
+    if legacy_id="$(dk inspect -f '{{.Image}}' "$LEGACY_CONTAINER")" && dk tag "$legacy_id" "$IMAGE_REPO:legacy" 2>/dev/null; then
+      set_image blue "$IMAGE_REPO:legacy"
+    else
+      log "note: the legacy image cannot be tagged for rollback (rebuild an older commit if ever needed)"
+    fi
     old_name="$LEGACY_CONTAINER"
   else
     old_name="leetcot-app-$cur"
