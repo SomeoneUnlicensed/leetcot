@@ -51,7 +51,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'ACCESS',
     difficulty: Difficulty.EASY,
     points: POINTS.light,
-    sortOrder: 1,
+    sortOrder: 19,
     narrative:
       'Служба безопасности «Продукты и Баги» получила алерт: один из серверов складского учёта отвечает на SSH из внешней сети, а пароль администратора, судя по всему, никто не менял с момента установки. Прежде чем об этом узнают настоящие злоумышленники, нужно доказать, что взлом возможен — подобрать пароль и зайти на сервер.',
     instructions:
@@ -64,7 +64,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'RECON',
     difficulty: Difficulty.EASY,
     points: POINTS.light,
-    sortOrder: 2,
+    sortOrder: 5,
     narrative:
       'Вам выдали IP одного из серверов подсети склада — и больше почти ничего. Задача разведки: понять, что на нём вообще работает, какие порты открыты и какие сервисы за ними прячутся, включая один, о котором в документации ни слова.',
     instructions:
@@ -77,7 +77,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'ACCESS',
     difficulty: Difficulty.EASY,
     points: POINTS.light,
-    sortOrder: 3,
+    sortOrder: 2,
     narrative:
       'На одном из внутренних серверов администратор поднял базу данных «на скорую руку», чтобы протестировать интеграцию, — и забыл включить аутентификацию. Она до сих пор открыта. Проверьте, что можно найти внутри, прежде чем это сделает кто-то другой.',
     instructions:
@@ -90,7 +90,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'NETWORK',
     difficulty: Difficulty.EASY,
     points: POINTS.light,
-    sortOrder: 5,
+    sortOrder: 10,
     narrative:
       'Два внутренних сервиса склада обмениваются данными в открытую, без шифрования. Ваша задача — встать «посередине» сетевого пути и перехватить трафик между ними, чтобы показать, какие данные утекают в чистом виде.',
     instructions:
@@ -116,7 +116,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'NETWORK',
     difficulty: Difficulty.EASY,
     points: POINTS.light,
-    sortOrder: 10,
+    sortOrder: 3,
     narrative:
       'Внутренний API-эндпоинт доступен только с определённых IP — так, по крайней мере, думает команда инфраструктуры. На деле фаервол смотрит на заголовок X-Forwarded-For, а не на реальный источник запроса.',
     instructions:
@@ -129,7 +129,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'WEB',
     difficulty: Difficulty.EASY,
     points: POINTS.light,
-    sortOrder: 11,
+    sortOrder: 8,
     narrative:
       'На внутреннем портале есть утилита «проверить связь с сервером» — вводишь адрес, получаешь результат ping. Разработчики явно поверили пользовательскому вводу чуть больше, чем следовало.',
     instructions:
@@ -142,7 +142,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'ACCESS',
     difficulty: Difficulty.EASY,
     points: POINTS.light,
-    sortOrder: 14,
+    sortOrder: 11,
     narrative:
       'В открытом облачном хранилище, которым пользовалась команда разработки, случайно оказался приватный SSH-ключ от одного из серверов. Он всё ещё рабочий — воспользуйтесь им, прежде чем администраторы спохватятся.',
     instructions:
@@ -155,7 +155,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'RECON',
     difficulty: Difficulty.EASY,
     points: POINTS.light,
-    sortOrder: 18,
+    sortOrder: 4,
     narrative:
       'Два года назад для одного из проектов подняли админ-панель на нестандартном порту — и благополучно забыли про неё после релиза. Она где-то всё ещё крутится.',
     instructions:
@@ -168,7 +168,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'NETWORK',
     difficulty: Difficulty.EASY,
     points: POINTS.light,
-    sortOrder: 19,
+    sortOrder: 15,
     narrative:
       'С одного и того же IP на сервер идёт поток подозрительных запросов — похоже на сканирование или попытку подбора. Ваша задача не расследование, а реакция: настройте фаервол так, чтобы источник был заблокирован.',
     instructions:
@@ -181,7 +181,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'INCIDENT_RESPONSE',
     difficulty: Difficulty.EASY,
     points: POINTS.light,
-    sortOrder: 24,
+    sortOrder: 9,
     narrative:
       'Среди тысяч строк access-лога веб-сервера спрятаны следы одной серии атак. Найдите IP, который выбивается из обычного трафика магазина, — в его последнем запросе оставлен флаг.',
     instructions:
@@ -194,7 +194,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'INCIDENT_RESPONSE',
     difficulty: Difficulty.EASY,
     points: POINTS.light,
-    sortOrder: 25,
+    sortOrder: 14,
     narrative:
       'Диск сервера мониторинга почти заполнен — логи растут годами и никогда не архивировались. Прежде чем сервис упадёт от нехватки места, настройте ротацию логов.',
     instructions:
@@ -209,7 +209,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'ACCESS',
     difficulty: Difficulty.MEDIUM,
     points: POINTS.medium,
-    sortOrder: 4,
+    sortOrder: 16,
     narrative:
       'На сервере есть уязвимость, позволяющая заставить его самому «позвонить» вам обратно. Добейтесь обратного подключения и закрепитесь в системе достаточно, чтобы найти флаг в домашней директории.',
     instructions:
@@ -222,7 +222,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'WEB',
     difficulty: Difficulty.MEDIUM,
     points: POINTS.medium,
-    sortOrder: 6,
+    sortOrder: 12,
     narrative:
       'Кто-то уже был здесь до вас. В каталоге сайта затаился веб-шелл — точка входа, которую злоумышленник может использовать снова в любой момент. Найдите и уберите его.',
     instructions:
@@ -235,7 +235,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'CLOUD',
     difficulty: Difficulty.MEDIUM,
     points: POINTS.medium,
-    sortOrder: 8,
+    sortOrder: 1,
     narrative:
       'На одном из хостов остался открытым Docker API — без токена, без TLS, доступный всем, кто до него достучится. А в переменных окружения одного из контейнеров лежит то, чего там быть не должно.',
     instructions:
@@ -248,7 +248,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'NETWORK',
     difficulty: Difficulty.MEDIUM,
     points: POINTS.medium,
-    sortOrder: 15,
+    sortOrder: 17,
     narrative:
       'Общий сетевой диск склада настроен так, что подключиться к нему может кто угодно в сети — без пароля, без проверки. Посмотрите, что лежит на расшаренных ресурсах.',
     instructions:
@@ -261,7 +261,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'INCIDENT_RESPONSE',
     difficulty: Difficulty.MEDIUM,
     points: POINTS.medium,
-    sortOrder: 20,
+    sortOrder: 18,
     narrative:
       'После неудачного обновления конфигурации файл /etc/sudoers оказался повреждён, и администраторы разом потеряли права. Аккуратно всё восстановите — одна лишняя ошибка, и можно потерять доступ насовсем.',
     instructions:
@@ -274,7 +274,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'INCIDENT_RESPONSE',
     difficulty: Difficulty.MEDIUM,
     points: POINTS.medium,
-    sortOrder: 21,
+    sortOrder: 13,
     narrative:
       'Сервер необъяснимо тормозит уже второй день. Где-то в фоне работает процесс, который не должен там быть, — маскируется под системный. Найдите его и остановите.',
     instructions:
@@ -287,7 +287,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'CLOUD',
     difficulty: Difficulty.MEDIUM,
     points: POINTS.medium,
-    sortOrder: 22,
+    sortOrder: 6,
     narrative:
       'В одном из контейнеров инфраструктуры используется библиотека с давно опубликованной и давно закрытой уязвимостью — просто никто не обновился. Устраните риск, обновив зависимость до безопасной версии.',
     instructions:
@@ -302,7 +302,7 @@ export const debugTasks: DebugTaskSeed[] = [
     category: 'INCIDENT_RESPONSE',
     difficulty: Difficulty.EVENT,
     points: POINTS.final,
-    sortOrder: 23,
+    sortOrder: 20,
     narrative:
       'Финал дня: один из узлов реплицируемого кластера отвалился от остальных, и репликация встала. Это уже не тренировочная задача — это то, с чем реальная команда эксплуатации сталкивается по ночам. Разберитесь, в чём дело, и верните узел в строй.',
     instructions:
