@@ -9,7 +9,7 @@
 #   (plain requests no longer claim to be upgrades), X-Forwarded-For -> the real peer address
 #   (a client-supplied value would let anyone dodge the per-IP rate limits) and 1h proxy timeouts (nginx's 60s default
 #   silently kills idle terminal websockets);
-# - adds basic security headers (HSTS for this host only, nosniff, frame and referrer policy) and
+# - adds basic security headers (HSTS for this host only, nosniff, frame and referrer policy, noindex) and
 #   hides the nginx version and X-Powered-By;
 # - runs `nginx -t` and reloads; restores the previous files if the test fails.
 set -Eeuo pipefail
@@ -75,6 +75,13 @@ if "Strict-Transport-Security" not in s:
         "\n"
         "    location / {\n"
         "        proxy_hide_header X-Powered-By;",
+        1,
+    )
+if "X-Robots-Tag" not in s and "add_header Referrer-Policy" in s:
+    s = s.replace(
+        '    add_header Referrer-Policy "strict-origin-when-cross-origin" always;\n',
+        '    add_header Referrer-Policy "strict-origin-when-cross-origin" always;\n'
+        '    add_header X-Robots-Tag "noindex, nofollow" always;\n',
         1,
     )
 open(path, "w", encoding="utf-8").write(s)
