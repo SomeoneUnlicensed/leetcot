@@ -4,7 +4,7 @@ import next from 'next';
 import { WebSocketServer, type WebSocket } from 'ws';
 import * as pty from 'node-pty';
 import { prisma } from '@repo/db';
-import { reapExpiredEnvironments } from './src/server/environments';
+import { extendEnvironment, reapExpiredEnvironments } from './src/server/environments';
 
 const dev = process.env.NODE_ENV !== 'production';
 const port = Number(process.env.PORT ?? 3000);
@@ -126,6 +126,19 @@ app.prepare().then(() => {
       }
 
       attachTerminal(ws, env.containerName, EXEC_USER_BY_TASK[task.slug]);
+
+      // The idle reaper only knows the expiry stored when the environment was started; nothing else
+      // ever pushed it back, so a participant who is actively working lost the container (and every
+      // change made in it) ENVIRONMENT_IDLE_MINUTES after starting. Keep it alive while the
+      // terminal is connected; once the tab closes the normal idle countdown applies.
+      const keepAlive = setInterval(() => {
+        extendEnvironment(env).catch((error: unknown) => {
+          console.error('[terminal] failed to extend environment:', error);
+        });
+      }, 60_000);
+      ws.on('close', () => {
+        clearInterval(keepAlive);
+      });
     });
   });
 
