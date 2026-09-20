@@ -140,6 +140,59 @@ function ParticipantAuthForm({ redirectTo }: { redirectTo: string }) {
   );
 }
 
+function CodeLoginForm({ redirectTo }: { redirectTo: string }) {
+  const router = useRouter();
+  const [code, setCode] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!code.trim() || loading) return;
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await signIn('participant-code', { code: code.trim(), redirect: false });
+      if (res?.error) {
+        setError('Неверный код доступа.');
+      } else {
+        router.push(redirectTo);
+        router.refresh();
+      }
+    } catch {
+      setError('Что-то пошло не так. Попробуй ещё раз.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
+      <Input
+        name="code"
+        type="text"
+        required
+        autoComplete="off"
+        autoCapitalize="characters"
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+        className="border-border uppercase tracking-widest"
+        placeholder="Код доступа"
+      />
+      {error ? <p className="text-center text-sm text-red-500">{error}</p> : null}
+      <Button
+        type="submit"
+        disabled={loading}
+        variant="outline"
+        className="border-border w-full rounded-xl"
+      >
+        {loading ? 'Заходим...' : 'Войти по коду'}
+      </Button>
+    </form>
+  );
+}
+
 function AdminLoginForm() {
   return (
     <Button
@@ -156,6 +209,7 @@ function AdminLoginForm() {
 function LoginForm() {
   const searchParams = useSearchParams();
   const [showAdmin, setShowAdmin] = useState(false);
+  const [showCode, setShowCode] = useState(false);
   const redirectTo = searchParams.get('callbackUrl') ?? '/debug-simulator';
   const locked = searchParams.get('locked') === '1';
 
@@ -182,15 +236,34 @@ function LoginForm() {
 
         <ParticipantAuthForm redirectTo={redirectTo} />
 
-        <div className="text-center text-sm">
+        <div className="flex items-center justify-center gap-4 text-center text-sm">
           <button
             type="button"
-            onClick={() => setShowAdmin((v) => !v)}
+            onClick={() => {
+              setShowCode((v) => !v);
+              setShowAdmin(false);
+            }}
+            className="text-[#131722]/40 hover:text-[#131722]/70"
+          >
+            У меня есть код
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setShowAdmin((v) => !v);
+              setShowCode(false);
+            }}
             className="text-[#131722]/40 hover:text-[#131722]/70"
           >
             Я организатор
           </button>
         </div>
+
+        {showCode ? (
+          <div className="border-border border-t pt-6">
+            <CodeLoginForm redirectTo={redirectTo} />
+          </div>
+        ) : null}
 
         {showAdmin ? (
           <div className="border-border border-t pt-6">
