@@ -3,7 +3,7 @@ import { LENTA_CHAMPIONSHIP_SLUG, hashPassword, normalizeParticipantName, prisma
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { rateLimit } from '~/utils/rateLimit';
+import { getClientIp, rateLimit } from '~/utils/rateLimit';
 
 const RegisterSchema = z.object({
   name: z.string().trim().min(2).max(80),
@@ -11,10 +11,12 @@ const RegisterSchema = z.object({
 });
 
 export async function POST(req: Request): Promise<NextResponse> {
-  const ip = (await headers()).get('x-forwarded-for') ?? 'unknown';
+  // The whole room registers from the venue's single NAT address, so this is only a flood
+  // guard (each registration costs a bcrypt hash), not a per-person limit.
+  const ip = getClientIp((await headers()).get('x-forwarded-for'));
   const isRateLimited = rateLimit(`participant-register:${ip}`, {
     windowSize: 60 * 1000,
-    maxRequests: 10,
+    maxRequests: 300,
   });
   if (isRateLimited) {
     return NextResponse.json({ error: 'Слишком много попыток. Подождите немного.' }, { status: 429 });

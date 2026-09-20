@@ -23,9 +23,15 @@ interface TerminalMessage {
 async function resolveUserFromCookie(cookieHeader: string | undefined) {
   if (!cookieHeader) return null;
 
-  const res = await fetch(`http://127.0.0.1:${port}/api/auth/session`, {
+  // Docker sets HOSTNAME to the container id, which makes the server listen on the container
+  // IP only - a hardcoded 127.0.0.1 is refused and every terminal ended up "Unauthorized".
+  const sessionHost = hostname === '0.0.0.0' ? '127.0.0.1' : hostname;
+  const res = await fetch(`http://${sessionHost}:${port}/api/auth/session`, {
     headers: { cookie: cookieHeader },
-  }).catch(() => null);
+  }).catch((error: unknown) => {
+    console.error('[terminal] session lookup failed:', error);
+    return null;
+  });
   if (!res?.ok) return null;
 
   const session = (await res.json().catch(() => null)) as { user?: { email?: string } } | null;
