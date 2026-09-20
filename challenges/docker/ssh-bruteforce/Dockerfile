@@ -4,7 +4,7 @@
 # expected to attack the SSH server running inside the SAME container: find the weak
 # password for `weakuser` (by hand or with hydra) and read the flag from their home
 # directory. The flag itself is never baked into the image — it's injected at
-# container-start time via the FLAG env var (see environments.ts) so the image can be
+# container-start time via the one-shot flag file (see environments.ts) so the image can be
 # reused across events/deployments without leaking the answer through `docker pull`.
 #
 # Deliberately does NOT ship a wordlist file anywhere in the image (an earlier

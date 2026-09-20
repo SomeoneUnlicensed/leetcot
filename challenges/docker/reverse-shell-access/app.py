@@ -3,7 +3,19 @@ import socket
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
 
-FLAG = os.environ.get("FLAG", "MISSING_FLAG")
+def _load_flag():
+    # The task runner hands the flag over as a one-shot file so it never sits in the container
+    # environment (visible to every shell as $FLAG and in /proc/*/environ).
+    try:
+        with open("/.lenta-flag") as f:
+            flag = f.read().strip()
+        os.remove("/.lenta-flag")
+        return flag
+    except OSError:
+        return os.environ.pop("FLAG", "MISSING_FLAG")
+
+
+FLAG = _load_flag()
 
 FORM = b"""<!doctype html><html><body>
 <h1>\xd0\x92\xd0\xbd\xd1\x83\xd1\x82\xd1\x80\xd0\xb5\xd0\xbd\xd0\xbd\xd0\xb8\xd0\xb9 healthcheck-agent</h1>
