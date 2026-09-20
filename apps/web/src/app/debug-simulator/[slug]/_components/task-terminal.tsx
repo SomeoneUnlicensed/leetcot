@@ -400,7 +400,12 @@ export function TaskTerminal({ taskSlug, points, initiallySolved }: TaskTerminal
                 </Button>
               </div>
             ) : null}
-            <div ref={containerRef} className="h-full w-full px-6 py-4" />
+            {/* Padding lives on the wrapper: FitAddon sizes the terminal from its parent, and with
+                border-box a padded parent made it ~48px too wide and ~32px too tall, clipping the
+                right end of long lines and the last rows (including the prompt). */}
+            <div className="h-full w-full px-6 py-4">
+              <div ref={containerRef} className="h-full w-full" />
+            </div>
           </>
         ) : (
           <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
