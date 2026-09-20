@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { prisma } from '@repo/db';
-import { Difficulty } from '@repo/db/types';
 import { DifficultyBadge } from '@repo/ui/components/difficulty-badge';
 import { CheckCircle, Lock } from '@repo/ui/icons';
 import Link from 'next/link';
@@ -12,14 +11,6 @@ export const metadata: Metadata = {
   title: 'Дебаг-Симулятор — Lenta tech',
   description: 'Задачи дебаг-симулятора: живой сервер и 20 практических инцидентов.',
 };
-
-const TIER_LABELS: Partial<Record<Difficulty, string>> = {
-  EASY: 'Лёгкие / стартовые',
-  MEDIUM: 'Средние',
-  EVENT: 'Финальная',
-};
-
-const TIER_ORDER: Difficulty[] = [Difficulty.EASY, Difficulty.MEDIUM, Difficulty.EVENT];
 
 export default async function DebugSimulatorPage() {
   const session = await auth();
@@ -63,7 +54,7 @@ export default async function DebugSimulatorPage() {
             миграции на новую CRM. Их место на сегодня занимаете вы.
           </p>
           <p className="mt-2 max-w-2xl text-[#131722]/65">
-            Каждая задача — реальный сервер и конкретный инцидент: от подбора SSH-пароля до
+            Каждая задача — реальный сервер и конкретный инцидент: от простых команд в терминале до
             восстановления упавшего узла кластера. Найдите флаг и отправьте его прямо в терминале.
           </p>
           <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-[#131722]/60">
@@ -100,82 +91,75 @@ export default async function DebugSimulatorPage() {
           </div>
         ) : (
           <p className="mb-5 text-sm text-[#131722]/50">
-            Задачи открываются по очереди — от простых к сложным. Следующая становится доступна сразу
-            после решения текущей.
+            Задачи открываются по очереди — в том порядке, в котором они перечислены ниже. Следующая
+            становится доступна сразу после решения текущей.
           </p>
         )}
 
-        {TIER_ORDER.map((tier) => {
-          const tierTasks = tasks.filter((t) => t.difficulty === tier);
-          if (tierTasks.length === 0) return null;
+        <ol className="grid gap-2">
+          {tasks.map((task, index) => {
+            const isSolved = solvedTaskIds.has(task.id);
+            const isCurrent = currentTask?.id === task.id;
+            const isLocked = !isSolved && !isCurrent;
 
-          return (
-            <div key={tier} className="mb-8">
-              <h2 className="mb-3 text-lg font-bold text-[#131722]/80">{TIER_LABELS[tier]}</h2>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {tierTasks.map((task) => {
-                  const isSolved = solvedTaskIds.has(task.id);
-                  const isCurrent = currentTask?.id === task.id;
-                  const isLocked = !isSolved && !isCurrent;
-
-                  const itemContent = (
-                    <>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex min-w-0 items-center gap-2">
-                          {isSolved ? (
-                            <CheckCircle className="h-4 w-4 shrink-0 stroke-emerald-500" />
-                          ) : (
-                            <Lock className="h-4 w-4 shrink-0 stroke-[#131722]/30" />
-                          )}
-                          <span
-                            className={`min-w-0 truncate font-semibold ${isLocked ? 'text-[#131722]/40' : 'text-[#131722] group-hover:text-[#003C96]'}`}
-                          >
-                            {task.title}
-                          </span>
-                          {isCurrent ? (
-                            <span className="shrink-0 rounded-full bg-[#00A0FF]/10 px-2 py-0.5 text-[11px] font-bold text-[#00A0FF]">
-                              текущая
-                            </span>
-                          ) : null}
-                        </div>
-                      </div>
-                      <div className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-2">
-                        <span className={`text-sm font-bold ${isLocked ? 'text-[#131722]/30' : 'text-[#131722]/50'}`}>
-                          {task.points} pts
-                        </span>
-                        <DifficultyBadge difficulty={task.difficulty} />
-                      </div>
-                    </>
-                  );
-
-                  if (isLocked) {
-                    return (
-                      <div
-                        key={task.id}
-                        className="border-border flex min-w-0 cursor-not-allowed items-center justify-between gap-3 rounded-xl border bg-[#FAFBFC] p-4 opacity-60"
-                        title="Сначала решите текущую задачу"
-                      >
-                        {itemContent}
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <Link
-                      key={task.id}
-                      href={`/debug-simulator/${task.slug}`}
-                      className={`group flex min-w-0 items-center justify-between gap-3 rounded-xl border p-4 transition-colors duration-200 hover:border-[#00A0FF]/40 hover:bg-[#F5F9FF] ${
-                        isCurrent ? 'border-[#00A0FF]/50 bg-[#F5F9FF]' : 'border-border bg-white'
-                      }`}
+            const itemContent = (
+              <>
+                <span
+                  className={`w-7 shrink-0 text-right text-sm font-bold tabular-nums ${isLocked ? 'text-[#131722]/25' : 'text-[#131722]/40'}`}
+                >
+                  {index + 1}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex min-w-0 items-center gap-2">
+                    {isSolved ? (
+                      <CheckCircle className="h-4 w-4 shrink-0 stroke-emerald-500" />
+                    ) : (
+                      <Lock className="h-4 w-4 shrink-0 stroke-[#131722]/30" />
+                    )}
+                    <span
+                      className={`min-w-0 font-semibold ${isLocked ? 'text-[#131722]/40' : 'text-[#131722] group-hover:text-[#003C96]'}`}
                     >
-                      {itemContent}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
+                      {task.title}
+                    </span>
+                    {isCurrent ? (
+                      <span className="shrink-0 rounded-full bg-[#00A0FF]/10 px-2 py-0.5 text-[11px] font-bold text-[#00A0FF]">
+                        текущая
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+                <div className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-2">
+                  <span className={`text-sm font-bold ${isLocked ? 'text-[#131722]/30' : 'text-[#131722]/50'}`}>
+                    {task.points} pts
+                  </span>
+                  <DifficultyBadge difficulty={task.difficulty} />
+                </div>
+              </>
+            );
+
+            return (
+              <li key={task.id} className="min-w-0">
+                {isLocked ? (
+                  <div
+                    className="border-border flex min-w-0 cursor-not-allowed items-center justify-between gap-3 rounded-xl border bg-[#FAFBFC] p-4 opacity-60"
+                    title="Сначала решите текущую задачу"
+                  >
+                    {itemContent}
+                  </div>
+                ) : (
+                  <Link
+                    href={`/debug-simulator/${task.slug}`}
+                    className={`group flex min-w-0 items-center justify-between gap-3 rounded-xl border p-4 transition-colors duration-200 hover:border-[#00A0FF]/40 hover:bg-[#F5F9FF] ${
+                      isCurrent ? 'border-[#00A0FF]/50 bg-[#F5F9FF]' : 'border-border bg-white'
+                    }`}
+                  >
+                    {itemContent}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
+        </ol>
 
         <div className="mt-8">
           <Link href="/leaderboard" className="text-sm font-semibold text-[#00A0FF] hover:text-[#0090e6]">
