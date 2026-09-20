@@ -6,7 +6,8 @@
 # - installs the websocket "Connection" map (conf.d/leetcot-map.conf);
 # - creates the managed upstream (conf.d/leetcot-upstream.conf, initially the blue instance :3002);
 # - patches the site config: proxy_pass -> the upstream, "Connection" -> $connection_upgrade
-#   (plain requests no longer claim to be upgrades) and 1h proxy timeouts (nginx's 60s default
+#   (plain requests no longer claim to be upgrades), X-Forwarded-For -> the real peer address
+#   (a client-supplied value would let anyone dodge the per-IP rate limits) and 1h proxy timeouts (nginx's 60s default
 #   silently kills idle terminal websockets);
 # - runs `nginx -t` and reloads; restores the previous files if the test fails.
 set -Eeuo pipefail
@@ -51,6 +52,10 @@ s = open(path, encoding="utf-8").read()
 
 s = s.replace("proxy_pass http://127.0.0.1:3002;", "proxy_pass http://leetcot_app;")
 s = s.replace('proxy_set_header Connection "upgrade";', "proxy_set_header Connection $connection_upgrade;")
+s = s.replace(
+    "proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;",
+    "proxy_set_header X-Forwarded-For $remote_addr;",
+)
 if "proxy_read_timeout" not in s:
     s = s.replace(
         "proxy_http_version 1.1;",

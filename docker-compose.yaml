@@ -8,6 +8,11 @@ name: leetcot
 x-app-common: &app-common
   restart: unless-stopped
   stop_grace_period: 30s
+  logging:
+    driver: json-file
+    options:
+      max-size: 20m
+      max-file: '5'
   volumes:
     - /var/run/docker.sock:/var/run/docker.sock
     # Persistent CTF flags: without this the seed regenerates every flag on each container start.
