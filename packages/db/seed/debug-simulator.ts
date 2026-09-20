@@ -79,6 +79,7 @@ async function main() {
         flagHash: hashFlag(flag),
         dockerImage: task.dockerImage ?? null,
         dockerFlagPlain,
+        hints: task.hints,
       },
       create: {
         championshipId: championship.id,
@@ -93,6 +94,7 @@ async function main() {
         flagHash: hashFlag(flag),
         dockerImage: task.dockerImage ?? null,
         dockerFlagPlain,
+        hints: task.hints,
       },
     });
   }

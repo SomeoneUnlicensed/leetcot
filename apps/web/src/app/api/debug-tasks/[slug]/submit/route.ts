@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '~/server/auth';
 import { stopEnvironment } from '~/server/environments';
+import { pointsAfterHints } from '~/server/hints';
 import { getQueueState, isParticipantLocked } from '~/server/task-queue';
 import { rateLimit } from '~/utils/rateLimit';
 
@@ -83,6 +84,9 @@ export async function POST(
       return NextResponse.json({ solved: false, error: 'Неверный флаг.' }, { status: 200 });
     }
 
+    const hintsUsed = await prisma.debugHintReveal.count({ where: { taskId: task.id, userId: user.id } });
+    const awarded = pointsAfterHints(task.points, hintsUsed);
+
     // The submission row and the score change commit together, and a partial unique index
     // (one correct submission per task and participant) makes concurrent duplicate submits
     // lose the race with a unique violation instead of scoring the task twice.
@@ -96,8 +100,8 @@ export async function POST(
           where: {
             championshipId_userId: { championshipId: task.championshipId, userId: user.id },
           },
-          update: { score: { increment: task.points } },
-          create: { championshipId: task.championshipId, userId: user.id, score: task.points },
+          update: { score: { increment: awarded } },
+          create: { championshipId: task.championshipId, userId: user.id, score: awarded },
         });
       });
     } catch (error) {
@@ -121,7 +125,7 @@ export async function POST(
 
     return NextResponse.json({
       solved: true,
-      points: task.points,
+      points: awarded,
       totalScore: participant.score,
       nextTaskSlug: next.currentTask?.slug ?? null,
     });

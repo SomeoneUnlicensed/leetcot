@@ -168,6 +168,7 @@ model User {
   userBadges       UserBadge[]
   debugSubmissions DebugSubmission[]
   taskEnvironments TaskEnvironment[]
+  debugHintReveals DebugHintReveal[]
 }
 
 model VerificationToken {
@@ -805,13 +806,30 @@ model DebugTask {
   /// actually be discovered inside the sandbox. Only set for docker-backed tasks —
   /// every other task keeps the hash-only property (plaintext never touches the DB).
   dockerFlagPlain String?
+  /// Ordered hint texts (markdown); the participant opens them one by one, each at a points cost.
+  hints          String[]          @default([])
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
 
   submissions  DebugSubmission[]
   environments TaskEnvironment[]
+  hintReveals  DebugHintReveal[]
 
   @@index([championshipId])
+}
+
+/// A hint a participant opened for a task (level = 1-based index into DebugTask.hints).
+model DebugHintReveal {
+  id        String    @id @default(uuid())
+  task      DebugTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  level     Int
+  createdAt DateTime  @default(now())
+
+  @@unique([taskId, userId, level])
+  @@index([userId])
 }
 
 enum TaskEnvironmentStatus {

@@ -6,7 +6,9 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { auth } from '~/server/auth';
 import { getQueueState, isParticipantLocked } from '~/server/task-queue';
+import { HINT_PENALTY_PERCENT } from '~/server/hints';
 import { FlagForm } from './_components/flag-form';
+import { HintButton } from './_components/hint-button';
 import { TaskBriefing } from './_components/task-briefing';
 import { TaskTerminal } from './_components/task-terminal';
 
@@ -40,6 +42,14 @@ export default async function DebugTaskPage({ params }: PageProps) {
       })
     : null;
   const solved = Boolean(solvedSubmission);
+  const openedHints = user
+    ? await prisma.debugHintReveal.findMany({
+        where: { taskId: task.id, userId: user.id },
+        select: { level: true },
+      })
+    : [];
+  const openedCount = openedHints.length;
+  const visibleHints = task.hints.slice(0, openedCount);
 
   // Tasks are worked in order — block jumping ahead by URL to a task that isn't
   // solved yet and isn't the current one in the queue.
@@ -75,6 +85,30 @@ export default async function DebugTaskPage({ params }: PageProps) {
           <div className="prose prose-sm mt-4 max-w-none text-[#131722]/70">
             <Markdown>{task.instructions}</Markdown>
           </div>
+
+          {!solved && task.hints.length > 0 ? (
+            <div className="mt-6 border-t border-[#131722]/10 pt-6">
+              <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-[#131722]/50">Подсказки</h2>
+              <div className="space-y-3">
+                {visibleHints.map((hint, index) => (
+                  <div key={index} className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm">
+                    <p className="mb-1 font-semibold text-amber-900">Подсказка {index + 1}</p>
+                    <div className="prose prose-sm max-w-none text-amber-950/80">
+                      <Markdown>{hint}</Markdown>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {openedCount < task.hints.length ? (
+                <HintButton
+                  slug={task.slug}
+                  next={openedCount + 1}
+                  total={task.hints.length}
+                  penaltyPercent={HINT_PENALTY_PERCENT}
+                />
+              ) : null}
+            </div>
+          ) : null}
 
           {solved ? (
             <div className="mt-6 border-t border-[#131722]/10 pt-6">
