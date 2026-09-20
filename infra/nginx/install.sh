@@ -9,6 +9,8 @@
 #   (plain requests no longer claim to be upgrades), X-Forwarded-For -> the real peer address
 #   (a client-supplied value would let anyone dodge the per-IP rate limits) and 1h proxy timeouts (nginx's 60s default
 #   silently kills idle terminal websockets);
+# - adds basic security headers (HSTS for this host only, nosniff, frame and referrer policy) and
+#   hides the nginx version and X-Powered-By;
 # - runs `nginx -t` and reloads; restores the previous files if the test fails.
 set -Eeuo pipefail
 
@@ -60,6 +62,19 @@ if "proxy_read_timeout" not in s:
     s = s.replace(
         "proxy_http_version 1.1;",
         "proxy_http_version 1.1;\n        proxy_read_timeout 3600s;\n        proxy_send_timeout 3600s;",
+        1,
+    )
+if "Strict-Transport-Security" not in s:
+    s = s.replace(
+        "    location / {",
+        "    server_tokens off;\n"
+        '    add_header Strict-Transport-Security "max-age=15552000" always;\n'
+        '    add_header X-Content-Type-Options "nosniff" always;\n'
+        '    add_header X-Frame-Options "SAMEORIGIN" always;\n'
+        '    add_header Referrer-Policy "strict-origin-when-cross-origin" always;\n'
+        "\n"
+        "    location / {\n"
+        "        proxy_hide_header X-Powered-By;",
         1,
     )
 open(path, "w", encoding="utf-8").write(s)
