@@ -43,6 +43,7 @@
     "SENTRY_TEST_TOKEN",
     "ALTCHA_HMAC_KEY",
     "DEBUG_TASK_FLAGS",
+    "DEBUG_FLAGS_FILE",
     "ENVIRONMENT_IDLE_MINUTES"
   ],
   "globalDependencies": [".env", ".env.*"],

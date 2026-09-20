@@ -12,7 +12,11 @@ const __dirname = path.dirname(__filename);
 // An organizer-supplied flag map (slug -> flag) can be passed via DEBUG_TASK_FLAGS
 // as JSON. Anything left unset gets a freshly generated random flag, written out to
 // a local (gitignored) file so it can be handed to infra / put on the target boxes.
-const LOCAL_FLAGS_FILE = path.join(__dirname, '.debug-flags.local.json');
+// DEBUG_FLAGS_FILE must point at persistent storage (a volume) in production: the seed runs on
+// every container start, and flags kept only in the container filesystem would be silently
+// regenerated (= rotated) on every deploy, breaking tasks participants already started.
+const LOCAL_FLAGS_FILE =
+  process.env.DEBUG_FLAGS_FILE || path.join(__dirname, '.debug-flags.local.json');
 
 function loadProvidedFlags(): Record<string, string> {
   if (process.env.DEBUG_TASK_FLAGS) {
@@ -93,6 +97,7 @@ async function main() {
     });
   }
 
+  fs.mkdirSync(path.dirname(LOCAL_FLAGS_FILE), { recursive: true });
   fs.writeFileSync(LOCAL_FLAGS_FILE, `${JSON.stringify(resolvedFlags, null, 2)}\n`);
 
   console.log(`Championship: ${championship.name} (${championship.slug}), status=${championship.status}`);

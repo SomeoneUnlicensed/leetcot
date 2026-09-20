@@ -35,4 +35,4 @@ else
 fi
 
 echo "Starting LeetCot in production mode..."
-pnpm start
+exec pnpm start

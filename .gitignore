@@ -67,3 +67,6 @@ tunnel-db.ps1
 
 # generated plaintext CTF flags for the debug-simulator, never commit
 packages/db/seed/.debug-flags.local.json
+
+# local deploy state (scripts/deploy/deploy.sh)
+.deploy/
