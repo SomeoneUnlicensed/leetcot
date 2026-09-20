@@ -1,5 +1,40 @@
 name: leetcot
 
+# The app runs as two interchangeable instances, "blue" (:3002) and "green" (:3012), behind
+# nginx (upstream "leetcot_app"). scripts/deploy/deploy.sh starts the idle colour with the new
+# image, switches nginx over once it is healthy and retires the old colour after it drains,
+# so a deploy never drops requests or open terminal sessions. Do not `docker compose up` the
+# app services by hand - use the script (it also pins the per-colour image tags).
+x-app-common: &app-common
+  restart: unless-stopped
+  stop_grace_period: 30s
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    # Persistent CTF flags: without this the seed regenerates every flag on each container start.
+    - flags:/data/flags
+  env_file:
+    - .env
+  environment:
+    - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-dev}@db:5432/leetcot?schema=public
+    - REDIS_URL=redis://redis:6379
+    - NODE_ENV=${NODE_ENV:-production}
+    - CODE_RUNNER_MAX_QUEUE_DEPTH=${CODE_RUNNER_MAX_QUEUE_DEPTH:-20}
+    - AUTH_URL=${AUTH_URL:-https://lenta.leetcot.ru}
+    - NEXTAUTH_URL=${NEXTAUTH_URL:-https://lenta.leetcot.ru}
+    - DEBUG_FLAGS_FILE=/data/flags/debug-flags.json
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_started
+  healthcheck:
+    test: ['CMD-SHELL', 'wget -q -O /dev/null http://127.0.0.1:3000/login || exit 1']
+    interval: 10s
+    timeout: 5s
+    retries: 6
+    # first boot may run migrations, seeding and build the task images
+    start_period: 300s
+
 services:
   db:
     image: postgres:16
@@ -27,30 +62,19 @@ services:
     ports:
       - 127.0.0.1:6380:6379
 
-  app:
-    image: ${LEETCOT_IMAGE:-ghcr.io/someoneunlicensed/leetcot:debug-simulator}
-    build:
-      context: .
+  app-blue:
+    <<: *app-common
+    container_name: leetcot-app-blue
+    image: ${APP_BLUE_IMAGE:-ghcr.io/someoneunlicensed/leetcot:debug-simulator}
     ports:
       - 127.0.0.1:3002:3000
-      - 127.0.0.1:3001:3001
-      - 127.0.0.1:3003:3003
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    env_file:
-      - .env
-    environment:
-      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-dev}@db:5432/leetcot?schema=public
-      - REDIS_URL=redis://redis:6379
-      - NODE_ENV=${NODE_ENV:-production}
-      - CODE_RUNNER_MAX_QUEUE_DEPTH=${CODE_RUNNER_MAX_QUEUE_DEPTH:-20}
-      - AUTH_URL=${AUTH_URL:-https://lenta.leetcot.ru}
-      - NEXTAUTH_URL=${NEXTAUTH_URL:-https://lenta.leetcot.ru}
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_started
+
+  app-green:
+    <<: *app-common
+    container_name: leetcot-app-green
+    image: ${APP_GREEN_IMAGE:-ghcr.io/someoneunlicensed/leetcot:debug-simulator}
+    ports:
+      - 127.0.0.1:3012:3000
 
   runtime-images:
     image: docker:27-cli
@@ -114,3 +138,7 @@ volumes:
   pgadmin-data:
     name: leetcot_pgadmin-data
     driver: local
+  flags:
+    # created (and bootstrapped) by scripts/deploy/deploy.sh; never delete it while an event runs
+    name: leetcot_flags
+    external: true
